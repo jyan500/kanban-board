@@ -1,0 +1,113 @@
+/* Global */
+/* Remove default button styling */ 
+button, input[type="submit"], input[type="reset"] {
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+/* */ 
+.jumbotron {
+	padding: 16px;
+	border: 4px solid;
+	margin-top: 32px;
+	margin-bottom: 32px;
+}
+
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.s-text {
+	font-size: 16px;
+}
+
+.m-text{
+	font-size: 24px;
+}
+
+.l-text {
+	font-size: 36px;
+}
+
+.btn {
+	border: 1px solid blue;
+	background-color: blue;
+	color: white;
+	padding: 8px;
+}
+
+.btn:hover{
+	opacity: .8;
+}
+
+.btn-row {
+	display: inline-block;
+	padding: 8px;
+}
+
+.btn-row .btn {
+	margin-left: 4px;
+	margin-right: 4px;
+}
+
+.alert{
+	border: 1px solid red;
+	background-color: red;
+}
+
+.form-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 50%;
+}
+
+.form {
+	display: flex;
+	flex-direction: column;
+}
+
+.form-input {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 8px;
+}
+
+.form-input-inline {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.form-input-inline > input {
+	margin-left: 4px;
+}
+
+.form-input input {
+	border: 1px solid;
+}
+
+.form-input label {
+	text-align: left;
+	margin-bottom: 4px;
+}
+
+.text-input { 
+	border: 1px solid;
+	padding: 8px;
+}
+
+.visible {
+	display: block;
+}
+
+.hidden {
+	display: none;
+}
+

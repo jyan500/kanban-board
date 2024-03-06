@@ -1,0 +1,13 @@
+.status-row {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+.status-col {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+.status-selected {
+	border: 1px solid blue;
+}
