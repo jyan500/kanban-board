@@ -60,33 +60,37 @@ export const TicketForm = () => {
 				e.preventDefault()
 				onSubmit()
 			}}>
-				<div className = "form-input">
-					<label className = "text-label">Name</label>
-					<input onChange = {(e) => setForm({...form, ticketName: e.target.value})} value = {form.ticketName} type = "text"/>
+				<div className = "form-row">
+					<div className = "form-cell">
+						<label>Name</label>
+						<input onChange = {(e) => setForm({...form, ticketName: e.target.value})} value = {form.ticketName} type = "text"/>
+					</div>
+					<div className = "form-cell">
+						<label>Status</label>
+						<select value = {form.ticketStatus} onChange = {(e) => setForm({...form, ticketStatus: e.target.value})}>
+							{board.statuses.filter((status: Status) => board.statusesToDisplay.includes(status.id)).map((status: Status) => {
+								return <option key = {status.id} value = {status.id}>{status.name}</option>
+							})}
+						</select>	
+					</div>
+					<div className = "form-cell">
+						<label>Description</label>
+						<textarea onChange = {(e) => setForm({...form, ticketDescription: e.target.value})}  value = {form.ticketDescription} ></textarea>
+					</div>
+					<div className = "form-cell">
+						<label>Priority</label>
+						<select value = {form.priority} onChange = {(e) => setForm({...form, priority: e.target.value})}>
+							<option disabled value = "">---</option>
+							{board.priorityList.map((priority: Priority) => {
+								return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
+							})}
+						</select>
+					</div>
 				</div>
-				<div className = "form-input">
-					<label className = "">Status</label>
-					<select value = {form.ticketStatus} onChange = {(e) => setForm({...form, ticketStatus: e.target.value})}>
-						{board.statuses.filter((status: Status) => board.statusesToDisplay.includes(status.id)).map((status: Status) => {
-							return <option key = {status.id} value = {status.id}>{status.name}</option>
-						})}
-					</select>	
-				</div>
-				<div className = "form-input">
-					<label className = "text-label">Description</label>
-					<textarea onChange = {(e) => setForm({...form, ticketDescription: e.target.value})}  value = {form.ticketDescription} ></textarea>
-				</div>
-				<div className = "form-input">
-					<label className = "">Priority</label>
-					<select value = {form.priority} onChange = {(e) => setForm({...form, priority: e.target.value})}>
-						<option disabled value = "">---</option>
-						{board.priorityList.map((priority: Priority) => {
-							return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
-						})}
-					</select>
-				</div>
-				<div className = "form-input">
-					<input type = "submit" className = "btn"/>
+				<div className = "form-row">
+					<div className = "btn-group">
+						<input type = "submit" className = "btn"/>
+					</div>
 				</div>
 			</form>
 		</div>

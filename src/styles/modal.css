@@ -10,10 +10,9 @@
 
 .close-button {
 	position: absolute;
-	top: 0;
-	right: 0;
-	margin-top: 8px;
-	margin-right: 8px;
+	top: 8px;
+	right: 8px;
+	z-index: 99;
 }
 
 .modal-container {
@@ -23,7 +22,6 @@
 	border: 1px solid #888;
 	background-color: white;
 	width: 80%;
-	height: 600px;
 }
 
 .modal {
@@ -40,5 +38,5 @@
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	width: 400px;
+	width: 500px;
 }

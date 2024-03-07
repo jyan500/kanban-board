@@ -28,17 +28,19 @@ export const Board = () => {
 }
 	return (
 		<div className = "board-container">
-			<div className = "btn-row">
-				<button onClick = {() => {
-					dispatch(toggleShowModal(true))
-					dispatch(setModalType("TICKET_FORM"))
-				}} className = "btn">Add Ticket</button>
-				<button onClick = {() => {
-					dispatch(toggleShowModal(true))
-					dispatch(setModalType("STATUS_FORM"))
-				}} className = "btn">Edit Statuses</button>
-				<button onClick = {() => dispatch(sortByPriority({sortOrder: 1}))} className = "btn">Sort By Priority</button>
-				<button onClick = {() => dispatch(deleteAllTickets())} className = "btn alert">Delete All Tickets</button>
+			<div className = "form-row">
+				<div className = "btn-group form-cell">
+					<button onClick = {() => {
+						dispatch(toggleShowModal(true))
+						dispatch(setModalType("TICKET_FORM"))
+					}} className = "btn primary">Add Ticket</button>
+					<button onClick = {() => {
+						dispatch(toggleShowModal(true))
+						dispatch(setModalType("STATUS_FORM"))
+					}} className = "btn primary">Edit Statuses</button>
+					<button onClick = {() => dispatch(sortByPriority({sortOrder: 1}))}>Sort By Priority</button>
+					<button onClick = {() => dispatch(deleteAllTickets())}>Delete All Tickets</button>
+				</div>
 			</div>
 			<div style = {boardStyle}>
 				{[...board.statuses].sort(sortStatusByOrder).map((status: Status) => {
@@ -46,9 +48,9 @@ export const Board = () => {
 						return (<div key = {status.id} className = "grid-col">
 							<div>
 								<div className = "grid-col-header">
-									<button onClick={() => dispatch(sortByPriority({sortOrder: 1, statusId: status.id}))}><ArrowUp/></button>
+									<button className = "transparent-btn" onClick={() => dispatch(sortByPriority({sortOrder: 1, statusId: status.id}))}><ArrowUp className = "icon"/></button>
 									<p>{board.statuses.find((s: Status) => s.id === status.id)?.name}</p>
-									<button onClick={() => dispatch(sortByPriority({sortOrder: 0, statusId: status.id}))}><ArrowDown/></button>
+									<button className = "transparent-btn" onClick={() => dispatch(sortByPriority({sortOrder: 0, statusId: status.id}))}><ArrowDown className = "icon"/></button>
 								</div>
 								{board.newBoard[status.id].map((ticket: TicketType) => {
 									return (
