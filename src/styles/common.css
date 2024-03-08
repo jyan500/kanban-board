@@ -32,6 +32,7 @@
 	--padding-inputs: .75em;
 	--padding-btn: .75em;
 	--radius-inputs: .25em;
+	--radius-buttons: .25em;
 	--transition-duration-inputs: 250ms;
 	--transition-function-inputs: ease-in-out;
 	--input-transition-inputs:
@@ -120,10 +121,11 @@ input[type="submit"],
 input[type="reset"], 
 input[type="file"]::file-selector-button {
 	padding: var(--padding-btn);
-	border-color: var(--bs-primary);
+	border: none;
 	background-color: var(--bs-primary);
 	color: var(--co-btn-text);
 	transition: var(--btn-transition-inputs);
+	border-radius: var(--radius-buttons);
 
 	&:hover,
     &:active{
@@ -159,12 +161,7 @@ label {
   cursor: not-allowed;
 }
 
-/* */ 
-.transparent-btn {
-	background-color: transparent;
-	color: black;
-	border: 0;
-}
+/* elements */
 
 .jumbotron {
 	padding: 16px;
@@ -184,47 +181,6 @@ label {
 	height: 20px;
 }
 
-.s-text {
-	font-size: 16px;
-}
-
-.m-text{
-	font-size: 24px;
-}
-
-.l-text {
-	font-size: 36px;
-}
-
-/*.btn {
-	color: white;
-	padding: 8px;
-}
-
-.primary {
-	border: 1px solid var(--bs-primary);
-	background-color: var(--bs-primary);
-}
-
-.btn:hover{
-	opacity: .8;
-}
-*/
-/*.btn-row {
-	display: inline-block;
-	padding: 8px;
-}
-
-.btn-row .btn {
-	margin-left: 4px;
-	margin-right: 4px;
-}
-*/
-/*.alert{
-	border: 1px solid var(--bs-danger);
-	background-color: var(--bs-danger);
-}
-*/
 .form-container {
 	display: flex;
 	flex-direction: column;
@@ -251,42 +207,33 @@ label {
 	gap: var(--margin-btn-gap);
 }
 
-/*.form {
-	display: flex;
-	flex-direction: column;
+/* modifiers */ 
+.--transparent {
+	background-color: transparent;
+	color: black;
+	border: 0;
 }
 
-.form-input {
-	display: flex;
-	flex-direction: column;
-	margin-bottom: 8px;
+.--alert {
+	background-color: var(--bs-danger);
 }
 
-.form-input-inline {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
+.--s-text {
+	font-size: 16px;
 }
 
-.form-input-inline > input {
-	margin-left: 4px;
+.--m-text{
+	font-size: 24px;
 }
 
-.form-input label {
-	text-align: left;
-	margin-bottom: 4px;
+.--l-text {
+	font-size: 36px;
 }
 
-.text-input { 
-	border: 1px solid;
-	padding: 8px;
-}*/
-
-.visible {
+.--visible {
 	display: block;
 }
 
-.hidden {
+.--hidden {
 	display: none;
 }
-

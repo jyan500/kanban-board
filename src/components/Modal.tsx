@@ -31,10 +31,10 @@ export const Modal = () => {
 	} 
 
 	return (
-		<div className = {`overlay ${board.showModal ? "visible": "hidden"}`}>
+		<div className = {`overlay ${board.showModal ? "--visible": "--hidden"}`}>
 			<div className = "modal-container">
 				<button 
-				className = "transparent-btn close-button"
+				className = "close-button --transparent"
 				onClick={
 					() => {
 						if (modalHandlers[board.currentModalType as keyof typeof modalHandlers]?.dismissHandler){

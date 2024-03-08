@@ -1,0 +1,10 @@
+.toolbar {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	width: 100%;
+	padding: var(--margin-form-gap);
+	background-color: var(--bs-light);
+	border: var(--width-input-border) solid var(--bs-light);
+	gap: var(--margin-btn-gap);
+}
