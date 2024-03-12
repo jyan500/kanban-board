@@ -4,7 +4,7 @@ import type { Status } from "../types/common"
 import "../styles/common.css" 
 import "../styles/status-form.css"
 import { updateStatuses, updateStatusesToDisplay, toggleShowModal } from "../slices/boardSlice" 
-import { sortStatusByOrder } from "../helpers/functions" 
+import { doTicketsContainStatus, sortStatusByOrder } from "../helpers/functions" 
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineArrowBackIosNew as ArrowBackward } from "react-icons/md"
 import { MdOutlineArrowForwardIos as ArrowForward } from "react-icons/md"
@@ -24,7 +24,11 @@ export const StatusForm = () => {
 		"statusesToDisplay": [...board.statusesToDisplay]
 	}
 	const [form, setForm] = useState<FormType>(defaultForm)
-	const [selectedStatusId, setSelectedStatusId] = useState<String | null>(null)
+	const [selectedStatusId, setSelectedStatusId] = useState<string | null>(null)
+
+	useEffect(() => {
+		setSelectedStatusId(null)	
+	}, [board.showModal])
 
 	const addStatus = () => {
 		const prevMaxOrder = Math.max(...form.statuses.map((status)=>status.order))
@@ -38,6 +42,29 @@ export const StatusForm = () => {
 			statuses: [...form.statuses, newStatus]
 		})
 		setSelectedStatusId(newStatus.id)
+	}
+
+	const removeStatus = () => {
+		const index = form.statuses.findIndex((status) => status.id === selectedStatusId)
+		// if deleting an index in the middle of the list, make sure the order of each
+		// element after is decremented by one
+		let updated = form.statuses.map((status, i) => {
+			if (i > index){
+				return {...status, order: status.order - 1}
+			}
+			else {
+				return status
+			}
+		})
+		// remove the status from the status list
+		updated.splice(index, 1)	
+		setForm({
+			...form,
+			statuses: updated,
+			statusesToDisplay: form.statusesToDisplay.filter((statusId) => statusId !== selectedStatusId)
+		})	
+		// remove the status from status to display list
+		setSelectedStatusId(null)
 	}
 
 	const onChangeName = (value: string) => {
@@ -57,6 +84,7 @@ export const StatusForm = () => {
 		dispatch(updateStatuses(form.statuses))
 		dispatch(updateStatusesToDisplay(form.statusesToDisplay))
 		dispatch(toggleShowModal(false))
+		setSelectedStatusId(null)
 	}		
 
 	const onCheck = () => {
@@ -105,43 +133,57 @@ export const StatusForm = () => {
 	return (
 		<div className = "container">
 			<div className = "status-col">
-				<p>Click on the status below to change its order, edit its name, or change its visibility</p>
-				<div className = "status-row">
-					{[...form.statuses].sort(sortStatusByOrder).map((status: Status) => {
-						return (
-							<div key = {status.id}>
-								<button 
-									className = {`${selectedStatusId === status.id ? "status-selected": ""}`} 
-									onClick = {() => {
-										setSelectedStatusId(status.id === selectedStatusId ? null : status.id)}
-									}>
-									{status.name}
-								</button>
-							</div>
-						)
-					})}
+				<p>Click on the status below to change its order, edit its name, change its visibility or remove it.</p>
+				<p>Click "Save Changes" to commit changes to the statuses once you're done. </p>
+				<div className = "form-row">
+					<div className = "btn-group">
+						{[...form.statuses].sort(sortStatusByOrder).map((status: Status) => {
+							return (
+								<div key = {status.id}>
+									<button 
+										className = {`${selectedStatusId === status.id ? "--selected": ""}`} 
+										onClick = {() => {
+											setSelectedStatusId(status.id === selectedStatusId ? null : status.id)}
+										}>
+										{status.name}
+									</button>
+								</div>
+							)
+						})}
+					</div>
 				</div>
 				{selectedStatusId != null ? 
 					<>
-						<div className = "status-row">
-							<button onClick = {(e) => setOrder(selectedStatusId, true)}><ArrowBackward /></button>
-							<button onClick = {(e) => setOrder(selectedStatusId, false)}><ArrowForward /></button>
+						<div className = "form-row">
+							<div className = "btn-group">
+								<button className = "--transparent" onClick = {(e) => setOrder(selectedStatusId, true)}><ArrowBackward /></button>
+								<button className = "--transparent" onClick = {(e) => setOrder(selectedStatusId, false)}><ArrowForward /></button>
+							</div>
 						</div>
-						<div className = "status-col">
-							<div className = "form-input-inline">
+						<div className = "form-row">
+							<div className = "form-cell">
 								<label>Is visible in table:</label>
 								<input type = "checkbox" onChange = {(e) => onCheck()} checked = {form.statusesToDisplay.includes(selectedStatusId)}/>
 							</div>
-							<div className = "form-input">
+						</div>
+						<div className = "form-row">
+							<div className = "form-cell">
 								<label>Edit Status Name</label>
 								<input type = "text" className = "" value = {form.statuses.find((status) => status.id === selectedStatusId)?.name} onChange = {(e) => onChangeName(e.target.value)} />
 							</div>
 						</div>
 					</>
 				: null}
-				<div className = "button-row">
-					<button className = "btn" onClick={addStatus}>Add Status</button>	
-					<button className = "btn" onClick={onSubmit}>Save Changes</button>	
+				<div className = "form-row">
+					<div className = "btn-group">
+						<button onClick={onSubmit}>Save Changes</button>	
+						<button onClick={addStatus}>Add Status</button>	
+						{
+							// you can only remove statuses that don't have any tickets associated with that status
+							selectedStatusId != null && !doTicketsContainStatus(selectedStatusId, board.tickets) ? (
+								<button onClick = {removeStatus} className = "--alert">Remove Status</button>) : null
+						}
+					</div>
 				</div>
 			</div>
 		</div>

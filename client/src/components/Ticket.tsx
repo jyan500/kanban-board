@@ -9,10 +9,9 @@ type PropType = {
 
 export const Ticket = ({ticket}: PropType) => {
 	return (
-		<div className = "ticket-card">
+		<div className = "ticket-card --card-shadow">
 			<div>
-				<p>id: {ticket.id} </p>
-				<p>Ticket: {ticket.ticketName}</p>	
+				<h3>{ticket.ticketName}</h3>	
 				<p>Status: {ticket.ticketStatus.name}</p>	
 				<p>Priority: {ticket.priority.name}</p>	
 			</div>

@@ -78,5 +78,10 @@ export const sortStatusByOrder = (a: Status, b: Status) => {
 	return 0
 }
 
+export const doTicketsContainStatus = (statusId: string, tickets: Array<Ticket>) => {
+	const ticketsWithStatus = tickets.filter((ticket) => ticket.ticketStatus.id === statusId)	
+	return ticketsWithStatus.length > 0
+}
+
 
 
