@@ -19,6 +19,9 @@
 *.env.test.local
 *.env.production.local
 
+# sql
+*.sql
+
 *config.js
 
 npm-debug.log*

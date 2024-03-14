@@ -10,11 +10,11 @@ export const TicketForm = () => {
 	const board = useAppSelector((state) => state.board)
 	let defaultForm = {
 		id: "",
-		ticketName: "",
-		ticketDescription: "",
+		name: "",
+		description: "",
 		priority: "",
 		// default TODO
-		ticketStatus: "1"
+		status: "1"
 	}
 
 	const [form, setForm] = useState(defaultForm)
@@ -26,7 +26,7 @@ export const TicketForm = () => {
 			setForm({
 				...ticket,
 				priority: ticket.priority.id,
-				ticketStatus: ticket.ticketStatus.id
+				status: ticket.status.id
 			})
 		}
 		else {
@@ -35,7 +35,7 @@ export const TicketForm = () => {
 	}, [board.showModal, board.currentCell])
 
 	const onSubmit = () => {
-		const status = board.statuses.find((status: Status) => status.id === form.ticketStatus)
+		const status = board.statuses.find((status: Status) => status.id === form.status)
 		const priority = board.priorityList.find((priority: Priority) => priority.id === form.priority)
 		if (priority && status){
 			if (form.id === ""){
@@ -43,11 +43,11 @@ export const TicketForm = () => {
 					...form,
 					id: uuidv4(),
 					priority: priority,
-					ticketStatus: status
+					status: status
 				}))
 			}
 			else {
-				dispatch(editTicket({...form, priority: priority, ticketStatus: status}))	
+				dispatch(editTicket({...form, priority: priority, status: status}))	
 			}
 			dispatch(toggleShowModal(false))
 			dispatch(selectCurrentTicketId(null))
@@ -63,11 +63,11 @@ export const TicketForm = () => {
 				<div className = "form-row">
 					<div className = "form-cell">
 						<label>Name</label>
-						<input onChange = {(e) => setForm({...form, ticketName: e.target.value})} value = {form.ticketName} type = "text"/>
+						<input onChange = {(e) => setForm({...form, name: e.target.value})} value = {form.name} type = "text"/>
 					</div>
 					<div className = "form-cell">
 						<label>Status</label>
-						<select value = {form.ticketStatus} onChange = {(e) => setForm({...form, ticketStatus: e.target.value})}>
+						<select value = {form.status} onChange = {(e) => setForm({...form, status: e.target.value})}>
 							{board.statuses.filter((status: Status) => board.statusesToDisplay.includes(status.id)).map((status: Status) => {
 								return <option key = {status.id} value = {status.id}>{status.name}</option>
 							})}
@@ -75,7 +75,7 @@ export const TicketForm = () => {
 					</div>
 					<div className = "form-cell">
 						<label>Description</label>
-						<textarea onChange = {(e) => setForm({...form, ticketDescription: e.target.value})}  value = {form.ticketDescription} ></textarea>
+						<textarea onChange = {(e) => setForm({...form, description: e.target.value})}  value = {form.description} ></textarea>
 					</div>
 					<div className = "form-cell">
 						<label>Priority</label>

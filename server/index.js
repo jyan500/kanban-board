@@ -1,8 +1,9 @@
 const express = require("express")
 const app = express()
 const port = 3000
-const mysql = require("mysql2")
-const config = require("./config.js")
+const statusRouter = require("./routes/status")
+const priorityRouter = require("./routes/priority")
+const ticketRouter = require("./routes/ticket")
 
 // JSON parser middleware
 app.use(express.json())
@@ -13,14 +14,19 @@ app.use(
 	})
 )
 
-const connection = mysql.createConnection(config.db)
-
 app.get("/", (req, res) => {
-	connection.query("SELECT now()", function(error, rows) {
-		if (error) throw error
-		console.log(rows)
-	})
 	res.json({message: "ok"})	
+})
+
+app.use("/status", statusRouter)
+app.use("/priority", priorityRouter)
+app.use("/ticket", ticketRouter)
+
+app.use((err, req, res, next) => {
+	const statusCode = err.statusCode || 500
+	console.error(err.message, err.stack)
+	res.status(statusCode).json({message: err.message})
+	return
 })
 
 app.listen(port, () => {

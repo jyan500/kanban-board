@@ -7,9 +7,9 @@ export interface Priority {
 export interface Ticket {
 	id: string
 	priority: Priority
-	ticketName: string
-	ticketDescription: string
-	ticketStatus: Status
+	name: string
+	description: string
+	status: Status
 }
 
 export interface Cell {

@@ -63,7 +63,7 @@ export const boardSlice = createSlice({
 			const {
 				newBoard, statuses, statusesToDisplay, tickets
 			} = state
-			const status = statuses.find(status => status.id === action.payload.ticketStatus.id)
+			const status = statuses.find(status => status.id === action.payload.status.id)
 			if (status){
 				newBoard[status.id].push(action.payload)	
 			}
@@ -75,22 +75,22 @@ export const boardSlice = createSlice({
 			// edit the ticket within the tickets list
 			let ticketIndex = state.tickets.findIndex((ticket) => action.payload.id === ticket.id)
 			let originalTicket = state.tickets[ticketIndex]
-			if (action.payload.ticketStatus.id !== originalTicket.ticketStatus.id){
+			if (action.payload.status.id !== originalTicket.status.id){
 				// find the column that the new status belongs to	
-				const newStatus = statuses.find(status => status.id === action.payload.ticketStatus.id)	
+				const newStatus = statuses.find(status => status.id === action.payload.status.id)	
 				if (newStatus){
 					// add the ticket to the respective status column
 					newBoard[newStatus.id].push(action.payload)
 					// remove the ticket from the column 
-					let oldTicketIndex = newBoard[originalTicket.ticketStatus.id]?.findIndex((t: Ticket) => t.id === originalTicket.id)
-					newBoard[originalTicket.ticketStatus.id]?.splice(oldTicketIndex, 1)
+					let oldTicketIndex = newBoard[originalTicket.status.id]?.findIndex((t: Ticket) => t.id === originalTicket.id)
+					newBoard[originalTicket.status.id]?.splice(oldTicketIndex, 1)
 				}
 			}
 			else {
 				// find the ticket within the board via its index and replace
-				const ticketsForStatus = newBoard[action.payload.ticketStatus.id]
+				const ticketsForStatus = newBoard[action.payload.status.id]
 				const ticketToEditIndex = ticketsForStatus.findIndex((ticket) => ticket.id === action.payload.id)
-				newBoard[action.payload.ticketStatus.id][ticketToEditIndex] = action.payload
+				newBoard[action.payload.status.id][ticketToEditIndex] = action.payload
 			}
 			state.tickets[ticketIndex] = action.payload
 

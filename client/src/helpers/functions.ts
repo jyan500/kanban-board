@@ -55,10 +55,10 @@ export const prioritySort = (tickets: Array<Ticket>) => {
 				return 1
 			}
 			else {
-				if (a.ticketName < b.ticketName){
+				if (a.name < b.name){
 					return 1
 				}
-				else if (a.ticketName > b.ticketName){
+				else if (a.name > b.name){
 					return -1
 				}
 			}
@@ -79,7 +79,7 @@ export const sortStatusByOrder = (a: Status, b: Status) => {
 }
 
 export const doTicketsContainStatus = (statusId: string, tickets: Array<Ticket>) => {
-	const ticketsWithStatus = tickets.filter((ticket) => ticket.ticketStatus.id === statusId)	
+	const ticketsWithStatus = tickets.filter((ticket) => ticket.status.id === statusId)	
 	return ticketsWithStatus.length > 0
 }
 
