@@ -12,4 +12,14 @@ router.get("/", async (req, res, next) => {
 	}
 })
 
+router.get("/:id", async (req, res, next) => {
+	try {
+		res.json(await statuses.getStatusById(req.params.id))
+	}	
+	catch (err){
+		console.log(`Error while getting status: ${err.message}`)	
+		next(err)
+	}
+})
+
 module.exports = router

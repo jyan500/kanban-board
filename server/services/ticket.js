@@ -19,8 +19,9 @@ async function getTickets(page=1, condition = "", params = []){
 		"INNER JOIN status ON status.id = ticket.status_id " 
 
 	const offset = helper.getOffset(page, config.listPerPage)	
+	const limit = "LIMIT ?, ? "
 	const rows = await db.query(
-		baseQuery + condition, params	
+		baseQuery + condition + limit, [...params, offset, config.listPerPage] 
 	)
 	let data = helper.emptyOrRows(rows)
 	data = data.map((obj) => {
@@ -48,13 +49,27 @@ async function getTickets(page=1, condition = "", params = []){
 }
 
 async function getTicketById(ticketId){
-	console.log("ticketId: ", ticketId)
 	let conditional = 
-	"WHERE ticket.id = ?"
+	"WHERE ticket.id = ? "
 	return await getTickets(1, conditional, [ticketId])
+}
+
+async function insertTicket(params = []){
+	const result = await db.query(
+		"INSERT INTO ticket (name, description, status_id, priority_id) " + 
+		"VALUES (?, ?, ?, ?)", params
+	)
+	let message = "Error in creating ticket"
+	if (result.affectedRows){
+		message = "Ticket created successfully"
+	}
+
+	return { message }
+
 }
 
 module.exports = {
 	getTickets,
-	getTicketById
+	getTicketById,
+	insertTicket
 }
