@@ -36,8 +36,37 @@ async function insertStatus(params=[]){
 	return { message }
 }
 
+async function updateStatus(params = []){
+	const result = await db.query(
+		"UPDATE status set `name` = ?, `order` = ? " + 
+		"WHERE id = ?", params
+	)
+	let message = "Error in updating ticket"
+	if (result.affectedRows){
+		message = "Status updated successfully"
+	}
+	return { message }
+}
+
+async function deleteStatus(params = []){
+	const result = await db.query(
+		"DELETE FROM status WHERE id = ?", params
+	)
+	let message = "Error in deleting ticket"
+	if (result.affectedRows){
+		message = "Status deleted successfully"
+	}
+	return { message }
+}
+
+async function bulkUpdateStatus(params = []){
+
+}
+
 module.exports = {
 	getStatuses,
 	getStatusById,
-	insertStatus
+	insertStatus,
+	updateStatus,
+	deleteStatus,
 }

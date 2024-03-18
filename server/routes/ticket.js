@@ -28,11 +28,12 @@ router.post("/", async (req, res, next) => {
 	try {
 		const {result: isValid, errors} = await ticketValidation.validateTicket(req.body)
 		if (isValid){
+			const {name, description, status_id: statusId, priority_id: priorityId} = req.body
 			res.json(await tickets.insertTicket([
-				req.body.name,
-				req.body.description,
-				req.body.status_id,
-				req.body.priority_id,
+				name,
+				description,
+				statusId,
+				priorityId
 			]))
 		}
 		else {
@@ -41,6 +42,48 @@ router.post("/", async (req, res, next) => {
 	}	
 	catch (err) {
 		console.error(`Error while creating ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+router.put("/:id", async (req, res, next) => {
+	try {
+		const id = req.params.id
+		const {result: isValid, errors} = await ticketValidation.validateTicket(req.body)
+		const ticket = await tickets.getTicketById(id)
+		if (isValid && ticket.data.length){
+			const {name, description, status_id: statusId, priority_id: priorityId} = req.body
+			res.json(await tickets.updateTicket([
+				name,
+				description,
+				statusId,
+				priorityId,
+				id,
+			]))	
+		}
+		else {
+			res.status(400).json({status: 400, errors})
+		}
+	}	
+	catch (err) {
+		console.error(`Error while updating ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+router.delete("/:id", async (req, res, next) => {
+	try {
+		const id = req.params.id
+		const ticket = await tickets.getTicketById(id)
+		if (ticket.data.length){
+			res.json(await tickets.deleteTicket([id]))
+		}
+		else {
+			res.status(400).json({status: 400, errors: ["Ticket does not exist"]})
+		}
+	}
+	catch (err){
+		console.log(`Error while deleting ticket: ${err.message}`)
 		next(err)
 	}
 })

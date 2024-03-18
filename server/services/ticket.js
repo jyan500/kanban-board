@@ -68,8 +68,33 @@ async function insertTicket(params = []){
 
 }
 
+async function updateTicket(params = []){
+	const result = await db.query(
+		"UPDATE TICKET set `name` = ?, description = ?, status_id = ?, priority_id = ? " + 
+		"WHERE id = ?", params
+	)
+	let message = "Error in updating ticket"
+	if (result.affectedRows){
+		message = "Ticket updated successfully"
+	}
+	return { message }
+}
+
+async function deleteTicket(params = []){
+	const result = await db.query(
+		"DELETE FROM ticket WHERE id = ?", params
+	)
+	let message = "Error in deleting ticket"
+	if (result.affectedRows){
+		message = "Ticket deleted successfully"
+	}
+	return { message }
+}
+
 module.exports = {
 	getTickets,
 	getTicketById,
-	insertTicket
+	insertTicket,
+	updateTicket,
+	deleteTicket,
 }
