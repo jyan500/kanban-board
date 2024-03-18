@@ -2,12 +2,7 @@ const express = require("express")
 const router = express.Router()
 const tickets = require("../services/ticket")
 const helper = require("../helper")
-
-const validateTicket = (body) => {
-	const keys = new Set(["name", "description", "status_id", "priority_id"])
-	const required = new Set(["name", "description", "status_id", "priority_id"])
-	return helper.validateKeys(body, keys, required)
-}
+const ticketValidation = require("../validation/tickets")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -31,10 +26,14 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
 	try {
-		const {result: isValid, errors} = validateTicket(req.body)
+		const {result: isValid, errors} = await ticketValidation.validateTicket(req.body)
 		if (isValid){
-			// res.json("hello world")
-			// res.json(await tickets.createTicket(req.body))
+			res.json(await tickets.insertTicket([
+				req.body.name,
+				req.body.description,
+				req.body.status_id,
+				req.body.priority_id,
+			]))
 		}
 		else {
 			res.status(400).json({status: 400, errors: errors})

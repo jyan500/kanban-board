@@ -15,7 +15,7 @@ async function getPriority(page=1, condition = "", params = []){
 }
 
 async function getPriorityById(priorityId){
-	const condition = "WHERE id = ? "
+	const condition = "WHERE `id` = ? "
 	const params = [priorityId]
 	return getPriority(1, condition, params)
 }

@@ -19,12 +19,25 @@ async function getStatuses(page = 1, condition="", params = []){
 }
 
 async function getStatusById(statusId){
-	const condition = "WHERE id = ? "
+	const condition = "WHERE `id` = ? "
 	const params = [statusId]
 	return getStatuses(1, condition, params)
 }
 
+async function insertStatus(params=[]){
+	const query = "INSERT INTO status (`name`, `order`) VALUES (?, ?)"	
+	const result = await db.query(
+		query, params
+	)
+	let message = "Error in creating status"
+	if (result.affectedRows){
+		message = "Status created successfully"
+	}
+	return { message }
+}
+
 module.exports = {
 	getStatuses,
-	getStatusById
+	getStatusById,
+	insertStatus
 }
