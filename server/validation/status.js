@@ -2,23 +2,23 @@ const tickets = require("../services/ticket")
 const status = require("../services/status")
 const priority = require("../services/priority")
 const helper = require("../helper")
+const db = require("../db/db")
 
 const validateStatus = async (body, id=null) => {
-	const keys = new Set(["name", "order"])
-	const required = new Set(["name", "order"])
+	const keys = new Set(["name", "order", "organization_id"])
+	const required = new Set(["name", "order", "organization_id"])
 	const validKeys = helper.validateKeys(body, keys, required)
 	if (validKeys){
 		try {
-			const condition = "WHERE `name` = ? OR `order` = ? "
-			const params = [body.name, body.order]
-			const statusBody = await status.getStatuses(1, condition, params)
-			if (statusBody.data.length){
+			const statuses = await db("statuses").where(function(){
+				this.where("name", body.name).orWhere("order", body.order)
+			}).andWhere("organization_id", body.organization_id)
+			if (statuses.length){
 				// if there's an ID given, if the other statuses that don't share this ID
 				// have the same name or same order as the ones in params, this is not valid
 				if (id){
-					const statuses = statusBody.data.filter((status) => status.id !== id)
-					console.log(statuses)
-					if (status.length){
+					const filteredStatuses = statusBody.data.filter((status) => status.id !== id)
+					if (filteredStatuses.length){
 						return {
 							result: false,
 							errors: [`name and order fields must be unique.`]

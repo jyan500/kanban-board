@@ -2,10 +2,12 @@ const express = require("express")
 const router = express.Router()
 const statuses = require("../services/status")
 const statusValidation = require("../validation/status")
+const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
-		res.json(await statuses.getStatuses(req.query.page))
+		const statuses = await db("statuses")
+		res.json(statuses)
 	}	
 	catch (err) {
 		console.log(`Error while getting statuses: ${err.message}`)	
@@ -15,7 +17,8 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
 	try {
-		res.json(await statuses.getStatusById(req.params.id))
+		const statuses = await db("statuses").where("id", req.params.id)
+		res.json(statuses)
 	}	
 	catch (err){
 		console.log(`Error while getting status: ${err.message}`)	
@@ -27,10 +30,8 @@ router.post("/", async (req, res, next) => {
 	try {
 		const {result: isValid, errors} = await statusValidation.validateStatus(req.body)
 		if (isValid){
-			res.json(await statuses.insertStatus([
-				req.body.name,
-				req.body.order
-			]))
+			const statusId = await db("statuses").insert(req.body)
+			res.json({message: `Status inserted successfully!`})
 		}
 		else {
 			res.status(400).json({status: 400, errors})
@@ -46,14 +47,10 @@ router.put("/:id", async (req, res, next) => {
 	try {
 		const id = req.params.id
 		const {result: isValid, errors} = await statusValidation.validateStatus(req.body, id)
-		const status = await statuses.getStatusById(id)
-		if (isValid && status.data.length){
-			const {name, order} = req.body
-			res.json(await statuses.updateStatus([
-				name,
-				order,
-				id
-			]))	
+		const status = await db("statuses").where("id", id)
+		if (isValid && status.length){
+			await db("statuses").update(req.body)
+			res.json({message: "Status updated successfully!"})	
 		}
 		else {
 			res.status(400).json({status: 400, errors})
@@ -68,9 +65,10 @@ router.put("/:id", async (req, res, next) => {
 router.delete("/:id", async (req, res, next) => {
 	try {
 		const id = req.params.id
-		const status = await statuses.getStatusById(id)
-		if (status.data.length){
-			res.json(await statuses.deleteStatus([id]))
+		const status = await db("statuses").where("id", id)
+		if (status.length){
+			await db("statuses").where("id", id).del()
+			res.json({message: "Status deleted successfully!"})
 		}
 		else {
 			res.status(400).json({status: 400, errors: ["Status does not exist"]})
