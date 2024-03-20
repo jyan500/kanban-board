@@ -1,5 +1,5 @@
 import { createSlice, current } from "@reduxjs/toolkit"
-import { createNewRow, setupInitialBoard, setupNewInitialBoard, prioritySort } from "../helpers/functions" 
+import { setupNewInitialBoard, prioritySort } from "../helpers/functions" 
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type { RootState } from "../store"
 import type { Cell, Board, Priority, Status, Ticket } from "../types/common" 

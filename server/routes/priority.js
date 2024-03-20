@@ -1,10 +1,12 @@
 const express = require("express")
 const router = express.Router()
 const priority = require("../services/priority")
+const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
-		res.json(await priority.getPriority(req.query.page))
+		const priorities = await db("priorities")
+		res.json(priorities)
 	}
 	catch (err){
 		console.log(`Error while getting priority: ${err.message}`)	
@@ -14,7 +16,8 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
 	try {
-		res.json(await priority.getPriorityById(req.params.id))
+		const priority = await db("priorities").where("id", req.params.id)
+		res.json(priority)
 	}	
 	catch (err){
 		console.log(`Error while getting priority: ${err.message}`)	

@@ -3,10 +3,12 @@ const router = express.Router()
 const tickets = require("../services/ticket")
 const helper = require("../helper")
 const ticketValidation = require("../validation/tickets")
+const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
-		res.json(await tickets.getTickets(req.query.page))
+		const tickets = await db("tickets")
+		res.json(tickets)
 	}
 	catch (err) {
 		console.log(`Error while getting tickets: ${err.message}`)	
@@ -16,7 +18,8 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
 	try {
-		res.json(await tickets.getTicketById(req.params.id))
+		const tickets = await db("tickets").where("id", req.params.id)
+		res.json(tickets)
 	}	
 	catch (err) {
 		console.log(`Error while getting tickets: ${err.message}`)	
@@ -28,13 +31,8 @@ router.post("/", async (req, res, next) => {
 	try {
 		const {result: isValid, errors} = await ticketValidation.validateTicket(req.body)
 		if (isValid){
-			const {name, description, status_id: statusId, priority_id: priorityId} = req.body
-			res.json(await tickets.insertTicket([
-				name,
-				description,
-				statusId,
-				priorityId
-			]))
+			await db("tickets").insert(req.body)
+			res.json({message: "Ticket inserted successfully!"})
 		}
 		else {
 			res.status(400).json({status: 400, errors: errors})
@@ -50,16 +48,10 @@ router.put("/:id", async (req, res, next) => {
 	try {
 		const id = req.params.id
 		const {result: isValid, errors} = await ticketValidation.validateTicket(req.body)
-		const ticket = await tickets.getTicketById(id)
-		if (isValid && ticket.data.length){
-			const {name, description, status_id: statusId, priority_id: priorityId} = req.body
-			res.json(await tickets.updateTicket([
-				name,
-				description,
-				statusId,
-				priorityId,
-				id,
-			]))	
+		const ticket = await db("tickets").where("id", id)
+		if (isValid && ticket.length){
+			await db("tickets").update(req.body)
+			res.json({message: "Ticket updated successfully!"})	
 		}
 		else {
 			res.status(400).json({status: 400, errors})
@@ -74,9 +66,10 @@ router.put("/:id", async (req, res, next) => {
 router.delete("/:id", async (req, res, next) => {
 	try {
 		const id = req.params.id
-		const ticket = await tickets.getTicketById(id)
-		if (ticket.data.length){
-			res.json(await tickets.deleteTicket([id]))
+		const ticket = await db("tickets").where("id", id)
+		if (ticket.length){
+			await db("tickets").where("id", id).del()
+			res.json({message: "Ticket deleted successfully!"})
 		}
 		else {
 			res.status(400).json({status: 400, errors: ["Ticket does not exist"]})
