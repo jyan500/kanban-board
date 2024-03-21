@@ -1,6 +1,3 @@
-const tickets = require("../services/ticket")
-const status = require("../services/status")
-const priority = require("../services/priority")
 const helper = require("../helper")
 const db = require("../db/db")
 
@@ -17,7 +14,7 @@ const validateStatus = async (body, id=null) => {
 				// if there's an ID given, if the other statuses that don't share this ID
 				// have the same name or same order as the ones in params, this is not valid
 				if (id){
-					const filteredStatuses = statusBody.data.filter((status) => status.id !== id)
+					const filteredStatuses = statuses.filter((status) => status.id !== id)
 					if (filteredStatuses.length){
 						return {
 							result: false,

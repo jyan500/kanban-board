@@ -1,5 +1,7 @@
+require("dotenv").config()
 const express = require("express")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 const router = express.Router()
 const helper = require("../helper")
 const config = require("../config")
@@ -7,8 +9,24 @@ const db = require("../db/db")
 const userValidator = require("../validation/user")
 const { body, validationResult } = require("express-validator")
 
-router.post("/login", async (req, res, next) => {
-
+router.post("/login", userValidator.loginValidator, async (req, res, next) => {
+	try {
+		const user = await db("users").where("email", req.body.email).first()
+		if (user){
+			const storedHash = user.password
+			const result = bcrypt.compare(req.body.password, storedHash)
+			if (result){
+				const token = jwt.sign({"id": user.id, "email": user.email}, process.env.SECRET_KEY, {expiresIn: "1h"})
+				res.json({message: "user logged in successfully!", data: token})
+			}
+			else {
+				res.status(400).json({message: "Failed to login, email or password is incorrect."})
+			}
+		}
+	}
+	catch (err){
+		console.error(`Something went wrong when logging in: ${err}`)
+	}
 })
 
 router.post("/register", userValidator.registerValidator, async (req, res, next) => {
@@ -25,12 +43,13 @@ router.post("/register", userValidator.registerValidator, async (req, res, next)
 		try {
 			const salt = await bcrypt.genSalt(config.saltRounds)
 			const hash = await bcrypt.hash(password, salt)
-			console.log("hash: ", hash)
-			// await db("users").insert({
-			// 	...req.body,
-			// 	password: hash
-			// })
-			res.json({message: "User registered successfully!", data: "session token here"})
+			await db("users").insert({
+				first_name: req.body.first_name,
+				last_name: req.body.last_name,
+				email: req.body.email,
+				password: hash
+			})
+			res.json({message: "User registered successfully!"})
 		}
 		catch (err){
 			console.error(`Something went wrong when registering user: ${err}`)

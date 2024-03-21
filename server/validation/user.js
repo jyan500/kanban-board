@@ -18,7 +18,11 @@ const registerValidator = [
 		})
 	}),
 	body("password").notEmpty().withMessage("Password is required")
-		.isLength({min: 6}).withMessage("Password must be at least 6 characters long"),
+		.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
+			"Password must be at least 6 characters long, " + 
+			"including one lowercase, one uppercase, " + 
+			"one number and one symbol."
+		),
 	body("confirm_password").notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
 		if (value !== req.body.password)	{
 			throw new Error("Passwords don't match")
@@ -32,7 +36,16 @@ const registerValidator = [
 const loginValidator = [
 	body("email")
 		.isEmail().withMessage("Invalid email")
-		.normalizeEmail(),
+		.normalizeEmail().custom((value, {req}) => {
+		return new Promise((resolve, reject) => {
+			db("users").where("email", req.body.email).then((res) => {
+				if (res?.length === 0){
+					reject(new Error(`User with email ${req.body.email} could not be found`))
+				}
+				resolve(true)
+			})	
+		})
+	}),
 	body("password")
 		.isLength({min: 6}).withMessage("Invalid Password")
 ]

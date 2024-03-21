@@ -1,6 +1,3 @@
-const tickets = require("../services/ticket")
-const status = require("../services/status")
-const priority = require("../services/priority")
 const helper = require("../helper")
 const db = require("../db/db")
 

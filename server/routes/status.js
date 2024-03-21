@@ -1,6 +1,5 @@
 const express = require("express")
 const router = express.Router()
-const statuses = require("../services/status")
 const statusValidation = require("../validation/status")
 const db = require("../db/db")
 
@@ -49,7 +48,7 @@ router.put("/:id", async (req, res, next) => {
 		const {result: isValid, errors} = await statusValidation.validateStatus(req.body, id)
 		const status = await db("statuses").where("id", id)
 		if (isValid && status.length){
-			await db("statuses").update(req.body)
+			await db("statuses").where("id", id).update(req.body)
 			res.json({message: "Status updated successfully!"})	
 		}
 		else {

@@ -1,6 +1,5 @@
 const express = require("express")
 const router = express.Router()
-const priority = require("../services/priority")
 const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {

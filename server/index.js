@@ -7,6 +7,7 @@ const priorityRouter = require("./routes/priority")
 const ticketRouter = require("./routes/ticket")
 const ticketTypeRouter = require("./routes/ticketType")
 const userRouter = require("./routes/user")
+const auth = require("./middleware/authMiddleware")
 
 // JSON parser middleware
 app.use(express.json())
@@ -21,10 +22,10 @@ app.get("/", (req, res) => {
 	res.json({message: "ok"})	
 })
 
-app.use("/status", statusRouter)
-app.use("/priority", priorityRouter)
-app.use("/ticket", ticketRouter)
-app.use("/ticket-type", ticketTypeRouter)
+app.use("/status", auth.authenticateToken, statusRouter)
+app.use("/priority", auth.authenticateToken, priorityRouter)
+app.use("/ticket", auth.authenticateToken, ticketRouter)
+app.use("/ticket-type", auth.authenticateToken, ticketTypeRouter)
 app.use("/user", userRouter)
 
 app.use((err, req, res, next) => {

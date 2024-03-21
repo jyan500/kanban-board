@@ -1,6 +1,5 @@
 const express = require("express")
 const router = express.Router()
-const tickets = require("../services/ticket")
 const helper = require("../helper")
 const ticketValidation = require("../validation/tickets")
 const db = require("../db/db")
@@ -50,7 +49,7 @@ router.put("/:id", async (req, res, next) => {
 		const {result: isValid, errors} = await ticketValidation.validateTicket(req.body)
 		const ticket = await db("tickets").where("id", id)
 		if (isValid && ticket.length){
-			await db("tickets").update(req.body)
+			await db("tickets").where("id", id).update(req.body)
 			res.json({message: "Ticket updated successfully!"})	
 		}
 		else {
