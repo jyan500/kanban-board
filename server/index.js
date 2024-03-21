@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require("express")
 const app = express()
 const port = 3000
@@ -5,6 +6,7 @@ const statusRouter = require("./routes/status")
 const priorityRouter = require("./routes/priority")
 const ticketRouter = require("./routes/ticket")
 const ticketTypeRouter = require("./routes/ticketType")
+const userRouter = require("./routes/user")
 
 // JSON parser middleware
 app.use(express.json())
@@ -23,6 +25,7 @@ app.use("/status", statusRouter)
 app.use("/priority", priorityRouter)
 app.use("/ticket", ticketRouter)
 app.use("/ticket-type", ticketTypeRouter)
+app.use("/user", userRouter)
 
 app.use((err, req, res, next) => {
 	const statusCode = err.statusCode || 500
