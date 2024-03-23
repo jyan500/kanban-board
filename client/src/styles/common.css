@@ -155,6 +155,17 @@ label {
 	}
 }
 
+small {
+	display: block;
+	& + &,
+	& + input,
+	& + select,
+	& + button,
+	& + textarea {
+		margin-top: var(--margin-label);
+	}
+}
+
 :read-only { cursor: default }
 :disabled {
   opacity: var(--opacity-input-disabled);
@@ -185,7 +196,6 @@ label {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	width: 50%;
 }
 
 .form-row {

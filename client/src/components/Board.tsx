@@ -40,7 +40,7 @@ export const Board = () => {
 									<p>{board.statuses.find((s: Status) => s.id === status.id)?.name}</p>
 									<button className = "--transparent" onClick={() => dispatch(sortByPriority({sortOrder: 0, statusId: status.id}))}><ArrowDown className = "icon"/></button>
 								</div>
-								{board.newBoard[status.id].map((ticket: TicketType) => {
+								{board.board[status.id].map((ticket: TicketType) => {
 									return (
 										<div 
 											key = {ticket.id} 

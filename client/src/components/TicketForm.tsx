@@ -23,16 +23,16 @@ export const TicketForm = () => {
 		// initialize with current values if the ticket exists
 		if (board.currentTicketId){
 			const ticket = board.tickets.find((ticket: Ticket) => ticket.id === board.currentTicketId)
-			setForm({
+			setForm(ticket ? {
 				...ticket,
 				priority: ticket.priority.id,
 				status: ticket.status.id
-			})
+			} : defaultForm)
 		}
 		else {
 			setForm(defaultForm)	
 		}
-	}, [board.showModal, board.currentCell])
+	}, [board.showModal, board.currentTicketId])
 
 	const onSubmit = () => {
 		const status = board.statuses.find((status: Status) => status.id === form.status)
