@@ -1,7 +1,8 @@
 require("dotenv").config()
 const express = require("express")
+const cors = require("cors")
 const app = express()
-const port = 3000
+const port = 8000
 const statusRouter = require("./routes/status")
 const priorityRouter = require("./routes/priority")
 const ticketRouter = require("./routes/ticket")
@@ -9,8 +10,13 @@ const ticketTypeRouter = require("./routes/ticketType")
 const userRouter = require("./routes/user")
 const auth = require("./middleware/authMiddleware")
 
+const api = (route, apiVersion = "") => {
+	return `/api${apiVersion}/${route}`
+}
+
 // JSON parser middleware
 app.use(express.json())
+app.use(cors())
 
 app.use(
 	express.urlencoded({
@@ -18,15 +24,11 @@ app.use(
 	})
 )
 
-app.get("/", (req, res) => {
-	res.json({message: "ok"})	
-})
-
-app.use("/status", auth.authenticateToken, statusRouter)
-app.use("/priority", auth.authenticateToken, priorityRouter)
-app.use("/ticket", auth.authenticateToken, ticketRouter)
-app.use("/ticket-type", auth.authenticateToken, ticketTypeRouter)
-app.use("/user", userRouter)
+app.use(api("status"), auth.authenticateToken, statusRouter)
+app.use(api("priority"), auth.authenticateToken, priorityRouter)
+app.use(api("ticket"), auth.authenticateToken, ticketRouter)
+app.use(api("ticket-type"), auth.authenticateToken, ticketTypeRouter)
+app.use(api("user"), userRouter)
 
 app.use((err, req, res, next) => {
 	const statusCode = err.statusCode || 500

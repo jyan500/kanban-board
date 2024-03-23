@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
-const statusValidation = require("../validation/status")
+const { validateCreate, validateUpdate, validateDelete } = require("../validation/status")
+const { showValidationMessageIfError } = require("../middleware/validationMiddleware")
 const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
@@ -25,16 +26,10 @@ router.get("/:id", async (req, res, next) => {
 	}
 })
 
-router.post("/", async (req, res, next) => {
+router.post("/", validateCreate, showValidationMessageIfError, async (req, res, next) => {
 	try {
-		const {result: isValid, errors} = await statusValidation.validateStatus(req.body)
-		if (isValid){
-			const statusId = await db("statuses").insert(req.body)
-			res.json({message: `Status inserted successfully!`})
-		}
-		else {
-			res.status(400).json({status: 400, errors})
-		}
+		const statusId = await db("statuses").insert(req.body)
+		res.json({message: `Status inserted successfully!`})
 	}	
 	catch (err){
 		console.log(`Error while inserting status: ${err.message}`)	
@@ -42,18 +37,10 @@ router.post("/", async (req, res, next) => {
 	}
 })
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", validateUpdate, showValidationMessageIfError, async (req, res, next) => {
 	try {
-		const id = req.params.id
-		const {result: isValid, errors} = await statusValidation.validateStatus(req.body, id)
-		const status = await db("statuses").where("id", id)
-		if (isValid && status.length){
-			await db("statuses").where("id", id).update(req.body)
-			res.json({message: "Status updated successfully!"})	
-		}
-		else {
-			res.status(400).json({status: 400, errors})
-		}
+		await db("statuses").where("id", req.params.id).update(req.body)
+		res.json({message: "Status updated successfully!"})	
 	}	
 	catch (err) {
 		console.error(`Error while updating status: ${err.message}`)
@@ -61,17 +48,10 @@ router.put("/:id", async (req, res, next) => {
 	}
 })
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", validateDelete, showValidationMessageIfError, async (req, res, next) => {
 	try {
-		const id = req.params.id
-		const status = await db("statuses").where("id", id)
-		if (status.length){
-			await db("statuses").where("id", id).del()
-			res.json({message: "Status deleted successfully!"})
-		}
-		else {
-			res.status(400).json({status: 400, errors: ["Status does not exist"]})
-		}
+		await db("statuses").where("id", req.params.id).del()
+		res.json({message: "Status deleted successfully!"})
 	}
 	catch (err){
 		console.log(`Error while deleting status: ${err.message}`)
