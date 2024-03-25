@@ -2,7 +2,7 @@ require("dotenv").config()
 const { validationResult } = require("express-validator")
 
 /*  used to parse the validation result from express-validator */
-function showValidationMessageIfError(req, res, next){
+function handleValidationResult(req, res, next){
 	const validationErrors = validationResult(req)
 	let errors = []
 	if (!validationErrors.isEmpty()){
@@ -17,5 +17,5 @@ function showValidationMessageIfError(req, res, next){
 }
 
 module.exports = {
-	showValidationMessageIfError
+	handleValidationResult
 }

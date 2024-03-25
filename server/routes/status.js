@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const { validateCreate, validateUpdate, validateDelete } = require("../validation/status")
-const { showValidationMessageIfError } = require("../middleware/validationMiddleware")
+const { handleValidationResult } = require("../middleware/validationMiddleware")
 const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
@@ -26,7 +26,7 @@ router.get("/:id", async (req, res, next) => {
 	}
 })
 
-router.post("/", validateCreate, showValidationMessageIfError, async (req, res, next) => {
+router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
 		const statusId = await db("statuses").insert(req.body)
 		res.json({message: `Status inserted successfully!`})
@@ -37,7 +37,7 @@ router.post("/", validateCreate, showValidationMessageIfError, async (req, res, 
 	}
 })
 
-router.put("/:id", validateUpdate, showValidationMessageIfError, async (req, res, next) => {
+router.put("/:id", validateUpdate, handleValidationResult, async (req, res, next) => {
 	try {
 		await db("statuses").where("id", req.params.id).update(req.body)
 		res.json({message: "Status updated successfully!"})	
@@ -48,7 +48,7 @@ router.put("/:id", validateUpdate, showValidationMessageIfError, async (req, res
 	}
 })
 
-router.delete("/:id", validateDelete, showValidationMessageIfError, async (req, res, next) => {
+router.delete("/:id", validateDelete, handleValidationResult, async (req, res, next) => {
 	try {
 		await db("statuses").where("id", req.params.id).del()
 		res.json({message: "Status deleted successfully!"})

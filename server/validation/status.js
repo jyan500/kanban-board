@@ -1,61 +1,47 @@
 const helper = require("../helper")
 const db = require("../db/db")
+const { validateKeyExists } = require("./helper")
 const { body, param } = require("express-validator")
 
 const statusValidator = (actionType) => {
-
-	let validationRules = [
-		body("name").notEmpty().withMessage("name is required").custom((value, {req}) => {
-			return new Promise((resolve, reject) => {
-				checkFieldUniqueToStatuses("name", req.body.name, req.body.organization_id, req.params.id).then((res) => {
-					if (res){
-						resolve(true)
-					}
-					else {
-						reject(new Error("name field must be unique"))
-					}
-				})
-			})
-		}),
-		body("order").notEmpty().withMessage("order is required").isNumeric().withMessage("order must be a number").custom((value, {req}) => {
+	let validationRules = []
+	// if update or delete route, validate the ID and make sure status exists
+	if (actionType === "update" || actionType === "delete"){
+		validationRules = [
+			param("id").custom(async (value, {req}) => await validateKeyExists("status", value, "statuses"))
+		]
+	}
+	if (actionType !== "delete"){
+		validationRules = [
+			...validationRules,
+			body("name").notEmpty().withMessage("name is required").custom((value, {req}) => {
 				return new Promise((resolve, reject) => {
-					checkFieldUniqueToStatuses("order", req.body.order, req.body.organization_id, req.params.id).then((res) => {
+					checkFieldUniqueToStatuses("name", req.body.name, req.body.organization_id, req.params.id).then((res) => {
 						if (res){
 							resolve(true)
 						}
 						else {
-							reject(new Error("order field must be unique"))
+							reject(new Error("name field must be unique"))
 						}
 					})
-				})	
-		}),
-		body("organization_id").notEmpty().withMessage("organization_id is required").custom((value, {req}) => {
-			return new Promise((resolve, reject) => {
-				db("organizations").where("id", req.body.organization_id).then((res) => {
-					if (res?.length === 0){
-						reject(new Error(`organization with id ${req.body.organization_id} could not be found`))
-					}
-					resolve(true)
 				})
-			})	
-		})
-	]
-	// if update or delete route, validate the ID and make sure status exists
-	if (actionType === "update" || actionType === "delete"){
-		validationRules = [
-			...validationRules,
-			param("id").custom((value, {req}) => {
-				return new Promise((resolve, reject) => {
-					db("statuses").where("id", value).then((res) => {
-						if (res?.length === 0){
-							reject(new Error(`status with id ${value} does not exist`))
-						}
-						resolve(true)
-					})
-				})
-			})
+			}),
+			body("order").notEmpty().withMessage("order is required").isNumeric().withMessage("order must be a number").custom((value, {req}) => {
+					return new Promise((resolve, reject) => {
+						checkFieldUniqueToStatuses("order", req.body.order, req.body.organization_id, req.params.id).then((res) => {
+							if (res){
+								resolve(true)
+							}
+							else {
+								reject(new Error("order field must be unique"))
+							}
+						})
+					})	
+			}),
+			body("organization_id").notEmpty().withMessage("organization_id is required").custom(async (value, {req}) => await validateKeyExists("organization", req.body.organization_id, "organizations"))
 		]
 	}
+
 	return validationRules
 }
 

@@ -1,7 +1,8 @@
 const express = require("express")
 const router = express.Router()
 const helper = require("../helper")
-const ticketValidation = require("../validation/tickets")
+const { validateCreate, validateUpdate, validateDelete }  = require("../validation/tickets")
+const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
@@ -26,16 +27,10 @@ router.get("/:id", async (req, res, next) => {
 	}
 })
 
-router.post("/", async (req, res, next) => {
+router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
-		const {result: isValid, errors} = await ticketValidation.validateTicket(req.body)
-		if (isValid){
-			await db("tickets").insert(req.body)
-			res.json({message: "Ticket inserted successfully!"})
-		}
-		else {
-			res.status(400).json({status: 400, errors: errors})
-		}
+		await db("tickets").insert(req.body)
+		res.json({message: "Ticket inserted successfully!"})
 	}	
 	catch (err) {
 		console.error(`Error while creating ticket: ${err.message}`)
@@ -43,18 +38,10 @@ router.post("/", async (req, res, next) => {
 	}
 })
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", validateUpdate, handleValidationResult, async (req, res, next) => {
 	try {
-		const id = req.params.id
-		const {result: isValid, errors} = await ticketValidation.validateTicket(req.body)
-		const ticket = await db("tickets").where("id", id)
-		if (isValid && ticket.length){
-			await db("tickets").where("id", id).update(req.body)
-			res.json({message: "Ticket updated successfully!"})	
-		}
-		else {
-			res.status(400).json({status: 400, errors})
-		}
+		await db("tickets").where("id", req.params.id).update(req.body)
+		res.json({message: "Ticket updated successfully!"})	
 	}	
 	catch (err) {
 		console.error(`Error while updating ticket: ${err.message}`)
@@ -62,17 +49,10 @@ router.put("/:id", async (req, res, next) => {
 	}
 })
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", validateDelete, handleValidationResult, async (req, res, next) => {
 	try {
-		const id = req.params.id
-		const ticket = await db("tickets").where("id", id)
-		if (ticket.length){
-			await db("tickets").where("id", id).del()
-			res.json({message: "Ticket deleted successfully!"})
-		}
-		else {
-			res.status(400).json({status: 400, errors: ["Ticket does not exist"]})
-		}
+		await db("tickets").where("id", req.params.id).del()
+		res.json({message: "Ticket deleted successfully!"})
 	}
 	catch (err){
 		console.log(`Error while deleting ticket: ${err.message}`)

@@ -7,10 +7,10 @@ const helper = require("../helper")
 const config = require("../config")
 const db = require("../db/db")
 const userValidator = require("../validation/user")
-const { showValidationMessageIfError }  = require("../middleware/validationMiddleware")
+const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { body, validationResult } = require("express-validator")
 
-router.post("/login", userValidator.loginValidator, showValidationMessageIfError, async (req, res, next) => {
+router.post("/login", userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const user = await db("users").where("email", req.body.email).first()
 		if (user){
@@ -33,7 +33,7 @@ router.post("/login", userValidator.loginValidator, showValidationMessageIfError
 	}
 })
 
-router.post("/register", userValidator.registerValidator, showValidationMessageIfError, async (req, res, next) => {
+router.post("/register", userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(password, salt)
