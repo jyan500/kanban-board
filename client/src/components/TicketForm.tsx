@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import "../styles/common.css" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { addTicketToBoard, selectCurrentTicketId, editTicket, toggleShowModal } from "../slices/boardSlice"
 import { v4 as uuidv4 } from "uuid" 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
 import type { Status } from "../types/common" 
-import "../styles/common.css" 
 import "../styles/status-form.css"
 import { updateStatuses, updateStatusesToDisplay, toggleShowModal } from "../slices/boardSlice" 
 import { doTicketsContainStatus, sortStatusByOrder } from "../helpers/functions" 

@@ -9,7 +9,6 @@ import {
 	selectCurrentTicketId 
 } from "../slices/boardSlice"
 import { Ticket } from "./Ticket"
-import "../styles/common.css" 
 import "../styles/board.css"
 import { ToolBar } from "./ToolBar" 
 import { v4 as uuidv4 } from "uuid" 

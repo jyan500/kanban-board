@@ -1,11 +1,13 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
+import { Route, Routes } from "react-router-dom"
 import { Login } from "./pages/Login" 
 import { Home } from "./pages/Home" 
+import { HamburgerButton } from "./components/HamburgerButton" 
 import { Register } from "./pages/Register" 
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
+import "./styles/common.css" 
 
 function App() {
 	return (

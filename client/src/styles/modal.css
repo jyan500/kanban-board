@@ -8,13 +8,6 @@
 	background-color: rgba(0,0,0,.4);
 }
 
-.close-button {
-	position: absolute;
-	top: 8px;
-	right: 8px;
-	z-index: 99;
-}
-
 .modal-container {
 	position: relative;
 	margin: 5% auto;

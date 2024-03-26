@@ -1,5 +1,4 @@
 import React from "react"
-import "../styles/common.css"
 import "../styles/ticket.css"
 import type { Ticket as TicketType } from "../types/common"
 

@@ -28,10 +28,15 @@
 	--margin-btn-gap: 1em;
 	--margin-label: 0.5em;
 	--height-textarea: 250px;
+	--height-nav: 8em;
 	--opacity-input-disabled: 0.5;
 	--padding-inputs: .75em;
 	--padding-btn: .75em;
 	--radius-inputs: .25em;
+	--height-icon: 20px;
+	--width-icon: 20px;
+	--height-icon-large: 30px;
+	--width-icon-large: 30px;
 	--radius-buttons: .25em;
 	--transition-duration-inputs: 250ms;
 	--transition-function-inputs: ease-in-out;
@@ -44,6 +49,7 @@
 	--width-inputs: 250px;
 	--width-input-border: 2px;
 	--width-textarea: 450px;
+	--z-index-top: 99;
 }
 
 input,
@@ -166,6 +172,16 @@ small {
 	}
 }
 
+ul {
+	list-style-type: none;
+	padding: 0;
+}
+
+a {
+	text-decoration: none;	
+	color: black;
+}
+
 :read-only { cursor: default }
 :disabled {
   opacity: var(--opacity-input-disabled);
@@ -188,8 +204,8 @@ small {
 }
 
 .icon {
-	width: 20px;
-	height: 20px;
+	width: var(--width-icon);
+	height: var(--height-icon);
 }
 
 .form-container {
@@ -217,6 +233,13 @@ small {
 	gap: var(--margin-btn-gap);
 }
 
+.close-button {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	z-index: 99;
+}
+
 /* modifiers */ 
 .--transparent {
 	background-color: transparent;
@@ -240,6 +263,11 @@ small {
 	font-size: 36px;
 }
 
+.--l-icon {
+	height: var(--height-icon-large);
+	width: var(--width-icon-large);
+}
+
 .--visible {
 	display: block;
 }
@@ -251,3 +279,4 @@ small {
 .--card-shadow {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
+

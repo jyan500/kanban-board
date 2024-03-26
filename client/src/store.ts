@@ -1,6 +1,7 @@
 import { createStore } from "redux"
 import { configureStore } from "@reduxjs/toolkit" 
 import { boardReducer } from "./slices/boardSlice" 
+import { navReducer }  from "./slices/navSlice"
 import { authReducer } from "./slices/authSlice" 
 import { api } from "./services/auth" 
 import {
@@ -26,7 +27,8 @@ export const store = configureStore({
 	reducer: {
 		[api.reducerPath]: api.reducer,
 		"board": boardReducer,
-		"auth": authReducer
+		"auth": authReducer,
+		"nav": navReducer
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
@@ -38,6 +40,7 @@ export const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
 
+// export const persistor = persistStore(store)
 
 
 

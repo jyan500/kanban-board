@@ -1,7 +1,6 @@
 import React from "react"
 import { useAppDispatch } from "../hooks/redux-hooks" 
 import { SearchBar } from "./SearchBar" 
-import "../styles/common.css"
 import "../styles/toolbar.css"
 import { toggleShowModal, setModalType, sortByPriority, deleteAllTickets } from "../slices/boardSlice" 
 

@@ -1,0 +1,45 @@
+.sidebar {
+	height: 100%;	
+	width: 256px;
+	top: 0;
+	left: 0;
+	position: fixed;
+	background-color: var(--bs-light);
+	z-index: var(--z-index-top);
+
+	& li {
+		margin: 8px;
+		padding: 8px;
+		border-radius: var(--radius-inputs);
+		&:hover {
+			background-color: var(--bs-primary);
+			transition: var(--input-transition-inputs);
+
+			& a {
+				color: white;
+			}
+		}
+		&.active {
+			background-color: var(--bs-primary);
+
+			& a {
+				color: white;
+			}
+		}
+	}
+}
+
+
+.--transition-transform {
+	transition-property: transform;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: var(--transition-duration-inputs); 
+}
+
+.--translate-x-0 {
+	transform: translateX(0px);
+}
+
+.--translate-x-full-negative {
+	transform: translateX(-100%);
+}

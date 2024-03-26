@@ -1,7 +1,6 @@
 import React, {ReactNode} from "react"
 import { IoMdClose } from "react-icons/io";
 import "../styles/modal.css"
-import "../styles/common.css"
 import { toggleShowModal, selectCurrentTicketId } from "../slices/boardSlice"
 import { TicketForm } from "./TicketForm" 
 import { StatusForm } from "./StatusForm" 
