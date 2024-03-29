@@ -13,20 +13,29 @@ const { body, validationResult } = require("express-validator")
 router.post("/login", userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const user = await db("users").where("email", req.body.email).first()
-		if (user){
-			const storedHash = user.password
-			const result = await bcrypt.compare(req.body.password, storedHash)
-			if (result){
-				const token = jwt.sign({"id": user.id, "email": user.email}, process.env.SECRET_KEY, {expiresIn: "1h"})
-				res.json({message: "user logged in successfully!", token: token})
-			}
-			else {
-				res.status(400).json({errors: ["Failed to login, email or password is incorrect."]})
-			}
+		const error = "Failed to login, email, organization or password is incorrect."
+		if (!user){
+			res.status(400).json({errors: [error]})
+			return
 		}
-		else {
-			res.status(400).json({errors: ["Failed to login, email or password is incorrect."]})
+		const userInOrganization = await db("organization_user_roles").where("organization_id", req.body.organizationId).where("user_id", user.id).first()
+		if (!userInOrganization){
+			res.status(400).json({errors: [error]})
+			return
 		}
+		const storedHash = user.password
+		const result = await bcrypt.compare(req.body.password, storedHash)
+		if (!result){
+			res.status(400).json({errors: [error]})
+			return
+		}
+		const userRole = await db("user_roles").where("id", userInOrganization.user_role_id).first()
+		if (!userRole){
+			res.status(400).json({errors: [error]})
+			return
+		}
+		const token = jwt.sign({"id": user.id, "email": user.email, "organization": req.body.organizationId, "userRole": userRole.name}, process.env.SECRET_KEY, {expiresIn: "1h"})
+		res.json({message: "user logged in successfully!", token: token})
 	}
 	catch (err){
 		console.error(`Something went wrong when logging in: ${err}`)
@@ -48,10 +57,6 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 	catch (err){
 		console.error(`Something went wrong when registering user: ${err}`)
 	}
-})
-
-router.post("/logout", async (req, res, next) => {
-
 })
 
 module.exports = router
