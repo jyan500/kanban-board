@@ -3,7 +3,11 @@ import { configureStore } from "@reduxjs/toolkit"
 import { boardReducer } from "./slices/boardSlice" 
 import { navReducer }  from "./slices/navSlice"
 import { authReducer } from "./slices/authSlice" 
-import { api } from "./services/auth" 
+import { organizationReducer } from "./slices/organizationSlice" 
+import { authApi } from "./services/auth" 
+import { organizationApi } from "./services/organization" 
+import { userProfileReducer }  from "./slices/userProfileSlice"
+import { userProfileApi } from "./services/userProfile" 
 import {
 	persistStore,
 	persistReducer,
@@ -25,15 +29,19 @@ const persistConfig = {
 
 export const store = configureStore({
 	reducer: {
-		[api.reducerPath]: api.reducer,
+		[authApi.reducerPath]: authApi.reducer,
+		[organizationApi.reducerPath]: organizationApi.reducer,
+		[userProfileApi.reducerPath]: userProfileApi.reducer,
 		"board": boardReducer,
 		"auth": authReducer,
-		"nav": navReducer
+		"nav": navReducer,
+		"org": organizationReducer,
+		"userProfile": userProfileReducer,
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
 		},
-	}).concat(logger).concat(api.middleware)
+	}).concat(logger).concat(authApi.middleware).concat(organizationApi.middleware).concat(userProfileApi.middleware)
 })
 
 // Infer the 'RootState' and 'AppDispatch' types from the store itself

@@ -26,7 +26,6 @@ const authSlice = createSlice({
     ) => {
     	localStorage.setItem("token", token)
     	state.token = token
-    	console.log("state.token: ", state.token)
     },
   },
 })

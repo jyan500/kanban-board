@@ -1,3 +1,22 @@
+export interface UserProfile {
+	id: number
+	firstName: string
+	lastName: string
+	email: string
+	organizationId: number
+	userRoleId: number
+}
+
+export interface UserRole {
+	id: number
+	name: string
+}
+
+export interface Organization {
+	id: number
+	name: string
+}
+
 export interface Priority {
 	id: string
 	name: string
@@ -27,4 +46,9 @@ export interface Status {
 	id: string  
 	name: string
 	order: number
+}
+
+export interface CustomError {
+	data: Record<string, Array<string>>
+	status: number
 }

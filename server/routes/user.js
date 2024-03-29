@@ -34,7 +34,7 @@ router.post("/login", userValidator.loginValidator, handleValidationResult, asyn
 			res.status(400).json({errors: [error]})
 			return
 		}
-		const token = jwt.sign({"id": user.id, "email": user.email, "organization": req.body.organizationId, "userRole": userRole.name}, process.env.SECRET_KEY, {expiresIn: "1h"})
+		const token = jwt.sign({"id": user.id, "email": user.email, "organization": req.body.organizationId, "userRole": userRole.name}, process.env.SECRET_KEY, {expiresIn: "1d"})
 		res.json({message: "user logged in successfully!", token: token})
 	}
 	catch (err){

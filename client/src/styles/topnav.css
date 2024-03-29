@@ -1,0 +1,23 @@
+.topnav {
+	margin-top: var(--m-spacing);
+	margin-bottom: var(--m-spacing);
+	display: flex;	
+	justify-content: space-between;
+	align-items: center;
+	flex-direction: row;
+
+	& div {
+		margin-left: var(--s-spacing);
+	}
+}
+
+.topnav-profile {
+	display: flex;
+	justify-content: center;
+	flex-direction: row;
+	align-items: center;
+
+	& div {
+		margin-right: var(--s-spacing);
+	}
+}

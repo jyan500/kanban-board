@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import { Route, Routes } from "react-router-dom"
 import { Login } from "./pages/Login" 
@@ -7,9 +7,22 @@ import { HamburgerButton } from "./components/HamburgerButton"
 import { Register } from "./pages/Register" 
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
+import { useGetOrganizationQuery } from "./services/organization"
+import { setOrganization } from "./slices/organizationSlice" 
+import { useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
 
 function App() {
+
+	const {data: orgData} = useGetOrganizationQuery()
+	const dispatch = useAppDispatch()
+
+	useEffect(() => {
+		if (orgData?.length){
+			dispatch(setOrganization({organizations: orgData}))
+		}
+	}, [])
+
 	return (
 		<div>
 			<Routes>

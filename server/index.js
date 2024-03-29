@@ -8,8 +8,10 @@ const priorityRouter = require("./routes/priority")
 const ticketRouter = require("./routes/ticket")
 const organizationRouter = require("./routes/organization")
 const ticketTypeRouter = require("./routes/ticketType")
+const userProfileRouter = require("./routes/userProfile")
 const userRouter = require("./routes/user")
 const auth = require("./middleware/authMiddleware")
+
 
 const api = (route, apiVersion = "") => {
 	return `/api${apiVersion}/${route}`
@@ -30,6 +32,7 @@ app.use(api("status"), auth.authenticateToken, statusRouter)
 app.use(api("priority"), auth.authenticateToken, priorityRouter)
 app.use(api("ticket"), auth.authenticateToken, ticketRouter)
 app.use(api("ticket-type"), auth.authenticateToken, ticketTypeRouter)
+app.use(api("user-profile"), auth.authenticateToken, userProfileRouter)
 
 /* Public Endpoints */
 app.use(api("user"), userRouter)

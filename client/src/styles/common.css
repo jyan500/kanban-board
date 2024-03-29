@@ -50,6 +50,9 @@
 	--width-input-border: 2px;
 	--width-textarea: 450px;
 	--z-index-top: 99;
+	--s-spacing: 8px;
+	--m-spacing: 16px;
+	--l-spacing: 32px;
 }
 
 input,
@@ -280,3 +283,16 @@ a {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+.--transition-transform {
+	transition-property: transform;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: var(--transition-duration-inputs); 
+}
+
+.--translate-x-0 {
+	transform: translateX(0px);
+}
+
+.--translate-x-full-negative {
+	transform: translateX(-100%);
+}
