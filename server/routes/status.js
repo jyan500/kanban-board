@@ -1,12 +1,12 @@
 const express = require("express")
 const router = express.Router()
-const { validateCreate, validateUpdate, validateDelete } = require("../validation/status")
+const { validateCreate, validateGet, validateUpdate, validateDelete } = require("../validation/status")
 const { handleValidationResult } = require("../middleware/validationMiddleware")
 const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
-		const statuses = await db("statuses")
+		const statuses = await db("statuses").where("organization_id", req.user.organization)
 		res.json(statuses)
 	}	
 	catch (err) {
@@ -15,7 +15,7 @@ router.get("/", async (req, res, next) => {
 	}
 })
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const statuses = await db("statuses").where("id", req.params.id)
 		res.json(statuses)

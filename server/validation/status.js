@@ -1,22 +1,22 @@
 const helper = require("../helper")
 const db = require("../db/db")
-const { validateKeyExists } = require("./helper")
+const { entityInOrganization, validateKeyExists } = require("./helper")
 const { body, param } = require("express-validator")
 
 const statusValidator = (actionType) => {
 	let validationRules = []
 	// if update or delete route, validate the ID and make sure status exists
-	if (actionType === "update" || actionType === "delete"){
+	if (actionType === "get" || actionType === "update" || actionType === "delete"){
 		validationRules = [
-			param("id").custom(async (value, {req}) => await validateKeyExists("status", value, "statuses"))
+			param("id").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value, "statuses"))
 		]
 	}
-	if (actionType !== "delete"){
+	if (actionType !== "delete" && actionType !== "get"){
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required").custom((value, {req}) => {
 				return new Promise((resolve, reject) => {
-					checkFieldUniqueToStatuses("name", req.body.name, req.body.organization_id, req.params.id).then((res) => {
+					checkFieldUniqueToStatuses("name", req.body.name, req.user.organization, req.params.id).then((res) => {
 						if (res){
 							resolve(true)
 						}
@@ -28,7 +28,7 @@ const statusValidator = (actionType) => {
 			}),
 			body("order").notEmpty().withMessage("order is required").isNumeric().withMessage("order must be a number").custom((value, {req}) => {
 					return new Promise((resolve, reject) => {
-						checkFieldUniqueToStatuses("order", req.body.order, req.body.organization_id, req.params.id).then((res) => {
+						checkFieldUniqueToStatuses("order", req.body.order, req.user.organization, req.params.id).then((res) => {
 							if (res){
 								resolve(true)
 							}
@@ -38,7 +38,6 @@ const statusValidator = (actionType) => {
 						})
 					})	
 			}),
-			body("organization_id").notEmpty().withMessage("organization_id is required").custom(async (value, {req}) => await validateKeyExists("organization", req.body.organization_id, "organizations"))
 		]
 	}
 
@@ -63,12 +62,13 @@ const checkFieldUniqueToStatuses = async (fieldName, field, organizationId, id=n
 		return true
 	}
 	catch (err) {
-		console.log(`Error while validating tickets: ${err.message}`)	
+		console.log(`Error while validating statuses: ${err.message}`)	
 	}
 
 }
 
 module.exports = {
+	validateGet: statusValidator("get"),
 	validateCreate: statusValidator("create"),
 	validateUpdate: statusValidator("update"),
 	validateDelete: statusValidator("delete"),

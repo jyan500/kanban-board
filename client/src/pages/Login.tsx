@@ -85,6 +85,7 @@ export const Login = () => {
 						<select 
 							{...register("organizationId", registerOptions.organizationId)}
 						>
+							<option value = "">---</option>
 							{ org.organizations?.map((org) => <option key = {org.id} value = {org.id}>{org.name}</option>)
 							}
 						</select>

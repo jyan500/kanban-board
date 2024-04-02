@@ -19,9 +19,10 @@ function App() {
 
 	useEffect(() => {
 		if (orgData?.length){
+			console.log("set org data")
 			dispatch(setOrganization({organizations: orgData}))
 		}
-	}, [])
+	}, [orgData])
 
 	return (
 		<div>

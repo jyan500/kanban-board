@@ -4,8 +4,13 @@ import "../styles/topnav.css"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { logout } from "../slices/authSlice" 
 import { CgProfile } from "react-icons/cg"
+import { LoadingSpinner } from "./LoadingSpinner"
 
-export const TopNav = () => {
+interface Props {
+	isFetching: boolean
+}
+
+export const TopNav = ({isFetching}: Props) => {
 	const dispatch = useAppDispatch()
 	const { organizations } = useAppSelector((state) => state.org)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -19,13 +24,19 @@ export const TopNav = () => {
 				<HamburgerButton/>	
 			</div>
 			<div className = "topnav-profile">
-				<div>
-					<CgProfile className = "--l-icon"/>
-				</div>
-				<div>
-					<span>{`${userProfile?.firstName} ${userProfile?.lastName}`}</span>
-					<small>{organizations.find((org) => org.id === userProfile?.organizationId)?.name}</small>
-				</div>
+				{!isFetching ? (
+					<>
+						<div>
+							<CgProfile className = "--l-icon"/>
+						</div>
+						<div>
+							<span>{`${userProfile?.firstName} ${userProfile?.lastName}`}</span>
+							<small>{organizations.find((org) => org.id === userProfile?.organizationId)?.name}</small>
+						</div>
+					</>
+				) : (
+					<LoadingSpinner/>
+				)}
 				<div>
 					<button onClick={onLogout}>Logout</button>
 				</div>

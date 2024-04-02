@@ -15,6 +15,18 @@ const validateKeyExists = async (key, keyValue, tableName) => {
 	})	
 }
 
+const entityInOrganization = async (orgId, key, keyValue, tableName) => {
+	return new Promise((resolve, reject) => {
+		db(tableName).where("id", keyValue).where("organization_id", orgId).then((res) => {
+			if (res?.length === 0){
+				reject(new Error(`${key} does not exist`))
+			}
+			resolve(true)
+		})	
+	})	
+}
+
 module.exports = {
-	validateKeyExists
+	validateKeyExists,
+	entityInOrganization
 }

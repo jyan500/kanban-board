@@ -5,8 +5,13 @@ import { toggleSideBar } from "../slices/navSlice"
 import { IoMdClose } from "react-icons/io";
 import { Link, useLocation } from 'react-router-dom';
 import { CgProfile } from "react-icons/cg";
+import { LoadingSpinner } from "./LoadingSpinner" 
 
-export const SideBar = () => {
+interface Props {
+	isFetching: boolean
+}
+
+export const SideBar = ({isFetching}: Props) => {
 	const sideBar = useAppSelector((state) => state.nav)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { organizations } = useAppSelector((state) => state.org)
@@ -59,13 +64,19 @@ export const SideBar = () => {
 				</div>
 				<div className = "sidebar__bottom-bar">
 					<div className = "sidebar__bottom-bar__content">
-						<div>
-							<CgProfile className = "--l-icon"/>
-						</div>
-						<div>
-							<span>{`${userProfile?.firstName} ${userProfile?.lastName}`}</span>
-							<small>{organizations.find((org) => org.id === userProfile?.organizationId)?.name}</small>
-						</div>
+						{!isFetching ? (
+							<>
+								<div>
+									<CgProfile className = "--l-icon"/>
+								</div>
+								<div>
+									<span>{`${userProfile?.firstName} ${userProfile?.lastName}`}</span>
+									<small>{organizations.find((org) => org.id === userProfile?.organizationId)?.name}</small>
+								</div>
+							</>
+						) : (
+							<LoadingSpinner/>
+						)}
 					</div>
 				</div>
 			</div>
