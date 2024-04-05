@@ -1,0 +1,14 @@
+.icon-input {
+	margin-top: var(--margin-label);
+	position: relative;	
+	.icon {
+		position: absolute;
+		top: 0;
+		right: 0;
+		margin-top: var(--s-spacing);
+		margin-right: var(--s-spacing);
+	}
+	.icon:hover{
+		opacity: .6;
+	}
+}

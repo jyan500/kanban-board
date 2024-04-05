@@ -45,7 +45,7 @@ router.post("/login", userValidator.loginValidator, handleValidationResult, asyn
 router.post("/register", userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const salt = await bcrypt.genSalt(config.saltRounds)
-		const hash = await bcrypt.hash(password, salt)
+		const hash = await bcrypt.hash(req.body.password, salt)
 		await db("users").insert({
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
