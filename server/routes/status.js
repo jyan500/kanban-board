@@ -28,7 +28,12 @@ router.get("/:id", validateGet, handleValidationResult, async (req, res, next) =
 
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
-		const statusId = await db("statuses").insert(req.body)
+		const body = {...req.body, organization_id: req.user.organization}
+		await db("statuses").insert({
+			name: body.name,
+			order: body.order,
+			organization_id: body.organization_id
+		})
 		res.json({message: `Status inserted successfully!`})
 	}	
 	catch (err){
@@ -39,7 +44,10 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 
 router.put("/:id", validateUpdate, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("statuses").where("id", req.params.id).update(req.body)
+		await db("statuses").where("id", req.params.id).update({
+			name: req.body.name,
+			order: req.body.order
+		})
 		res.json({message: "Status updated successfully!"})	
 	}	
 	catch (err) {

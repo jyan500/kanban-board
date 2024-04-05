@@ -60,6 +60,7 @@ export const Login = () => {
 					    	Email: 
 					    </label>
 						<input 
+						type="text"
 						{...register("email", registerOptions.email)}
 						/>
 				        {errors?.email && <small>{errors.email.message}</small>}

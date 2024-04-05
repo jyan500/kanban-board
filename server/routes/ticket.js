@@ -7,7 +7,7 @@ const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
-		const tickets = await db("tickets")
+		const tickets = await db("tickets").where("organization_id", req.user.organization)
 		res.json(tickets)
 	}
 	catch (err) {
@@ -29,7 +29,15 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("tickets").insert(req.body)
+		const body = {...req.body, organization_id: req.user.organization}
+		await db("tickets").insert({
+			name: body.name,
+			description: body.description,
+			priority_id: body.priority_id,
+			status_id: body.status_id,
+			ticket_type_id: body.ticket_type_id,
+			organization_id: body.organization_id
+		})
 		res.json({message: "Ticket inserted successfully!"})
 	}	
 	catch (err) {
@@ -40,7 +48,13 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 
 router.put("/:id", validateUpdate, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("tickets").where("id", req.params.id).update(req.body)
+		await db("tickets").where("id", req.params.id).update({
+			name: req.body.name,
+			description: req.body.description,
+			priority_id: req.body.priority_id,
+			status_id: req.body.status_id,
+			ticket_type_id: req.body.ticket_type_id
+		})
 		res.json({message: "Ticket updated successfully!"})	
 	}	
 	catch (err) {

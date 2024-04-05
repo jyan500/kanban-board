@@ -65,6 +65,7 @@ input::file-selector-button {
 
 select,
 textarea,
+input[type="password"],
 input[type="text"] {
 	padding: var(--padding-inputs);
 	border: var(--width-input-border) solid var(--co-textfld-border);
@@ -113,7 +114,9 @@ input[type="text"] {
 }
 
 select,
-input[type="text"]{
+input[type="text"],
+input[type="password"],
+{
 	width: var(--width-inputs);
 	max-width: 100%;
 }
