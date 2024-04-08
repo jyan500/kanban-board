@@ -13,7 +13,7 @@ const { body, validationResult } = require("express-validator")
 router.post("/login", userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const user = await db("users").where("email", req.body.email).first()
-		const error = "Failed to login, email, organization or password is incorrect."
+		const error = "Failed to login: email, organization or password is incorrect."
 		if (!user){
 			res.status(400).json({errors: [error]})
 			return

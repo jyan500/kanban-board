@@ -40,10 +40,11 @@ export const Register = () => {
 	}
 
 	return (
-		<div className = "container">
-			<form className = "form-container" onSubmit={handleSubmit(onSubmit)}>
+		<div className = "container --page-height">
+			<div className = "sidebar-design"></div>
+			<form className = "form-container --fixed-width" onSubmit={handleSubmit(onSubmit)}>
 				<div><h1>Register</h1></div>
-				{error && "status" in error ? (error.data.errors?.map((errorMessage) => <p key = {uuidv4()}>{errorMessage}</p>)) : null}
+				{error && "status" in error ? (error.data.errors?.map((errorMessage) => <p className = "--text-alert" key = {uuidv4()}>{errorMessage}</p>)) : null}
 				<div className = "form-row">
 					<div className = "form-cell">
 					    <label>
@@ -53,7 +54,7 @@ export const Register = () => {
 						type="text"
 						{...formRegister("firstName", registerOptions.firstName)}
 						/>
-				        {errors?.firstName && <small>{errors.firstName.message}</small>}
+				        {errors?.firstName && <small className = "--text-alert">{errors.firstName.message}</small>}
 			        </div>
 			    </div>
 			    <div className = "form-row">
@@ -65,7 +66,7 @@ export const Register = () => {
 						type="text"
 						{...formRegister("lastName", registerOptions.lastName)}
 						/>
-				        {errors?.lastName && <small>{errors.lastName.message}</small>}
+				        {errors?.lastName && <small className = "--text-alert">{errors.lastName.message}</small>}
 			        </div>
 			    </div>
 			    <div className="form-row">
@@ -77,7 +78,7 @@ export const Register = () => {
 						type="text"
 						{...formRegister("email", registerOptions.email)}
 						/>
-				        {errors?.email && <small>{errors.email.message}</small>}
+				        {errors?.email && <small className = "--text-alert">{errors.email.message}</small>}
 				 	</div>
 			    </div>
 			    <div className="form-row">
@@ -89,7 +90,7 @@ export const Register = () => {
 						type="password"
 						{...formRegister("password", registerOptions.password)}
 						/>
-				        {errors?.password && <small>{errors.password.message}</small>}
+				        {errors?.password && <small className = "--text-alert">{errors.password.message}</small>}
 			        </div>
 			    </div>
 			    <div className="form-row">
@@ -108,7 +109,7 @@ export const Register = () => {
 								<FaEyeSlash className = "icon" onClick={() => setShowPassword(!showPassword)}/>
 							}
 						</div>
-				        {errors?.confirmPassword && <small>{errors.confirmPassword.message}</small>}
+				        {errors?.confirmPassword && <small className = "--text-alert">{errors.confirmPassword.message}</small>}
 			        </div>
 			    </div>
 			    <div className = "form-row">
@@ -118,7 +119,7 @@ export const Register = () => {
 				</div>
 				<div className = "form-row">
 					<div className = "form-cell">
-						<small>Already have an account? Click <button onClick = {() => navigate("/login")}>here</button> to login</small>
+						<small>Already have an account? Click <a onClick = {() => navigate("/login")}>here</a> to login</small>
 					</div>
 				</div>
 			</form>

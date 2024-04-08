@@ -47,12 +47,14 @@ export const Login = () => {
 		}
 	}
 	return (
-		<div className = "container">
+		<div className = "container --row --page-height">
+			<div className = "sidebar-design">
+			</div>
 			{/* checking if "status" in error narrows down the type to the CustomError defined in services/auth.ts,
 			 rather than SerializedError Type */}
-			<form className = "form-container" onSubmit={handleSubmit(onSubmit)}>
+			<form className = "form-container --fixed-width" onSubmit={handleSubmit(onSubmit)}>
 				<div><h1>Login</h1></div>
-				{error && "status" in error ? (error.data.errors?.map((errorMessage) => <p key = {uuidv4()}>{errorMessage}</p>)) : null}
+				{error && "status" in error ? (error.data.errors?.map((errorMessage) => <p className = "--text-alert" key = {uuidv4()}>{errorMessage}</p>)) : null}
 				{location.state?.message ? <p>{location.state.message}</p> : null}
 				<div className = "form-row">
 					<div className = "form-cell">
@@ -63,7 +65,7 @@ export const Login = () => {
 						type="text"
 						{...register("email", registerOptions.email)}
 						/>
-				        {errors?.email && <small>{errors.email.message}</small>}
+				        {errors?.email && <small className = "--text-alert">{errors.email.message}</small>}
 				    </div>
 				</div>
 				<div className = "form-row">
@@ -75,7 +77,7 @@ export const Login = () => {
 						type="password"
 						{...register("password", registerOptions.password)}
 						/>
-				        {errors?.password && <small>{errors.password.message}</small>}
+				        {errors?.password && <small className = "--text-alert">{errors.password.message}</small>}
 				    </div>
 				</div>
 				<div className = "form-row">
@@ -90,7 +92,7 @@ export const Login = () => {
 							{ org.organizations?.map((org) => <option key = {org.id} value = {org.id}>{org.name}</option>)
 							}
 						</select>
-				        {errors?.organizationId && <small>{errors.organizationId.message}</small>}
+				        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
 				    </div>
 				</div>
 				<div className = "form-row">
@@ -100,7 +102,7 @@ export const Login = () => {
 				</div>
 				<div className = "form-row">
 					<div className = "form-cell">
-						<small>Don't have an account? Click <button className = "--transparent" onClick={() => navigate("/register")}>Here</button> to Register</small>
+						<small>Don't have an account? Click <a onClick={() => navigate("/register")}>Here</a> to Register</small>
 					</div>
 				</div>
 			</form>
