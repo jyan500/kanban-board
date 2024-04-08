@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const helper = require("../helper")
-const { validateCreate, validateUpdate, validateDelete }  = require("../validation/tickets")
+const { validateCreate, validateUpdate, validateDelete }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
 

@@ -6,6 +6,7 @@ const port = 8000
 const statusRouter = require("./routes/status")
 const priorityRouter = require("./routes/priority")
 const ticketRouter = require("./routes/ticket")
+const boardRouter = require("./routes/board")
 const organizationRouter = require("./routes/organization")
 const ticketTypeRouter = require("./routes/ticketType")
 const userProfileRouter = require("./routes/userProfile")
@@ -30,6 +31,7 @@ app.use(
 /* Protected Endpoints */
 app.use(api("status"), auth.authenticateToken, statusRouter)
 app.use(api("priority"), auth.authenticateToken, priorityRouter)
+app.use(api("board"), auth.authenticateToken, boardRouter)
 app.use(api("ticket"), auth.authenticateToken, ticketRouter)
 app.use(api("ticket-type"), auth.authenticateToken, ticketTypeRouter)
 app.use(api("user-profile"), auth.authenticateToken, userProfileRouter)
