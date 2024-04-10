@@ -8,7 +8,6 @@ const {
 	validateDelete,
 	validateBoardTicketGet,
 	validateBoardTicketCreate,
-	validateBoardTicketUpdate,
 	validateBoardTicketDelete,
 }  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
@@ -80,12 +79,15 @@ router.get("/:boardId/ticket/:ticketId", validateBoardTicketGet, handleValidatio
 	}
 })
 
-router.put("/:boardId/ticket/:ticketId", validateBoardTicketUpdate, handleValidationResult, async (req, res, next) => {
-
-})
-
 router.delete("/:boardId/ticket/:ticketId", validateBoardTicketDelete, handleValidationResult, async (req, res, next) => {
-
+	try {
+		await db("tickets_to_boards").where("ticket_id", req.params.ticketId).where("board_id", req.params.boardId).del()
+		res.json({message: "ticket deleted from board successfully!"})
+	}
+	catch (err) {
+		console.log(`Error while deleting ticket from board: ${err.message}`)
+		next(err)
+	}
 })
 
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {

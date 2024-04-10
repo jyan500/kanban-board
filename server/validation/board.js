@@ -25,10 +25,10 @@ const boardTicketValidator = (actionType) => {
 	let validationRules = [
 		param("boardId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "board", value, "boards"))
 	]
-	if (actionType === "get" || actionType === "update" || actionType === "delete"){
+	if (actionType === "get" || actionType === "delete"){
 		validationRules = [
 			...validationRules,
-			param("ticketId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "ticket")),
+			param("ticketId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "ticket", value, "tickets")),
 		]
 	}
 	else if (actionType === "create") {
@@ -52,6 +52,5 @@ module.exports = {
 	validateDelete: boardValidator("delete"),
 	validateBoardTicketGet: boardTicketValidator("get"),
 	validateBoardTicketCreate: boardTicketValidator("create"),
-	validateBoardTicketUpdate: boardTicketValidator("update"),
 	validateBoardTicketDelete: boardTicketValidator("delete"),
 }
