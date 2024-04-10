@@ -1,5 +1,5 @@
 const { body } = require("express-validator")
-const { validateKeyExists } = require("./helper")
+const { checkEntityExistsIn } = require("./helper")
 const db = require("../db/db")
 
 
@@ -31,7 +31,7 @@ const registerValidator = [
 		else {
 			return value
 		}
-	})
+	}),
 ]
 
 const loginValidator = [
@@ -49,7 +49,7 @@ const loginValidator = [
 	}),
 	body("password")
 		.isLength({min: 6}).withMessage("Invalid Password"),
-	body("organizationId").notEmpty().withMessage("Organization is required").custom(async (value, {req}) => await validateKeyExists("organization", req.body.organizationId, "organizations"))
+	body("organization_id").notEmpty().withMessage("Organization is required").custom(async (value, {req}) => await checkEntityExistsIn("organization", value, [{col: "id", value: value}], "organizations"))
 ]
 
 module.exports = {

@@ -3,7 +3,6 @@ const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const router = express.Router()
-const helper = require("../helper")
 const config = require("../config")
 const db = require("../db/db")
 const userValidator = require("../validation/user")
@@ -18,7 +17,7 @@ router.post("/login", userValidator.loginValidator, handleValidationResult, asyn
 			res.status(400).json({errors: [error]})
 			return
 		}
-		const userInOrganization = await db("organization_user_roles").where("organization_id", req.body.organizationId).where("user_id", user.id).first()
+		const userInOrganization = await db("organization_user_roles").where("organization_id", req.body.organization_id).where("user_id", user.id).first()
 		if (!userInOrganization){
 			res.status(400).json({errors: [error]})
 			return
@@ -34,7 +33,7 @@ router.post("/login", userValidator.loginValidator, handleValidationResult, asyn
 			res.status(400).json({errors: [error]})
 			return
 		}
-		const token = jwt.sign({"id": user.id, "email": user.email, "organization": req.body.organizationId, "userRole": userRole.name}, process.env.SECRET_KEY, {expiresIn: "1d"})
+		const token = jwt.sign({"id": user.id, "email": user.email, "organization": req.body.organization_id, "userRole": userRole.name}, process.env.SECRET_KEY, {expiresIn: "1d"})
 		res.json({message: "user logged in successfully!", token: token})
 	}
 	catch (err){

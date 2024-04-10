@@ -1,6 +1,5 @@
 const express = require("express")
 const router = express.Router()
-const helper = require("../helper")
 const { 
 	validateGet, 
 	validateCreate, 
@@ -105,9 +104,9 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 	}
 })
 
-router.put("/:id", validateUpdate, handleValidationResult, async (req, res, next) => {
+router.put("/:boardId", validateUpdate, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("boards").where("id", req.params.id).update({
+		await db("boards").where("id", req.params.boardId).update({
 			name: req.body.name,
 		})
 		res.json({message: "Board updated successfully!"})	
@@ -118,9 +117,9 @@ router.put("/:id", validateUpdate, handleValidationResult, async (req, res, next
 	}
 })
 
-router.delete("/:id", validateDelete, handleValidationResult, async (req, res, next) => {
+router.delete("/:boardId", validateDelete, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("boards").where("id", req.params.id).del()
+		await db("boards").where("id", req.params.boardId).del()
 		res.json({message: "Board deleted successfully!"})
 	}
 	catch (err){

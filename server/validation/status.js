@@ -1,6 +1,5 @@
-const helper = require("../helper")
 const db = require("../db/db")
-const { entityInOrganization, validateKeyExists } = require("./helper")
+const { checkEntityExistsIn } = require("./helper")
 const { body, param } = require("express-validator")
 
 const statusValidator = (actionType) => {
@@ -8,7 +7,7 @@ const statusValidator = (actionType) => {
 	// if update or delete route, validate the ID and make sure status exists
 	if (actionType === "get" || actionType === "update" || actionType === "delete"){
 		validationRules = [
-			param("id").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value, "statuses"))
+			param("id").custom(async (value, {req}) => await checkEntityExistsIn("status", value, [{col: "id", value: value}, {col: "organization_id", value: req.user.organization}], "statuses"))
 		]
 	}
 	if (actionType !== "delete" && actionType !== "get"){

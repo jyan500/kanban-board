@@ -1,6 +1,6 @@
-const helper = require("../helper")
 const db = require("../db/db")
 const { checkUniqueEntity, entityInOrganization, validateKeyExists } = require("./helper")
+const { BULK_INSERT_LIMIT } = require("../constants")
 const { body, param } = require("express-validator")
 
 const boardValidator = (actionType) => {
@@ -35,10 +35,20 @@ const boardTicketValidator = (actionType) => {
 		validationRules = [
 			...validationRules,
 			// must be an array of length > 0
-			body("ticket_ids").isArray({ min: 0 }).withMessage("tickets_ids must be an array"),
+			body("ticket_ids").isArray({ min: 0, max: BULK_INSERT_LIMIT })
+			.withMessage("tickets_ids must be an array")
+			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
 			body("ticket_ids.*")
 				.custom(async (value, {req}) => await entityInOrganization(req.user.organization, "ticket", value, "tickets"))
-				.custom(async (value, {req}) => await checkUniqueEntity("ticket", "ticket_id", value, "tickets_to_boards"))
+				.custom(async (value, {req}) => await checkUniqueEntity("ticket", value, [{
+					"col": "ticket_id",
+					"value": value,
+				},
+				{
+					"col": "board_id",
+					"value": req.params.boardId
+				}
+				],"tickets_to_boards"))
 		]		
 	}
 	return validationRules

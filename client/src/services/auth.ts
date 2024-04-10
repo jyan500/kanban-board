@@ -9,6 +9,7 @@ export interface UserResponse {
 export interface LoginRequest {
 	email: string
 	password: string
+	organizationId: number
 }
 
 export const authApi = createApi({
@@ -20,7 +21,11 @@ export const authApi = createApi({
 			query: (credentials) => ({
 				url: LOGIN_URL,
 				method: "POST",
-				body: credentials
+				body: {
+					email: credentials.email,
+					password: credentials.password,
+					organization_id: credentials.organizationId,
+				}
 			})	
 		}),
 		protected: builder.mutation<{message: string}, void>({
