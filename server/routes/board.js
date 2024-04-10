@@ -1,7 +1,16 @@
 const express = require("express")
 const router = express.Router()
 const helper = require("../helper")
-const { validateCreate, validateUpdate, validateDelete }  = require("../validation/board")
+const { 
+	validateGet, 
+	validateCreate, 
+	validateUpdate, 
+	validateDelete,
+	validateBoardTicketGet,
+	validateBoardTicketCreate,
+	validateBoardTicketUpdate,
+	validateBoardTicketDelete,
+}  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
 
@@ -16,15 +25,67 @@ router.get("/", async (req, res, next) => {
 	}
 })
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:boardId", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const boards = await db("boards").where("id", req.params.id)
+		const boards = await db("boards").where("id", req.params.boardId)
 		res.json(boards)
 	}	
 	catch (err) {
 		console.log(`Error while getting Boards: ${err.message}`)	
 		next(err)
 	}
+})
+
+router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const tickets = await db("tickets_to_boards")
+		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
+		.where("board_id", req.params.boardId)
+		.select("tickets.*")
+		res.json(tickets)
+
+	}	
+	catch (err) {
+		console.log(`Error while getting tickets: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/:boardId/ticket", validateBoardTicketCreate, handleValidationResult, async (req, res, next) => {
+	try {
+		const tickets = req.body.ticket_ids
+		const boardId = req.params.boardId
+		await db("tickets_to_boards").insert(tickets.map((ticketId) => ({board_id: boardId, ticket_id: ticketId})))
+		res.json({message: "tickets inserted into board successfully!"})
+	}	
+	catch (err) {
+		console.log(`Error while inserting tickets into board: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:boardId/ticket/:ticketId", validateBoardTicketGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const tickets = await db("tickets_to_boards")
+		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
+		.where("board_id", req.params.boardId)
+		.where("ticket_id", req.params.ticketId)
+		.select("tickets.*")
+		res.json(tickets)
+
+	}	
+	catch (err) {
+		console.log(`Error while getting tickets: ${err.message}`)
+		next(err)
+	}
+})
+
+router.put("/:boardId/ticket/:ticketId", validateBoardTicketUpdate, handleValidationResult, async (req, res, next) => {
+
+})
+
+router.delete("/:boardId/ticket/:ticketId", validateBoardTicketDelete, handleValidationResult, async (req, res, next) => {
+
 })
 
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
