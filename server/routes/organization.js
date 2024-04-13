@@ -4,6 +4,7 @@ const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
+		console.log("endpoint is reached")
 		const organizations = await db("organizations")
 		res.json(organizations)
 	}
