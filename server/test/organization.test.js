@@ -10,7 +10,7 @@ chai.use(chaiHttp)
 var app = require("../index")
 var knex = require("../db/db")
 
-describe("routes: users", function() {
+describe("routes: organization", function() {
 	beforeEach(function(done) {
     knex.migrate.rollback()
     .then(function() {
@@ -34,6 +34,17 @@ describe("routes: users", function() {
 			chai.request(app).get("/api/organization").end((err, res) => {
 				res.status.should.equal(200)
 				res.type.should.equal("application/json")
+				let body = JSON.parse(res.text)
+				body.length.should.equal(2)
+				done()
+			})	
+		})	
+		it("should get organization by id", (done) => {
+			chai.request(app).get("/api/organization/1").end((err, res) => {
+				res.status.should.equal(200)
+				res.type.should.equal("application/json")
+				let body = JSON.parse(res.text)
+				body.length.should.equal(1)
 				done()
 			})	
 		})	
