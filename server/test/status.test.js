@@ -46,7 +46,7 @@ describe("routes: status", function() {
 		});
 	});
 
-	describe("GET /api/status", () => {
+	describe("/api/status", () => {
 		it("should get statuses", async () => {
 			const res = await chai.request(app).get("/api/status").set({"Authorization": `Bearer ${token}`})
 			res.status.should.equal(200)
@@ -60,6 +60,18 @@ describe("routes: status", function() {
 			res.type.should.equal("application/json")
 			const body = JSON.parse(res.text)
 			assert.equal(body.length === 1, true)
+		})
+		it("should prevent duplicate statuses from being inserted", async () => {
+			const order = await knex("statuses").where("organization_id", 1).max("order as order").first()
+			const payload = {
+				"name": "New Status #2",
+				"organization_id": 1,	
+				// order already exists
+				"order": order.order
+			}
+			const res = await chai.request(app).post("/api/status").set({"Authorization": `Bearer ${token}`}).send(payload)
+			// should return 422 because order already exists for this organization
+			res.status.should.equal(422)		
 		})
 		it("should insert status", async () => {
 			const order = await knex("statuses").where("organization_id", 1).max("order as order").first()

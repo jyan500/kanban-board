@@ -29,7 +29,7 @@ describe("routes: organization", function() {
       done();
     });
   });
-	describe("GET /api/organization", () => {
+	describe("/api/organization", () => {
 		it("should get organizations", (done) => {
 			chai.request(app).get("/api/organization").end((err, res) => {
 				res.status.should.equal(200)

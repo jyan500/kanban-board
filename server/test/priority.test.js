@@ -43,16 +43,16 @@ describe("routes: ticket-type", function() {
 			done();
 		});
 	});
-	describe("/api/ticket-type", () => {
-		it("should get ticket types", async () => {
-			const res = await chai.request(app).get("/api/ticket-type").set({"Authorization": `Bearer ${token}`})
+	describe("/api/priority", () => {
+		it("should get priorities", async () => {
+			const res = await chai.request(app).get("/api/priority").set({"Authorization": `Bearer ${token}`})
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
 			const body = JSON.parse(res.text)
 			assert.equal(body.length > 0, true)
 		})	
-		it("should get ticket type by ID", async () => {
-			const res = await chai.request(app).get("/api/ticket-type/1").set({"Authorization": `Bearer ${token}`})
+		it("should get priority by ID", async () => {
+			const res = await chai.request(app).get("/api/priority/1").set({"Authorization": `Bearer ${token}`})
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
 			const body = JSON.parse(res.text)
