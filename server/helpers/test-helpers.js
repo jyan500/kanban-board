@@ -45,8 +45,25 @@ const createUserTestToken = async (
 	return await jwt.sign({"id": userId, "email": email, "organization": organizationId, "userRole": userRoleName}, process.env.SECRET_KEY, {expiresIn: "1d"})
 }
 
+// Create a test user and return an authentication token for this user 
+const createTokenForUserRole = async (
+	firstName,
+	lastName,
+	email,
+	password,
+	userRoleConst,
+	organization,
+) => {
+	const userId = await createUser(firstName, lastName, email, password)
+	const userRole = await db("user_roles").where("name", userRoleConst).first()
+	const org = await db("organizations").where("name", organization).first()
+	await createOrganizationUserRole(userId, org.id, userRole.id)
+	return await createUserTestToken(userId, email, org.id, userRole.id)
+}
+
 module.exports = {
 	createUser,
 	createOrganizationUserRole,
-	createUserTestToken
+	createUserTestToken,
+	createTokenForUserRole
 }
