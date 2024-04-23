@@ -110,6 +110,47 @@ describe("routes: board", function() {
 			// board should be deleted
 			assert.equal(board == null, true)
 		})
+		it("should get all tickets for board", async () => {
+			const id = await knex("boards").insert({
+				"name": "New Board #2",
+				"organization_id": 1	
+			}, ["id"])	
+			await knex("tickets").insert([
+			{
+				"name": "Ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			},
+			{
+				"name": "Ticket #2",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			}])
+			const ticketIds = await knex("tickets").where("organization_id", 1).select("id")
+			await knex("tickets_to_boards").insert([
+				{
+					"board_id": id[0],
+					"ticket_id": ticketIds[0].id
+				},
+				{
+					"board_id": id[0],
+					"ticket_id": ticketIds[1].id
+				}
+			])
+			const res = await chai.request(app).get(`/api/board/${id[0]}/ticket`).set({
+				"Authorization": `Bearer: ${token}`
+			})
+			res.status.should.equal(200)
+			res.type.should.equal("application/json")
+			const body = JSON.parse(res.text)
+			assert.equal(body.length === 2, true)
+		})
 	})
 })
 
