@@ -151,6 +151,68 @@ describe("routes: board", function() {
 			const body = JSON.parse(res.text)
 			assert.equal(body.length === 2, true)
 		})
+		it("can insert multiple tickets into the board", async () => {
+			const id = await knex("boards").insert({
+				"name": "New Board #2",
+				"organization_id": 1	
+			}, ["id"])	
+			await knex("tickets").insert([
+			{
+				"name": "Ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			},
+			{
+				"name": "Ticket #2",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			}])
+			const ticketIds = await knex("tickets").where("organization_id", 1).select("id")
+			const payload = {
+				"ticket_ids": ticketIds.map((ticket)=>ticket.id)
+			}
+			const res = await chai.request(app).post(`/api/board/${id[0]}/ticket`).set({
+				"Authorization": `Bearer: ${token}`
+			}).send(payload)
+			res.status.should.equal(200)
+
+			const tickets = await knex("tickets_to_boards").where("board_id", id[0])
+			assert.equal(tickets.length === 2, true)
+		})
+		it("can delete ticket from the board", async () => {
+			const id = await knex("boards").insert({
+				"name": "New Board #2",
+				"organization_id": 1	
+			}, ["id"])	
+			await knex("tickets").insert([
+			{
+				"name": "Ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			}])
+			const ticketIds = await knex("tickets").where("organization_id", 1).select("id")
+			await knex("tickets_to_boards").insert([
+				{
+					"board_id": id[0],
+					"ticket_id": ticketIds[0].id
+				},
+			])
+			const res = await chai.request(app).delete(`/api/board/${id[0]}/ticket/${ticketIds[0].id}`).set({
+				"Authorization": `Bearer: ${token}`
+			})
+			res.status.should.equal(200)
+			const tickets = await knex("tickets_to_boards").where("board_id", id[0])
+			assert(tickets.length === 0, true)
+		})
 	})
 })
 
