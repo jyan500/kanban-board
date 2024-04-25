@@ -4,7 +4,8 @@ var chai = require("chai")
 var chaiHttp = require("chai-http")
 var should = chai.should()
 var { 
-	createTokenForUserRole 
+	createTokenForUserRole,
+	createUserWithOrganization,
 } = require("../helpers/test-helpers")
 var { assert } = chai
 
@@ -133,6 +134,32 @@ describe("routes: ticket", function() {
 			const ticket = await knex("tickets").where("id", id[0]).first()
 			// ticket should be deleted
 			assert.equal(ticket == null, true)
+		})
+		it("get all assigned users for ticket", async () => {
+			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")
+			const userId2 = await createUserWithOrganization("Test2", "User2", "test2@jansen-test-company.com")
+			const ticketId = await knex("tickets").insert([{
+				"name": "ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			}], ["id"])
+			await knex("tickets_to_users").insert([
+			{
+				"user_id": userId1,	
+				"ticket_id": ticketId
+			}, 
+			{
+				"user_id": userId2,
+				"ticket_id": ticketId
+			}])
+			const res = await chai.request(app).get(`/api/ticket/${ticketId[0]}/user`).set({"Authorization": `Bearer ${token}`})
+			res.status.should.equal(200)
+			res.type.should.equal("application/json")
+			const body = JSON.parse(res.text)
+			assert.equal(body.length === 2, true)
 		})
 	})
 })
