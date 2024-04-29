@@ -72,11 +72,12 @@ const createOrganizationUserRole = async (
 	organizationId, 
 	userRoleId
 ) => {
-	return await db("organization_user_roles").insert({
+	const orgUserRole = await db("organization_user_roles").insert({
 		user_id: userId,
 		organization_id: organizationId,
 		user_role_id: userRoleId
-	}, ["id"])[0]
+	}, ["id"])
+	return orgUserRole[0]
 }
 
 // create user with user level permissions
@@ -88,9 +89,8 @@ const createUserWithOrganization = async (
 	userRoleId=1
 ) => {
 	const randomPassword = generateRandomPassword()
-	console.log(randomPassword)
 	const userId = await createUser(firstName, lastName, email, generateRandomPassword())
-	await createOrganizationUserRole(userId, orgId, userRoleId)
+	const organizationUserRole = await createOrganizationUserRole(userId, orgId, userRoleId)
 	return userId
 }
 

@@ -161,6 +161,46 @@ describe("routes: ticket", function() {
 			const body = JSON.parse(res.text)
 			assert.equal(body.length === 2, true)
 		})
+		it("can assign multiple users to ticket", async () => {
+			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")
+			const userId2 = await createUserWithOrganization("Test2", "User2", "test2@jansen-test-company.com")
+			const ticketId = await knex("tickets").insert([{
+				"name": "ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			}], ["id"])
+
+			const res = await chai.request(app).post(`/api/ticket/${ticketId[0]}/user`).set({"Authorization": `Bearer ${token}`}).send({
+				user_ids: [userId1, userId2]	
+			})
+			res.status.should.equal(200)
+			res.type.should.equal("application/json")
+			const assignedUsers = await knex("tickets_to_users").where("ticket_id", ticketId[0])
+			assert.equal(assignedUsers.length, 2)
+		})
+		it("can delete user from ticket", async () => {
+			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")
+			const ticketId = await knex("tickets").insert([{
+				"name": "ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			}], ["id"])
+			await knex("tickets_to_users").insert([
+			{
+				"user_id": userId1,	
+				"ticket_id": ticketId
+			}])
+			const res = await chai.request(app).delete(`/api/ticket/${ticketId[0]}/user/${userId1}`).set({"Authorization": `Bearer ${token}`})
+			res.status.should.equal(200)
+			const assignedUsers = await knex("tickets_to_users").where("ticket_id", ticketId[0])
+			assert.equal(assignedUsers.length, 0)
+		})
 	})
 })
 

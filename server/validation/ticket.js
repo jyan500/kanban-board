@@ -62,10 +62,12 @@ const ticketUserValidator = (actionType) => {
 	else if (actionType === "create") {
 		validationRules = [
 			...validationRules,
-			body("user_ids.*")
+			body("user_ids")
 			.isArray({min: 0, max: BULK_INSERT_LIMIT})
 			.withMessage("user_ids must be an array")
-			.withMessage(`user_ids cannot have more than ${BULK_INSERT_LIMIT} ids`).custom(async (value, {req}) => await checkUniqueEntity("user", value, [
+			.withMessage(`user_ids cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			body("user_ids.*")
+			.custom(async (value, {req}) => await checkUniqueEntity("user", value, [
 			{
 				"col": "user_id",
 				"value": value,
