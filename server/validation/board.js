@@ -54,6 +54,37 @@ const boardTicketValidator = (actionType) => {
 	return validationRules
 }
 
+const boardStatusValidator = (actionType) => {
+	let validationRules = [
+		param("boardId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "board", value, "boards"))
+	]	
+	if (actionType === "get" || actionType === "delete"){
+		validationRules = [
+			...validationRules,
+			param("statusId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value, "statuses"))
+		]
+	}
+	else if (actionType === "create") {
+		validationRules = [
+			...validationRules,
+			body("status_ids").isArray({ min: 0, max: BULK_INSERT_LIMIT })
+			.withMessage("status_ids must be an array")
+			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			body("status_ids.*")
+			.custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value, "statuses"))
+			.custom(async (value, {req}) => await checkUniqueEntity("status", value, [{
+				"col": "status_id",
+				"value": value,
+			},
+			{
+				"col": "board_id",	
+				"value": req.params.boardId
+			}
+			], "boards_to_statuses"))
+		]
+	}
+	return validationRules
+}
 
 module.exports = {
 	validateGet: boardValidator("get"),
@@ -63,4 +94,7 @@ module.exports = {
 	validateBoardTicketGet: boardTicketValidator("get"),
 	validateBoardTicketCreate: boardTicketValidator("create"),
 	validateBoardTicketDelete: boardTicketValidator("delete"),
+	validateBoardStatusGet: boardStatusValidator("get"),
+	validateBoardStatusCreate: boardStatusValidator("create"),
+	validateBoardStatusDelete: boardStatusValidator("delete"),
 }

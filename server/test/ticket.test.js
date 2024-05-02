@@ -13,17 +13,17 @@ var { assert } = chai
 chai.use(chaiHttp)
 
 var app = require("../index")
-var knex = require("../db/db")
+var db = require("../db/db")
 
 describe("routes: ticket", function() {
 
 	let token;
 	beforeEach(function(done) {
-		knex.migrate.rollback()
+		db.migrate.rollback()
 		.then(function() {
-			knex.migrate.latest()
+			db.migrate.latest()
 			.then(function() {
-				return knex.seed.run().then(function() {
+				return db.seed.run().then(function() {
 					createTokenForUserRole(
 						"Jansen", 
 						"Yan",
@@ -41,7 +41,7 @@ describe("routes: ticket", function() {
 	});
 
 	afterEach(function(done) {
-		knex.migrate.rollback()
+		db.migrate.rollback()
 		.then(function() {
 			done();
 		});
@@ -49,7 +49,7 @@ describe("routes: ticket", function() {
 
 	describe("/api/ticket", () => {
 		it("should get tickets", async () => {
-			await knex("tickets").insert({
+			await db("tickets").insert({
 				"name": "ticket #1",
 				"description": "test",
 				"status_id": 1,
@@ -64,7 +64,7 @@ describe("routes: ticket", function() {
 			assert.equal(body.length === 1, true)
 		})	
 		it("should get ticket by ID", async () => {
-			await knex("tickets").insert({
+			await db("tickets").insert({
 				"name": "ticket #1",
 				"description": "test",
 				"status_id": 1,
@@ -90,12 +90,12 @@ describe("routes: ticket", function() {
 			const res = await chai.request(app).post("/api/ticket").set({"Authorization": `Bearer ${token}`}).send(payload)
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
-			const newticket = await knex("tickets").where("organization_id", 1).where("name", "ticket #1").first()
+			const newticket = await db("tickets").where("organization_id", 1).where("name", "ticket #1").first()
 			assert.equal(newticket != null, true)
 			assert.equal(newticket.name, "ticket #1")
 		})
 		it("should update ticket", async () => {
-			const id = await knex("tickets").insert({
+			const id = await db("tickets").insert({
 				"name": "ticket #2",
 				"description": "test",
 				"status_id": 1,
@@ -115,12 +115,12 @@ describe("routes: ticket", function() {
 			const res = await chai.request(app).put(`/api/ticket/${id[0]}`).set({"Authorization": `Bearer ${token}`}).send(payload)
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
-			const newticket = await knex("tickets").where("id", id[0]).first()
+			const newticket = await db("tickets").where("id", id[0]).first()
 			assert.equal(newticket != null, true)
 			assert.equal(newticket.name, "ticket #2 Updated")
 		})
 		it("should delete ticket", async () => {
-			const id = await knex("tickets").insert({
+			const id = await db("tickets").insert({
 				"name": "ticket #2 Updated",
 				"description": "test",
 				"organization_id": 1,
@@ -131,14 +131,14 @@ describe("routes: ticket", function() {
 			const res = await chai.request(app).delete(`/api/ticket/${id[0]}`).set({"Authorization": `Bearer ${token}`})
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
-			const ticket = await knex("tickets").where("id", id[0]).first()
+			const ticket = await db("tickets").where("id", id[0]).first()
 			// ticket should be deleted
 			assert.equal(ticket == null, true)
 		})
 		it("get all assigned users for ticket", async () => {
 			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")
 			const userId2 = await createUserWithOrganization("Test2", "User2", "test2@jansen-test-company.com")
-			const ticketId = await knex("tickets").insert([{
+			const ticketId = await db("tickets").insert([{
 				"name": "ticket #1",
 				"description": "test",
 				"status_id": 1,
@@ -146,7 +146,7 @@ describe("routes: ticket", function() {
 				"ticket_type_id": 1,
 				"organization_id": 1
 			}], ["id"])
-			await knex("tickets_to_users").insert([
+			await db("tickets_to_users").insert([
 			{
 				"user_id": userId1,	
 				"ticket_id": ticketId
@@ -164,7 +164,7 @@ describe("routes: ticket", function() {
 		it("can assign multiple users to ticket", async () => {
 			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")
 			const userId2 = await createUserWithOrganization("Test2", "User2", "test2@jansen-test-company.com")
-			const ticketId = await knex("tickets").insert([{
+			const ticketId = await db("tickets").insert([{
 				"name": "ticket #1",
 				"description": "test",
 				"status_id": 1,
@@ -178,12 +178,12 @@ describe("routes: ticket", function() {
 			})
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
-			const assignedUsers = await knex("tickets_to_users").where("ticket_id", ticketId[0])
+			const assignedUsers = await db("tickets_to_users").where("ticket_id", ticketId[0])
 			assert.equal(assignedUsers.length, 2)
 		})
 		it("can delete user from ticket", async () => {
 			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")
-			const ticketId = await knex("tickets").insert([{
+			const ticketId = await db("tickets").insert([{
 				"name": "ticket #1",
 				"description": "test",
 				"status_id": 1,
@@ -191,14 +191,14 @@ describe("routes: ticket", function() {
 				"ticket_type_id": 1,
 				"organization_id": 1
 			}], ["id"])
-			await knex("tickets_to_users").insert([
+			await db("tickets_to_users").insert([
 			{
 				"user_id": userId1,	
 				"ticket_id": ticketId
 			}])
 			const res = await chai.request(app).delete(`/api/ticket/${ticketId[0]}/user/${userId1}`).set({"Authorization": `Bearer ${token}`})
 			res.status.should.equal(200)
-			const assignedUsers = await knex("tickets_to_users").where("ticket_id", ticketId[0])
+			const assignedUsers = await db("tickets_to_users").where("ticket_id", ticketId[0])
 			assert.equal(assignedUsers.length, 0)
 		})
 	})

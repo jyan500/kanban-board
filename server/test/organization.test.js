@@ -8,15 +8,15 @@ var should = chai.should()
 chai.use(chaiHttp)
 
 var app = require("../index")
-var knex = require("../db/db")
+var db = require("../db/db")
 
 describe("routes: organization", function() {
 	beforeEach(function(done) {
-    knex.migrate.rollback()
+    db.migrate.rollback()
     .then(function() {
-      knex.migrate.latest()
+      db.migrate.latest()
       .then(function() {
-        return knex.seed.run().then(function() {
+        return db.seed.run().then(function() {
           done();
 	    });
 	  })
@@ -24,7 +24,7 @@ describe("routes: organization", function() {
   });
 
   afterEach(function(done) {
-    knex.migrate.rollback()
+    db.migrate.rollback()
     .then(function() {
       done();
     });

@@ -9,15 +9,15 @@ var { assert } = chai
 chai.use(chaiHttp)
 
 var app = require("../index")
-var knex = require("../db/db")
+var db = require("../db/db")
 
 describe("routes: user", function() {
 	beforeEach(function(done) {
-    knex.migrate.rollback()
+    db.migrate.rollback()
     .then(function() {
-      knex.migrate.latest()
+      db.migrate.latest()
       .then(function() {
-        return knex.seed.run().then(function() {
+        return db.seed.run().then(function() {
           done();
 	    });
 	  })
@@ -25,7 +25,7 @@ describe("routes: user", function() {
   });
 
   afterEach(function(done) {
-    knex.migrate.rollback()
+    db.migrate.rollback()
     .then(function() {
       done();
     });
@@ -41,7 +41,7 @@ describe("routes: user", function() {
 			}).end(async (err, res) => {
 				res.status.should.equal(200)
 				res.type.should.equal("application/json")
-				const user = await knex("users").where("email", "jansen@jansen-test-company.com").first()
+				const user = await db("users").where("email", "jansen@jansen-test-company.com").first()
 				assert.isNotNull(user)
 				done()
 			})	
@@ -99,12 +99,12 @@ describe("routes: user", function() {
 			})
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
-			let user = await knex("users").where("email", "jansen@jansen-test-company.com").first()
+			let user = await db("users").where("email", "jansen@jansen-test-company.com").first()
 			assert.isNotNull(user)
 
 			// add organization to the user (this is not part of the register flow yet)
-			await knex("organization_user_roles").insert({user_id: user.id, organization_id: 1, user_role_id: 1})
-			user = await knex("users").where("email", "jansen@jansen-test-company.com").first()
+			await db("organization_user_roles").insert({user_id: user.id, organization_id: 1, user_role_id: 1})
+			user = await db("users").where("email", "jansen@jansen-test-company.com").first()
 			const loginRes = await chai.request(app).post("/api/user/login").send({
 				email: "jansen@jansen-test-company.com",
 				password: "Fakepassword123!",

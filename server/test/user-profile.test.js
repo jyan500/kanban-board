@@ -12,17 +12,17 @@ var { assert } = chai
 chai.use(chaiHttp)
 
 var app = require("../index")
-var knex = require("../db/db")
+var db = require("../db/db")
 
 describe("routes: status", function() {
 
 	let token;
 	beforeEach(function(done) {
-		knex.migrate.rollback()
+		db.migrate.rollback()
 		.then(function() {
-			knex.migrate.latest()
+			db.migrate.latest()
 			.then(function() {
-				return knex.seed.run().then(function() {
+				return db.seed.run().then(function() {
 					createTokenForUserRole(
 						"Jansen", 
 						"Yan",
@@ -40,7 +40,7 @@ describe("routes: status", function() {
 	});
 
 	afterEach(function(done) {
-		knex.migrate.rollback()
+		db.migrate.rollback()
 		.then(function() {
 			done();
 		});

@@ -12,17 +12,17 @@ var { assert } = chai
 chai.use(chaiHttp)
 
 var app = require("../index")
-var knex = require("../db/db")
+var db = require("../db/db")
 
 describe("routes: status", function() {
 
 	let token;
 	beforeEach(function(done) {
-		knex.migrate.rollback()
+		db.migrate.rollback()
 		.then(function() {
-			knex.migrate.latest()
+			db.migrate.latest()
 			.then(function() {
-				return knex.seed.run().then(function() {
+				return db.seed.run().then(function() {
 					createTokenForUserRole(
 						"Jansen", 
 						"Yan",
@@ -40,7 +40,7 @@ describe("routes: status", function() {
 	});
 
 	afterEach(function(done) {
-		knex.migrate.rollback()
+		db.migrate.rollback()
 		.then(function() {
 			done();
 		});
@@ -62,7 +62,7 @@ describe("routes: status", function() {
 			assert.equal(body.length === 1, true)
 		})
 		it("should prevent duplicate statuses from being inserted", async () => {
-			const order = await knex("statuses").where("organization_id", 1).max("order as order").first()
+			const order = await db("statuses").where("organization_id", 1).max("order as order").first()
 			const payload = {
 				"name": "New Status #2",
 				"organization_id": 1,	
@@ -74,7 +74,7 @@ describe("routes: status", function() {
 			res.status.should.equal(422)		
 		})
 		it("should insert status", async () => {
-			const order = await knex("statuses").where("organization_id", 1).max("order as order").first()
+			const order = await db("statuses").where("organization_id", 1).max("order as order").first()
 			const newOrder = parseInt(order.order) + 1
 			const payload = {
 				"name": "New Status",
@@ -84,14 +84,14 @@ describe("routes: status", function() {
 			const res = await chai.request(app).post("/api/status").set({"Authorization": `Bearer ${token}`}).send(payload)
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
-			const newStatus = await knex("statuses").where("organization_id", 1).where("name", "New Status").first()
+			const newStatus = await db("statuses").where("organization_id", 1).where("name", "New Status").first()
 			assert.equal(newStatus != null, true)
 			assert.equal(newStatus.name, "New Status")
 		})
 		it("should update status", async () => {
-			const order = await knex("statuses").where("organization_id", 1).max("order as order").first()
+			const order = await db("statuses").where("organization_id", 1).max("order as order").first()
 			const newOrder = parseInt(order.order) + 1
-			const id = await knex("statuses").insert({
+			const id = await db("statuses").insert({
 				"name": "New Status #2",
 				"organization_id": 1,	
 				"order": newOrder
@@ -105,14 +105,14 @@ describe("routes: status", function() {
 			const res = await chai.request(app).put(`/api/status/${id[0]}`).set({"Authorization": `Bearer ${token}`}).send(payload)
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
-			const newStatus = await knex("statuses").where("id", id[0]).first()
+			const newStatus = await db("statuses").where("id", id[0]).first()
 			assert.equal(newStatus != null, true)
 			assert.equal(newStatus.name, "New Status #2 Updated")
 		})
 		it("should delete status", async () => {
-			const order = await knex("statuses").where("organization_id", 1).max("order as order").first()
+			const order = await db("statuses").where("organization_id", 1).max("order as order").first()
 			const newOrder = parseInt(order.order) + 1
-			const id = await knex("statuses").insert({
+			const id = await db("statuses").insert({
 				"name": "New Status #2",
 				"organization_id": 1,	
 				"order": newOrder
@@ -120,7 +120,7 @@ describe("routes: status", function() {
 			const res = await chai.request(app).delete(`/api/status/${id[0]}`).set({"Authorization": `Bearer ${token}`})
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
-			const status = await knex("statuses").where("id", id[0]).first()
+			const status = await db("statuses").where("id", id[0]).first()
 			// status should be deleted
 			assert.equal(status == null, true)
 		})
