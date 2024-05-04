@@ -6,6 +6,7 @@ import {v4 as uuidv4} from "uuid"
 import { useLocation, useNavigate } from "react-router-dom" 
 import { useForm, Resolver } from "react-hook-form"
 import { parseErrorResponse } from "../helpers/functions"
+import { useGetOrganizationQuery } from "../services/organization" 
 
 type FormValues = {
 	email: string
@@ -18,8 +19,8 @@ export const Login = () => {
 	const location = useLocation()
 	const navigate = useNavigate()
 	const [login, { isLoading, error }] = useLoginMutation()
+	const {data: orgData} = useGetOrganizationQuery()
 	const { token } = useAppSelector((state) => state.auth)
-	const org = useAppSelector((state) => state.org)
 	const { register , handleSubmit, formState: {errors} } = useForm<FormValues>()
 	const registerOptions = {
 	    email: { required: "Email is required" },
@@ -89,7 +90,7 @@ export const Login = () => {
 							{...register("organizationId", registerOptions.organizationId)}
 						>
 							<option value = "">---</option>
-							{ org.organizations?.map((org) => <option key = {org.id} value = {org.id}>{org.name}</option>)
+							{ orgData?.map((org) => <option key = {org.id} value = {org.id}>{org.name}</option>)
 							}
 						</select>
 				        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}

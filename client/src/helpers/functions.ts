@@ -1,11 +1,11 @@
-import type { Board, Cell, Status, Ticket } from "../types/common"
+import type { KanbanBoard, Cell, Status, Ticket } from "../types/common"
 import { v4 as uuidv4 } from "uuid"
 /* 
 New Design:
 Map each status id to an array, which represents all tickets for this column
 */
 export const setupInitialBoard = (statuses: Array<Status>, numRows: number) => {
-	let board: Board = {}
+	let board: KanbanBoard = {}
 	for (let i = 0; i < statuses.length; ++i){
 		board[statuses[i].id] = []
 	}

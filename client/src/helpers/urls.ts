@@ -4,3 +4,5 @@ export const LOGIN_URL = `/${API_VERSION}/user/login`
 export const REGISTER_URL = `/${API_VERSION}/user/register`
 export const ORGANIZATION_URL = `/${API_VERSION}/organization`
 export const USER_PROFILE_URL = `/${API_VERSION}/user-profile`
+export const TICKET_URL = `/${API_VERSION}/ticket`
+export const BOARD_URL = `/${API_VERSION}/board`

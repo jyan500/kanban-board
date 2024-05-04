@@ -7,24 +7,18 @@
 	background-color: var(--bs-light);
 	z-index: var(--z-index-top);
 
-	& li {
+	& a {
 		padding: 8px;
 		margin-bottom: 8px;
 		border-radius: var(--radius-inputs);
 		&:hover {
 			background-color: var(--bs-primary);
 			transition: var(--input-transition-inputs);
-
-			& a {
-				color: white;
-			}
+			color: white;
 		}
 		&.active {
 			background-color: var(--bs-primary);
-
-			& a {
-				color: white;
-			}
+			color: white;
 		}
 	}
 }
@@ -39,6 +33,8 @@
 .sidebar__links {
 	margin-top: var(--m-spacing);
 	margin-bottom: var(--m-spacing);
+	display: flex;
+	flex-direction: column;
 }
 
 .sidebar__bottom-bar {

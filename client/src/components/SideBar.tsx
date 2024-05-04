@@ -53,14 +53,16 @@ export const SideBar = ({isFetching}: Props) => {
 					<h2>Welcome to Kanban Board</h2>
 				</div>
 				<div className = "sidebar__links">
-					<ul>
 					{ 
 						links.map((link) => 
-							<li key = {link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`} >
-								<Link to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>{link.text}</Link>
-							</li>)
+							// <li key = {link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`} >
+							// 	<Link to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>{link.text}</Link>
+							// </li>
+							<Link onClick={(e) => dispatch(toggleSideBar(false))} to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>
+								{link.text}
+							</Link>
+						)
 					}
-					</ul>
 				</div>
 				<div className = "sidebar__bottom-bar">
 					<div className = "sidebar__bottom-bar__content">

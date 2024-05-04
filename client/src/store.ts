@@ -9,6 +9,8 @@ import { organizationApi } from "./services/organization"
 import { userRegisterApi } from "./services/register" 
 import { userProfileReducer }  from "./slices/userProfileSlice"
 import { userProfileApi } from "./services/userProfile" 
+import { ticketApi } from "./services/ticket" 
+import { boardApi } from "./services/board" 
 import {
 	persistStore,
 	persistReducer,
@@ -34,6 +36,8 @@ export const store = configureStore({
 		[organizationApi.reducerPath]: organizationApi.reducer,
 		[userProfileApi.reducerPath]: userProfileApi.reducer,
 		[userRegisterApi.reducerPath]: userRegisterApi.reducer,
+		[ticketApi.reducerPath]: ticketApi.reducer, 
+		[boardApi.reducerPath]: boardApi.reducer, 
 		"board": boardReducer,
 		"auth": authReducer,
 		"nav": navReducer,
@@ -48,6 +52,8 @@ export const store = configureStore({
 	.concat(organizationApi.middleware)
 	.concat(userProfileApi.middleware)
 	.concat(userRegisterApi.middleware)
+	.concat(ticketApi.middleware)
+	.concat(boardApi.middleware)
 })
 
 // Infer the 'RootState' and 'AppDispatch' types from the store itself

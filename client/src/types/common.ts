@@ -23,12 +23,19 @@ export interface Priority {
 	order: number
 }
 
+export interface Board {
+	id: number
+	name: string 
+	organization: Organization
+}
+
 export interface Ticket {
 	id: string
 	priority: Priority
 	name: string
 	description: string
 	status: Status
+	ticketType: string
 }
 
 export interface Cell {
@@ -38,7 +45,7 @@ export interface Cell {
 	ticket: Ticket | null
 }
 
-export interface Board {
+export interface KanbanBoard {
 	[statusId: string]: Array<Ticket>
 }
 

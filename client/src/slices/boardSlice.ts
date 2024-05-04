@@ -2,7 +2,7 @@ import { createSlice, current } from "@reduxjs/toolkit"
 import { setupInitialBoard, prioritySort } from "../helpers/functions" 
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type { RootState } from "../store"
-import type { Cell, Board, Priority, Status, Ticket } from "../types/common" 
+import type { Cell, KanbanBoard, Priority, Status, Ticket } from "../types/common" 
 import { 
 	defaultPriorities, 
 	defaultRows, 
@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from "uuid"
 import { modalTypes } from "../components/Modal"
 
 interface BoardState {
-	board: Board 
+	board: KanbanBoard 
 	numRows: number
 	numCols: number
 	statuses: Array<Status>
