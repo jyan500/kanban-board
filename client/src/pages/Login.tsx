@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { setCredentials } from "../slices/authSlice" 
-import { useLoginMutation } from "../services/auth" 
+import { useLoginMutation } from "../services/public/auth" 
 import {v4 as uuidv4} from "uuid"
 import { useLocation, useNavigate } from "react-router-dom" 
 import { useForm, Resolver } from "react-hook-form"
 import { parseErrorResponse } from "../helpers/functions"
-import { useGetOrganizationQuery } from "../services/organization" 
+import { useGetOrganizationQuery } from "../services/public/organization" 
 
 type FormValues = {
 	email: string

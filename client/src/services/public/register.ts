@@ -1,6 +1,7 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { BACKEND_BASE_URL, REGISTER_URL } from "../helpers/urls" 
-import { CustomError } from "../types/common" 
+import { BACKEND_BASE_URL, REGISTER_URL } from "../../helpers/urls" 
+import { CustomError } from "../../types/common" 
+import { publicApi } from "../public" 
 
 export interface Response {
 	message: string
@@ -14,11 +15,8 @@ export interface RegisterRequest {
 	confirmPassword: string
 }
 
-export const userRegisterApi = createApi({
-	reducerPath: "userRegister",
-	baseQuery: fetchBaseQuery({
-		baseUrl: BACKEND_BASE_URL,
-	}) as BaseQueryFn<string | FetchArgs, unknown, CustomError, {}>,
+export const userRegisterApi = publicApi.injectEndpoints({
+	overrideExisting: false,
 	endpoints: (builder) => ({
 		userRegister: builder.mutation<Response, RegisterRequest>({
 			query: (registrationInfo) => ({

@@ -3,7 +3,7 @@ import { Link, Outlet, Navigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SideBar } from "../components/SideBar"
 import { TopNav } from "../components/TopNav" 
-import { useGetUserProfileQuery } from "../services/userProfile" 
+import { useGetUserProfileQuery } from "../services/private/userProfile" 
 import { setUserProfile } from "../slices/userProfileSlice" 
 
 const ProtectedLayout = () => {

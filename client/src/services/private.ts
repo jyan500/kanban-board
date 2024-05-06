@@ -1,10 +1,10 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../store" 
-import { BACKEND_BASE_URL, USER_PROFILE_URL } from "../helpers/urls" 
-import { CustomError, UserProfile } from "../types/common" 
+import { BACKEND_BASE_URL } from "../helpers/urls" 
+import { CustomError, Board, Ticket } from "../types/common" 
 
-export const userProfileApi = createApi({
-	reducerPath: "userProfileApi",
+// initialize an empty api service that we'll inject endpoints into later as needed
+export const privateApi = createApi({
 	baseQuery: fetchBaseQuery({
 		baseUrl: BACKEND_BASE_URL,
 		prepareHeaders: (headers, { getState }) => {
@@ -12,18 +12,9 @@ export const userProfileApi = createApi({
 	        if (token) {
 		        headers.set('Authorization', `Bearer ${token}`)
 	        }
-	    
 	        return headers
 	    },
 	}) as BaseQueryFn<string | FetchArgs, unknown, CustomError, {}>,
-	endpoints: (builder) => ({
-		getUserProfile: builder.query<UserProfile, void>({
-			query: () => ({
-				url: USER_PROFILE_URL,
-				method: "GET",
-			})	
-		}),
-	}),
+	tagTypes: ["Boards", "BoardTickets"],
+	endpoints: () => ({}),
 })
-
-export const { useGetUserProfileQuery } = userProfileApi 

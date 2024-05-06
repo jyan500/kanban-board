@@ -1,6 +1,6 @@
 import React from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
-import { useGetBoardsQuery } from "../services/board" 
+import { useGetBoardsQuery } from "../services/private/board" 
 import { Link, Outlet } from "react-router-dom" 
 
 export const BoardDisplay = () => {

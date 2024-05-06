@@ -4,13 +4,9 @@ import { boardReducer } from "./slices/boardSlice"
 import { navReducer }  from "./slices/navSlice"
 import { authReducer } from "./slices/authSlice" 
 import { organizationReducer } from "./slices/organizationSlice" 
-import { authApi } from "./services/auth" 
-import { organizationApi } from "./services/organization" 
-import { userRegisterApi } from "./services/register" 
 import { userProfileReducer }  from "./slices/userProfileSlice"
-import { userProfileApi } from "./services/userProfile" 
-import { ticketApi } from "./services/ticket" 
-import { boardApi } from "./services/board" 
+import { publicApi } from "./services/public"
+import { privateApi } from "./services/private"
 import {
 	persistStore,
 	persistReducer,
@@ -32,12 +28,8 @@ const persistConfig = {
 
 export const store = configureStore({
 	reducer: {
-		[authApi.reducerPath]: authApi.reducer,
-		[organizationApi.reducerPath]: organizationApi.reducer,
-		[userProfileApi.reducerPath]: userProfileApi.reducer,
-		[userRegisterApi.reducerPath]: userRegisterApi.reducer,
-		[ticketApi.reducerPath]: ticketApi.reducer, 
-		[boardApi.reducerPath]: boardApi.reducer, 
+		[publicApi.reducerPath]: publicApi.reducer,
+		[privateApi.reducerPath]: privateApi.reducer,
 		"board": boardReducer,
 		"auth": authReducer,
 		"nav": navReducer,
@@ -48,12 +40,8 @@ export const store = configureStore({
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
 		},
 	}).concat(logger)
-	.concat(authApi.middleware)
-	.concat(organizationApi.middleware)
-	.concat(userProfileApi.middleware)
-	.concat(userRegisterApi.middleware)
-	.concat(ticketApi.middleware)
-	.concat(boardApi.middleware)
+	.concat(publicApi.middleware)
+	.concat(privateApi.middleware)
 })
 
 // Infer the 'RootState' and 'AppDispatch' types from the store itself

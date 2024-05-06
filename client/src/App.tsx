@@ -9,13 +9,10 @@ import { BoardDisplay } from "./pages/BoardDisplay"
 import { Board } from "./pages/Board" 
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
-import { useGetOrganizationQuery } from "./services/organization"
-import { setOrganization } from "./slices/organizationSlice" 
 import { useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
 
 function App() {
-
 	return (
 		<div>
 			<Routes>

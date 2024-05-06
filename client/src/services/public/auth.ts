@@ -1,6 +1,7 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { BACKEND_BASE_URL, LOGIN_URL } from "../helpers/urls" 
-import { CustomError } from "../types/common" 
+import { BACKEND_BASE_URL, LOGIN_URL } from "../../helpers/urls" 
+import { CustomError } from "../../types/common" 
+import { publicApi } from "../public" 
 
 export interface UserResponse {
 	token: string
@@ -12,10 +13,8 @@ export interface LoginRequest {
 	organizationId: number
 }
 
-export const authApi = createApi({
-	baseQuery: fetchBaseQuery({
-		baseUrl: BACKEND_BASE_URL,
-	}) as BaseQueryFn<string | FetchArgs, unknown, CustomError, {}>,
+export const authApi = publicApi.injectEndpoints({
+	overrideExisting: false,
 	endpoints: (builder) => ({
 		login: builder.mutation<UserResponse, LoginRequest>({
 			query: (credentials) => ({
