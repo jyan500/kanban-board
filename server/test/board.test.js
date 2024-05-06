@@ -262,8 +262,14 @@ describe("routes: board", function() {
 				"organization_id": 1
 			}, ["id"])	
 			const payload = {
-				
+				// status id of 6 belongs to organization of id 2, but the logged in user
+				// belongs to organization of id 1
+				status_ids: [6]	
 			}
+			const res = await chai.request(app).post(`/api/board/${id[0]}/status`).set({
+				"Authorization": `Bearer ${token}`
+			}).send(payload)
+			res.status.should.equal(422)
 		})
 		it("can delete status from the board", async () => {
 			const id = await db("boards").insert({

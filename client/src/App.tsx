@@ -5,6 +5,7 @@ import { Login } from "./pages/Login"
 import { Home } from "./pages/Home" 
 import { HamburgerButton } from "./components/HamburgerButton" 
 import { Register } from "./pages/Register" 
+import { BoardDisplay } from "./pages/BoardDisplay" 
 import { Board } from "./pages/Board" 
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
@@ -24,7 +25,15 @@ function App() {
 				</Route>
 				<Route element = {<ProtectedLayout/>}>
 					<Route path = "/" element={<Home/>}></Route>
-					<Route path = "/boards" element={<Board/>}></Route>
+					<Route 
+						path = "/boards" 
+						element={<BoardDisplay/>}
+					>
+						<Route 
+							path = "/boards/:boardId"
+							element={<Board/>}>
+						</Route>
+					</Route>
 				</Route>
 			</Routes>
 		</div>

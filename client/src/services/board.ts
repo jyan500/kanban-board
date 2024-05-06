@@ -17,13 +17,13 @@ export const boardApi = createApi({
 	    },
 	}) as BaseQueryFn<string | FetchArgs, unknown, CustomError, {}>,
 	endpoints: (builder) => ({
-		getBoards: builder.query<Board, void>({
+		getBoards: builder.query<Array<Board>, void>({
 			query: () => ({
 				url: BOARD_URL,
 				method: "GET",
 			})	
 		}),
-		getBoard: builder.query<Board, void>({
+		getBoard: builder.query<Array<Board>, string>({
 			query: (id) => ({
 				url: `${BOARD_URL}/${id}`,
 				method: "GET"
