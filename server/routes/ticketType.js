@@ -4,7 +4,10 @@ const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
-		const ticketTypes = await db("ticket_types")
+		const ticketTypes = await db("ticket_types").select(
+			"ticket_types.id as id",
+			"ticket_types.name as name"
+		)
 		res.json(ticketTypes)
 	}
 	catch (err){
@@ -15,7 +18,10 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
 	try {
-		const ticketTypes = await db("ticket_types").where("id", req.params.id)
+		const ticketTypes = await db("ticket_types").where("id", req.params.id).select(
+			"ticket_types.id as id",
+			"ticket_types.name as name"
+		)
 		res.json(ticketTypes)
 	}	
 	catch (err){

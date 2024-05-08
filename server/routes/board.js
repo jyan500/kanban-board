@@ -17,7 +17,11 @@ const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
-		const boards = await db("boards").where("organization_id", req.user.organization)
+		const boards = await db("boards").where("organization_id", req.user.organization).select(
+			"boards.id as id",
+			"boards.name as name",
+			"boards.organization_id as organizationId"
+		)
 		res.json(boards)
 	}
 	catch (err) {
@@ -28,7 +32,11 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:boardId", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const boards = await db("boards").where("id", req.params.boardId)
+		const boards = await db("boards").where("id", req.params.boardId).select(
+			"boards.id as id",
+			"boards.name as name",
+			"boards.organization_id as organizationId"
+		)
 		res.json(boards)
 	}	
 	catch (err) {
@@ -42,7 +50,15 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 		const tickets = await db("tickets_to_boards")
 		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
 		.where("board_id", req.params.boardId)
-		.select("tickets.*")
+		.select(
+			"tickets.id as id",
+			"tickets.priority_id as priorityId",
+			"tickets.name as name",
+			"tickets.description as description",
+			"tickets.status_id as statusId",
+			"tickets.ticket_type_id as ticketTypeId",
+			"tickets.organization_id as organizationId"
+		)
 		res.json(tickets)
 
 	}	
@@ -71,7 +87,15 @@ router.get("/:boardId/ticket/:ticketId", validateBoardTicketGet, handleValidatio
 		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
 		.where("board_id", req.params.boardId)
 		.where("ticket_id", req.params.ticketId)
-		.select("tickets.*")
+		.select(
+			"tickets.id as id",
+			"tickets.priority_id as priorityId",
+			"tickets.name as name",
+			"tickets.description as description",
+			"tickets.status_id as statusId",
+			"tickets.ticket_type_id as ticketTypeId",
+			"tickets.organization_id as organizationId"
+		)
 		res.json(tickets)
 
 	}	
@@ -97,7 +121,12 @@ router.get("/:boardId/status", validateGet, handleValidationResult, async (req, 
 		const statuses = await db("boards_to_statuses")
 		.join("statuses", "statuses.id", "=", "boards_to_statuses.status_id")
 		.where("board_id", req.params.boardId)
-		.select("statuses.*")
+		.orderBy("statuses.order")
+		.select(
+			"statuses.id as id",
+			"statuses.name as name",
+			"statuses.order as order",
+			"statuses.organization_id as organizationId")
 		res.json(statuses)
 	}
 	catch (err) {
@@ -112,7 +141,11 @@ router.get("/:boardId/status/:statusId", validateBoardStatusGet, handleValidatio
 		.join("statuses", "statuses.id", "=", "boards_to_statuses.status_id")
 		.where("board_id", req.params.boardId)
 		.where("status_id", req.params.statusId)
-		.select("statuses.*")
+		.select(
+			"statuses.id as id",
+			"statuses.name as name",
+			"statuses.order as order",
+			"statuses.organization_id as organizationId")
 		res.json(status)
 
 	}	

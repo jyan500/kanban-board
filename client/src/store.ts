@@ -5,6 +5,9 @@ import { navReducer }  from "./slices/navSlice"
 import { authReducer } from "./slices/authSlice" 
 import { organizationReducer } from "./slices/organizationSlice" 
 import { userProfileReducer }  from "./slices/userProfileSlice"
+import { ticketTypeReducer } from "./slices/ticketTypeSlice" 
+import { priorityReducer } from "./slices/prioritySlice" 
+import { statusReducer } from "./slices/statusSlice" 
 import { publicApi } from "./services/public"
 import { privateApi } from "./services/private"
 import {
@@ -35,6 +38,9 @@ export const store = configureStore({
 		"nav": navReducer,
 		"org": organizationReducer,
 		"userProfile": userProfileReducer,
+		"status": statusReducer,
+		"ticketType": ticketTypeReducer,
+		"priority": priorityReducer,
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]

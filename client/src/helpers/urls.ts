@@ -6,4 +6,8 @@ export const ORGANIZATION_URL = `/${API_VERSION}/organization`
 export const USER_PROFILE_URL = `/${API_VERSION}/user-profile`
 export const TICKET_URL = `/${API_VERSION}/ticket`
 export const BOARD_URL = `/${API_VERSION}/board`
+export const STATUS_URL = `/${API_VERSION}/status`
+export const TICKET_TYPE_URL = `/${API_VERSION}/ticket-type`
+export const PRIORITY_URL = `/${API_VERSION}/priority`
 export const BOARD_TICKET_URL = (boardId: string, ticketId = "") => `/${API_VERSION}/board/${boardId}/ticket/${ticketId}`
+export const BOARD_STATUS_URL = (boardId: string, statusId = "") => `/${API_VERSION}/board/${boardId}/status/${statusId}`

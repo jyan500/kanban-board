@@ -11,7 +11,7 @@ const initialState: NavState = {
 }
 
 const navSlice = createSlice({
-  name: 'auth',
+  name: 'nav',
   initialState,
   reducers: {
   	toggleSideBar(state, action: PayloadAction<boolean>){

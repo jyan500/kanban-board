@@ -18,7 +18,7 @@ export interface Organization {
 }
 
 export interface Priority {
-	id: string
+	id: number 
 	name: string
 	order: number
 }
@@ -26,20 +26,26 @@ export interface Priority {
 export interface Board {
 	id: number
 	name: string 
-	organization: Organization
+	organizationId: number
+}
+
+export interface TicketType {
+	id: number
+	name: string
 }
 
 export interface Ticket {
-	id: string
-	priority: Priority
+	id:number 
+	priorityId: number
 	name: string
 	description: string
-	status: Status
-	ticketType: string
+	statusId: number
+	ticketTypeId: number
+	organizationId: number
 }
 
 export interface Cell {
-	id: string 
+	id: number 
 	rowNum?: number
 	colNum?: number
 	ticket: Ticket | null
@@ -50,9 +56,10 @@ export interface KanbanBoard {
 }
 
 export interface Status {
-	id: string  
+	id: number  
 	name: string
 	order: number
+	organizationId: number
 }
 
 export interface CustomError {

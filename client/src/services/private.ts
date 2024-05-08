@@ -5,6 +5,7 @@ import { CustomError, Board, Ticket } from "../types/common"
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const privateApi = createApi({
+	reducerPath: "private",
 	baseQuery: fetchBaseQuery({
 		baseUrl: BACKEND_BASE_URL,
 		prepareHeaders: (headers, { getState }) => {
@@ -15,6 +16,14 @@ export const privateApi = createApi({
 	        return headers
 	    },
 	}) as BaseQueryFn<string | FetchArgs, unknown, CustomError, {}>,
-	tagTypes: ["Boards", "BoardTickets"],
+	tagTypes: [
+		"Boards", 
+		"BoardTickets", 
+		"Tickets", 
+		"Statuses", 
+		"BoardStatuses",
+		"TicketTypes",
+		"Priorities",
+	],
 	endpoints: () => ({}),
 })

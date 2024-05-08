@@ -15,7 +15,15 @@ const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
-		const tickets = await db("tickets").where("organization_id", req.user.organization)
+		const tickets = await db("tickets").where("organization_id", req.user.organization).select(
+			"tickets.id as id",
+			"tickets.priority_id as priorityId",
+			"tickets.name as name",
+			"tickets.description as description",
+			"tickets.status_id as statusId",
+			"tickets.ticket_type_id as ticketTypeId",
+			"tickets.organization_id as organizationId"
+		)
 		res.json(tickets)
 	}
 	catch (err) {
@@ -26,7 +34,15 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const tickets = await db("tickets").where("id", req.params.ticketId)
+		const tickets = await db("tickets").where("id", req.params.ticketId).select(
+			"tickets.id as id",
+			"tickets.priority_id as priorityId",
+			"tickets.name as name",
+			"tickets.description as description",
+			"tickets.status_id as statusId",
+			"tickets.ticket_type_id as ticketTypeId",
+			"tickets.organization_id as organizationId"
+		)
 		res.json(tickets)
 	}	
 	catch (err) {

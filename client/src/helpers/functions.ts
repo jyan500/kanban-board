@@ -13,26 +13,27 @@ export const setupInitialBoard = (statuses: Array<Status>, numRows: number) => {
 }
 
 export const prioritySort = (tickets: Array<Ticket>) => {
-	const sortKey = (a: Ticket, b: Ticket) => {
-		if (a && b){
-			if (a.priority.order < b.priority.order){
-				return -1
-			}
-			else if (a.priority.order > b.priority.order){
-				return 1
-			}
-			else {
-				if (a.name < b.name){
-					return 1
-				}
-				else if (a.name > b.name){
-					return -1
-				}
-			}
-		}	
-		return 0
-	}	
-	return tickets.sort(sortKey)
+	// const sortKey = (a: Ticket, b: Ticket) => {
+	// 	if (a && b){
+	// 		if (a.priority.order < b.priority.order){
+	// 			return -1
+	// 		}
+	// 		else if (a.priority.order > b.priority.order){
+	// 			return 1
+	// 		}
+	// 		else {
+	// 			if (a.name < b.name){
+	// 				return 1
+	// 			}
+	// 			else if (a.name > b.name){
+	// 				return -1
+	// 			}
+	// 		}
+	// 	}	
+	// 	return 0
+	// }	
+	// return tickets.sort(sortKey)
+	return tickets
 }
 
 export const sortStatusByOrder = (a: Status, b: Status) => {
@@ -46,8 +47,9 @@ export const sortStatusByOrder = (a: Status, b: Status) => {
 }
 
 export const doTicketsContainStatus = (statusId: string, tickets: Array<Ticket>) => {
-	const ticketsWithStatus = tickets.filter((ticket) => ticket.status.id === statusId)	
-	return ticketsWithStatus.length > 0
+	// const ticketsWithStatus = tickets.filter((ticket) => ticket.status.id === statusId)	
+	// return ticketsWithStatus.length > 0
+	return false
 }
 
 /**

@@ -14,25 +14,26 @@ import { modalTypes } from "../components/Modal"
 
 interface BoardState {
 	board: KanbanBoard 
-	numRows: number
-	numCols: number
-	statuses: Array<Status>
-	statusesToDisplay: Array<String>
-	priorityList: Array<Priority>
+	// numRows: number
+	// numCols: number
+	// statuses: Array<Status>
+	// statusesToDisplay: Array<String>
+	// priorityList: Array<Priority>
 	showModal: boolean
-	currentTicketId: string | null
+	currentTicketId: number | null
 	currentModalType: keyof typeof modalTypes
 	currentModalProps: Record<string, any>
 	tickets: Array<Ticket>
 }
 
 const initialState: BoardState = {
-	board: setupInitialBoard(defaultStatuses, defaultRows),
-	numCols: 4,
-	numRows: defaultRows,
-	statusesToDisplay: defaultStatusesToDisplay,
-	statuses: defaultStatuses,
-	priorityList: defaultPriorities, 
+	// board: setupInitialBoard(defaultStatuses, defaultRows),
+	board: {},
+	// numCols: 4,
+	// numRows: defaultRows,
+	// statusesToDisplay: defaultStatusesToDisplay,
+	// statuses: defaultStatuses,
+	// priorityList: defaultPriorities, 
 	tickets: [],
 	showModal: false,
 	currentModalType: "TICKET_FORM",
@@ -44,6 +45,9 @@ export const boardSlice = createSlice({
 	name: "board",
 	initialState,
 	reducers: {
+		setBoard(state, action: PayloadAction<KanbanBoard>){
+			state.board = action.payload
+		},
 		toggleShowModal(state, action: PayloadAction<boolean>){
 			state.showModal = action.payload
 		},
@@ -54,42 +58,42 @@ export const boardSlice = createSlice({
 			state.currentModalProps = action.payload
 		},
 		selectCurrentTicketId(state, action: PayloadAction<string | null>){
-			state.currentTicketId = action.payload
+			// state.currentTicketId = action.payload
 		},
 		addTicketToBoard(state, action: PayloadAction<Ticket>){
-			const {
-				board, statuses, statusesToDisplay, tickets
-			} = state
-			const status = statuses.find(status => status.id === action.payload.status.id)
-			if (status){
-				board[status.id].push(action.payload)	
-			}
-			tickets.push(action.payload)
+			// const {
+			// 	board, statuses, statusesToDisplay, tickets
+			// } = state
+			// const status = statuses.find(status => status.id === action.payload.status.id)
+			// if (status){
+			// 	board[status.id].push(action.payload)	
+			// }
+			// tickets.push(action.payload)
 
 		},
 		editTicket(state, action: PayloadAction<Ticket>){
-			const { board, statuses, statusesToDisplay } = state
-			// edit the ticket within the tickets list
-			let ticketIndex = state.tickets.findIndex((ticket) => action.payload.id === ticket.id)
-			let originalTicket = state.tickets[ticketIndex]
-			if (action.payload.status.id !== originalTicket.status.id){
-				// find the column that the new status belongs to	
-				const newStatus = statuses.find(status => status.id === action.payload.status.id)	
-				if (newStatus){
-					// add the ticket to the respective status column
-					board[newStatus.id].push(action.payload)
-					// remove the ticket from the column 
-					let oldTicketIndex = board[originalTicket.status.id]?.findIndex((t: Ticket) => t.id === originalTicket.id)
-					board[originalTicket.status.id]?.splice(oldTicketIndex, 1)
-				}
-			}
-			else {
-				// find the ticket within the board via its index and replace
-				const ticketsForStatus = board[action.payload.status.id]
-				const ticketToEditIndex = ticketsForStatus.findIndex((ticket) => ticket.id === action.payload.id)
-				board[action.payload.status.id][ticketToEditIndex] = action.payload
-			}
-			state.tickets[ticketIndex] = action.payload
+			// const { board, statuses, statusesToDisplay } = state
+			// // edit the ticket within the tickets list
+			// let ticketIndex = state.tickets.findIndex((ticket) => action.payload.id === ticket.id)
+			// let originalTicket = state.tickets[ticketIndex]
+			// if (action.payload.status.id !== originalTicket.status.id){
+			// 	// find the column that the new status belongs to	
+			// 	const newStatus = statuses.find(status => status.id === action.payload.status.id)	
+			// 	if (newStatus){
+			// 		// add the ticket to the respective status column
+			// 		board[newStatus.id].push(action.payload)
+			// 		// remove the ticket from the column 
+			// 		let oldTicketIndex = board[originalTicket.status.id]?.findIndex((t: Ticket) => t.id === originalTicket.id)
+			// 		board[originalTicket.status.id]?.splice(oldTicketIndex, 1)
+			// 	}
+			// }
+			// else {
+			// 	// find the ticket within the board via its index and replace
+			// 	const ticketsForStatus = board[action.payload.status.id]
+			// 	const ticketToEditIndex = ticketsForStatus.findIndex((ticket) => ticket.id === action.payload.id)
+			// 	board[action.payload.status.id][ticketToEditIndex] = action.payload
+			// }
+			// state.tickets[ticketIndex] = action.payload
 
 		},
 		/*
@@ -100,38 +104,38 @@ export const boardSlice = createSlice({
 		or 0 for lowest to highest priority
 		*/
 		sortByPriority(state, action: PayloadAction<{statusId?: string, sortOrder: number}>){
-			const { board, statuses, statusesToDisplay } = state
-			const status = statuses.find(status => status.id === action.payload.statusId)
-			if (status){
-				action.payload.sortOrder === 1 ? prioritySort(board[status.id]) : prioritySort(board[status.id]).reverse()
-			}
-			else {
-				Object.keys(board).forEach((statusId) => {
-					action.payload.sortOrder === 1 ? prioritySort(board[statusId]) : prioritySort(board[statusId]).reverse()
-				})	
-			}
+			// const { board, statuses, statusesToDisplay } = state
+			// const status = statuses.find(status => status.id === action.payload.statusId)
+			// if (status){
+			// 	action.payload.sortOrder === 1 ? prioritySort(board[status.id]) : prioritySort(board[status.id]).reverse()
+			// }
+			// else {
+			// 	Object.keys(board).forEach((statusId) => {
+			// 		action.payload.sortOrder === 1 ? prioritySort(board[statusId]) : prioritySort(board[statusId]).reverse()
+			// 	})	
+			// }
 		},
 		deleteAllTickets(state){
-			const {board, statuses, numRows, numCols} = state
-			for (let i = 0; i < statuses.length; ++i){
-				if (statuses[i].id in board){
-					board[statuses[i].id] = []
-				}
-			}
-			// delete all tickets in the ticket list
-			state.tickets = []
+			// const {board, statuses, numRows, numCols} = state
+			// for (let i = 0; i < statuses.length; ++i){
+			// 	if (statuses[i].id in board){
+			// 		board[statuses[i].id] = []
+			// 	}
+			// }
+			// // delete all tickets in the ticket list
+			// state.tickets = []
 		},
 		updateStatuses(state, action: PayloadAction<Array<Status>>){
-			state.statuses = action.payload
-			const currentStatuses = Object.keys(state.board)
-			// create a new status column for the board if not present
-			const newStatuses = action.payload.filter((status) => !currentStatuses.includes(status.id))
-			newStatuses.forEach((status) => {
-				state.board[status.id] = []
-			})
+			// state.statuses = action.payload
+			// const currentStatuses = Object.keys(state.board)
+			// // create a new status column for the board if not present
+			// const newStatuses = action.payload.filter((status) => !currentStatuses.includes(status.id))
+			// newStatuses.forEach((status) => {
+			// 	state.board[status.id] = []
+			// })
 		},
 		updateStatusesToDisplay(state, action: PayloadAction<Array<String>>){
-			state.statusesToDisplay = action.payload
+			// state.statusesToDisplay = action.payload
 		}
 	}
 })
@@ -141,6 +145,7 @@ export const {
 	deleteAllTickets, 
 	editTicket, 
 	selectCurrentTicketId, 
+	setBoard,
 	setModalType, 
 	setModalProps,
 	sortByPriority, 

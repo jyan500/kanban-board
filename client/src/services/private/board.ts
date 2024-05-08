@@ -1,7 +1,7 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../../store" 
-import { BACKEND_BASE_URL, BOARD_URL, BOARD_TICKET_URL } from "../../helpers/urls" 
-import { CustomError, Board, Ticket } from "../../types/common" 
+import { BACKEND_BASE_URL, BOARD_URL, BOARD_TICKET_URL, BOARD_STATUS_URL } from "../../helpers/urls" 
+import { CustomError, Board, Status, Ticket } from "../../types/common" 
 import { privateApi } from "../private"
 
 type BoardRequest = {
@@ -10,8 +10,6 @@ type BoardRequest = {
 }
 
 export const boardApi = privateApi.injectEndpoints({
-	// reducerPath: "boardApi",
-	// tagTypes: ["Boards", "BoardTickets"],
 	overrideExisting: false,
 	endpoints: (builder) => ({
 		getBoards: builder.query<Array<Board>, void>({
@@ -54,8 +52,19 @@ export const boardApi = privateApi.injectEndpoints({
 				url: BOARD_TICKET_URL(id),
 				method: "GET"
 			})
+		}),
+		getBoardStatuses: builder.query<Array<Status>, string>({
+			query: (id) => ({
+				url: BOARD_STATUS_URL(id),
+				method: "GET"
+			})
 		})
 	}),
 })
 
-export const { useGetBoardQuery, useGetBoardsQuery, useGetBoardTicketsQuery } = boardApi 
+export const { 
+	useGetBoardQuery, 
+	useGetBoardsQuery, 
+	useGetBoardTicketsQuery,
+	useGetBoardStatusesQuery
+} = boardApi 
