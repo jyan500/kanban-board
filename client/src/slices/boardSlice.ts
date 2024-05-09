@@ -17,7 +17,7 @@ interface BoardState {
 	// numRows: number
 	// numCols: number
 	// statuses: Array<Status>
-	// statusesToDisplay: Array<String>
+	statusesToDisplay: Array<Status>
 	// priorityList: Array<Priority>
 	showModal: boolean
 	currentTicketId: number | null
@@ -31,7 +31,7 @@ const initialState: BoardState = {
 	board: {},
 	// numCols: 4,
 	// numRows: defaultRows,
-	// statusesToDisplay: defaultStatusesToDisplay,
+	statusesToDisplay: [],
 	// statuses: defaultStatuses,
 	// priorityList: defaultPriorities, 
 	tickets: [],
@@ -48,6 +48,9 @@ export const boardSlice = createSlice({
 		setBoard(state, action: PayloadAction<KanbanBoard>){
 			state.board = action.payload
 		},
+		setStatusesToDisplay(state, action: PayloadAction<Array<Status>>){
+			state.statusesToDisplay = action.payload
+		},
 		toggleShowModal(state, action: PayloadAction<boolean>){
 			state.showModal = action.payload
 		},
@@ -57,8 +60,11 @@ export const boardSlice = createSlice({
 		setModalProps(state, action: PayloadAction<Record<string, any>>){
 			state.currentModalProps = action.payload
 		},
-		selectCurrentTicketId(state, action: PayloadAction<string | null>){
-			// state.currentTicketId = action.payload
+		selectCurrentTicketId(state, action: PayloadAction<number | null>){
+			state.currentTicketId = action.payload
+		},
+		setTickets(state, action: PayloadAction<Array<Ticket>>){
+			state.tickets = action.payload
 		},
 		addTicketToBoard(state, action: PayloadAction<Ticket>){
 			// const {
@@ -148,6 +154,8 @@ export const {
 	setBoard,
 	setModalType, 
 	setModalProps,
+	setStatusesToDisplay,
+	setTickets,
 	sortByPriority, 
 	updateStatuses,
 	updateStatusesToDisplay,

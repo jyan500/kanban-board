@@ -4,7 +4,7 @@ import { setCredentials } from "../slices/authSlice"
 import { useLoginMutation } from "../services/public/auth" 
 import {v4 as uuidv4} from "uuid"
 import { useLocation, useNavigate } from "react-router-dom" 
-import { useForm, Resolver } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { parseErrorResponse } from "../helpers/functions"
 import { useGetOrganizationQuery } from "../services/public/organization" 
 

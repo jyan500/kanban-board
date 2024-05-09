@@ -10,11 +10,13 @@ type PropType = {
 export const Ticket = ({ticket}: PropType) => {
 	const {priorities} = useAppSelector((state) => state.priority)
 	const {statuses} = useAppSelector((state) => state.status)
+	const {ticketTypes} = useAppSelector((state) => state.ticketType)
 	return (
 		<div className = "ticket-card --card-shadow">
 			<div>
 				<h3>{ticket.name}</h3>	
 				<p>Status: {statuses.find((s) => s.id === ticket.statusId)?.name}</p>	
+				<p>Ticket Type: {ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name}</p>	
 				<p>Priority: {priorities.find((p) => p.id === ticket.priorityId)?.name}</p>	
 			</div>
 		</div>
