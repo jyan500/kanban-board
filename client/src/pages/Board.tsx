@@ -6,7 +6,7 @@ import {
 	useGetBoardStatusesQuery } from "../services/private/board"
 import { Board as KanbanBoard } from "../components/Board" 
 import { KanbanBoard as KanbanBoardType } from "../types/common" 
-import { setBoard, setStatusesToDisplay, setTickets } from "../slices/boardSlice" 
+import { setBoard, setBoardInfo, setStatusesToDisplay, setTickets } from "../slices/boardSlice" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 
 export const Board = () => {
@@ -18,12 +18,14 @@ export const Board = () => {
 	const board = useAppSelector((state) => state.board)
 
 	useEffect(() => {
+		console.log("has data been refetched?")
 		if (boardData?.length && statusData?.length && ticketData?.length){
 			let board: KanbanBoardType = {}
 			for (let i = 0; i < statusData.length; ++i){
 				board[statusData[i].id] = ticketData.filter((ticket) => ticket.statusId === statusData[i].id) 
 			}
 			dispatch(setBoard(board))
+			dispatch(setBoardInfo(boardData[0]))
 			dispatch(setTickets(ticketData))
 			dispatch(setStatusesToDisplay(statusData))
 		}

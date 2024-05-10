@@ -39,12 +39,12 @@ router.get("/:id", validateGet, handleValidationResult, async (req, res, next) =
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
 		const body = {...req.body, organization_id: req.user.organization}
-		await db("statuses").insert({
+		const id = await db("statuses").insert({
 			name: body.name,
 			order: body.order,
 			organization_id: body.organization_id
-		})
-		res.json({message: `Status inserted successfully!`})
+		}, ["id"])
+		res.json({id: id[0], message: `Status inserted successfully!`})
 	}	
 	catch (err){
 		console.log(`Error while inserting status: ${err.message}`)	

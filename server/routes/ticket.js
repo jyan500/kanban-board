@@ -54,15 +54,15 @@ router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, n
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
 		const body = {...req.body, organization_id: req.user.organization}
-		await db("tickets").insert({
+		const id = await db("tickets").insert({
 			name: body.name,
 			description: body.description,
 			priority_id: body.priority_id,
 			status_id: body.status_id,
 			ticket_type_id: body.ticket_type_id,
 			organization_id: body.organization_id
-		})
-		res.json({message: "Ticket inserted successfully!"})
+		}, ["id"])
+		res.json({id: id[0], message: "Ticket inserted successfully!"})
 	}	
 	catch (err) {
 		console.error(`Error while creating ticket: ${err.message}`)

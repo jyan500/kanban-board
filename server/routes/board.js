@@ -185,11 +185,11 @@ router.delete("/:boardId/status/:statusId", validateBoardStatusDelete, handleVal
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
 		const body = {...req.body, organization_id: req.user.organization}
-		await db("boards").insert({
+		const id = await db("boards").insert({
 			name: body.name,
 			organization_id: body.organization_id
-		})
-		res.json({message: "Board inserted successfully!"})
+		},["id"])
+		res.json({id: id[0], message: "Board inserted successfully!"})
 	}	
 	catch (err) {
 		console.error(`Error while creating Board: ${err.message}`)

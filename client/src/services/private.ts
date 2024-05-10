@@ -2,10 +2,12 @@ import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/tool
 import { RootState } from "../store" 
 import { BACKEND_BASE_URL } from "../helpers/urls" 
 import { CustomError, Board, Ticket } from "../types/common" 
+import { TAG_TYPES } from "../helpers/constants" 
 
 // initialize an empty api service that we'll inject endpoints into later as needed
 export const privateApi = createApi({
 	reducerPath: "private",
+	tagTypes: TAG_TYPES,
 	baseQuery: fetchBaseQuery({
 		baseUrl: BACKEND_BASE_URL,
 		prepareHeaders: (headers, { getState }) => {
@@ -16,14 +18,5 @@ export const privateApi = createApi({
 	        return headers
 	    },
 	}) as BaseQueryFn<string | FetchArgs, unknown, CustomError, {}>,
-	tagTypes: [
-		"Boards", 
-		"BoardTickets", 
-		"Tickets", 
-		"Statuses", 
-		"BoardStatuses",
-		"TicketTypes",
-		"Priorities",
-	],
 	endpoints: () => ({}),
 })

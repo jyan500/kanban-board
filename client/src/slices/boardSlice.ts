@@ -2,7 +2,7 @@ import { createSlice, current } from "@reduxjs/toolkit"
 import { setupInitialBoard, prioritySort } from "../helpers/functions" 
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type { RootState } from "../store"
-import type { Cell, KanbanBoard, Priority, Status, Ticket } from "../types/common" 
+import type { Cell, Board, KanbanBoard, Priority, Status, Ticket } from "../types/common" 
 import { 
 	defaultPriorities, 
 	defaultRows, 
@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from "uuid"
 import { modalTypes } from "../components/Modal"
 
 interface BoardState {
+	boardInfo: Board | null 
 	board: KanbanBoard 
 	// numRows: number
 	// numCols: number
@@ -28,6 +29,7 @@ interface BoardState {
 
 const initialState: BoardState = {
 	// board: setupInitialBoard(defaultStatuses, defaultRows),
+	boardInfo: null,
 	board: {},
 	// numCols: 4,
 	// numRows: defaultRows,
@@ -45,6 +47,9 @@ export const boardSlice = createSlice({
 	name: "board",
 	initialState,
 	reducers: {
+		setBoardInfo(state, action:PayloadAction<Board>){
+			state.boardInfo = action.payload
+		},
 		setBoard(state, action: PayloadAction<KanbanBoard>){
 			state.board = action.payload
 		},
@@ -152,6 +157,7 @@ export const {
 	editTicket, 
 	selectCurrentTicketId, 
 	setBoard,
+	setBoardInfo,
 	setModalType, 
 	setModalProps,
 	setStatusesToDisplay,

@@ -23,3 +23,13 @@ export const defaultStatusesToDisplay = [
 ]
 
 export const defaultRows = 4
+
+export const TAG_TYPES = [
+	"Tickets",
+	"BoardTickets",
+	"Statuses",
+	"BoardStatuses",
+	"Boards",
+	"TicketTypes",
+	"Priorities"
+]

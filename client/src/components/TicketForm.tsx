@@ -4,6 +4,8 @@ import { addTicketToBoard, selectCurrentTicketId, editTicket, toggleShowModal } 
 import { useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import type { Status, Ticket, TicketType, Priority } from "../types/common"
+import { useAddBoardTicketsMutation } from "../services/private/board"
+import { useAddTicketMutation } from "../services/private/ticket"
 
 type FormValues = {
 	id?: number
@@ -19,7 +21,16 @@ export const TicketForm = () => {
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
-	const { currentTicketId, board, statusesToDisplay, tickets } = useAppSelector((state) => state.board)
+	const { 
+		showModal, 
+		currentTicketId, 
+		board, 
+		boardInfo, 
+		statusesToDisplay, 
+		tickets 
+	} = useAppSelector((state) => state.board)
+	const [ addTicket, {isLoading: isAddTicketLoading, error: isAddTicketError} ] = useAddTicketMutation() 
+	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
 	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
@@ -48,10 +59,29 @@ export const TicketForm = () => {
 		else {
 			reset(defaultForm)
 		}
-	}, [board.showModal, board.currentTicketId])
-    const onSubmit = async (values: FormValues) => {
+	}, [showModal, currentTicketId])
 
+    const onSubmit = async (values: FormValues) => {
+    	try {
+    		// update existing ticket
+    		if (values.id){
+    			console.log("update existing ticket")
+    		}
+    		// add new ticket
+    		else {
+		    	const data = await addTicket(values).unwrap()
+		    	if (boardInfo){
+			    	await addBoardTickets({boardId: boardInfo.id, ticketIds: [data.id]}).unwrap()
+		    	}
+    		}
+			dispatch(toggleShowModal(false))
+			dispatch(selectCurrentTicketId(null))
+    	}
+    	catch (e) { 
+
+    	}
     }
+
 	return (
 		<div className = "container">
 			<form onSubmit = {handleSubmit(onSubmit)}>

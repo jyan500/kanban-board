@@ -9,6 +9,24 @@ type BoardRequest = {
 	name: string
 }
 
+type BoardTicketRequest = {
+	boardId: number
+	ticketIds: Array<number>
+}
+
+type BoardTicketResponse = {
+	message: string
+}
+
+type BoardStatusRequest = {
+	boardId: number
+	statusIds: Array<number>
+}
+
+type BoardStatusResponse = {
+	message: string
+}
+
 export const boardApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
@@ -16,49 +34,72 @@ export const boardApi = privateApi.injectEndpoints({
 			query: () => ({
 				url: BOARD_URL,
 				method: "GET",
-				providesTags: ["Boards"]
-			})	
+			}),
+			providesTags: ["Boards"]
 		}),
 		getBoard: builder.query<Array<Board>, string>({
 			query: (id) => ({
 				url: `${BOARD_URL}/${id}`,
 				method: "GET",
-				providesTags: ["Boards"]
-			})
+			}),
+			providesTags: ["Boards"]
 		}),
 		createBoard: builder.mutation<void, BoardRequest>({
 			query: (board: BoardRequest) => ({
 				url: BOARD_URL,
 				method: "POST",
-				invalidatesTags: ["Boards"]
-			})
+			}),
+			invalidatesTags: ["Boards"]
 		}),
 		updateBoard: builder.mutation<void, BoardRequest>({
 			query: (board: BoardRequest) => ({
 				url: `${BOARD_URL}/${board.id}`,
 				method: "PUT",
-				invalidatesTags: ["Boards"]
-			})
+			}),
+			invalidatesTags: ["Boards"]
 		}),
 		deleteBoard: builder.mutation<void, number>({
 			query: (id) => ({
 				url: `${BOARD_URL}/${id}`,
 				method: "DELETE",
-				invalidatesTags: ["Boards"]
-			})
+			}),
+			invalidatesTags: ["Boards"]
 		}),
 		getBoardTickets: builder.query<Array<Ticket>, string>({
 			query: (id) => ({
 				url: BOARD_TICKET_URL(id),
-				method: "GET"
-			})
+				method: "GET",
+			}),
+			providesTags: ["BoardTickets"]
 		}),
 		getBoardStatuses: builder.query<Array<Status>, string>({
 			query: (id) => ({
 				url: BOARD_STATUS_URL(id),
-				method: "GET"
-			})
+				method: "GET",
+			}),
+			providesTags: ["BoardStatuses"],
+		}),
+		addBoardTickets: builder.mutation<BoardTicketResponse, BoardTicketRequest>({
+			query: ({boardId, ticketIds}) => ({
+				url: BOARD_TICKET_URL(boardId),
+				body: {
+					ticket_ids: ticketIds	
+				},
+				method: "POST",
+			}),
+			invalidatesTags: ["BoardTickets"]
+		}),
+		addBoardStatuses: builder.mutation<BoardStatusResponse, BoardStatusRequest>({
+			query: ({boardId, statusIds}) => ({
+				url: BOARD_STATUS_URL(boardId),
+				body: {
+					status_ids: statusIds
+				},
+				method: "POST",
+			}),
+			invalidatesTags: ["BoardStatuses"]
 		})
+
 	}),
 })
 
@@ -66,5 +107,7 @@ export const {
 	useGetBoardQuery, 
 	useGetBoardsQuery, 
 	useGetBoardTicketsQuery,
-	useGetBoardStatusesQuery
+	useGetBoardStatusesQuery,
+	useAddBoardTicketsMutation,
+	useAddBoardStatusesMutation,
 } = boardApi 
