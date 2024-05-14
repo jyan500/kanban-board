@@ -15,7 +15,7 @@ import { setPriorities } from "../slices/prioritySlice"
 const ProtectedLayout = () => {
 	const token = useAppSelector((state) => state.auth.token)	
 	const dispatch = useAppDispatch()
-    const {data: userProfileData, isFetching} = useGetUserProfileQuery() 
+    const {data: userProfileData, isFetching: isUserProfileFetching, isError: isUserProfileError } = useGetUserProfileQuery() 
     const {data: statusData} = useGetStatusesQuery()
     const {data: ticketTypesData} = useGetTicketTypesQuery()
     const {data: priorityData} = useGetPrioritiesQuery()
@@ -44,8 +44,8 @@ const ProtectedLayout = () => {
 	
 	return (
 		<div>
-			<SideBar isFetching={isFetching}/>
-			<TopNav isFetching={isFetching}/>
+			<SideBar isFetching={isUserProfileFetching}/>
+			<TopNav isFetching={isUserProfileFetching}/>
 			<Outlet/>
 		</div>
 	)
