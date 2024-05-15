@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import type { Status, Ticket, TicketType, Priority } from "../types/common"
 import { useAddBoardTicketsMutation } from "../services/private/board"
-import { useAddTicketMutation } from "../services/private/ticket"
+import { useAddTicketMutation, useUpdateTicketMutation } from "../services/private/ticket"
 
 type FormValues = {
 	id?: number
@@ -21,15 +21,17 @@ export const TicketForm = () => {
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
+	const { tickets } = useAppSelector((state) => state.ticket) 
 	const { 
 		showModal, 
 		currentTicketId, 
 		board, 
 		boardInfo, 
 		statusesToDisplay, 
-		tickets 
+		tickets: boardTickets 
 	} = useAppSelector((state) => state.board)
 	const [ addTicket, {isLoading: isAddTicketLoading, error: isAddTicketError} ] = useAddTicketMutation() 
+	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
 	const defaultForm: FormValues = {
 		id: undefined,
@@ -64,8 +66,8 @@ export const TicketForm = () => {
     const onSubmit = async (values: FormValues) => {
     	try {
     		// update existing ticket
-    		if (values.id){
-    			console.log("update existing ticket")
+    		if (values.id != null){
+    			await updateTicket({...values, id: values.id}).unwrap()
     		}
     		// add new ticket
     		else {

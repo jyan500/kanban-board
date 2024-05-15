@@ -1,6 +1,7 @@
 import { createStore } from "redux"
 import { configureStore } from "@reduxjs/toolkit" 
 import { boardReducer } from "./slices/boardSlice" 
+import { ticketReducer } from "./slices/ticketSlice" 
 import { navReducer }  from "./slices/navSlice"
 import { authReducer } from "./slices/authSlice" 
 import { organizationReducer } from "./slices/organizationSlice" 
@@ -40,6 +41,7 @@ export const store = configureStore({
 		"userProfile": userProfileReducer,
 		"status": statusReducer,
 		"ticketType": ticketTypeReducer,
+		"ticket": ticketReducer,
 		"priority": priorityReducer,
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {

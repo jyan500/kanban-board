@@ -17,6 +17,7 @@ type FormValues = {
 export const Login = () => {
 	const dispatch = useAppDispatch()
 	const location = useLocation()
+	console.log("location: ", location)
 	const navigate = useNavigate()
 	const [login, { isLoading, error }] = useLoginMutation()
 	const {data: orgData} = useGetOrganizationQuery()
@@ -56,7 +57,7 @@ export const Login = () => {
 			<form className = "form-container --fixed-width" onSubmit={handleSubmit(onSubmit)}>
 				<div><h1>Login</h1></div>
 				{error && "status" in error ? (error.data.errors?.map((errorMessage) => <p className = "--text-alert" key = {uuidv4()}>{errorMessage}</p>)) : null}
-				{location.state?.message ? <p>{location.state.message}</p> : null}
+				{location.state?.alert ? <p>{location.state.alert}</p> : null}
 				<div className = "form-row">
 					<div className = "form-cell">
 					    <label>

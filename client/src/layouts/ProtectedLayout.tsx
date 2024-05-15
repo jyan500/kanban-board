@@ -39,7 +39,7 @@ const ProtectedLayout = () => {
     }, [userProfileData, ticketTypesData, statusData, priorityData]);
 
 	if (!token){
-		return <Navigate replace to = {"/login"}/>
+		return <Navigate replace to = {"/login"} state={{alert: "You have been logged out"}}/>
 	}
 	
 	return (

@@ -24,7 +24,7 @@ interface BoardState {
 	currentTicketId: number | null
 	currentModalType: keyof typeof modalTypes
 	currentModalProps: Record<string, any>
-	tickets: Array<Ticket>
+	tickets: Array<number>
 }
 
 const initialState: BoardState = {
@@ -68,7 +68,7 @@ export const boardSlice = createSlice({
 		selectCurrentTicketId(state, action: PayloadAction<number | null>){
 			state.currentTicketId = action.payload
 		},
-		setTickets(state, action: PayloadAction<Array<Ticket>>){
+		setTickets(state, action: PayloadAction<Array<number>>){
 			state.tickets = action.payload
 		},
 		addTicketToBoard(state, action: PayloadAction<Ticket>){

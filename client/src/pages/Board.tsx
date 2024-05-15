@@ -6,39 +6,37 @@ import {
 	useGetBoardStatusesQuery } from "../services/private/board"
 import { Board as KanbanBoard } from "../components/Board" 
 import { KanbanBoard as KanbanBoardType } from "../types/common" 
-import { setBoard, setBoardInfo, setStatusesToDisplay, setTickets } from "../slices/boardSlice" 
+import { setBoard, setBoardInfo, setStatusesToDisplay, setTickets as setBoardTickets } from "../slices/boardSlice" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
 	const dispatch = useAppDispatch()
 	const {data: boardData} = useGetBoardQuery(params.boardId ?? "")
-	const {data: ticketData} = useGetBoardTicketsQuery(params.boardId ?? "")
+	const {data: boardTicketData} = useGetBoardTicketsQuery(params.boardId ?? "")
 	const {data: statusData} = useGetBoardStatusesQuery(params.boardId ?? "")
 	const board = useAppSelector((state) => state.board)
+	const { tickets } = useAppSelector((state) => state.ticket)
 
 	useEffect(() => {
-		console.log("has data been refetched?")
-		if (boardData?.length && statusData?.length && ticketData?.length){
+		if (boardData?.length && statusData?.length && boardTicketData?.length){
 			let board: KanbanBoardType = {}
+			let ids = boardTicketData.map((ticket) => ticket.id)
+			let boardTickets = tickets.filter((t) => ids.includes(t.id))
 			for (let i = 0; i < statusData.length; ++i){
-				board[statusData[i].id] = ticketData.filter((ticket) => ticket.statusId === statusData[i].id) 
+				// find the tickets that belong to the board
+				board[statusData[i].id] = boardTickets.filter((ticket) => ticket.statusId === statusData[i].id).map((ticket) => ticket.id) 
 			}
 			dispatch(setBoard(board))
 			dispatch(setBoardInfo(boardData[0]))
-			dispatch(setTickets(ticketData))
+			// get only the ids of the tickets and track the ids only
+			dispatch(setBoardTickets(ids))
 			dispatch(setStatusesToDisplay(statusData))
 		}
-	}, [boardData, statusData, ticketData])
+	}, [tickets, boardData, statusData, boardTicketData])
 
 	return (
 		<div>
-			{/*<p>Board: {boardData?.[0].name}</p>
-			<ul>
-				{ ticketData?.map((ticket) => <li>{ticket.name}</li>) }	
-			</ul>
-
-*/}		
 			<KanbanBoard
 			/>
 		</div>

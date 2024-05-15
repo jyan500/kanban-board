@@ -26,6 +26,7 @@ import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icon
 export const Board = () => {
 	const {board, statusesToDisplay} = useAppSelector((state) => state.board)
 	const { statuses: allStatuses } = useAppSelector((state) => state.status)
+	const {tickets} = useAppSelector((state) => state.ticket)
 	const dispatch = useAppDispatch()
 	const boardStyle = {
 		"display": "grid",	
@@ -47,19 +48,20 @@ export const Board = () => {
 								<button className = "--transparent" onClick={() => dispatch(sortByPriority({sortOrder: 0, statusId: status.id}))}><ArrowDown className = "icon"/></button>
 								*/}
 							</div>
-							{board[status.id]?.map((ticket: TicketType) => {
+							{board[status.id]?.map((ticketId: number) => {
+								const ticket = tickets.find((t) => t.id === ticketId)
 								return (
 									<div 
-										key = {ticket.id} 
+										key = {ticketId} 
 										onClick = {() => {
 											dispatch(toggleShowModal(true))
 											dispatch(setModalType("TICKET_FORM"))
-											dispatch(selectCurrentTicketId(ticket.id))
+											dispatch(selectCurrentTicketId(ticketId))
 										}}
 										className = "cell">
-										{<Ticket 
+										{ticket ? <Ticket 
 											ticket = {ticket}
-										/>}
+										/> : null}
 									</div>
 								)
 							})}

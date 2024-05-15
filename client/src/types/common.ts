@@ -52,7 +52,7 @@ export interface Cell {
 }
 
 export interface KanbanBoard {
-	[statusId: string]: Array<Ticket>
+	[statusId: string]: Array<number>
 }
 
 export interface Status {

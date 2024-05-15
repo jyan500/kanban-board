@@ -32,7 +32,7 @@ export const Register = () => {
 	const onSubmit = async (values: FormValues) => {
 		try {
 			const data = await userRegister(values).unwrap()
-    		navigate("/login", {state: {"message": "User registered successfully!"}})
+    		navigate("/login", {state: {"alert": "User registered successfully!"}})
 		}
 		catch (err) {
 			console.log(err)
