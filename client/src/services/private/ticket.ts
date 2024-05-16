@@ -35,7 +35,7 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Tickets"]
 		}),
-		updateTicket: builder.mutation<{id: number, message: string}, Omit<Ticket, "organizationId">>({
+		updateTicket: builder.mutation<{message: string}, Omit<Ticket, "organizationId">>({
 			query: (ticket) => ({
 				url: `${TICKET_URL}/${ticket.id}`,
 				method: "PUT",
@@ -49,6 +49,13 @@ export const ticketApi = privateApi.injectEndpoints({
 				}
 			}),
 			invalidatesTags: ["Tickets"]
+		}),
+		deleteTicket: builder.mutation<{message: string}, number>({
+			query: (ticketId) => ({
+				url: `${TICKET_URL}/${ticketId}`,
+				method: "DELETE",
+			}),
+			invalidatesTags: ["Tickets"]
 		})
 	}),
 })
@@ -57,5 +64,6 @@ export const {
 	useGetTicketQuery, 
 	useGetTicketsQuery, 
 	useAddTicketMutation, 
-	useUpdateTicketMutation 
+	useUpdateTicketMutation,
+	useDeleteTicketMutation,
 } = ticketApi 

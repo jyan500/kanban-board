@@ -9,5 +9,5 @@ export const BOARD_URL = `/${API_VERSION}/board`
 export const STATUS_URL = `/${API_VERSION}/status`
 export const TICKET_TYPE_URL = `/${API_VERSION}/ticket-type`
 export const PRIORITY_URL = `/${API_VERSION}/priority`
-export const BOARD_TICKET_URL = (boardId: number | string, ticketId = "") => `/${API_VERSION}/board/${boardId}/ticket/${ticketId}`
-export const BOARD_STATUS_URL = (boardId: number | string, statusId = "") => `/${API_VERSION}/board/${boardId}/status/${statusId}`
+export const BOARD_TICKET_URL = (boardId: number | string, ticketId: number | string) => `/${API_VERSION}/board/${boardId}/ticket` + (ticketId !== "" ? `/${ticketId}` : "")
+export const BOARD_STATUS_URL = (boardId: number | string, statusId: number | string) => `/${API_VERSION}/board/${boardId}/status` + (statusId !== "" ? `/${statusId}` : "")

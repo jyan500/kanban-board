@@ -4,8 +4,8 @@ import { addTicketToBoard, selectCurrentTicketId, editTicket, toggleShowModal } 
 import { useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import type { Status, Ticket, TicketType, Priority } from "../types/common"
-import { useAddBoardTicketsMutation } from "../services/private/board"
-import { useAddTicketMutation, useUpdateTicketMutation } from "../services/private/ticket"
+import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
+import { useAddTicketMutation, useDeleteTicketMutation, useUpdateTicketMutation } from "../services/private/ticket"
 
 type FormValues = {
 	id?: number
@@ -32,7 +32,9 @@ export const TicketForm = () => {
 	} = useAppSelector((state) => state.board)
 	const [ addTicket, {isLoading: isAddTicketLoading, error: isAddTicketError} ] = useAddTicketMutation() 
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
+	const [ deleteTicket, {isLoading: isDeleteTicketLoading, error: isDeleteTicketError} ] = useDeleteTicketMutation()
 	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
+	const [ deleteBoardTicket, {isLoading: isDeleteBoardTicketLoading, error: isDeleteBoardTicketError}] = useDeleteBoardTicketMutation()
 	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
@@ -84,6 +86,20 @@ export const TicketForm = () => {
     	}
     }
 
+    const onDelete = async () => {
+    	if (currentTicketId && boardInfo?.id){
+	    	try {
+		    	await deleteBoardTicket({boardId: boardInfo.id, ticketId: currentTicketId}).unwrap()
+		    	await deleteTicket(currentTicketId).unwrap()
+				dispatch(toggleShowModal(false))
+				dispatch(selectCurrentTicketId(null))
+	    	}
+	    	catch (e) {
+
+	    	}
+    	}
+    }
+
 	return (
 		<div className = "container">
 			<form onSubmit = {handleSubmit(onSubmit)}>
@@ -129,6 +145,13 @@ export const TicketForm = () => {
 					<div className = "btn-group">
 						<input type = "submit" className = "btn"/>
 					</div>
+					{
+						currentTicketId && boardInfo?.id ? (
+							<div className = "btn-group">
+								<button onClick={onDelete} className = "btn --alert">Delete</button>
+							</div>
+						) : null
+					}
 				</div>
 			</form>
 		</div>

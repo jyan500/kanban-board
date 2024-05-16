@@ -67,21 +67,21 @@ export const boardApi = privateApi.injectEndpoints({
 		}),
 		getBoardTickets: builder.query<Array<Ticket>, string>({
 			query: (id) => ({
-				url: BOARD_TICKET_URL(id),
+				url: BOARD_TICKET_URL(id, ""),
 				method: "GET",
 			}),
 			providesTags: ["BoardTickets"]
 		}),
 		getBoardStatuses: builder.query<Array<Status>, string>({
 			query: (id) => ({
-				url: BOARD_STATUS_URL(id),
+				url: BOARD_STATUS_URL(id, ""),
 				method: "GET",
 			}),
 			providesTags: ["BoardStatuses"],
 		}),
 		addBoardTickets: builder.mutation<BoardTicketResponse, BoardTicketRequest>({
 			query: ({boardId, ticketIds}) => ({
-				url: BOARD_TICKET_URL(boardId),
+				url: BOARD_TICKET_URL(boardId, ""),
 				body: {
 					ticket_ids: ticketIds	
 				},
@@ -91,15 +91,28 @@ export const boardApi = privateApi.injectEndpoints({
 		}),
 		addBoardStatuses: builder.mutation<BoardStatusResponse, BoardStatusRequest>({
 			query: ({boardId, statusIds}) => ({
-				url: BOARD_STATUS_URL(boardId),
+				url: BOARD_STATUS_URL(boardId, ""),
 				body: {
 					status_ids: statusIds
 				},
 				method: "POST",
 			}),
 			invalidatesTags: ["BoardStatuses"]
+		}),
+		deleteBoardTicket: builder.mutation<BoardTicketResponse, {boardId: number, ticketId: number}>({
+			query: ({boardId, ticketId}) => ({
+				url: BOARD_TICKET_URL(boardId, ticketId),
+				method: "DELETE"
+			}),
+			invalidatesTags: ["BoardTickets"]	
+		}),
+		deleteBoardStatus: builder.mutation<BoardStatusResponse, {boardId: number, statusId: number}>({
+			query: ({boardId, statusId}) => ({
+				url: BOARD_STATUS_URL(boardId, statusId),	
+				method: "DELETE"
+			}),
+			invalidatesTags: ["BoardStatuses"]
 		})
-
 	}),
 })
 
@@ -110,4 +123,6 @@ export const {
 	useGetBoardStatusesQuery,
 	useAddBoardTicketsMutation,
 	useAddBoardStatusesMutation,
+	useDeleteBoardTicketMutation,
+	useDeleteBoardStatusMutation,
 } = boardApi 
