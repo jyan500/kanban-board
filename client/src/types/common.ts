@@ -66,3 +66,9 @@ export interface CustomError {
 	data: Record<string, Array<string>>
 	status: number
 }
+
+export interface Toast {
+	id: string
+	message: string
+	type: "success" | "failure" | "warning"
+}

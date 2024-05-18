@@ -9,8 +9,9 @@ import { BoardDisplay } from "./pages/BoardDisplay"
 import { Board } from "./pages/Board" 
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
-import { useAppDispatch } from "./hooks/redux-hooks" 
+import { useAppSelector, useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
+import { ToastListWrapper } from "./components/ToastListWrapper" 
 
 function App() {
 	return (
@@ -33,6 +34,7 @@ function App() {
 					</Route>
 				</Route>
 			</Routes>
+			<ToastListWrapper/>
 		</div>
 	)
 }

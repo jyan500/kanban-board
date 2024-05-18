@@ -1,0 +1,32 @@
+.toast {
+	background-color: var(--bs-light-gray);
+	padding: var(--toast-padding);
+	border-radius: .5em;
+	position: relative;
+
+	.--success {
+		color: hsl(var(--toast-success-hue) 97% 3%);
+		background-color: hsl(var(--toast-success-hue) 98% 99%);
+	}
+
+	.--icon-thumb {
+		color: hsl(var(--toast-success-hue) 90% 40%);	
+	}
+
+	.--failure {
+		color: hsl(var(--toast-failure-hue) 97% 3%);
+		background-color: hsl(var(--toast-failure-hue) 98% 99%);
+	}
+
+	.--warning {
+		color: hsl(var(--toast-warning-hue) 97% 3%);
+		background-color: hsl(var(--toast-warning-hue) 98% 99%);
+	}
+}
+
+.toast-message {
+	display: flex;
+	gap: var(--toast-content-gap);
+	align-items: top;
+}
+
