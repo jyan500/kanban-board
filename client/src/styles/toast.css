@@ -1,8 +1,20 @@
 .toast {
-	background-color: var(--bs-light-gray);
+	background-color: var(--toast-bg-color-fallback);
 	padding: var(--toast-padding);
-	border-radius: .5em;
+	box-shadow: hsl(var(--secondary-hue) 10% 10% / 10%) 0px 1px 3px 0px,
+	hsl(var(--secondary-hue) 10% 10% / 5%) 0px 1px 2px 0px;
+	border-radius: 0.5em;
 	position: relative;
+	color: var(--toast-text-color-fallback);
+	opacity: var(--toast-opacity);
+}
+
+.toast:hover {
+  opacity: 1;
+}
+
+.toast + .toast {
+  margin-top: var(--toast-margin);
 }
 
 .--success {
@@ -10,7 +22,7 @@
 	background-color: hsl(var(--toast-success-hue) 98% 99%);
 }
 
-.--icon-thumb {
+.--success .--icon-thumb {
 	color: hsl(var(--toast-success-hue) 90% 40%);	
 }
 
@@ -19,9 +31,17 @@
 	background-color: hsl(var(--toast-failure-hue) 98% 99%);
 }
 
+.--failure .--icon-thumb {
+	color: hsl(var(--toast-failure-hue) 97% 3%);
+}
+
 .--warning {
 	color: hsl(var(--toast-warning-hue) 97% 3%);
 	background-color: hsl(var(--toast-warning-hue) 98% 99%);
+}
+
+.--warning .--icon-thumb {
+	color: hsl(var(--toast-warning-hue) 97% 3%);
 }
 
 .toast-message {

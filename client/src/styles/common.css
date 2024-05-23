@@ -24,6 +24,7 @@
 	--co-textfld-invalid-border: hsl(20 65% 75%);
 	--co-textfld-invalid-active-border: hsl(20 65% 65%);
 	--co-textfld-invalid-focus-border: hsl(20 65% 50%);
+	--secondary-hue: 25;
 	--toast-success-hue: 150;
 	--toast-failure-hue: 20;
 	--toast-warning-hue: 205;
@@ -35,6 +36,8 @@
 	--toast-list-scrollbar-width: .35em;
 	--toast-list-width: 400px;
 	--toast-list-padding: 1em;
+	--toast-bg-color-fallback: hsl(var(--secondary-hue) 15% 100%);
+  --toast-text-color-fallback: hsl(var(--secondary-hue) 10% 25%);
 	--margin-form-gap: 1.5em;
 	--margin-btn-gap: 1em;
 	--margin-label: 0.5em;

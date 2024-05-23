@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
-import { addTicketToBoard, selectCurrentTicketId, editTicket, toggleShowModal } from "../slices/boardSlice"
+import { selectCurrentTicketId, toggleShowModal } from "../slices/boardSlice"
 import { useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import type { Status, Ticket, TicketType, Priority } from "../types/common"

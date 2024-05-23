@@ -16,7 +16,7 @@ export const ToastListWrapper = () => {
 				dispatch(addToast({
 					id: uuidv4(),
 					message: "toast added successfully",
-					type: "success",
+					type: "warning",
 				}))
 			}>Add Toast</button>
 			<ToastList

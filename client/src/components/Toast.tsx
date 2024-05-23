@@ -4,6 +4,7 @@ import { IoMdClose } from "react-icons/io"
 import { IoIosCheckmarkCircle as SuccessIcon } from "react-icons/io"
 import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { FaCircleXmark as FailureIcon } from "react-icons/fa6"
+import { IconContext } from "react-icons"
 
 type Props = {
 	message: string
@@ -13,18 +14,26 @@ type Props = {
 
 export const Toast = ({message, type, onClose}: Props) => {
 	const iconMap: {[key: string]: ReactNode} = {
-		success: <SuccessIcon className="--l-icon"/>,
-		failure: <FailureIcon className="--l-icon"/>,
-		warning: <WarningIcon className="--l-icon"/>	
+		success: <SuccessIcon/>,
+		failure: <FailureIcon/>,
+		warning: <WarningIcon/>	
+	}
+	const colorMap: {[key: string]: string} = {
+		success: "var(--bs-success)",	
+		failure: "var(--bs-danger)",
+		warning: "var(--bs-warning)",
 	}
 	const toastIcon = iconMap[type] as ReactNode || null
+	const color = colorMap[type] as string
 	return (
 		<div className={`toast --${type}`} role="alert">
 			<div className="toast-message">
-				{toastIcon && (
-					<div className = "--icon-thumb">
-					{toastIcon}
-					</div>)}
+				<IconContext.Provider value = {{color: color, className: "--l-icon"}}>
+					{toastIcon && (
+						<div className = {`--icon-thumb`}>
+						{toastIcon}
+						</div>)}
+				</IconContext.Provider>
 				<p>{message}</p>	
 			</div>
 			<button 

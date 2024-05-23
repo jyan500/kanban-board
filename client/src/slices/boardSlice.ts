@@ -71,42 +71,6 @@ export const boardSlice = createSlice({
 		setTickets(state, action: PayloadAction<Array<number>>){
 			state.tickets = action.payload
 		},
-		addTicketToBoard(state, action: PayloadAction<Ticket>){
-			// const {
-			// 	board, statuses, statusesToDisplay, tickets
-			// } = state
-			// const status = statuses.find(status => status.id === action.payload.status.id)
-			// if (status){
-			// 	board[status.id].push(action.payload)	
-			// }
-			// tickets.push(action.payload)
-
-		},
-		editTicket(state, action: PayloadAction<Ticket>){
-			// const { board, statuses, statusesToDisplay } = state
-			// // edit the ticket within the tickets list
-			// let ticketIndex = state.tickets.findIndex((ticket) => action.payload.id === ticket.id)
-			// let originalTicket = state.tickets[ticketIndex]
-			// if (action.payload.status.id !== originalTicket.status.id){
-			// 	// find the column that the new status belongs to	
-			// 	const newStatus = statuses.find(status => status.id === action.payload.status.id)	
-			// 	if (newStatus){
-			// 		// add the ticket to the respective status column
-			// 		board[newStatus.id].push(action.payload)
-			// 		// remove the ticket from the column 
-			// 		let oldTicketIndex = board[originalTicket.status.id]?.findIndex((t: Ticket) => t.id === originalTicket.id)
-			// 		board[originalTicket.status.id]?.splice(oldTicketIndex, 1)
-			// 	}
-			// }
-			// else {
-			// 	// find the ticket within the board via its index and replace
-			// 	const ticketsForStatus = board[action.payload.status.id]
-			// 	const ticketToEditIndex = ticketsForStatus.findIndex((ticket) => ticket.id === action.payload.id)
-			// 	board[action.payload.status.id][ticketToEditIndex] = action.payload
-			// }
-			// state.tickets[ticketIndex] = action.payload
-
-		},
 		/*
 		Sort by columns,
 		1) either by all columns if no status Id is provided, OR 
@@ -152,9 +116,7 @@ export const boardSlice = createSlice({
 })
 
 export const { 
-	addTicketToBoard, 
 	deleteAllTickets, 
-	editTicket, 
 	selectCurrentTicketId, 
 	setBoard,
 	setBoardInfo,
