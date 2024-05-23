@@ -13,16 +13,16 @@ type Props = {
 
 export const Toast = ({message, type, onClose}: Props) => {
 	const iconMap: {[key: string]: ReactNode} = {
-		success: <SuccessIcon/>,
-		failure: <FailureIcon/>,
-		warning: <WarningIcon/>	
+		success: <SuccessIcon className="--l-icon"/>,
+		failure: <FailureIcon className="--l-icon"/>,
+		warning: <WarningIcon className="--l-icon"/>	
 	}
 	const toastIcon = iconMap[type] as ReactNode || null
 	return (
 		<div className={`toast --${type}`} role="alert">
 			<div className="toast-message">
 				{toastIcon && (
-					<div className = "icon --icon-thumb">
+					<div className = "--icon-thumb">
 					{toastIcon}
 					</div>)}
 				<p>{message}</p>	

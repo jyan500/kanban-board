@@ -23,7 +23,7 @@ export const ToastList = ({data, position, removeToast}: Props) => {
 	const sortedData = position.includes("bottom") ? [...data].reverse() : [...data]
 
 	return (
-		<div ref = {listRef} className={`toast-list toast-list --${position}`} aria-live="assertive">
+		<div ref = {listRef} className={`toast-list --${position}`} aria-live="assertive">
 			{sortedData.map((toast: ToastType) => (
 				<Toast
 					key={toast.id}
