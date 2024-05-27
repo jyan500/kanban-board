@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { ToastList } from "./ToastList" 
-import { addToast, setToasts } from "../slices/toastSlice" 
+import { addToast, removeToast as removeToastAction } from "../slices/toastSlice" 
+import { Toast as ToastType } from "../types/common"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
 import { v4 as uuidv4 } from "uuid"
+import { addToast as addToastHelper } from "../helpers/functions" 
 
 export const ToastListWrapper = () => {
 	const { toasts } = useAppSelector((state) => state.toast)
 	const dispatch = useAppDispatch()
 	const removeToast = (id: string) => {
-		dispatch(setToasts(toasts.filter((t) => t.id !== id)))
+		dispatch(removeToastAction(id))
 	}
 	return (
 		<div>
 			<button onClick={(e) => 
-				dispatch(addToast({
-					id: uuidv4(),
-					message: "toast added successfully",
-					type: "warning",
-				}))
+				addToastHelper({
+					id: uuidv4(),	
+					message: "toast added successfully!",
+					type: "failure"
+				}, dispatch, addToast, removeToastAction)
 			}>Add Toast</button>
 			<ToastList
 				data={toasts}

@@ -5,36 +5,34 @@ import type { Toast } from "../types/common"
 
 type ToastState = {
     toasts: Array<Toast>
-    autoClose: number
 }
 
 const initialState: ToastState = {
     toasts: [],
-    autoClose: 5000
 }
 
 const toastSlice = createSlice({
   name: 'toast',
   initialState,
   reducers: {
-    setToasts: (
-      state,
-      action: PayloadAction<Array<Toast>>,
-    ) => {
-    	state.toasts = action.payload
-    },
     addToast: (
-        state,
-        action: PayloadAction<Toast>,
+      state,
+      action: PayloadAction<Toast>,
     ) => {
-        state.toasts.push(action.payload) 
-        // setTimeout(() => {
-        //     state.toasts.unshift()
-        // }, state.autoClose)
+    	state.toasts.push(action.payload)
+    },
+    removeToast: (
+        state,
+        action: PayloadAction<string>,
+    ) => {
+        const index = state.toasts.findIndex((toast: Toast) => toast.id === action.payload)
+        if (index >= 0){
+            state.toasts.splice(index, 1)
+        }
     }
   },
 })
 
-export const { setToasts, addToast } = toastSlice.actions
+export const { addToast, removeToast } = toastSlice.actions
 
 export const toastReducer = toastSlice.reducer

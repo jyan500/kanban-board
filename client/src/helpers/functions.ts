@@ -1,5 +1,6 @@
-import type { KanbanBoard, Cell, Status, Ticket } from "../types/common"
+import type { KanbanBoard, Cell, Status, Toast, Ticket } from "../types/common"
 import { v4 as uuidv4 } from "uuid"
+import { AppDispatch } from "../store"
 /* 
 New Design:
 Map each status id to an array, which represents all tickets for this column
@@ -58,6 +59,20 @@ export const doTicketsContainStatus = (statusId: string, tickets: Array<Ticket>)
  */
 export const parseErrorResponse = (err: Record<string, any>): Array<string> => {
 	return Object.values(err).map((e) => e[0])
+}
+
+export const addToast = (
+	toast: Toast, 
+	dispatch: Function,
+	addFunc: (t: Toast) => void, 
+	delFunc: (tId: string) => void, 
+	autoClose = false,
+	autoCloseTime = 3000
+) => {
+	dispatch(addFunc(toast))
+	setTimeout(() => {
+		dispatch(delFunc(toast.id))
+	}, autoCloseTime)
 }
 
 

@@ -58,7 +58,7 @@ export const SideBar = ({isFetching}: Props) => {
 							// <li key = {link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`} >
 							// 	<Link to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>{link.text}</Link>
 							// </li>
-							<Link onClick={(e) => dispatch(toggleSideBar(false))} to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>
+							<Link key={link.pathname} onClick={(e) => dispatch(toggleSideBar(false))} to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>
 								{link.text}
 							</Link>
 						)

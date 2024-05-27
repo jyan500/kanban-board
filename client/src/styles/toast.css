@@ -9,10 +9,6 @@
 	opacity: var(--toast-opacity);
 }
 
-.toast:hover {
-  opacity: 1;
-}
-
 .toast + .toast {
   margin-top: var(--toast-margin);
 }
