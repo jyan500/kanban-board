@@ -10,6 +10,7 @@
 .--top-left {
 	top: 0;
 	left: 0;
+
 }
 
 .--top-right {
@@ -25,35 +26,6 @@
 .--bottom-right {
 	bottom: 0;
 	right: 0;
-}
-
-@keyframes toast-in-right {
-	from {
-		transform: translateX(100%);
-	}
-	to {
-		transform: translateX(0);
-	}
-}
-
-@keyframes toast-in-left {
-	from {
-		transform: translateX(-100%);
-	}
-	to {
-		transform: translateX(0);
-	}
-}
-
-/* apply animation for the toast element */
-.--top-left .toast,
-.--bottom-left .toast {
-	animation: toast-in-left var(--toast-speed);	
-}
-
-.--top-right .toast,
-.--bottom-right .toast {
-	animation: toast-in-right var(--toast-speed);
 }
 
 /* apply the transition properties to the toast elements within the toast list */

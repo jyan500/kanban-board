@@ -47,3 +47,39 @@
 	gap: var(--toast-content-gap);
 }
 
+@keyframes toast-in-right {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+@keyframes toast-in-left {
+	from {
+		transform: translateX(-100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+@keyframes toast-out-right {
+	from {
+		transform: translateX(0);	
+	}
+	to {
+		transform: translateX(100%);
+	}
+}
+
+@keyframes toast-out-left {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-100%);
+	}
+}
+

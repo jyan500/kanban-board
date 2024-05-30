@@ -66,13 +66,15 @@ export const addToast = (
 	dispatch: Function,
 	addFunc: (t: Toast) => void, 
 	delFunc: (tId: string) => void, 
-	autoClose = false,
+	autoClose = true,
 	autoCloseTime = 3000
 ) => {
 	dispatch(addFunc(toast))
-	setTimeout(() => {
-		dispatch(delFunc(toast.id))
-	}, autoCloseTime)
+	if (autoClose){
+		setTimeout(() => {
+			dispatch(delFunc(toast.id))
+		}, autoCloseTime)
+	}
 }
 
 

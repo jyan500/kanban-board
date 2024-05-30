@@ -8,23 +8,43 @@ import { addToast as addToastHelper } from "../helpers/functions"
 
 export const ToastListWrapper = () => {
 	const { toasts } = useAppSelector((state) => state.toast)
+	const [animationType, setAnimationType] = useState<string>("animation-in")
+	const [toastId, setToastId] = useState<string>()
 	const dispatch = useAppDispatch()
 	const removeToast = (id: string) => {
-		dispatch(removeToastAction(id))
+		setAnimationType("animation-out")
+		setToastId(id)
 	}
+
+	const animateInHandler = () => {
+	}
+
+	const animateOutHandler = () => {
+		if (toastId){
+			dispatch(removeToastAction(toastId))
+		}
+		setAnimationType("animation-in")
+	}
+
 	return (
 		<div>
-			<button onClick={(e) => 
+			<button onClick={(e) => {
+				setAnimationType("animation-in")
+				const id = uuidv4()
+				setToastId(id)
 				addToastHelper({
-					id: uuidv4(),	
+					id: id,	
 					message: "toast added successfully!",
 					type: "failure"
-				}, dispatch, addToast, removeToastAction)
+				}, dispatch, addToast, removeToastAction, false)}
 			}>Add Toast</button>
 			<ToastList
 				data={toasts}
+				toastId={toastId}
 				position={"bottom-right"}
 				removeToast={removeToast}
+				animationType={animationType}
+				animationHandler={animationType === "animation-in" ? animateInHandler : animateOutHandler}
 			/>
 		</div>
 	)

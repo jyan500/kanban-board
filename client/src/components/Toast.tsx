@@ -7,12 +7,14 @@ import { FaCircleXmark as FailureIcon } from "react-icons/fa6"
 import { IconContext } from "react-icons"
 
 type Props = {
+	id: string
 	message: string
 	type: string
 	onClose: () => void
+	animationStyle: Record<string, any>
 }
 
-export const Toast = ({message, type, onClose}: Props) => {
+export const Toast = ({id, message, type, onClose, animationStyle}: Props) => {
 	const iconMap: {[key: string]: ReactNode} = {
 		success: <SuccessIcon/>,
 		failure: <FailureIcon/>,
@@ -26,7 +28,7 @@ export const Toast = ({message, type, onClose}: Props) => {
 	const toastIcon = iconMap[type] as ReactNode || null
 	const color = colorMap[type] as string
 	return (
-		<div className={`toast --${type}`} role="alert">
+		<div id = {id} style = {animationStyle} className={`toast --${type}`} role="alert">
 			<div className="toast-message">
 				<IconContext.Provider value = {{color: color, className: "--l-icon"}}>
 					{toastIcon && (

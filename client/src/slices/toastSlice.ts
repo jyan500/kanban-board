@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, current } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
 import type { Toast } from "../types/common"
@@ -25,7 +25,10 @@ const toastSlice = createSlice({
         state,
         action: PayloadAction<string>,
     ) => {
+        console.log(action.payload)
         const index = state.toasts.findIndex((toast: Toast) => toast.id === action.payload)
+        console.log(current(state.toasts))
+        console.log(index)
         if (index >= 0){
             state.toasts.splice(index, 1)
         }
