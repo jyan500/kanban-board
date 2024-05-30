@@ -12,6 +12,7 @@ export const ToastListWrapper = () => {
 	const [toastId, setToastId] = useState<string>()
 	const dispatch = useAppDispatch()
 	const removeToast = (id: string) => {
+		// animate the removal of the toast from the list
 		setAnimationType("animation-out")
 		setToastId(id)
 	}
@@ -20,6 +21,8 @@ export const ToastListWrapper = () => {
 	}
 
 	const animateOutHandler = () => {
+		// once the animation for the removal of the toast is finished,
+		// remove the toast element from the list
 		if (toastId){
 			dispatch(removeToastAction(toastId))
 		}
