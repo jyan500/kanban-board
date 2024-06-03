@@ -12,9 +12,10 @@ type Props = {
 	type: string
 	onClose: () => void
 	animationStyle: Record<string, any>
+	animationHandler: (id: string) => void
 }
 
-export const Toast = ({id, message, type, onClose, animationStyle}: Props) => {
+export const Toast = ({id, message, type, onClose, animationStyle, animationHandler}: Props) => {
 	const iconMap: {[key: string]: ReactNode} = {
 		success: <SuccessIcon/>,
 		failure: <FailureIcon/>,
@@ -28,7 +29,10 @@ export const Toast = ({id, message, type, onClose, animationStyle}: Props) => {
 	const toastIcon = iconMap[type] as ReactNode || null
 	const color = colorMap[type] as string
 	return (
-		<div id = {id} style = {animationStyle} className={`toast --${type}`} role="alert">
+		<div id = {id} 
+			onAnimationEnd={(e) => animationHandler(id)}
+			style = {animationStyle} 
+			className={`toast --${type}`} role="alert">
 			<div className="toast-message">
 				<IconContext.Provider value = {{color: color, className: "--l-icon"}}>
 					{toastIcon && (

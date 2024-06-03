@@ -61,23 +61,6 @@ export const parseErrorResponse = (err: Record<string, any>): Array<string> => {
 	return Object.values(err).map((e) => e[0])
 }
 
-export const addToast = (
-	toast: Toast, 
-	dispatch: Function,
-	addFunc: (t: Toast) => void, 
-	delFunc: (tId: string) => void, 
-	autoClose = true,
-	autoCloseTime = 3000
-) => {
-	dispatch(addFunc(toast))
-	if (autoClose){
-		setTimeout(() => {
-			dispatch(delFunc(toast.id))
-		}, autoCloseTime)
-	}
-}
-
-
 
 
 

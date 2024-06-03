@@ -2,18 +2,18 @@ import React, { useRef, useEffect } from "react"
 import { Toast } from "./Toast"
 import { Toast as ToastType } from "../types/common" 
 import "../styles/toast-list.css"
+import { useAppDispatch } from "../hooks/redux-hooks" 
+import { removeToast as removeToastAction } from "../slices/toastSlice"
 
 type Props = {
 	data: Array<ToastType>
 	position: string
 	removeToast: (id: string) => void
-	animationType: string
-	animationHandler: Function
-	toastId?: string
 }
 
-export const ToastList = ({data, toastId, position, removeToast, animationType, animationHandler}: Props) => {
+export const ToastList = ({data, position, removeToast}: Props) => {
 	const listRef = useRef<HTMLDivElement | null>(null)
+	const dispatch = useAppDispatch()
 	useEffect(() => {
 		handleScrolling(listRef.current)
 	}, [position, data])
@@ -23,19 +23,26 @@ export const ToastList = ({data, toastId, position, removeToast, animationType, 
 		isTopPosition ? el?.scrollTo(0, el.scrollHeight) : el?.scrollTo(0, 0)
 	}
 
+	const animationHandler = (id: string) => {
+		const toast = data.find((toast) => toast.id === id)
+		if (toast && toast.animationType === "animation-out"){
+			dispatch(removeToastAction(id))
+		}
+	}
+
 	const sortedData = position.includes("bottom") ? [...data].reverse() : [...data]
 
 	return (
 		<div 
-			onAnimationEnd={(e) => animationHandler()}
 			ref = {listRef} className={`toast-list --${position}`} aria-live="assertive">
 			{sortedData.map((toast: ToastType) => (
 				<Toast
 					key={toast.id}
+					animationHandler={animationHandler}
 					animationStyle={
-						toastId && toastId === toast.id ? {
-							"animation": `${animationType === "animation-in" ? "toast-in-right" : "toast-out-right"} var(--toast-speed)`} 
-						: {}
+						{
+							"animation": `${toast.animationType === "animation-in" ? "toast-in-right" : "toast-out-right"} var(--toast-speed)` 
+						}
 					}
 					id={toast.id}
 					message={toast.message}

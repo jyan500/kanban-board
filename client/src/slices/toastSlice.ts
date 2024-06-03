@@ -21,14 +21,18 @@ const toastSlice = createSlice({
     ) => {
     	state.toasts.push(action.payload)
     },
+    updateToast: (state, action: PayloadAction<{toast: Toast, toastId: string}>) => {
+        const { toastId, toast } = action.payload
+        const index = state.toasts.findIndex((toast: Toast) => toast.id === toastId)
+        if (index >= 0){
+            state.toasts.splice(index, 1, toast)
+        }
+    },
     removeToast: (
         state,
         action: PayloadAction<string>,
     ) => {
-        console.log(action.payload)
         const index = state.toasts.findIndex((toast: Toast) => toast.id === action.payload)
-        console.log(current(state.toasts))
-        console.log(index)
         if (index >= 0){
             state.toasts.splice(index, 1)
         }
@@ -36,6 +40,10 @@ const toastSlice = createSlice({
   },
 })
 
-export const { addToast, removeToast } = toastSlice.actions
+export const { 
+    addToast, 
+    removeToast, 
+    updateToast, 
+} = toastSlice.actions
 
 export const toastReducer = toastSlice.reducer

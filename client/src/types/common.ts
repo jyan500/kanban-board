@@ -71,4 +71,5 @@ export interface Toast {
 	id: string
 	message: string
 	type: "success" | "failure" | "warning"
+	animationType: string
 }
