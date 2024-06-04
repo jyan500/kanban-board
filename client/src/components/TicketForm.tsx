@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid"
 import type { Status, Ticket, TicketType, Priority } from "../types/common"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
 import { useAddTicketMutation, useDeleteTicketMutation, useUpdateTicketMutation } from "../services/private/ticket"
+import { addToast } from "../slices/toastSlice" 
 
 type FormValues = {
 	id?: number
@@ -80,9 +81,20 @@ export const TicketForm = () => {
     		}
 			dispatch(toggleShowModal(false))
 			dispatch(selectCurrentTicketId(null))
+    		dispatch(addToast({
+    			id: uuidv4(),
+    			type: "success",
+    			animationType: "animation-in",
+    			message: `Ticket ${values.id != null ? "updated" : "added"} successfully!`,
+    		}))
     	}
     	catch (e) { 
-
+    		dispatch(addToast({
+    			id: uuidv4(),
+    			type: "failure",
+    			animationType: "animation-in",
+    			message: "Failed to submit ticket",
+    		}))
     	}
     }
 
@@ -93,16 +105,27 @@ export const TicketForm = () => {
 		    	await deleteTicket(currentTicketId).unwrap()
 				dispatch(toggleShowModal(false))
 				dispatch(selectCurrentTicketId(null))
+	    		dispatch(addToast({
+	    			id: uuidv4(),
+	    			type: "success",
+	    			animationType: "animation-in",
+	    			message: "Ticket deleted successfully!",
+	    		}))
 	    	}
 	    	catch (e) {
-
+	    		dispatch(addToast({
+	    			id: uuidv4(),
+	    			type: "failure",
+	    			animationType: "animation-in",
+	    			message: "Failed to delete ticket",
+	    		}))
 	    	}
     	}
     }
 
 	return (
 		<div className = "container">
-			<form onSubmit = {handleSubmit(onSubmit)}>
+			<form>
 				<div className = "form-row">
 					<div className = "form-cell">
 						<label>Name</label>
@@ -143,12 +166,17 @@ export const TicketForm = () => {
 				</div>
 				<div className = "form-row">
 					<div className = "btn-group">
-						<input type = "submit" className = "btn"/>
+						<button onClick={handleSubmit(onSubmit)} className = "btn">Submit</button>
 					</div>
 					{
 						currentTicketId && boardInfo?.id ? (
 							<div className = "btn-group">
-								<button onClick={onDelete} className = "btn --alert">Delete</button>
+								<button onClick={
+									(e) => {
+										e.preventDefault()
+										onDelete()
+									}
+								} className = "btn --alert">Delete</button>
 							</div>
 						) : null
 					}

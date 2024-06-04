@@ -8,6 +8,7 @@ import { logout } from "../slices/authSlice"
 import { CustomError } from "../types/common"
 import { BACKEND_BASE_URL } from "../helpers/urls" 
 import { RootState } from "../store" 
+import { v4 as uuidv4 } from "uuid" 
 
 export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, {}>
  =
@@ -21,9 +22,11 @@ async (args, api, extraOptions) => {
 	        }
 	        return headers
 	    }})(args, api, extraOptions)	
-	if (result.error && result.error.status === 403) {
-		// TODO: implement refresh token
-		api.dispatch(logout())
+	if (result.error){
+		if (result.error.status === 403) {
+			// TODO: implement refresh token
+			api.dispatch(logout())
+		}
 	}
 	return result
 }

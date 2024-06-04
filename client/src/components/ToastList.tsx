@@ -30,6 +30,19 @@ export const ToastList = ({data, position, removeToast}: Props) => {
 		}
 	}
 
+	const animationStyle = (toast: ToastType) => {
+		if (position === "bottom-right" || position === "top-right"){
+			return {
+				"animation": `${toast.animationType === "animation-in" ? "toast-in-right" : "toast-out-right"} var(--toast-speed)` 
+			}
+		}
+		else {
+			return {
+				"animation": `${toast.animationType === "animation-in" ? "toast-in-left" : "toast-out-left"} var(--toast-speed)` 
+			}
+		}
+	}
+
 	const sortedData = position.includes("bottom") ? [...data].reverse() : [...data]
 
 	return (
@@ -39,11 +52,7 @@ export const ToastList = ({data, position, removeToast}: Props) => {
 				<Toast
 					key={toast.id}
 					animationHandler={animationHandler}
-					animationStyle={
-						{
-							"animation": `${toast.animationType === "animation-in" ? "toast-in-right" : "toast-out-right"} var(--toast-speed)` 
-						}
-					}
+					animationStyle={animationStyle(toast)}
 					id={toast.id}
 					message={toast.message}
 					type={toast.type}

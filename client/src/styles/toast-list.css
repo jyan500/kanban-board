@@ -5,6 +5,7 @@
 	max-width: var(--toast-list-width);
 	max-height: 100vh;
 	overflow: hidden auto;
+	z-index:999;
 }
 
 .--top-left {
