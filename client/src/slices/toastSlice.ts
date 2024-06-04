@@ -5,10 +5,12 @@ import type { Toast } from "../types/common"
 
 type ToastState = {
     toasts: Array<Toast>
+    position: string
 }
 
 const initialState: ToastState = {
     toasts: [],
+    position: "bottom-right"
 }
 
 const toastSlice = createSlice({

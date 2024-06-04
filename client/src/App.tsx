@@ -11,7 +11,7 @@ import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
 import { useAppSelector, useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
-import { ToastListWrapper } from "./components/ToastListWrapper" 
+import { ToastList } from "./components/ToastList" 
 
 function App() {
 	return (
@@ -34,7 +34,7 @@ function App() {
 					</Route>
 				</Route>
 			</Routes>
-			<ToastListWrapper/>
+			<ToastList/>
 		</div>
 	)
 }
