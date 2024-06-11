@@ -78,7 +78,7 @@ export const boardSlice = createSlice({
 		Within each column, specify 1 to sort by highest to lowest priority
 		or 0 for lowest to highest priority
 		*/
-		sortByPriority(state, action: PayloadAction<{statusId?: string, sortOrder: number}>){
+		sortByPriority(state, action: PayloadAction<{statusId?: number, sortOrder: number}>){
 			// const { board, statuses, statusesToDisplay } = state
 			// const status = statuses.find(status => status.id === action.payload.statusId)
 			// if (status){

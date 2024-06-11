@@ -1,13 +1,13 @@
 .searchbar {
 	position: relative;
+
+	& .--icon-shift {
+		padding-left: 40px;
+	}
 }
 
 .searchbar--icon {
 	position: absolute;
 	top: 10px;
 	left: 10px;
-}
-
-.searchbar > input {
-	padding-left: 40px;
 }

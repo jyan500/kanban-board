@@ -10,6 +10,7 @@ import { userProfileReducer }  from "./slices/userProfileSlice"
 import { ticketTypeReducer } from "./slices/ticketTypeSlice" 
 import { priorityReducer } from "./slices/prioritySlice" 
 import { statusReducer } from "./slices/statusSlice" 
+import { modalReducer } from "./slices/modalSlice" 
 import { publicApi } from "./services/public"
 import { privateApi } from "./services/private"
 import {
@@ -45,6 +46,7 @@ export const store = configureStore({
 		"ticket": ticketReducer,
 		"priority": priorityReducer,
 		"toast": toastReducer,
+		"modal": modalReducer
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]

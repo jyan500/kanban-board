@@ -2,12 +2,14 @@ import React from "react"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
 import { 
 	deleteAllTickets, 
-	toggleShowModal, 
-	setModalType, 
-	setModalProps, 
 	sortByPriority, 
 	selectCurrentTicketId 
 } from "../slices/boardSlice"
+import {
+	toggleShowModal, 
+	setModalType, 
+	setModalProps, 
+} from '../slices/modalSlice'
 import { Ticket } from "./Ticket"
 import "../styles/board.css"
 import { ToolBar } from "./ToolBar" 
@@ -42,11 +44,9 @@ export const Board = () => {
 					return (<div key = {status.id} className = "grid-col">
 						<div>
 							<div className = "grid-col-header">
-								{/*
-								<button className = "--transparent" onClick={() => dispatch(sortByPriority({sortOrder: 1, statusId: status.id}))}><ArrowUp className = "icon"/></button>
-								<p>{board.statuses.find((s: Status) => s.id === status.id)?.name}</p>
-								<button className = "--transparent" onClick={() => dispatch(sortByPriority({sortOrder: 0, statusId: status.id}))}><ArrowDown className = "icon"/></button>
-								*/}
+								<button className = "--transparent" onClick={() => console.log("priority sort")/*dispatch(sortByPriority({sortOrder: 1, statusId: status.id}))*/}><ArrowUp className = "icon"/></button>
+								<p>{allStatuses.find((s: Status) => s.id === status.id)?.name}</p>
+								<button className = "--transparent" onClick={() => console.log("priority sort")/*dispatch(sortByPriority({sortOrder: 0, statusId: status.id}))*/}><ArrowDown className = "icon"/></button>
 							</div>
 							{board[status.id]?.map((ticketId: number) => {
 								const ticket = tickets.find((t) => t.id === ticketId)

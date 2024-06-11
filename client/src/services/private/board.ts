@@ -1,6 +1,12 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../../store" 
-import { BACKEND_BASE_URL, BOARD_URL, BOARD_TICKET_URL, BOARD_STATUS_URL } from "../../helpers/urls" 
+import { 
+	BACKEND_BASE_URL, 
+	BOARD_URL, 
+	BOARD_TICKET_URL, 
+	BOARD_STATUS_URL, 
+	BOARD_BULK_EDIT_STATUS_URL 
+} from "../../helpers/urls" 
 import { CustomError, Board, Status, Ticket } from "../../types/common" 
 import { privateApi } from "../private"
 
@@ -99,6 +105,16 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["BoardStatuses"]
 		}),
+		bulkEditBoardStatuses: builder.mutation<BoardStatusResponse, BoardStatusRequest>({
+			query: ({boardId, statusIds}) => ({
+				url: BOARD_BULK_EDIT_STATUS_URL(boardId),
+				body: {
+					status_ids: statusIds
+				},
+				method: "POST"
+			}),
+			invalidatesTags: ["BoardStatuses"]
+		}),
 		deleteBoardTicket: builder.mutation<BoardTicketResponse, {boardId: number, ticketId: number}>({
 			query: ({boardId, ticketId}) => ({
 				url: BOARD_TICKET_URL(boardId, ticketId),
@@ -125,4 +141,5 @@ export const {
 	useAddBoardStatusesMutation,
 	useDeleteBoardTicketMutation,
 	useDeleteBoardStatusMutation,
+	useBulkEditBoardStatusesMutation,
 } = boardApi 

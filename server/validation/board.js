@@ -64,7 +64,7 @@ const boardStatusValidator = (actionType) => {
 			param("statusId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value, "statuses"))
 		]
 	}
-	else if (actionType === "create") {
+	else if (actionType === "create" || actionType === "bulk-edit") {
 		validationRules = [
 			...validationRules,
 			body("status_ids").isArray({ min: 0, max: BULK_INSERT_LIMIT })
@@ -72,16 +72,23 @@ const boardStatusValidator = (actionType) => {
 			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
 			body("status_ids.*")
 			.custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value, "statuses"))
-			.custom(async (value, {req}) => await checkUniqueEntity("status", value, [{
-				"col": "status_id",
-				"value": value,
-			},
-			{
-				"col": "board_id",	
-				"value": req.params.boardId
-			}
-			], "boards_to_statuses"))
+
+			
 		]
+		if (actionType === "create"){
+			validationRules = [
+				...validationRules,
+				body("status_ids.*").custom(async (value, {req}) => await checkUniqueEntity("status", value, [{
+					"col": "status_id",
+					"value": value,
+				},
+				{
+					"col": "board_id",	
+					"value": req.params.boardId
+				}
+				], "boards_to_statuses"))
+			]
+		}
 	}
 	return validationRules
 }
@@ -97,4 +104,5 @@ module.exports = {
 	validateBoardStatusGet: boardStatusValidator("get"),
 	validateBoardStatusCreate: boardStatusValidator("create"),
 	validateBoardStatusDelete: boardStatusValidator("delete"),
+	validateBoardStatusBulkEdit: boardStatusValidator("bulk-edit"),
 }

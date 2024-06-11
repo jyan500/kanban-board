@@ -11,6 +11,7 @@ const {
 	validateBoardStatusGet,
 	validateBoardStatusCreate,
 	validateBoardStatusDelete,
+	validateBoardStatusBulkEdit,
 }  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
@@ -160,11 +161,26 @@ router.post("/:boardId/status", validateBoardStatusCreate, handleValidationResul
 		const statusIds = req.body.status_ids
 		const boardId = req.params.boardId
 		await db("boards_to_statuses").insert(statusIds.map((statusId) => ({status_id: statusId, board_id: boardId})))
-		res.json({message: "tickets inserted into board successfully!"})
+		res.json({message: "statuses inserted into board successfully!"})
 	}
 	catch (err) {
 		console.log(`Error while inserting statuses: ${err.message}`)
 		next(err)
+	}
+})
+
+router.post("/:boardId/status/bulk-edit", validateBoardStatusBulkEdit, handleValidationResult, async (req, res, next) => {
+	try {
+		const statusIds = req.body.status_ids
+		const boardId = req.params.boardId
+		// delete all status ids attached to this board and then re-insert
+		const toInsert = statusIds.map((id) => ({board_id: boardId, status_id: id}))
+		await db("boards_to_statuses").where("board_id", boardId).delete()
+		await db("boards_to_statuses").insert(toInsert)
+		res.json({message: "statuses bulk edited successfully"})
+	}	
+	catch (err) {
+
 	}
 })
 

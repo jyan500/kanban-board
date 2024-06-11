@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
 import type { Status } from "../types/common" 
 import "../styles/status-form.css"
-import { updateStatuses, updateStatusesToDisplay, toggleShowModal } from "../slices/boardSlice" 
+import { updateStatuses, updateStatusesToDisplay } from "../slices/boardSlice" 
+import { addToast } from "../slices/toastSlice" 
+import { useBulkEditBoardStatusesMutation } from "../services/private/board" 
+import { toggleShowModal } from "../slices/modalSlice"
 import { doTicketsContainStatus, sortStatusByOrder } from "../helpers/functions" 
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineArrowBackIosNew as ArrowBackward } from "react-icons/md"
@@ -11,23 +14,19 @@ import { v4 as uuidv4 } from "uuid"
 
 // change visible statuses
 // add custom statuses
-type FormType = {
-	statuses: Array<Status>
-	statusesToDisplay: Array<String>
-}
 export const StatusForm = () => {
-	// const dispatch = useAppDispatch()
-	// const board = useAppSelector((state) => state.board)
-	// const defaultForm = {
-	// 	"statuses": [...board.statuses],	
-	// 	"statusesToDisplay": [...board.statusesToDisplay]
-	// }
-	// const [form, setForm] = useState<FormType>(defaultForm)
-	// const [selectedStatusId, setSelectedStatusId] = useState<string | null>(null)
+	const dispatch = useAppDispatch()
+	const { boardInfo, statusesToDisplay, tickets: boardTicketIds } = useAppSelector((state) => state.board)
+	const { statuses } = useAppSelector((state) => state.status)
+	const { showModal } = useAppSelector((state) => state.modal) 
+	const { tickets } = useAppSelector((state) => state.ticket)
+	const [formStatuses, setFormStatuses] = useState<Array<Status>>(statusesToDisplay)
+	const [ bulkEditBoardStatuses, {isLoading: isLoading, error: isError} ] =  useBulkEditBoardStatusesMutation() 
+	// const [selectedStatusId, setSelectedStatusId] = useState<number | null>(null)
 
 	// useEffect(() => {
 	// 	setSelectedStatusId(null)	
-	// }, [board.showModal])
+	// }, [showModal])
 
 	// const addStatus = () => {
 	// 	const prevMaxOrder = Math.max(...form.statuses.map((status)=>status.order))
@@ -60,7 +59,7 @@ export const StatusForm = () => {
 	// 	setForm({
 	// 		...form,
 	// 		statuses: updated,
-	// 		statusesToDisplay: form.statusesToDisplay.filter((statusId) => statusId !== selectedStatusId)
+	// 		statusesToDisplay: form.statusesToDisplay.filter((status) => status.id !== selectedStatusId)
 	// 	})	
 	// 	// remove the status from status to display list
 	// 	setSelectedStatusId(null)
@@ -79,33 +78,64 @@ export const StatusForm = () => {
 	// 	}
 	// }
 
-	// const onSubmit = () => {
-	// 	dispatch(updateStatuses(form.statuses))
-	// 	dispatch(updateStatusesToDisplay(form.statusesToDisplay))
-	// 	dispatch(toggleShowModal(false))
-	// 	setSelectedStatusId(null)
-	// }		
+	const onSubmit = async () => {
+		// dispatch(updateStatuses(form.statuses))
+		// dispatch(updateStatusesToDisplay(form.statusesToDisplay))
+		//
+		if (boardInfo){
+			try {
 
-	// const onCheck = () => {
-	// 	if (selectedStatusId){
-	// 		const statusIndex = form.statuses.findIndex((status) => status.id === selectedStatusId)
-	// 		const status = form.statuses[statusIndex]
-	// 		if (status){
-	// 			const isVisible = form.statusesToDisplay.includes(status.id)
-	// 			let temp = [...form.statusesToDisplay]
-	// 			if (isVisible){
-	// 				let i = temp.indexOf(status.id)
-	// 				temp.splice(i, 1)
-	// 			}
-	// 			else {
-	// 				temp.push(selectedStatusId)
-	// 			}
-	// 			setForm({...form, statusesToDisplay: temp})
-	// 		}
-	// 	}
-	// }
+				await bulkEditBoardStatuses({boardId: boardInfo.id, statusIds: formStatuses.map((status)=>status.id)}).unwrap()
+				dispatch(addToast({
+	    			id: uuidv4(),
+	    			type: "success",
+	    			animationType: "animation-in",
+	    			message: "Statuses toggled successfully!",
+	    		}))	
+			}
+			catch (e){
+				dispatch(addToast({
+	    			id: uuidv4(),
+	    			type: "failure",
+	    			animationType: "animation-in",
+	    			message: "Failed to toggle statuses",
+	    		}))	
+			}
+		}
+		dispatch(toggleShowModal(false))
+	}		
 
-	// const setOrder = (statusId: String, isBackwards: boolean) => {
+	const onCheck = (id: number) => {
+		const formStatus = formStatuses.find((status) => status.id === id)
+		// if index could not be found in the display statuses, add to the form statuses, otherwise remove
+		if (!formStatus){
+			const status = statuses.find((status) => status.id === id)
+			if (status){
+				setFormStatuses([...formStatuses, status])
+			}
+		}
+		else {
+			setFormStatuses(formStatuses.filter((s)=>formStatus.id !== s.id))	
+		}
+		// if (selectedStatusId){
+		// 	const statusIndex = form.statuses.findIndex((status) => status.id === selectedStatusId)
+		// 	const status = form.statuses[statusIndex]
+		// 	if (status){
+		// 		const isVisible = form.statusesToDisplay.filter((status) => selectedStatusId === status.id).length > 0
+		// 		let temp = [...form.statusesToDisplay]
+		// 		if (isVisible){
+		// 			let i = temp.findIndex((status) => status.id === selectedStatusId)
+		// 			temp.splice(i, 1)
+		// 		}
+		// 		else {
+		// 			temp.push(status)
+		// 		}
+		// 		setForm({...form, statusesToDisplay: temp})
+		// 	}
+		// }
+	}
+
+	// const setOrder = (statusId: number, isBackwards: boolean) => {
 	// 	const selectedStatusIndex = form.statuses.findIndex((status: Status) => status.id === statusId)	
 	// 	const selectedStatus = form.statuses[selectedStatusIndex]
 	// 	// you cannot move order of 1 any further backwards
@@ -129,63 +159,33 @@ export const StatusForm = () => {
 	// 	}	
 	// }
 
-	// return (
-	// 	<div className = "container">
-	// 		<div className = "status-col">
-	// 			<p>Click on the status below to change its order, edit its name, change its visibility or remove it.</p>
-	// 			<p>Click "Save Changes" to commit changes to the statuses once you're done. </p>
-	// 			<div className = "form-row">
-	// 				<div className = "btn-group">
-	// 					{[...form.statuses].sort(sortStatusByOrder).map((status: Status) => {
-	// 						return (
-	// 							<div key = {status.id}>
-	// 								<button 
-	// 									className = {`${selectedStatusId === status.id ? "--selected": ""}`} 
-	// 									onClick = {() => {
-	// 										setSelectedStatusId(status.id === selectedStatusId ? null : status.id)}
-	// 									}>
-	// 									{status.name}
-	// 								</button>
-	// 							</div>
-	// 						)
-	// 					})}
-	// 				</div>
-	// 			</div>
-	// 			{selectedStatusId != null ? 
-	// 				<>
-	// 					<div className = "form-row">
-	// 						<div className = "btn-group">
-	// 							<button className = "--transparent" onClick = {(e) => setOrder(selectedStatusId, true)}><ArrowBackward /></button>
-	// 							<button className = "--transparent" onClick = {(e) => setOrder(selectedStatusId, false)}><ArrowForward /></button>
-	// 						</div>
-	// 					</div>
-	// 					<div className = "form-row">
-	// 						<div className = "form-cell">
-	// 							<label>Is visible in table:</label>
-	// 							<input type = "checkbox" onChange = {(e) => onCheck()} checked = {form.statusesToDisplay.includes(selectedStatusId)}/>
-	// 						</div>
-	// 					</div>
-	// 					<div className = "form-row">
-	// 						<div className = "form-cell">
-	// 							<label>Edit Status Name</label>
-	// 							<input type = "text" className = "" value = {form.statuses.find((status) => status.id === selectedStatusId)?.name} onChange = {(e) => onChangeName(e.target.value)} />
-	// 						</div>
-	// 					</div>
-	// 				</>
-	// 			: null}
-	// 			<div className = "form-row">
-	// 				<div className = "btn-group">
-	// 					<button onClick={onSubmit}>Save Changes</button>	
-	// 					<button onClick={addStatus}>Add Status</button>	
-	// 					{
-	// 						// you can only remove statuses that don't have any tickets associated with that status
-	// 						selectedStatusId != null && !doTicketsContainStatus(selectedStatusId, board.tickets) ? (
-	// 							<button onClick = {removeStatus} className = "--alert">Remove Status</button>) : null
-	// 					}
-	// 				</div>
-	// 			</div>
-	// 		</div>
-	// 	</div>
-	// )	
-	return <div></div>
+	return (
+		<div className = "container">
+			<div>
+				{[...statuses].sort(sortStatusByOrder).map((status: Status) => {
+					return (
+						<div key = {status.id} className="form-row">
+							<div className = "form-cell">
+								<input checked = {formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
+							</div>
+							<div className = "form-cell">
+								<label>{status.name}</label>
+							</div>
+						</div>
+					)
+				})}
+				<div className = "form-row">
+					<div className = "btn-group">
+						<button onClick={onSubmit}>Save Changes</button>	
+					</div>
+					{/*<button onClick={addStatus}>Add Status</button>*/}
+					{
+						// you can only remove statuses that don't have any tickets associated with that status
+						// selectedStatusId != null && !doTicketsContainStatus(selectedStatusId, boardTicketIds) ? (
+						// 	<button onClick = {removeStatus} className = "--alert">Remove Status</button>) : null
+					}
+				</div>
+			</div>
+		</div>
+	)	
 }
