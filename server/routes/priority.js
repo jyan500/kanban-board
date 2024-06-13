@@ -6,7 +6,8 @@ router.get("/", async (req, res, next) => {
 	try {
 		const priorities = await db("priorities").select(
 			"priorities.id as id",
-			"priorities.name as name"
+			"priorities.name as name",
+			"priorities.order as order",
 		)
 		res.json(priorities)
 	}
@@ -20,7 +21,8 @@ router.get("/:id", async (req, res, next) => {
 	try {
 		const priority = await db("priorities").where("id", req.params.id).select(
 			"priorities.id as id",
-			"priorities.name as name"
+			"priorities.name as name",
+			"priorities.order as order",
 		)
 		res.json(priority)
 	}	

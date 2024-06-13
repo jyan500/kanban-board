@@ -149,8 +149,8 @@ export const TicketForm = () => {
 						<textarea {...register("description", registerOptions.description)}></textarea>
 					</div>
 						<div className = "form-cell">
-						<label>Ticket Type</label>
-						<select {...register("ticketTypeId", registerOptions.ticketTypeId)}>
+						<label>Priority</label>
+						<select {...register("priorityId", registerOptions.priorityId)}>
 							<option disabled value = "">---</option>
 							{priorities.map((priority: Priority) => {
 								return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
@@ -158,8 +158,8 @@ export const TicketForm = () => {
 						</select>
 					</div>
 					<div className = "form-cell">
-						<label>Priority</label>
-						<select {...register("priorityId", registerOptions.priorityId)}>
+						<label>Ticket Type</label>
+						<select {...register("ticketTypeId", registerOptions.ticketTypeId)}>
 							<option disabled value = "">---</option>
 							{ticketTypes.map((ticketType: TicketType) => {
 								return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
