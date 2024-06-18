@@ -7,8 +7,8 @@
 	--bs-warning: #ffc107;
 	--bs-danger: #dc3545;
 	--bs-light: #f8f9fa;
-	--bs-light-gray: #ced4da;
-	--bs-dark-gray: #343a40;
+	--bs-light-gray: #B3BAC5;
+	--bs-dark-gray: #5E6C84;
 	--co-body-accent: #07c;
 	--co-btn-text: #fff;
 	--co-btn-bg: var(--co-body-accent);
@@ -43,6 +43,7 @@
 	--margin-label: 0.5em;
 	--height-textarea: 250px;
 	--height-nav: 8em;
+	--icon-gap: .5em;
 	--opacity-input-disabled: 0.5;
 	--padding-inputs: .75em;
 	--padding-btn: .75em;
@@ -67,7 +68,7 @@
 	--width-textarea: 450px;
 	--width-menu: 600px;
 	--z-index-top: 99;
-	--s-spacing: 8px;
+	--s-spacing: 10px;
 	--m-spacing: 16px;
 	--l-spacing: 32px;
 }

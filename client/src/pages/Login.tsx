@@ -17,7 +17,6 @@ type FormValues = {
 export const Login = () => {
 	const dispatch = useAppDispatch()
 	const location = useLocation()
-	console.log("location: ", location)
 	const navigate = useNavigate()
 	const [login, { isLoading, error }] = useLoginMutation()
 	const {data: orgData} = useGetOrganizationQuery()

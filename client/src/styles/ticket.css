@@ -1,6 +1,33 @@
 .ticket-card{
-	background-color: var(--bs-light);
 	margin: 6px;
 	padding: 8px;
 	word-wrap: break-word;
+	background-color: white;
+	
+
+	& .__row {
+		display: flex;	
+		flex-direction: row;
+		align-items: center;
+		& + & {
+			margin-top: var(--icon-gap);
+		} 
+	}
+
+	& .__header {
+		justify-content: space-between;
+
+		& span {
+			font-weight: bold;	
+		}
+
+		& svg {
+			flex-shrink: 0;
+		}
+
+	}
+
+	& .__icon {
+		gap: var(--icon-gap);
+	}
 }

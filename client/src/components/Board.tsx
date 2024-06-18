@@ -56,9 +56,14 @@ export const Board = () => {
 					return (<div key = {status.id} className = "grid-col">
 						<div>
 							<div className = "grid-col-header">
-								<button className = "--transparent" onClick={() => prioritySort(1, status.id)/*dispatch(sortByPriority({sortOrder: 1, statusId: status.id}))*/}><ArrowUp className = "icon"/></button>
-								<p>{allStatuses.find((s: Status) => s.id === status.id)?.name}</p>
-								<button className = "--transparent" onClick={() => prioritySort(-1, status.id)/*dispatch(sortByPriority({sortOrder: 0, statusId: status.id}))*/}><ArrowDown className = "icon"/></button>
+								{/*<button className = "--transparent" onClick={() => prioritySort(1, status.id)}><ArrowUp className = "icon"/></button>*/}
+								<p className = "__title">
+									{allStatuses.find((s: Status) => s.id === status.id)?.name}
+									<span className = "__field">
+										{board[status.id].length}
+									</span>
+								</p>
+								{/*<button className = "--transparent" onClick={() => prioritySort(-1, status.id)}><ArrowDown className = "icon"/></button>*/}
 							</div>
 							{board[status.id]?.map((ticketId: number) => {
 								const ticket = tickets.find((t: TicketType) => t.id === ticketId)

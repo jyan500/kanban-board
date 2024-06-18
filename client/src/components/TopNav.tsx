@@ -31,7 +31,6 @@ export const TopNav = ({isFetching}: Props) => {
 						</div>
 						<div>
 							<span>{`${userProfile?.firstName} ${userProfile?.lastName}`}</span>
-							<small>{organizations.find((org) => org.id === userProfile?.organizationId)?.name}</small>
 						</div>
 					</>
 				) : (

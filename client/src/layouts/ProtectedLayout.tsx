@@ -19,6 +19,7 @@ const ProtectedLayout = () => {
     const {data: statusData} = useGetStatusesQuery()
     const {data: ticketTypesData} = useGetTicketTypesQuery()
     const {data: priorityData} = useGetPrioritiesQuery()
+    const gutter = {margin: "var(--s-spacing)"}
 
     useEffect(() => {
         // Retrieve user on startup
@@ -46,7 +47,9 @@ const ProtectedLayout = () => {
 		<div>
 			<SideBar isFetching={isUserProfileFetching}/>
 			<TopNav isFetching={isUserProfileFetching}/>
-			<Outlet/>
+			<div style={gutter}>
+				<Outlet/>
+			</div>
 		</div>
 	)
 }
