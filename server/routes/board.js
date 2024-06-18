@@ -36,7 +36,8 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 		const boards = await db("boards").where("id", req.params.boardId).select(
 			"boards.id as id",
 			"boards.name as name",
-			"boards.organization_id as organizationId"
+			"boards.organization_id as organizationId",
+			"boards.updated_at as updatedAt"
 		)
 		res.json(boards)
 	}	
