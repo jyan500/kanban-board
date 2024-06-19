@@ -18,12 +18,38 @@ const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
-		const boards = await db("boards").where("organization_id", req.user.organization).select(
-			"boards.id as id",
-			"boards.name as name",
-			"boards.organization_id as organizationId"
-		)
-		res.json(boards)
+		let resData;
+		if (req.query.last_modified === "true"){
+			const boards = await db("boards").where("organization_id", req.user.organization)
+			.join("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
+			.join("boards_to_statuses","boards_to_statuses.board_id", "=", "boards.id")
+			.max("tickets_to_boards.updated_at as ticketsUpdatedAt")
+			.max("boards_to_statuses.updated_at as boardStatusesUpdatedAt")
+			.select(
+				"boards.id as id",
+				"boards.name as name",
+				"boards.organization_id as organizationId",
+				"boards.updated_at as boardUpdatedAt",
+			)
+			resData = boards.map((board) => {
+			const lastUpdated = new Date(Math.max(board.boardStatusesUpdatedAt, board.ticketsUpdatedAt, board.boardUpdatedAt))
+				return {
+					id: board.id,
+					name: board.name,
+					organizationId: board.organizationId,
+					lastModified: lastUpdated,
+				}
+			})
+		}
+		else {
+			resData = await db("boards").where("organization_id", req.user.organization)
+			.select(
+				"boards.id as id",
+				"boards.name as name",
+				"boards.organization_id as organizationId",
+			)
+		}
+		res.json(resData)
 	}
 	catch (err) {
 		console.log(`Error while getting boards: ${err.message}`)	
@@ -37,12 +63,32 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 			"boards.id as id",
 			"boards.name as name",
 			"boards.organization_id as organizationId",
-			"boards.updated_at as updatedAt"
 		)
 		res.json(boards)
 	}	
 	catch (err) {
 		console.log(`Error while getting Boards: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.get("/:boardId/last-modified", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const boardLastUpdated = await db("boards").where("id", req.params.boardId).select(
+			"boards.updated_at as updatedAt" 
+		)
+		const boardTicketLastUpdated = await db("tickets_to_boards").where("board_id", req.params.boardId).max("updated_at as updatedAt")
+		const boardStatusLastUpdated = await db("boards_to_statuses").where("board_id", req.params.boardId).max("updated_at as updatedAt")
+		// figure out which last updated is the most recent
+		const mostRecentUpdate = Math.max(
+			boardLastUpdated[0].updatedAt, 
+			boardTicketLastUpdated[0].updatedAt,
+			boardStatusLastUpdated[0].updatedAt,
+		)
+		res.json({"lastModified": new Date(mostRecentUpdate)})
+	}	
+	catch (err) {
+		console.log(`Error while getting board last modified:  ${err.message}`)	
 		next(err)
 	}
 })
