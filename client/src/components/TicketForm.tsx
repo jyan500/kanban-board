@@ -56,6 +56,7 @@ export const TicketForm = () => {
 	    description: { required: "Password is required"},
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
+	    userId: { required: "Assignee is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
     }
 	useEffect(() => {
@@ -159,6 +160,15 @@ export const TicketForm = () => {
 					</div>
 					<div className = "form-cell">
 						<label>Ticket Type</label>
+						<select {...register("ticketTypeId", registerOptions.ticketTypeId)}>
+							<option disabled value = "">---</option>
+							{ticketTypes.map((ticketType: TicketType) => {
+								return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
+							})}
+						</select>
+					</div>
+					<div className = "form-cell">
+						<label>Assignee</label>
 						<select {...register("ticketTypeId", registerOptions.ticketTypeId)}>
 							<option disabled value = "">---</option>
 							{ticketTypes.map((ticketType: TicketType) => {

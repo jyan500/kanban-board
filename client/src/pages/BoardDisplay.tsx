@@ -4,11 +4,13 @@ import { useGetBoardsQuery } from "../services/private/board"
 import { Link, Outlet } from "react-router-dom" 
 import { setTicket } from "../slices/ticketSlice"
 import { useGetTicketsQuery } from "../services/private/ticket"
+import { Table } from "../components/Table" 
 
 export const BoardDisplay = () => {
-	const {data: boardData } = useGetBoardsQuery()
+	const {data: boardData } = useGetBoardsQuery({lastModified: true})
 	const {data: ticketData } = useGetTicketsQuery()
 	const dispatch = useAppDispatch()
+	const headers = ["Name", "Tickets", "Assignees", "Last Modified"]
 
 	useEffect(() => {
 		if (ticketData?.length){
@@ -22,6 +24,10 @@ export const BoardDisplay = () => {
 			<div>
 				{boardData?.map((board) => <Link key={board.id} to={`/boards/${board.id}`}>{board.name}</Link>)}
 			</div>
+			{/*<Table 
+				data = {} 
+				headers = {} 
+			/>*/}
 			<Outlet/>
 		</div>
 	)

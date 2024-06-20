@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
 import type { Status } from "../types/common" 
 import "../styles/status-form.css"
-import { updateStatuses, updateStatusesToDisplay } from "../slices/boardSlice" 
 import { addToast } from "../slices/toastSlice" 
 import { useBulkEditBoardStatusesMutation } from "../services/private/board" 
 import { toggleShowModal } from "../slices/modalSlice"
@@ -79,12 +78,8 @@ export const StatusForm = () => {
 	// }
 
 	const onSubmit = async () => {
-		// dispatch(updateStatuses(form.statuses))
-		// dispatch(updateStatusesToDisplay(form.statusesToDisplay))
-		//
 		if (boardInfo){
 			try {
-
 				await bulkEditBoardStatuses({boardId: boardInfo.id, statusIds: formStatuses.map((status)=>status.id)}).unwrap()
 				dispatch(addToast({
 	    			id: uuidv4(),

@@ -27,6 +27,7 @@ export interface Board {
 	id: number
 	name: string 
 	organizationId: number
+	lastModified?: Date
 }
 
 export interface TicketType {

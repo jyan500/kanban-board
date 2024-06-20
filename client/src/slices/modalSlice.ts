@@ -2,6 +2,7 @@ import { createSlice, current } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type { RootState } from "../store"
 import { modalTypes } from "../components/Modal"
+import { logout } from "./authSlice" 
 
 interface ModalState {
 	showModal: boolean
@@ -28,7 +29,12 @@ export const modalSlice = createSlice({
 		setModalProps(state, action: PayloadAction<Record<string, any>>){
 			state.currentModalProps = action.payload
 		},
-	}
+	},
+    extraReducers: (builder) => {
+        builder.addCase(logout, () => {
+            return initialState
+        })
+    }
 })
 
 export const { 

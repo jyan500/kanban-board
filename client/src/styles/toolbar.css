@@ -6,4 +6,6 @@
 	background-color: var(--bs-light);
 	border: var(--width-input-border) solid var(--bs-light);
 	gap: var(--margin-btn-gap);
+	margin-top: var(--s-spacing);
+	margin-bottom: var(--s-spacing);
 }

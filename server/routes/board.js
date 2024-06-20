@@ -19,7 +19,7 @@ const db = require("../db/db")
 router.get("/", async (req, res, next) => {
 	try {
 		let resData;
-		if (req.query.last_modified === "true"){
+		if (req.query.lastModified === "true"){
 			const boards = await db("boards").where("organization_id", req.user.organization)
 			.join("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
 			.join("boards_to_statuses","boards_to_statuses.board_id", "=", "boards.id")
@@ -32,7 +32,7 @@ router.get("/", async (req, res, next) => {
 				"boards.updated_at as boardUpdatedAt",
 			)
 			resData = boards.map((board) => {
-			const lastUpdated = new Date(Math.max(board.boardStatusesUpdatedAt, board.ticketsUpdatedAt, board.boardUpdatedAt))
+				const lastUpdated = new Date(Math.max(board.boardStatusesUpdatedAt, board.ticketsUpdatedAt, board.boardUpdatedAt))
 				return {
 					id: board.id,
 					name: board.name,

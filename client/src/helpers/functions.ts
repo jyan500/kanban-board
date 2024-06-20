@@ -109,6 +109,21 @@ export const parseErrorResponse = (err: Record<string, any>): Array<string> => {
 	return Object.values(err).map((e) => e[0])
 }
 
+/**
+ * @param parse url parameters
+ * @return url string with params included
+ */
+export const parseURLParams = (params: Record<string, any>) => {
+	const keys = Object.keys(params)
+	return keys.reduce((acc, key, i) => {
+		if (i < keys.length - 1){
+			return acc + `${key}=${params[key]}&`
+		}
+		return acc + `${key}=${params[key]}`
+	}, "")
+}
+
+
 
 
 

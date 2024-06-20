@@ -9,6 +9,7 @@ import {
 } from "../../helpers/urls" 
 import { CustomError, Board, Status, Ticket } from "../../types/common" 
 import { privateApi } from "../private"
+import { parseURLParams } from "../../helpers/functions" 
 
 type BoardRequest = {
 	id?: number
@@ -36,10 +37,11 @@ type BoardStatusResponse = {
 export const boardApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
-		getBoards: builder.query<Array<Board>, void>({
-			query: () => ({
-				url: BOARD_URL,
+		getBoards: builder.query<Array<Board>, Record<string, any>>({
+			query: (urlParams) => ({
+				url: `${BOARD_URL}`,
 				method: "GET",
+				params: urlParams
 			}),
 			providesTags: ["Boards"]
 		}),

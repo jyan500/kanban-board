@@ -11,35 +11,21 @@ import {
 } from "../helpers/constants" 
 import { v4 as uuidv4 } from "uuid" 
 import { modalTypes } from "../components/Modal"
+import { logout } from "./authSlice"
 
 interface BoardState {
 	boardInfo: Board | null 
 	board: KanbanBoard 
-	// numRows: number
-	// numCols: number
-	// statuses: Array<Status>
 	statusesToDisplay: Array<Status>
-	// priorityList: Array<Priority>
-	showModal: boolean
 	currentTicketId: number | null
-	currentModalType: keyof typeof modalTypes
-	currentModalProps: Record<string, any>
 	tickets: Array<number>
 }
 
 const initialState: BoardState = {
-	// board: setupInitialBoard(defaultStatuses, defaultRows),
 	boardInfo: null,
 	board: {},
-	// numCols: 4,
-	// numRows: defaultRows,
 	statusesToDisplay: [],
-	// statuses: defaultStatuses,
-	// priorityList: defaultPriorities, 
 	tickets: [],
-	showModal: false,
-	currentModalType: "TICKET_FORM",
-	currentModalProps: {},
 	currentTicketId: null
 }
 
@@ -56,77 +42,25 @@ export const boardSlice = createSlice({
 		setStatusesToDisplay(state, action: PayloadAction<Array<Status>>){
 			state.statusesToDisplay = action.payload
 		},
-		toggleShowModal(state, action: PayloadAction<boolean>){
-			state.showModal = action.payload
-		},
-		setModalType(state, action: PayloadAction<keyof typeof modalTypes>){
-			state.currentModalType = action.payload	
-		},
-		setModalProps(state, action: PayloadAction<Record<string, any>>){
-			state.currentModalProps = action.payload
-		},
 		selectCurrentTicketId(state, action: PayloadAction<number | null>){
 			state.currentTicketId = action.payload
 		},
 		setTickets(state, action: PayloadAction<Array<number>>){
 			state.tickets = action.payload
 		},
-		/*
-		Sort by columns,
-		1) either by all columns if no status Id is provided, OR 
-		by a specific column
-		Within each column, specify 1 to sort by highest to lowest priority
-		or 0 for lowest to highest priority
-		*/
-		sortByPriority(state, action: PayloadAction<{statusId?: number, sortOrder: number}>){
-			// const { board, statuses, statusesToDisplay } = state
-			// const status = statuses.find(status => status.id === action.payload.statusId)
-			// if (status){
-			// 	action.payload.sortOrder === 1 ? prioritySort(board[status.id]) : prioritySort(board[status.id]).reverse()
-			// }
-			// else {
-			// 	Object.keys(board).forEach((statusId) => {
-			// 		action.payload.sortOrder === 1 ? prioritySort(board[statusId]) : prioritySort(board[statusId]).reverse()
-			// 	})	
-			// }
-		},
-		deleteAllTickets(state){
-			// const {board, statuses, numRows, numCols} = state
-			// for (let i = 0; i < statuses.length; ++i){
-			// 	if (statuses[i].id in board){
-			// 		board[statuses[i].id] = []
-			// 	}
-			// }
-			// // delete all tickets in the ticket list
-			// state.tickets = []
-		},
-		updateStatuses(state, action: PayloadAction<Array<Status>>){
-			// state.statuses = action.payload
-			// const currentStatuses = Object.keys(state.board)
-			// // create a new status column for the board if not present
-			// const newStatuses = action.payload.filter((status) => !currentStatuses.includes(status.id))
-			// newStatuses.forEach((status) => {
-			// 	state.board[status.id] = []
-			// })
-		},
-		updateStatusesToDisplay(state, action: PayloadAction<Array<String>>){
-			// state.statusesToDisplay = action.payload
-		}
-	}
+	},
+    extraReducers: (builder) => {
+        builder.addCase(logout, () => {
+            return initialState
+        })
+    }
 })
 
 export const { 
-	deleteAllTickets, 
 	selectCurrentTicketId, 
 	setBoard,
 	setBoardInfo,
-	setModalType, 
-	setModalProps,
 	setStatusesToDisplay,
 	setTickets,
-	sortByPriority, 
-	updateStatuses,
-	updateStatusesToDisplay,
-	toggleShowModal 
 } = boardSlice.actions
 export const boardReducer = boardSlice.reducer 

@@ -12,18 +12,13 @@ const initialState: OrganizationState = {
 }
 
 const organizationSlice = createSlice({
-  name: 'organization',
-  initialState,
-  reducers: {
-    setOrganization: (
-      state,
-      {
-        payload: { organizations },
-      }: PayloadAction<{ organizations: Array<Organization> }>,
-    ) => {
-    	state.organizations = organizations
+    name: 'organization',
+    initialState,
+    reducers: {
+        setOrganization: (state, {payload: { organizations }}: PayloadAction<{ organizations: Array<Organization> }>) => {
+            state.organizations = organizations
+        },
     },
-  },
 })
 
 export const { setOrganization } = organizationSlice.actions

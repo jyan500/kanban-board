@@ -9,11 +9,17 @@ export const userProfileApi = privateApi.injectEndpoints({
 	endpoints: (builder) => ({
 		getUserProfile: builder.query<UserProfile, void>({
 			query: () => ({
-				url: USER_PROFILE_URL,
+				url: `${USER_PROFILE_URL}/me`,
 				method: "GET",
 			})	
 		}),
+		getUserProfiles: builder.query<Array<UserProfile>, void>({
+			query: () => ({
+				url: USER_PROFILE_URL,	
+				method: "GET",
+			})
+		})
 	}),
 })
 
-export const { useGetUserProfileQuery } = userProfileApi 
+export const { useGetUserProfileQuery, useGetUserProfilesQuery } = userProfileApi 

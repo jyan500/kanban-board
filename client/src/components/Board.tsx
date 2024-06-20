@@ -1,7 +1,6 @@
 import React from "react"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
 import { 
-	deleteAllTickets, 
 	selectCurrentTicketId,
 	setBoard,
 } from "../slices/boardSlice"
