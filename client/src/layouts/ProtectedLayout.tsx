@@ -3,11 +3,11 @@ import { Link, Outlet, Navigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SideBar } from "../components/SideBar"
 import { TopNav } from "../components/TopNav" 
-import { useGetUserProfileQuery } from "../services/private/userProfile" 
+import { useGetUserProfileQuery, useGetUserProfilesQuery } from "../services/private/userProfile" 
 import { useGetStatusesQuery } from "../services/private/status" 
 import { useGetTicketTypesQuery } from "../services/private/ticketType" 
 import { useGetPrioritiesQuery } from "../services/private/priority" 
-import { setUserProfile } from "../slices/userProfileSlice" 
+import { setUserProfile, setUserProfiles } from "../slices/userProfileSlice" 
 import { setStatuses } from "../slices/statusSlice" 
 import { setTicketTypes } from "../slices/ticketTypeSlice" 
 import { setPriorities } from "../slices/prioritySlice"
@@ -16,6 +16,7 @@ const ProtectedLayout = () => {
 	const token = useAppSelector((state) => state.auth.token)	
 	const dispatch = useAppDispatch()
     const {data: userProfileData, isFetching: isUserProfileFetching, isError: isUserProfileError } = useGetUserProfileQuery() 
+    const {data: userProfilesData, isFetching: isUserProfilesFetching, isError: isUserProfilesError } = useGetUserProfilesQuery() 
     const {data: statusData} = useGetStatusesQuery()
     const {data: ticketTypesData} = useGetTicketTypesQuery()
     const {data: priorityData} = useGetPrioritiesQuery()
@@ -26,6 +27,10 @@ const ProtectedLayout = () => {
         if (token){
         	if (userProfileData){
 	        	dispatch(setUserProfile({userProfile: userProfileData}))
+	        }
+	        // get all user profiles
+        	if (userProfilesData){
+	        	dispatch(setUserProfiles({userProfiles: userProfilesData}))
 	        }
 	        if (ticketTypesData){
 	        	dispatch(setTicketTypes({ticketTypes: ticketTypesData}))	

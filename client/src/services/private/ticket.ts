@@ -1,8 +1,22 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../../store" 
-import { BACKEND_BASE_URL, TICKET_URL } from "../../helpers/urls" 
-import { CustomError, Ticket } from "../../types/common" 
+import { 
+	BACKEND_BASE_URL, 
+	TICKET_URL, 
+	TICKET_ASSIGNEES_URL, 
+	TICKET_BULK_EDIT_ASSIGNEES_URL } 
+from "../../helpers/urls" 
+import { CustomError, Ticket, UserProfile } from "../../types/common" 
 import { privateApi } from "../private"
+
+type TicketAssigneeRequest = {
+	ticketId: number
+	userIds: Array<number>
+}
+
+type TicketAssigneeResponse = {
+	message: string
+}
 
 export const ticketApi = privateApi.injectEndpoints({
 	overrideExisting: false,
@@ -14,12 +28,29 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Tickets"],	
 		}),
-		getTicket: builder.query<Array<Ticket>, void>({
+		getTicket: builder.query<Array<Ticket>, number>({
 			query: (id) => ({
 				url: `${TICKET_URL}/${id}`,
 				method: "GET",
 			}),
 			providesTags: ["Tickets"],	
+		}),
+		getTicketAssignees: builder.query<Array<UserProfile>, number>({
+			query: (ticketId) => ({
+				url: TICKET_ASSIGNEES_URL(ticketId),
+				method: "GET",
+			}),
+			providesTags: ["TicketAssignees"]
+		}),
+		bulkEditTicketAssignees: builder.mutation<TicketAssigneeResponse, TicketAssigneeRequest>({
+			query: ({ticketId, userIds}) => ({
+				url: TICKET_BULK_EDIT_ASSIGNEES_URL(ticketId),	
+				method: "POST",
+				body: {
+					user_ids: userIds 
+				}
+			}),
+			invalidatesTags: ["TicketAssignees"]
 		}),
 		addTicket: builder.mutation<{id: number, message: string}, Omit<Ticket, "organizationId" | "id">>({
 			query: (ticket) => ({
@@ -66,4 +97,6 @@ export const {
 	useAddTicketMutation, 
 	useUpdateTicketMutation,
 	useDeleteTicketMutation,
+	useGetTicketAssigneesQuery,
+	useBulkEditTicketAssigneesMutation,
 } = ticketApi 

@@ -59,24 +59,14 @@ const ticketUserValidator = (actionType) => {
 			], "organization_user_roles")),
 		]	
 	}
-	else if (actionType === "create") {
+	else if (actionType === "create" || actionType === "bulk-edit") {
 		validationRules = [
 			...validationRules,
 			body("user_ids")
 			.isArray({min: 0, max: BULK_INSERT_LIMIT})
 			.withMessage("user_ids must be an array")
 			.withMessage(`user_ids cannot have more than ${BULK_INSERT_LIMIT} ids`),
-			body("user_ids.*")
-			.custom(async (value, {req}) => await checkUniqueEntity("user", value, [
-			{
-				"col": "user_id",
-				"value": value,
-			},
-			{
-				"col": "ticket_id",
-				"value": req.params.ticketId
-			}
-			], "tickets_to_users")).custom(async (value, {req}) => await checkEntityExistsIn("user", value, [{
+			body("user_ids.*").custom(async (value, {req}) => await checkEntityExistsIn("user", value, [{
 				col: "user_id",
 				value: value	
 			},
@@ -85,6 +75,22 @@ const ticketUserValidator = (actionType) => {
 				value: req.user.organization
 			}], "organization_user_roles"))
 		]
+		if (actionType === "create"){
+			validationRules = [
+				...validationRules, 
+				body("user_ids.*")
+				.custom(async (value, {req}) => await checkUniqueEntity("user", value, [
+				{
+					"col": "user_id",
+					"value": value,
+				},
+				{
+					"col": "ticket_id",
+					"value": req.params.ticketId
+				}
+				], "tickets_to_users"))
+			]
+		}
 	}
 	return validationRules
 }
@@ -97,4 +103,5 @@ module.exports = {
 	validateTicketUserGet: ticketUserValidator("get"),
 	validateTicketUserCreate: ticketUserValidator("create"),
 	validateTicketUserDelete: ticketUserValidator("delete"),
+	validateTicketUserBulkEdit: ticketUserValidator("bulk-edit")
 }

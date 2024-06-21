@@ -227,7 +227,8 @@ router.post("/:boardId/status/bulk-edit", validateBoardStatusBulkEdit, handleVal
 		res.json({message: "statuses bulk edited successfully"})
 	}	
 	catch (err) {
-
+		console.log(`Error while updating board statuses: ${err.message}`)
+		next(err)
 	}
 })
 

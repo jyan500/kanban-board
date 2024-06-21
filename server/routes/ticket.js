@@ -8,6 +8,7 @@ const {
 	validateTicketUserGet,
 	validateTicketUserCreate,
 	validateTicketUserDelete,
+	validateTicketUserBulkEdit,
 
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
@@ -116,7 +117,23 @@ router.post("/:ticketId/user/", validateTicketUserCreate, handleValidationResult
 		res.json({message: "users assigned to tickets successfully!"})
 	}	
 	catch (err) {
-		console.log(`Error while inserting tickets into board: ${err.message}`)
+		console.log(`Error while assigning user to ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/:ticketId/user/bulk-edit", validateTicketUserBulkEdit, handleValidationResult, async (req, res, next) => {
+	try {
+		const userIds = req.body.user_ids
+		const ticketId = req.params.ticketId
+		// delete all status ids attached to this board and then re-insert
+		const toInsert = userIds.map((id) => ({ticket_id: ticketId, user_id: id}))
+		await db("tickets_to_users").where("ticket_id", ticketId).delete()
+		await db("tickets_to_users").insert(toInsert)
+		res.json({message: "users assigned to ticket successfully!"})
+	}	
+	catch (err){ 
+		console.log(`Error while assigning users to ticket: ${err.message}`)
 		next(err)
 	}
 })

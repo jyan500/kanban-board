@@ -26,6 +26,7 @@ export const defaultRows = 4
 
 export const TAG_TYPES = [
 	"Tickets",
+	"TicketAssignees",
 	"BoardTickets",
 	"Statuses",
 	"BoardStatuses",

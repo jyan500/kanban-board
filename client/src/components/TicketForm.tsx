@@ -4,10 +4,18 @@ import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
-import type { Status, Ticket, TicketType, Priority } from "../types/common"
+import type { UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
-import { useAddTicketMutation, useDeleteTicketMutation, useUpdateTicketMutation } from "../services/private/ticket"
+import { 
+	useAddTicketMutation, 
+	useDeleteTicketMutation, 
+	useUpdateTicketMutation,
+	useBulkEditTicketAssigneesMutation,
+	useGetTicketAssigneesQuery,
+} 
+from "../services/private/ticket"
 import { addToast } from "../slices/toastSlice" 
+import { skipToken } from '@reduxjs/toolkit/query/react'
 
 type FormValues = {
 	id?: number
@@ -16,6 +24,7 @@ type FormValues = {
 	priorityId: number
 	statusId: number
 	ticketTypeId: number
+	userId?: number
 }
 
 export const TicketForm = () => {
@@ -23,6 +32,7 @@ export const TicketForm = () => {
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
+	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
 	const { tickets } = useAppSelector((state) => state.ticket) 
 	const { 
 		currentTicketId, 
@@ -34,6 +44,10 @@ export const TicketForm = () => {
 	const {
 		showModal
 	} = useAppSelector((state) => state.modal)
+	// only run query if currentTicketId is not null, otherwise it will pass in the skipToken,
+	// which notifies RTK query to skip this 
+	const { data: ticketAssignees } = useGetTicketAssigneesQuery(currentTicketId ?? skipToken)
+	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const [ addTicket, {isLoading: isAddTicketLoading, error: isAddTicketError} ] = useAddTicketMutation() 
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ deleteTicket, {isLoading: isDeleteTicketLoading, error: isDeleteTicketError} ] = useDeleteTicketMutation()
@@ -43,9 +57,10 @@ export const TicketForm = () => {
 		id: undefined,
 		name: "",
 		description: "",
-		priorityId: 1,
-		statusId: 1,
-		ticketTypeId: 1
+		priorityId: 0,
+		statusId: 0,
+		ticketTypeId: 0,
+		userId: 0 
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const { register , handleSubmit, reset , formState: {errors} } = useForm<FormValues>({
@@ -53,17 +68,18 @@ export const TicketForm = () => {
 	})
 	const registerOptions = {
 	    name: { required: "Name is required" },
-	    description: { required: "Password is required"},
+	    description: { required: "Description is required"},
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
-	    userId: { required: "Assignee is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
+	    userId: {}
     }
 	useEffect(() => {
 		// initialize with current values if the ticket exists
 		if (currentTicketId){
-			const ticket = tickets.find((t: Ticket) => t.id === currentTicketId)
-			reset(ticket ?? defaultForm)
+			let ticket = tickets.find((t: Ticket) => t.id === currentTicketId)
+			let ticketWithAssignee = {...ticket, userId: ticketAssignees?.length ? ticketAssignees[0].id : 0}
+			reset(ticketWithAssignee ?? defaultForm)
 		}
 		else {
 			reset(defaultForm)
@@ -75,12 +91,22 @@ export const TicketForm = () => {
     		// update existing ticket
     		if (values.id != null){
     			await updateTicket({...values, id: values.id}).unwrap()
+    			// update ticket assignees
+    			// TODO: need to update this line to include all userIds if allowing multiple 
+    			// assignees per ticket
+    			if (values.userId){
+	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [values.userId]}).unwrap()
+    			}
     		}
     		// add new ticket
     		else {
 		    	const data = await addTicket(values).unwrap()
 		    	if (boardInfo){
 			    	await addBoardTickets({boardId: boardInfo.id, ticketIds: [data.id]}).unwrap()
+		    	}
+		    	// update ticket assignees
+		    	if (values.userId){
+		    		await bulkEditTicketAssignees({ticketId: data.id, userIds: [values.userId]}).unwrap()
 		    	}
     		}
 			dispatch(toggleShowModal(false))
@@ -136,6 +162,7 @@ export const TicketForm = () => {
 						<input type = "text"
 						{...register("name", registerOptions.name)}
 						/>
+				        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 					</div>
 					<div className = "form-cell">
 						<label>Status</label>
@@ -144,37 +171,39 @@ export const TicketForm = () => {
 								return <option key = {status.id} value = {status.id}>{status.name}</option>
 							})}
 						</select>	
+				        {errors?.statusId && <small className = "--text-alert">{errors.statusId.message}</small>}
 					</div>
 					<div className = "form-cell">
 						<label>Description</label>
 						<textarea {...register("description", registerOptions.description)}></textarea>
+				        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 					</div>
 						<div className = "form-cell">
 						<label>Priority</label>
 						<select {...register("priorityId", registerOptions.priorityId)}>
-							<option disabled value = "">---</option>
 							{priorities.map((priority: Priority) => {
 								return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
 							})}
 						</select>
+				        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
 					</div>
 					<div className = "form-cell">
 						<label>Ticket Type</label>
 						<select {...register("ticketTypeId", registerOptions.ticketTypeId)}>
-							<option disabled value = "">---</option>
 							{ticketTypes.map((ticketType: TicketType) => {
 								return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
 							})}
 						</select>
+				        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
 					</div>
 					<div className = "form-cell">
 						<label>Assignee</label>
-						<select {...register("ticketTypeId", registerOptions.ticketTypeId)}>
-							<option disabled value = "">---</option>
-							{ticketTypes.map((ticketType: TicketType) => {
-								return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
+						<select {...register("userId", registerOptions.userId)}>
+							{userProfiles.map((userProfile: UserProfile) => {
+								return <option key = {userProfile.id} value = {userProfile.id}>{userProfile.firstName + " " + userProfile.lastName}</option>
 							})}
 						</select>
+				        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
 					</div>
 				</div>
 				<div className = "form-row">
