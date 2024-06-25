@@ -14,7 +14,7 @@
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: start;
-	margin-left: 6px;
+	margin-left: var(--s-spacing);
 
 	& p {
 		font-weight: 500;
@@ -30,7 +30,7 @@
 
 	& .__title {
 		& .__field {
-			margin-left: 6px;
+			margin-left: var(--s-spacing);
 		}	
 	}
 }

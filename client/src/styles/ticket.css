@@ -1,6 +1,6 @@
 .ticket-card{
-	margin: 6px;
-	padding: 8px;
+	margin: 0 var(--s-spacing) var(--s-spacing) var(--s-spacing);
+	padding: var(--s-spacing);
 	word-wrap: break-word;
 	background-color: white;
 	

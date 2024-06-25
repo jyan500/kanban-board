@@ -28,10 +28,11 @@ function App() {
 						element={<BoardDisplay/>}
 					>
 						<Route 
-							path = "/boards/:boardId"
+							path = ":boardId"
 							element={<Board/>}>
 						</Route>
 					</Route>
+				
 				</Route>
 			</Routes>
 			<ToastList/>
