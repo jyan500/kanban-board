@@ -16,6 +16,7 @@ import {
 from "../services/private/ticket"
 import { addToast } from "../slices/toastSlice" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
+import { LoadingSpinner } from "./LoadingSpinner"
 
 type FormValues = {
 	id?: number
@@ -46,7 +47,7 @@ export const TicketForm = () => {
 	} = useAppSelector((state) => state.modal)
 	// only run query if currentTicketId is not null, otherwise it will pass in the skipToken,
 	// which notifies RTK query to skip this 
-	const { data: ticketAssignees } = useGetTicketAssigneesQuery(currentTicketId ?? skipToken)
+	const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ?? skipToken)
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const [ addTicket, {isLoading: isAddTicketLoading, error: isAddTicketError} ] = useAddTicketMutation() 
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
@@ -63,7 +64,7 @@ export const TicketForm = () => {
 		userId: 0 
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { register , handleSubmit, reset , formState: {errors} } = useForm<FormValues>({
+	const { register , handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
 	const registerOptions = {
@@ -79,12 +80,19 @@ export const TicketForm = () => {
 		if (currentTicketId){
 			let ticket = tickets.find((t: Ticket) => t.id === currentTicketId)
 			let ticketWithAssignee = {...ticket, userId: ticketAssignees?.length ? ticketAssignees[0].id : 0}
-			reset(ticketWithAssignee ?? defaultForm)
+			reset(ticketWithAssignee)
 		}
 		else {
 			reset(defaultForm)
 		}
 	}, [showModal, currentTicketId])
+
+	useEffect(() => {
+		if (!isTicketAssigneesLoading){
+			let ticket = tickets.find((t: Ticket) => t.id === currentTicketId)
+			setValue("userId", ticketAssignees?.length ? ticketAssignees[0].id : 0, { shouldDirty: true })
+		}
+	}, [ticketAssignees])
 
     const onSubmit = async (values: FormValues) => {
     	try {
@@ -156,73 +164,79 @@ export const TicketForm = () => {
 	return (
 		<div className = "container">
 			<form>
-				<div className = "form-row">
-					<div className = "form-cell">
-						<label>Name</label>
-						<input type = "text"
-						{...register("name", registerOptions.name)}
-						/>
-				        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
-					</div>
-					<div className = "form-cell">
-						<label>Status</label>
-						<select {...register("statusId", registerOptions.statusId)}>
-							{statusesToDisplay.map((status: Status) => {
-								return <option key = {status.id} value = {status.id}>{status.name}</option>
-							})}
-						</select>	
-				        {errors?.statusId && <small className = "--text-alert">{errors.statusId.message}</small>}
-					</div>
-					<div className = "form-cell">
-						<label>Description</label>
-						<textarea {...register("description", registerOptions.description)}></textarea>
-				        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
-					</div>
-						<div className = "form-cell">
-						<label>Priority</label>
-						<select {...register("priorityId", registerOptions.priorityId)}>
-							{priorities.map((priority: Priority) => {
-								return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
-							})}
-						</select>
-				        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
-					</div>
-					<div className = "form-cell">
-						<label>Ticket Type</label>
-						<select {...register("ticketTypeId", registerOptions.ticketTypeId)}>
-							{ticketTypes.map((ticketType: TicketType) => {
-								return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
-							})}
-						</select>
-				        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
-					</div>
-					<div className = "form-cell">
-						<label>Assignee</label>
-						<select {...register("userId", registerOptions.userId)}>
-							{userProfiles.map((userProfile: UserProfile) => {
-								return <option key = {userProfile.id} value = {userProfile.id}>{userProfile.firstName + " " + userProfile.lastName}</option>
-							})}
-						</select>
-				        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
-					</div>
-				</div>
-				<div className = "form-row">
-					<div className = "btn-group">
-						<button onClick={handleSubmit(onSubmit)} className = "btn">Submit</button>
-					</div>
-					{
-						currentTicketId && boardInfo?.id ? (
-							<div className = "btn-group">
-								<button onClick={
-									(e) => {
-										e.preventDefault()
-										onDelete()
-									}
-								} className = "btn --alert">Delete</button>
+				{!isTicketAssigneesLoading ? (
+					<>
+						<div className = "form-row">
+							<div className = "form-cell">
+								<label>Name</label>
+								<input type = "text"
+								{...register("name", registerOptions.name)}
+								/>
+						        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 							</div>
-						) : null
-					}
-				</div>
+							<div className = "form-cell">
+								<label>Status</label>
+								<select {...register("statusId", registerOptions.statusId)}>
+									{statusesToDisplay.map((status: Status) => {
+										return <option key = {status.id} value = {status.id}>{status.name}</option>
+									})}
+								</select>	
+						        {errors?.statusId && <small className = "--text-alert">{errors.statusId.message}</small>}
+							</div>
+							<div className = "form-cell">
+								<label>Description</label>
+								<textarea {...register("description", registerOptions.description)}></textarea>
+						        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
+							</div>
+								<div className = "form-cell">
+								<label>Priority</label>
+								<select {...register("priorityId", registerOptions.priorityId)}>
+									{priorities.map((priority: Priority) => {
+										return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
+									})}
+								</select>
+						        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
+							</div>
+							<div className = "form-cell">
+								<label>Ticket Type</label>
+								<select {...register("ticketTypeId", registerOptions.ticketTypeId)}>
+									{ticketTypes.map((ticketType: TicketType) => {
+										return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
+									})}
+								</select>
+						        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
+							</div>
+							<div className = "form-cell">
+								<label>Assignee</label>
+								<select {...register("userId", registerOptions.userId)}>
+									{userProfiles.map((userProfile: UserProfile) => {
+										return <option key = {userProfile.id} value = {userProfile.id}>{userProfile.firstName + " " + userProfile.lastName}</option>
+									})}
+								</select>
+						        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
+							</div>
+						</div>
+						<div className = "form-row">
+							<div className = "btn-group">
+								<button onClick={handleSubmit(onSubmit)} className = "btn">Submit</button>
+							</div>
+							{
+								currentTicketId && boardInfo?.id ? (
+									<div className = "btn-group">
+										<button onClick={
+											(e) => {
+												e.preventDefault()
+												onDelete()
+											}
+										} className = "btn --alert">Delete</button>
+									</div>
+								) : null
+							}
+						</div>
+					</>
+				) : (
+					<LoadingSpinner/>	
+				)}
 			</form>
 		</div>
 	)	
