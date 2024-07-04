@@ -19,35 +19,59 @@ const db = require("../db/db")
 router.get("/", async (req, res, next) => {
 	try {
 		let resData;
-		if (req.query.lastModified === "true"){
-			const boards = await db("boards").where("organization_id", req.user.organization)
-			.join("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
-			.join("boards_to_statuses","boards_to_statuses.board_id", "=", "boards.id")
-			.max("tickets_to_boards.updated_at as ticketsUpdatedAt")
-			.max("boards_to_statuses.updated_at as boardStatusesUpdatedAt")
-			.select(
-				"boards.id as id",
-				"boards.name as name",
-				"boards.organization_id as organizationId",
-				"boards.updated_at as boardUpdatedAt",
-			)
+		const boards = await db("boards").where("organization_id", req.user.organization)
+		.modify((queryBuilder) => {
+			if (req.query.lastModified === "true"){
+				queryBuilder.join("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
+				.join("boards_to_statuses","boards_to_statuses.board_id", "=", "boards.id")
+				.max("tickets_to_boards.updated_at as ticketsUpdatedAt")
+				.max("boards_to_statuses.updated_at as boardStatusesUpdatedAt")
+				.select(
+					"boards.updated_at as boardUpdatedAt",
+				)
+			}
+		})	
+		.select(
+			"boards.id as id", "boards.name as name", "boards.organization_id as organizationId"
+		)
+		let boardAssignees;
+		let boardAssigneesRes = {}
+		if (req.query.assignees === "true"){
+			boardAssignees = await db("boards")
+			.where("organization_id", req.user.organization)
+			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
+			.join("tickets_to_users", "tickets_to_boards.ticket_id", "=", "tickets_to_users.ticket_id")
+			.groupBy("tickets_to_users.user_id")
+			.select("boards.id as id", "tickets_to_users.user_id")
+
+			boardAssignees.map((row) => {
+				if (!(row.id in boardAssigneesRes)){
+					boardAssigneesRes[row.id] = []
+				}
+				boardAssigneesRes[row.id].push(row.user_id)
+			})
+		}
+
+		if (req.query.lastModified === "true" || req.query.assignees === "true"){
 			resData = boards.map((board) => {
-				const lastUpdated = new Date(Math.max(board.boardStatusesUpdatedAt, board.ticketsUpdatedAt, board.boardUpdatedAt))
-				return {
+				let lastUpdated;
+				if (req.query.lastModified === "true"){
+					lastUpdated = new Date(Math.max(board.boardStatusesUpdatedAt, board.ticketsUpdatedAt, board.boardUpdatedAt))
+				}
+				let boardRes = {
 					id: board.id,
 					name: board.name,
 					organizationId: board.organizationId,
-					lastModified: lastUpdated,
+					...(req.query.lastModified === "true" ? {lastModified: lastUpdated} : {})
 				}
+				if (req.query.assignees === "true" && board.id in boardAssigneesRes){
+					boardRes = {...boardRes, assignees: boardAssigneesRes[board.id]}
+				}
+				return boardRes
 			})
 		}
 		else {
-			resData = await db("boards").where("organization_id", req.user.organization)
-			.select(
-				"boards.id as id",
-				"boards.name as name",
-				"boards.organization_id as organizationId",
-			)
+			resData = boards
 		}
 		res.json(resData)
 	}
