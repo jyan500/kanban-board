@@ -37,17 +37,17 @@ router.get("/", async (req, res, next) => {
 			.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
 			.join("organizations", "organizations.id", "=", "organization_user_roles.organization_id")
 			.where("organizations.id", organizationId)
-			.modify((queryBuilder) => {
-				// users can only see other users
-				if (userRole === "USER"){
-					queryBuilder.where("user_roles.name", "USER")
-				}
-				// board admins can see users and board admins 
-				else if (userRole === "BOARD_ADMIN"){
-					queryBuilder.where("user_roles.name", "USER").orWhere("user_roles.name", "BOARD_ADMIN")
-				}
-				// admins can see all users, no condition needed
-			})
+			// .modify((queryBuilder) => {
+			// 	// users can only see other users
+			// 	if (userRole === "USER"){
+			// 		queryBuilder.where("user_roles.name", "USER")
+			// 	}
+			// 	// board admins can see users and board admins 
+			// 	else if (userRole === "BOARD_ADMIN"){
+			// 		queryBuilder.where("user_roles.name", "USER").orWhere("user_roles.name", "BOARD_ADMIN")
+			// 	}
+			// 	// admins can see all users, no condition needed
+			// })
 			.select(
 				"users.id as id", 
 				"users.first_name as firstName", 

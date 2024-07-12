@@ -35,6 +35,7 @@ export const TicketForm = () => {
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
 	const { tickets } = useAppSelector((state) => state.ticket) 
+	const { userRoles } = useAppSelector((state) => state.userRole) 
 	const { 
 		currentTicketId, 
 		board, 
@@ -67,6 +68,10 @@ export const TicketForm = () => {
 	const { register , handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
+
+	const adminRole = userRoles?.find((role) => role.name === "ADMIN")
+	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
+
 	const registerOptions = {
 	    name: { required: "Name is required" },
 	    description: { required: "Description is required"},
@@ -209,8 +214,10 @@ export const TicketForm = () => {
 							<div className = "form-cell">
 								<label>Assignee</label>
 								<select {...register("userId", registerOptions.userId)}>
-									{userProfiles.map((userProfile: UserProfile) => {
-										return <option key = {userProfile.id} value = {userProfile.id}>{userProfile.firstName + " " + userProfile.lastName}</option>
+									{userProfiles.map((profile: UserProfile) => {
+										return <option disabled={
+											(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
+											(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{profile.firstName + " " + profile.lastName}</option>
 									})}
 								</select>
 						        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}

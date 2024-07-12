@@ -15,6 +15,7 @@ const {
 }  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
+const { mapIdToRowAggregateArray, mapIdToRowObject } = require("../helpers/functions") 
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -44,15 +45,22 @@ router.get("/", async (req, res, next) => {
 			.groupBy("tickets_to_users.user_id")
 			.select("boards.id as id", "tickets_to_users.user_id")
 
-			boardAssignees.map((row) => {
-				if (!(row.id in boardAssigneesRes)){
-					boardAssigneesRes[row.id] = []
-				}
-				boardAssigneesRes[row.id].push(row.user_id)
-			})
+			boardAssigneesRes = mapIdToRowAggregateArray(boardAssignees, "user_id")
+			console.log(boardAssigneesRes)
 		}
 
-		if (req.query.lastModified === "true" || req.query.assignees === "true"){
+		let numTickets;
+		let numTicketsRes = {}
+		if (req.query.numTickets === "true") {
+			numTickets = await db("boards").where("organization_id", req.user.organization)
+			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
+			.groupBy("tickets_to_boards.board_id")
+			.count("tickets_to_boards.ticket_id as numTickets")
+			.select("boards.id as id")
+			numTicketsRes = mapIdToRowObject(numTickets)
+		}
+
+		if (req.query.lastModified === "true" || req.query.assignees === "true" || req.query.numTickets === "true"){
 			resData = boards.map((board) => {
 				let lastUpdated;
 				if (req.query.lastModified === "true"){
@@ -66,6 +74,9 @@ router.get("/", async (req, res, next) => {
 				}
 				if (req.query.assignees === "true" && board.id in boardAssigneesRes){
 					boardRes = {...boardRes, assignees: boardAssigneesRes[board.id]}
+				}
+				if (req.query.numTickets === "true" && board.id in numTicketsRes){
+					boardRes = {...boardRes, numTickets: numTicketsRes[board.id].numTickets}
 				}
 				return boardRes
 			})

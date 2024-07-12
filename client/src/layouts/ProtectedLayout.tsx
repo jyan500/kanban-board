@@ -7,7 +7,9 @@ import { useGetUserProfileQuery, useGetUserProfilesQuery } from "../services/pri
 import { useGetStatusesQuery } from "../services/private/status" 
 import { useGetTicketTypesQuery } from "../services/private/ticketType" 
 import { useGetPrioritiesQuery } from "../services/private/priority" 
+import { useGetUserRolesQuery } from "../services/private/userRole" 
 import { setUserProfile, setUserProfiles } from "../slices/userProfileSlice" 
+import { setUserRoles } from "../slices/userRoleSlice" 
 import { setStatuses } from "../slices/statusSlice" 
 import { setTicketTypes } from "../slices/ticketTypeSlice" 
 import { setPriorities } from "../slices/prioritySlice"
@@ -20,6 +22,7 @@ const ProtectedLayout = () => {
     const {data: statusData} = useGetStatusesQuery()
     const {data: ticketTypesData} = useGetTicketTypesQuery()
     const {data: priorityData} = useGetPrioritiesQuery()
+    const {data: userRoleData } = useGetUserRolesQuery()
     const gutter = {margin: "var(--s-spacing)"}
 
     useEffect(() => {
@@ -40,6 +43,9 @@ const ProtectedLayout = () => {
 	        }
 	        if (priorityData){
 	        	dispatch(setPriorities({priorities: priorityData}))
+	        }
+	        if (userRoleData){
+	        	dispatch(setUserRoles({userRoles: userRoleData}))
 	        }
         }
     }, [userProfileData, ticketTypesData, statusData, priorityData]);

@@ -5,13 +5,14 @@ import { Link, Outlet, useParams } from "react-router-dom"
 import { setTicket } from "../slices/ticketSlice"
 import { useGetTicketsQuery } from "../services/private/ticket"
 import { Table } from "../components/Table" 
+import { useBoardConfig, BoardConfigType } from "../helpers/table-config/useBoardConfig" 
 
 export const BoardDisplay = () => {
 	const { boardId } = useParams();
-	const {data: boardData } = useGetBoardsQuery({lastModified: true, assignees: true})
+	const {data: boardData } = useGetBoardsQuery({lastModified: true, numTickets: true, assignees: true})
 	const {data: ticketData } = useGetTicketsQuery()
+	const config: BoardConfigType = useBoardConfig()
 	const dispatch = useAppDispatch()
-	const headers = ["Name", "Tickets", "Assignees", "Last Modified"]
 
 	useEffect(() => {
 		if (ticketData?.length){
@@ -26,15 +27,9 @@ export const BoardDisplay = () => {
 				boardId != null ? (
 					<Link to = {`/boards`}>Return to Boards</Link>
 				) : (
-					<div>
-						{boardData?.map((board) => <Link key={board.id} to={`/boards/${board.id}`}>{board.name}</Link>)}
-					</div>
+					<Table data={boardData} config={config}/>
 				)
 			}
-			{/*<Table 
-				data = {} 
-				headers = {} 
-			/>*/}
 			<Outlet/>
 		</div>
 	)
