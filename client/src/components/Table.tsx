@@ -1,5 +1,6 @@
 import React from "react"
 import { Link } from "react-router-dom"
+import "../styles/table.css"
 
 type Props = {
 	config: Record<string, any>
