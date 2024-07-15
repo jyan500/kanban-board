@@ -68,7 +68,8 @@
 	--width-textarea: 450px;
 	--width-menu: 600px;
 	--z-index-top: 99;
-	--s-spacing: 10px;
+	-xs-spacing: 4px;
+	--s-spacing: 8px;
 	--m-spacing: 16px;
 	--l-spacing: 32px;
 }
@@ -231,6 +232,24 @@ a {
 	height: var(--height-icon);
 }
 
+.link-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+
+	& .icon {
+		margin-right: var(--s-spacing);
+	}
+
+	& a {
+		font-weight: bold;
+	}
+
+	& a:hover {
+		color: var(--bs-primary);
+	}
+}
+
 .form-container {
 	display: flex;
 	flex-direction: column;
@@ -332,4 +351,5 @@ a {
 .--row {
 	flex-direction: row;
 }
+
 

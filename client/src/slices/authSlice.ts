@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
-import { privateApi } from "../services/private"
 
 type AuthState = {
     token: string | null
@@ -18,7 +17,6 @@ const authSlice = createSlice({
         logout: (state) => {
             localStorage.removeItem("token")
             state.token = null
-            privateApi.util.resetApiState()
         },
         setCredentials: (state, {payload: { token }}: PayloadAction<{ token: string }>) => {
             localStorage.setItem("token", token)

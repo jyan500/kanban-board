@@ -24,7 +24,7 @@ const userProfileSlice = createSlice({
         },
         setUserProfiles: (state, { payload: { userProfiles }}: PayloadAction<{ userProfiles: Array<UserProfile>}>,
         ) => {
-          state.userProfiles = userProfiles
+            state.userProfiles = userProfiles
         }
     },
     extraReducers: (builder) => {
