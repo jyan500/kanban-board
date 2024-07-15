@@ -46,7 +46,6 @@ router.get("/", async (req, res, next) => {
 			.select("boards.id as id", "tickets_to_users.user_id")
 
 			boardAssigneesRes = mapIdToRowAggregateArray(boardAssignees, "user_id")
-			console.log(boardAssigneesRes)
 		}
 
 		let numTickets;
