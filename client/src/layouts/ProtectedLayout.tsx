@@ -2,6 +2,7 @@ import React, {useEffect} from "react"
 import { Link, Outlet, Navigate } from "react-router-dom" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SideBar } from "../components/SideBar"
+import { Modal } from "../components/Modal" 
 import { TopNav } from "../components/TopNav" 
 import { useGetUserProfileQuery, useGetUserProfilesQuery } from "../services/private/userProfile" 
 import { useGetStatusesQuery } from "../services/private/status" 
@@ -61,6 +62,7 @@ const ProtectedLayout = () => {
 			<div style={gutter}>
 				<Outlet/>
 			</div>
+			<Modal/>
 		</div>
 	)
 }

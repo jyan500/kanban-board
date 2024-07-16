@@ -13,7 +13,6 @@ import { Ticket } from "./Ticket"
 import "../styles/board.css"
 import { ToolBar } from "./ToolBar" 
 import { v4 as uuidv4 } from "uuid" 
-import { Modal } from "./Modal" 
 import type { 
 	Cell as CellType, 
 	Status, 
@@ -59,7 +58,7 @@ export const Board = () => {
 								<p className = "__title">
 									{allStatuses.find((s: Status) => s.id === status.id)?.name}
 									<span className = "__field">
-										{board[status.id].length}
+										{board[status.id]?.length}
 									</span>
 								</p>
 								{/*<button className = "--transparent" onClick={() => prioritySort(-1, status.id)}><ArrowDown className = "icon"/></button>*/}
@@ -85,7 +84,6 @@ export const Board = () => {
 					</div>)
 				})}
 			</div>
-			<Modal/>
 		</div>
 	)	
 }

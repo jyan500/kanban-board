@@ -5,11 +5,13 @@ import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { TicketForm } from "./TicketForm" 
 import { StatusForm } from "./StatusForm" 
+import { BoardForm } from "./BoardForm" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 
 export const modalTypes = {
 	"TICKET_FORM": TicketForm,
 	"STATUS_FORM": StatusForm,
+	"BOARD_FORM": BoardForm,
 }
 
 // type for partial subset of keys

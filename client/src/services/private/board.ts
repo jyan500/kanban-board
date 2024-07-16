@@ -52,9 +52,10 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Boards"]
 		}),
-		createBoard: builder.mutation<void, BoardRequest>({
+		addBoard: builder.mutation<void, BoardRequest>({
 			query: (board: BoardRequest) => ({
 				url: BOARD_URL,
+				body: {name: board.name},
 				method: "POST",
 			}),
 			invalidatesTags: ["Boards"]
@@ -62,6 +63,7 @@ export const boardApi = privateApi.injectEndpoints({
 		updateBoard: builder.mutation<void, BoardRequest>({
 			query: (board: BoardRequest) => ({
 				url: `${BOARD_URL}/${board.id}`,
+				body: {name: board.name},
 				method: "PUT",
 			}),
 			invalidatesTags: ["Boards"]
@@ -95,7 +97,7 @@ export const boardApi = privateApi.injectEndpoints({
 				},
 				method: "POST",
 			}),
-			invalidatesTags: ["BoardTickets"]
+			invalidatesTags: ["Boards", "BoardTickets"]
 		}),
 		addBoardStatuses: builder.mutation<BoardStatusResponse, BoardStatusRequest>({
 			query: ({boardId, statusIds}) => ({
@@ -105,7 +107,7 @@ export const boardApi = privateApi.injectEndpoints({
 				},
 				method: "POST",
 			}),
-			invalidatesTags: ["BoardStatuses"]
+			invalidatesTags: ["Boards", "BoardStatuses"]
 		}),
 		bulkEditBoardStatuses: builder.mutation<BoardStatusResponse, BoardStatusRequest>({
 			query: ({boardId, statusIds}) => ({
@@ -115,21 +117,21 @@ export const boardApi = privateApi.injectEndpoints({
 				},
 				method: "POST"
 			}),
-			invalidatesTags: ["BoardStatuses"]
+			invalidatesTags: ["Boards", "BoardStatuses"]
 		}),
 		deleteBoardTicket: builder.mutation<BoardTicketResponse, {boardId: number, ticketId: number}>({
 			query: ({boardId, ticketId}) => ({
 				url: BOARD_TICKET_URL(boardId, ticketId),
 				method: "DELETE"
 			}),
-			invalidatesTags: ["BoardTickets"]	
+			invalidatesTags: ["Boards", "BoardTickets"]	
 		}),
 		deleteBoardStatus: builder.mutation<BoardStatusResponse, {boardId: number, statusId: number}>({
 			query: ({boardId, statusId}) => ({
 				url: BOARD_STATUS_URL(boardId, statusId),	
 				method: "DELETE"
 			}),
-			invalidatesTags: ["BoardStatuses"]
+			invalidatesTags: ["Boards", "BoardStatuses"]
 		})
 	}),
 })
@@ -139,6 +141,8 @@ export const {
 	useGetBoardsQuery, 
 	useGetBoardTicketsQuery,
 	useGetBoardStatusesQuery,
+	useAddBoardMutation,
+	useUpdateBoardMutation,
 	useAddBoardTicketsMutation,
 	useAddBoardStatusesMutation,
 	useDeleteBoardTicketMutation,

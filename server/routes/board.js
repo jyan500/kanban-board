@@ -23,10 +23,11 @@ router.get("/", async (req, res, next) => {
 		const boards = await db("boards").where("organization_id", req.user.organization)
 		.modify((queryBuilder) => {
 			if (req.query.lastModified === "true"){
-				queryBuilder.join("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
-				.join("boards_to_statuses","boards_to_statuses.board_id", "=", "boards.id")
+				queryBuilder.leftJoin("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
+				.leftJoin("boards_to_statuses","boards_to_statuses.board_id", "=", "boards.id")
 				.max("tickets_to_boards.updated_at as ticketsUpdatedAt")
 				.max("boards_to_statuses.updated_at as boardStatusesUpdatedAt")
+				.groupBy("boards.id")
 				.select(
 					"boards.updated_at as boardUpdatedAt",
 				)
@@ -35,6 +36,7 @@ router.get("/", async (req, res, next) => {
 		.select(
 			"boards.id as id", "boards.name as name", "boards.organization_id as organizationId"
 		)
+
 		let boardAssignees;
 		let boardAssigneesRes = {}
 		if (req.query.assignees === "true"){
@@ -69,13 +71,13 @@ router.get("/", async (req, res, next) => {
 					id: board.id,
 					name: board.name,
 					organizationId: board.organizationId,
-					...(req.query.lastModified === "true" ? {lastModified: lastUpdated} : {})
+					...(req.query.lastModified === "true" ? {lastModified: lastUpdated ?? null} : {})
 				}
 				if (req.query.assignees === "true" && board.id in boardAssigneesRes){
-					boardRes = {...boardRes, assignees: boardAssigneesRes[board.id]}
+					boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : 0}
 				}
 				if (req.query.numTickets === "true" && board.id in numTicketsRes){
-					boardRes = {...boardRes, numTickets: numTicketsRes[board.id].numTickets}
+					boardRes = {...boardRes, numTickets: Object.keys(numTicketsRes).length > 0 ? numTicketsRes[board.id].numTickets : 0}
 				}
 				return boardRes
 			})
