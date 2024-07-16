@@ -47,10 +47,11 @@ export const Register = () => {
 				{error && "status" in error ? (error.data.errors?.map((errorMessage) => <p className = "--text-alert" key = {uuidv4()}>{errorMessage}</p>)) : null}
 				<div className = "form-row">
 					<div className = "form-cell">
-					    <label>
+					    <label htmlFor = "register-firstname">
 					    	First Name: 
 					    </label>
 						<input 
+						id = "register-firstname"
 						type="text"
 						{...formRegister("firstName", registerOptions.firstName)}
 						/>
@@ -59,10 +60,11 @@ export const Register = () => {
 			    </div>
 			    <div className = "form-row">
 			    	<div className = "form-cell">
-					    <label>
+					    <label htmlFor = "register-lastname">
 					    	Last Name:
 					    </label>
 						<input 
+						id = "register-lastname"
 						type="text"
 						{...formRegister("lastName", registerOptions.lastName)}
 						/>
@@ -71,10 +73,11 @@ export const Register = () => {
 			    </div>
 			    <div className="form-row">
 			    	<div className="form-cell">
-					    <label>
+					    <label htmlFor = "register-email">
 					    	Email: 
 					    </label>
 						<input 
+						id = "register-email"
 						type="text"
 						{...formRegister("email", registerOptions.email)}
 						/>
@@ -83,10 +86,11 @@ export const Register = () => {
 			    </div>
 			    <div className="form-row">
 			    	<div className="form-cell">
-					    <label>
+					    <label htmlFor = "register-password">
 					    	Password:
 					    </label>
 						<input 
+						id = "register-password"
 						type="password"
 						{...formRegister("password", registerOptions.password)}
 						/>
@@ -95,11 +99,12 @@ export const Register = () => {
 			    </div>
 			    <div className="form-row">
 			    	<div className="form-cell">
-					    <label>
+					    <label htmlFor = "register-confirm-password">
 					    	Confirm Password:
 					    </label>
 					    <div className = "icon-input">
 							<input 
+							id = "register-confirm-password"
 							type={!showPassword ? "password" : "text"}
 							{...formRegister("confirmPassword", registerOptions.confirmPassword)}
 							/>

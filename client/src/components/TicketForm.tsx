@@ -173,15 +173,15 @@ export const TicketForm = () => {
 					<>
 						<div className = "form-row">
 							<div className = "form-cell">
-								<label>Name</label>
-								<input type = "text"
+								<label htmlFor="ticket-name">Name</label>
+								<input id = "ticket-name" type = "text"
 								{...register("name", registerOptions.name)}
 								/>
 						        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 							</div>
 							<div className = "form-cell">
-								<label>Status</label>
-								<select {...register("statusId", registerOptions.statusId)}>
+								<label htmlFor = "ticket-status">Status</label>
+								<select id = "ticket-status" {...register("statusId", registerOptions.statusId)}>
 									{statusesToDisplay.map((status: Status) => {
 										return <option key = {status.id} value = {status.id}>{status.name}</option>
 									})}
@@ -189,13 +189,13 @@ export const TicketForm = () => {
 						        {errors?.statusId && <small className = "--text-alert">{errors.statusId.message}</small>}
 							</div>
 							<div className = "form-cell">
-								<label>Description</label>
-								<textarea {...register("description", registerOptions.description)}></textarea>
+								<label htmlFor = "ticket-description">Description</label>
+								<textarea id = "ticket-description" {...register("description", registerOptions.description)}></textarea>
 						        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 							</div>
 								<div className = "form-cell">
-								<label>Priority</label>
-								<select {...register("priorityId", registerOptions.priorityId)}>
+								<label htmlFor = "ticket-priority">Priority</label>
+								<select id = "ticket-priority" {...register("priorityId", registerOptions.priorityId)}>
 									{priorities.map((priority: Priority) => {
 										return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
 									})}
@@ -203,8 +203,8 @@ export const TicketForm = () => {
 						        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
 							</div>
 							<div className = "form-cell">
-								<label>Ticket Type</label>
-								<select {...register("ticketTypeId", registerOptions.ticketTypeId)}>
+								<label htmlFor = "ticket-type">Ticket Type</label>
+								<select id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
 									{ticketTypes.map((ticketType: TicketType) => {
 										return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
 									})}
@@ -212,8 +212,8 @@ export const TicketForm = () => {
 						        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
 							</div>
 							<div className = "form-cell">
-								<label>Assignee</label>
-								<select {...register("userId", registerOptions.userId)}>
+								<label htmlFor = "ticket-assignee">Assignee</label>
+								<select id = "ticket-assignee" {...register("userId", registerOptions.userId)}>
 									{userProfiles.map((profile: UserProfile) => {
 										return <option disabled={
 											(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 

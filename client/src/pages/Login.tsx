@@ -59,10 +59,11 @@ export const Login = () => {
 				{location.state?.alert ? <p>{location.state.alert}</p> : null}
 				<div className = "form-row">
 					<div className = "form-cell">
-					    <label>
+					    <label htmlFor = "login-email">
 					    	Email: 
 					    </label>
 						<input 
+						id="login-email"
 						type="text"
 						{...register("email", registerOptions.email)}
 						/>
@@ -71,10 +72,11 @@ export const Login = () => {
 				</div>
 				<div className = "form-row">
 				    <div className = "form-cell">
-					    <label>
+					    <label htmlFor = "login-password">
 					    	Password:
 					    </label>
 						<input 
+						id="login-password"
 						type="password"
 						{...register("password", registerOptions.password)}
 						/>
@@ -83,10 +85,11 @@ export const Login = () => {
 				</div>
 				<div className = "form-row">
 				    <div className = "form-cell">
-					    <label>
+					    <label htmlFor = "login-organization">
 					    	Organization:
 					    </label>
 						<select 
+							id = "login-organization"
 							{...register("organizationId", registerOptions.organizationId)}
 						>
 							<option value = "">---</option>

@@ -161,10 +161,10 @@ export const StatusForm = () => {
 					return (
 						<div key = {status.id} className="form-row">
 							<div className = "form-cell">
-								<input checked = {formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
+								<input id = {`status-${status.id}`} checked = {formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
 							</div>
 							<div className = "form-cell">
-								<label>{status.name}</label>
+								<label htmlFor = {`status-${status.id}`}>{status.name}</label>
 							</div>
 						</div>
 					)
