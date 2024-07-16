@@ -16,6 +16,11 @@ type BoardRequest = {
 	name: string
 }
 
+type BoardResponse = {
+	id: number
+	message: string
+}
+
 type BoardTicketRequest = {
 	boardId: number
 	ticketIds: Array<number>
@@ -52,7 +57,7 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Boards"]
 		}),
-		addBoard: builder.mutation<void, BoardRequest>({
+		addBoard: builder.mutation<BoardResponse, BoardRequest>({
 			query: (board: BoardRequest) => ({
 				url: BOARD_URL,
 				body: {name: board.name},

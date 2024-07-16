@@ -52,7 +52,8 @@ export const BoardForm = () => {
 
     		}	
     		else {
-    			const data = await addBoard(values).unwrap()
+    			const res = await addBoard(values).unwrap()
+    			await bulkEditBoardStatuses({boardId: res.id, statusIds: formStatuses.map((status) => status.id)}).unwrap()
     		}
     		dispatch(toggleShowModal(false))
     		dispatch(addToast({
