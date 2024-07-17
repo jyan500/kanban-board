@@ -48,7 +48,8 @@ export const Modal = () => {
 					}
 				}
 				>
-				<IoMdClose className = "icon"/></button>
+					<IoMdClose className = "icon"/>
+				</button>
 				<div className = "modal">
 					<div className = "modal-content">
 						{

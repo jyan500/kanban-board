@@ -11,6 +11,9 @@ export const ToolBar = () => {
 	const { board } = useAppSelector((state) => state.board)
 	const { tickets } = useAppSelector((state) => state.ticket)
 	const { priorities } = useAppSelector((state) => state.priority)
+	const { userProfile } = useAppSelector((state) => state.userProfile)
+	const { userRoleLookup } = useAppSelector((state) => state.userRole)
+	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 
 	const prioritySort = (sortOrder: 1 | -1) => {
 		let sortedBoard = sortByPriority(
@@ -26,10 +29,13 @@ export const ToolBar = () => {
 					dispatch(toggleShowModal(true))
 					dispatch(setModalType("TICKET_FORM"))
 				}}>Add Ticket</button>
-				<button onClick = {() => {
-					dispatch(toggleShowModal(true))
-					dispatch(setModalType("STATUS_FORM"))
-				}}>Edit Statuses</button>
+				{
+					isAdminOrUserRole ? (
+					<button onClick = {() => {
+						dispatch(toggleShowModal(true))
+						dispatch(setModalType("STATUS_FORM"))
+					}}>Edit Statuses</button>) : null
+				}
 				<button className = "" onClick = {(e) => prioritySort(1)}>Sort By Priority</button>
 			</div>
 		</div>

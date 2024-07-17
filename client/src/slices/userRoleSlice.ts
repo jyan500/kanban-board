@@ -6,10 +6,12 @@ import { logout } from "./authSlice"
 
 type UserRoleState = {
     userRoles: Array<UserRole>
+    userRoleLookup: {[id: number]: string} 
 }
 
 const initialState: UserRoleState = {
-    userRoles: []
+    userRoles: [],
+    userRoleLookup: {},
 }
 
 const userRoleSlice = createSlice({
@@ -19,6 +21,9 @@ const userRoleSlice = createSlice({
         setUserRoles: (state, { payload: { userRoles }}: PayloadAction<{ userRoles: Array<UserRole>}>,
         ) => {
           state.userRoles = userRoles
+        },
+        setUserRoleLookup: (state, action: PayloadAction<{[id: number]: string}>) => {
+            state.userRoleLookup = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -28,6 +33,6 @@ const userRoleSlice = createSlice({
     }
 })
 
-export const { setUserRoles } = userRoleSlice.actions
+export const { setUserRoles, setUserRoleLookup } = userRoleSlice.actions
 
 export const userRoleReducer = userRoleSlice.reducer

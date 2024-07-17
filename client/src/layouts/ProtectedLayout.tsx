@@ -10,10 +10,11 @@ import { useGetTicketTypesQuery } from "../services/private/ticketType"
 import { useGetPrioritiesQuery } from "../services/private/priority" 
 import { useGetUserRolesQuery } from "../services/private/userRole" 
 import { setUserProfile, setUserProfiles } from "../slices/userProfileSlice" 
-import { setUserRoles } from "../slices/userRoleSlice" 
+import { setUserRoles, setUserRoleLookup } from "../slices/userRoleSlice" 
 import { setStatuses } from "../slices/statusSlice" 
 import { setTicketTypes } from "../slices/ticketTypeSlice" 
 import { setPriorities } from "../slices/prioritySlice"
+import { UserRole } from "../types/common" 
 
 const ProtectedLayout = () => {
 	const token = useAppSelector((state) => state.auth.token)	
@@ -47,6 +48,11 @@ const ProtectedLayout = () => {
 	        }
 	        if (userRoleData){
 	        	dispatch(setUserRoles({userRoles: userRoleData}))
+	        	const userRoleLookup: {[id: number]: string} = userRoleData.reduce((acc: {[id: number]: string}, obj: UserRole) => {
+        			acc[obj.id] = obj.name
+        			return acc
+	        	}, {})
+	        	dispatch(setUserRoleLookup(userRoleLookup))
 	        }
         }
     }, [userProfileData, ticketTypesData, statusData, priorityData]);

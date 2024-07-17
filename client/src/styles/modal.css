@@ -29,12 +29,8 @@
 
 .modal {
 	position: relative;
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-	flex-direction: row;
 	max-height:calc(100vh - 125px);
-	overflow:auto;
+	overflow-y:auto;
 }
 
 .modal-content {

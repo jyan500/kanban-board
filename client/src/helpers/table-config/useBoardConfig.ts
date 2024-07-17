@@ -10,11 +10,9 @@ export type BoardConfigType = {
 
 export const useBoardConfig = () => {
 	const { userProfiles, userProfile } = useAppSelector((state) => state.userProfile)
-	const { userRoles } = useAppSelector((state) => state.userRole)
+	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const dispatch = useAppDispatch()
-	const adminRole = userRoles.find((role) => role.name === "ADMIN")
-	const boardAdminRole = userRoles.find((role) => role.name === "BOARD_ADMIN")
-	const isAdminOrBoardAdmin = boardAdminRole?.id === userProfile?.userRoleId || adminRole?.id === userProfile?.userRoleId
+	const isAdminOrBoardAdmin = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	return {
 		headers: {
 			"name": "Name", 
