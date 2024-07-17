@@ -2,12 +2,18 @@ import React, { useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
-import { useAddBoardMutation, useUpdateBoardMutation, useBulkEditBoardStatusesMutation } from "../services/private/board" 
+import { 
+	useAddBoardMutation, 
+	useUpdateBoardMutation, 
+	useBulkEditBoardStatusesMutation, 
+	useGetBoardStatusesQuery 
+} from "../services/private/board" 
 import { useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import { addToast } from "../slices/toastSlice" 
 import { LoadingSpinner } from "./LoadingSpinner"
-import { Status } from "../types/common"
+import { Board, Status } from "../types/common"
+import { skipToken } from '@reduxjs/toolkit/query/react'
 
 type FormValues = {
 	id?: number
@@ -20,11 +26,14 @@ export const BoardForm = () => {
 		showModal
 	} = useAppSelector((state) => state.modal)
 	const { statuses } = useAppSelector((state) => state.status)
+	const { boardInfo, currentBoardId } = useAppSelector((state) => state.boardInfo)
 	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
 	}
 	const [ addBoard ] = useAddBoardMutation() 
+	const [ updateBoard ] = useUpdateBoardMutation()
+	const { data: statusData, isLoading: isStatusDataLoading } = useGetBoardStatusesQuery(currentBoardId ?? skipToken)
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const [formStatuses, setFormStatuses] = useState<Array<Status>>([])
 	const [ bulkEditBoardStatuses, {isLoading: isLoading, error: isError} ] =  useBulkEditBoardStatusesMutation() 
@@ -34,26 +43,32 @@ export const BoardForm = () => {
 	const registerOptions = {
 	    name: { required: "Name is required" },
     }
-	// useEffect(() => {
-	// 	// initialize with current values if the board exists
-	// 	if (currentTicketId){
-	// 		let ticket = tickets.find((t: Ticket) => t.id === currentTicketId)
-	// 		let ticketWithAssignee = {...ticket, userId: ticketAssignees?.length ? ticketAssignees[0].id : 0}
-	// 		reset(ticketWithAssignee)
-	// 	}
-	// 	else {
-	// 		reset(defaultForm)
-	// 	}
-	// }, [showModal, currentTicketId])
+	useEffect(() => {
+		// initialize with current values if the board exists
+		if (currentBoardId){
+			let board = boardInfo.find((b: Board) => b.id === currentBoardId)
+			reset({id: board?.id, name: board?.name})
+		}
+		else {
+			reset(defaultForm)
+		}
+	}, [showModal, currentBoardId])
+
+	useEffect(() => {
+		if (!isStatusDataLoading && statusData){
+			setFormStatuses(statusData)
+		}
+	}, [isStatusDataLoading, statusData])
 
     const onSubmit = async (values: FormValues) => {
     	try {
-    		if (values.id != null){
-
+    		if (values.id != null && currentBoardId){
+    			await updateBoard(values).unwrap()
+				await bulkEditBoardStatuses({boardId: currentBoardId, statusIds: formStatuses.map((status) => status.id)}).unwrap()
     		}	
     		else {
     			const res = await addBoard(values).unwrap()
-    			await bulkEditBoardStatuses({boardId: res.id, statusIds: formStatuses.map((status) => status.id)}).unwrap()
+				await bulkEditBoardStatuses({boardId: res.id, statusIds: formStatuses.map((status) => status.id)}).unwrap()
     		}
     		dispatch(toggleShowModal(false))
     		dispatch(addToast({
@@ -124,7 +139,7 @@ export const BoardForm = () => {
 				        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 					</div>
 				</div>
-				{ statuses.map((status) => (
+				{ !isStatusDataLoading ? (statuses.map((status) => (
 					<div key = {status.id} className="form-row">
 						<div className = "form-cell">
 							<input id = {`board-status-${status.id}`} checked = {formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
@@ -133,7 +148,7 @@ export const BoardForm = () => {
 							<label htmlFor = {`board-status-${status.id}`}>{status.name}</label>
 						</div>
 					</div>
-				))}
+				))) : <LoadingSpinner/>}
 				<div className = "form-row">
 					<div className = "btn-group">
 						<button onClick={handleSubmit(onSubmit)} className = "btn">Submit</button>

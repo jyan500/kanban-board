@@ -6,10 +6,12 @@ import { logout } from "./authSlice"
 
 type BoardInfoState = {
     boardInfo: Array<Board>
+    currentBoardId: number | null
 }
 
 const initialState: BoardInfoState = {
-    boardInfo: []
+    boardInfo: [],
+    currentBoardId: null 
 }
 
 const boardInfoSlice = createSlice({
@@ -20,6 +22,9 @@ const boardInfoSlice = createSlice({
         ) => {
             state.boardInfo = boardInfo
         },
+        setCurrentBoardId: (state, action: PayloadAction<number | null>) => {
+            state.currentBoardId = action.payload 
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(logout, () => {
@@ -28,6 +33,6 @@ const boardInfoSlice = createSlice({
     }
 })
 
-export const { setBoardInfo } = boardInfoSlice.actions
+export const { setCurrentBoardId, setBoardInfo } = boardInfoSlice.actions
 
 export const boardInfoReducer = boardInfoSlice.reducer

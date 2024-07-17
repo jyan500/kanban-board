@@ -8,13 +8,15 @@ import { Board as KanbanBoard } from "../components/Board"
 import { KanbanBoard as KanbanBoardType } from "../types/common" 
 import { setBoard, setBoardInfo, setStatusesToDisplay, setTickets as setBoardTickets } from "../slices/boardSlice" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
+import { skipToken } from '@reduxjs/toolkit/query/react'
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
+	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
-	const {data: boardData} = useGetBoardQuery(params.boardId ?? "")
-	const {data: boardTicketData} = useGetBoardTicketsQuery(params.boardId ?? "")
-	const {data: statusData} = useGetBoardStatusesQuery(params.boardId ?? "")
+	const {data: boardData} = useGetBoardQuery(boardId ?? skipToken)
+	const {data: boardTicketData} = useGetBoardTicketsQuery(boardId ?? skipToken)
+	const {data: statusData} = useGetBoardStatusesQuery(boardId ?? skipToken)
 	const board = useAppSelector((state) => state.board)
 	const { tickets } = useAppSelector((state) => state.ticket)
 

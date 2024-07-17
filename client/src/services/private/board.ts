@@ -50,7 +50,7 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Boards"]
 		}),
-		getBoard: builder.query<Array<Board>, string>({
+		getBoard: builder.query<Array<Board>, number>({
 			query: (id) => ({
 				url: `${BOARD_URL}/${id}`,
 				method: "GET",
@@ -80,14 +80,14 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Boards"]
 		}),
-		getBoardTickets: builder.query<Array<Ticket>, string>({
+		getBoardTickets: builder.query<Array<Ticket>, number>({
 			query: (id) => ({
 				url: BOARD_TICKET_URL(id, ""),
 				method: "GET",
 			}),
 			providesTags: ["BoardTickets"]
 		}),
-		getBoardStatuses: builder.query<Array<Status>, string>({
+		getBoardStatuses: builder.query<Array<Status>, number>({
 			query: (id) => ({
 				url: BOARD_STATUS_URL(id, ""),
 				method: "GET",
