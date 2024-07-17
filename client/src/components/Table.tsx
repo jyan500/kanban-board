@@ -26,9 +26,9 @@ export const Table = ({config, data}: Props) => {
 									<td><Link to = {config.link(row.id)}>{row[headerKey]}</Link></td>
 								)
 							}
-							else if (headerKey === config.editCol.col){
+							else if (headerKey === config.editCol?.col){
 								return (
-									<td><button onClick={() => config.editCol.onClick(row.id)}>{config.editCol.text}</button></td>
+									<td><button onClick={() => config.editCol?.onClick(row.id)}>{config.editCol?.text}</button></td>
 								)
 							}
 							else if (headerKey in config.modifiers){
