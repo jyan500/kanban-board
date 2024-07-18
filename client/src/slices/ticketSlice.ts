@@ -16,7 +16,7 @@ const ticketSlice = createSlice({
     name: 'ticket',
     initialState,
     reducers: {
-        setTicket: (state, {payload: { tickets }} : PayloadAction<{ tickets: Array<Ticket> }>) => {
+        setTickets: (state, {payload: { tickets }} : PayloadAction<{ tickets: Array<Ticket> }>) => {
         	state.tickets = tickets
         },
     },
@@ -27,6 +27,6 @@ const ticketSlice = createSlice({
     }
 })
 
-export const { setTicket } = ticketSlice.actions
+export const { setTickets } = ticketSlice.actions
 
 export const ticketReducer = ticketSlice.reducer

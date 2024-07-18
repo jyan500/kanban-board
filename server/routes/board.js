@@ -44,9 +44,9 @@ router.get("/", async (req, res, next) => {
 			.where("organization_id", req.user.organization)
 			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
 			.join("tickets_to_users", "tickets_to_boards.ticket_id", "=", "tickets_to_users.ticket_id")
+			.groupBy("boards.id")
 			.groupBy("tickets_to_users.user_id")
 			.select("boards.id as id", "tickets_to_users.user_id")
-
 			boardAssigneesRes = mapIdToRowAggregateArray(boardAssignees, "user_id")
 		}
 
