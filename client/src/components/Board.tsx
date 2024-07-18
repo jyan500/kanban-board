@@ -25,9 +25,8 @@ import { prioritySort as sortByPriority, sortStatusByOrder } from "../helpers/fu
 import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icons/io";
 
 export const Board = () => {
-	const {board, statusesToDisplay} = useAppSelector((state) => state.board)
+	const {board, tickets, statusesToDisplay} = useAppSelector((state) => state.board)
 	const { statuses: allStatuses } = useAppSelector((state) => state.status)
-	const { tickets } = useAppSelector((state) => state.ticket)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const dispatch = useAppDispatch()
 	const boardStyle = {

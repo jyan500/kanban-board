@@ -34,14 +34,14 @@ export const TicketForm = () => {
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
-	const { tickets } = useAppSelector((state) => state.ticket) 
+	// const { tickets } = useAppSelector((state) => state.ticket) 
 	const { userRoles } = useAppSelector((state) => state.userRole) 
 	const { 
 		currentTicketId, 
 		board, 
 		boardInfo, 
 		statusesToDisplay, 
-		tickets: boardTickets 
+		tickets 
 	} = useAppSelector((state) => state.board)
 	const {
 		showModal

@@ -18,7 +18,8 @@ interface BoardState {
 	board: KanbanBoard 
 	statusesToDisplay: Array<Status>
 	currentTicketId: number | null
-	tickets: Array<number>
+	// tickets: Array<number>
+	tickets: Array<Ticket>
 }
 
 const initialState: BoardState = {
@@ -45,7 +46,7 @@ export const boardSlice = createSlice({
 		selectCurrentTicketId(state, action: PayloadAction<number | null>){
 			state.currentTicketId = action.payload
 		},
-		setTickets(state, action: PayloadAction<Array<number>>){
+		setTickets(state, action: PayloadAction<Array<Ticket>>){
 			state.tickets = action.payload
 		},
 	},

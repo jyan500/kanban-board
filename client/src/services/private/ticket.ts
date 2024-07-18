@@ -21,12 +21,16 @@ type TicketAssigneeResponse = {
 export const ticketApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
-		getTickets: builder.query<Array<Ticket>, void>({
-			query: () => ({
+		getTickets: builder.query<Array<Ticket>, Record<string, any>>({
+			query: (urlParams) => ({
 				url: TICKET_URL,
 				method: "GET",
 			}),
 			providesTags: ["Tickets"],	
+			// providesTags: (result, error, arg) =>
+			// 	result
+			// 		? [...result.map(({id}) => ({ type: "Tickets" as const, id})), "Tickets"]
+			// 		: ["Tickets"]
 		}),
 		getTicket: builder.query<Array<Ticket>, number>({
 			query: (id) => ({
@@ -79,7 +83,8 @@ export const ticketApi = privateApi.injectEndpoints({
 					status_id: ticket.statusId
 				}
 			}),
-			invalidatesTags: ["Tickets"]
+			invalidatesTags: ["Tickets", "BoardTickets"]
+			// invalidatesTags: (result, error, arg) => [{type: "Tickets", id: arg.id}, {type: "BoardTickets", id: arg.id}]
 		}),
 		deleteTicket: builder.mutation<{message: string}, number>({
 			query: (ticketId) => ({

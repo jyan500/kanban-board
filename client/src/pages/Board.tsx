@@ -18,27 +18,23 @@ export const Board = () => {
 	const {data: boardTicketData} = useGetBoardTicketsQuery(boardId ?? skipToken)
 	const {data: statusData} = useGetBoardStatusesQuery(boardId ?? skipToken)
 	const board = useAppSelector((state) => state.board)
-	const { tickets } = useAppSelector((state) => state.ticket)
 
 	useEffect(() => {
 		if (boardData?.length){
 			let board: KanbanBoardType = {}
 			let ids: Array<number> = [];
 			if (statusData?.length){
-				ids = boardTicketData?.length ? boardTicketData.map((ticket) => ticket.id) : []
-				let boardTickets = tickets.filter((t) => ids.includes(t.id))
 				for (let i = 0; i < statusData.length; ++i){
 					// find the tickets that belong to the board
-					board[statusData[i].id] = boardTickets?.length ? boardTickets.filter((ticket) => ticket.statusId === statusData[i].id).map((ticket) => ticket.id) : [] 
+					board[statusData[i].id] = boardTicketData?.length ? boardTicketData.filter((ticket) => ticket.statusId === statusData[i].id).map((ticket) => ticket.id) : [] 
 				}
 			}
 			dispatch(setBoard(board))
 			dispatch(setBoardInfo(boardData[0]))
-			// get only the ids of the tickets and track the ids only
-			dispatch(setBoardTickets(ids))
+			dispatch(setBoardTickets(boardTicketData ?? []))
 			dispatch(setStatusesToDisplay(statusData ?? []))
 		}
-	}, [tickets, boardData, statusData, boardTicketData])
+	}, [boardData, statusData, boardTicketData])
 
 	return (
 		<div>

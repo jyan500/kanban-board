@@ -16,8 +16,6 @@ export const BoardDisplay = () => {
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const {data: boardData } = useGetBoardsQuery({lastModified: true, numTickets: true, assignees: true})
-	// TODO: need to optimize, as getting every ticket from an organization is not feasible for large sizes
-	const {data: ticketData } = useGetTicketsQuery()
 	const config: BoardConfigType = useBoardConfig()
 	const dispatch = useAppDispatch()
 
@@ -27,15 +25,12 @@ export const BoardDisplay = () => {
 	}
 
 	useEffect(() => {
-		if (ticketData?.length){
-			dispatch(setTickets({tickets: ticketData}))
-		}
 		if (boardData?.length){
 			dispatch(setBoardInfo({
 				boardInfo: boardData.map((b) => ({id: b.id, organizationId: b.organizationId, name: b.name}))})
 			)
 		}
-	}, [boardData, ticketData])
+	}, [boardData])
 
 	return (
 		<div>
