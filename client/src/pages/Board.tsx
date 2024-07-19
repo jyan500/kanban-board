@@ -6,7 +6,7 @@ import {
 	useGetBoardStatusesQuery } from "../services/private/board"
 import { Board as KanbanBoard } from "../components/Board" 
 import { KanbanBoard as KanbanBoardType } from "../types/common" 
-import { setBoard, setBoardInfo, setStatusesToDisplay, setTickets as setBoardTickets } from "../slices/boardSlice" 
+import { setBoard, setBoardInfo, setStatusesToDisplay, setFilteredTickets, setTickets as setBoardTickets } from "../slices/boardSlice" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
 
@@ -32,6 +32,7 @@ export const Board = () => {
 			dispatch(setBoard(board))
 			dispatch(setBoardInfo(boardData[0]))
 			dispatch(setBoardTickets(boardTicketData ?? []))
+			dispatch(setFilteredTickets(boardTicketData ?? []))
 			dispatch(setStatusesToDisplay(statusData ?? []))
 		}
 	}, [boardData, statusData, boardTicketData])

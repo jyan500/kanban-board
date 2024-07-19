@@ -236,18 +236,15 @@ a {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	font-weight: bold;
 
 	& .icon {
 		margin-right: var(--s-spacing);
 	}
+}
 
-	& a {
-		font-weight: bold;
-	}
-
-	& a:hover {
-		color: var(--bs-primary);
-	}
+.link-container:hover {
+	color: var(--bs-primary);	
 }
 
 .form-container {

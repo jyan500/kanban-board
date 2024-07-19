@@ -1,12 +1,17 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { FaSearch } from "react-icons/fa";
 import "../styles/searchbar.css"
 
-export const SearchBar = () => {
+type Props = {
+	placeholder: string
+	onChange: (value: string) => void
+}
+
+export const SearchBar = ({placeholder, onChange}: Props) => {
 	return (
 		<div className = "searchbar">
 			<FaSearch className = "icon searchbar--icon"/>
-			<input className = "--icon-shift" type = "text"/>
+			<input onChange={(e) => onChange(e.target.value)} placeholder = {placeholder} className = "--icon-shift" type = "text"/>
 		</div>
 	)	
 }

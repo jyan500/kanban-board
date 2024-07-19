@@ -18,8 +18,8 @@ interface BoardState {
 	board: KanbanBoard 
 	statusesToDisplay: Array<Status>
 	currentTicketId: number | null
-	// tickets: Array<number>
 	tickets: Array<Ticket>
+	filteredTickets: Array<Ticket>
 }
 
 const initialState: BoardState = {
@@ -27,6 +27,7 @@ const initialState: BoardState = {
 	board: {},
 	statusesToDisplay: [],
 	tickets: [],
+	filteredTickets: [],
 	currentTicketId: null
 }
 
@@ -49,6 +50,9 @@ export const boardSlice = createSlice({
 		setTickets(state, action: PayloadAction<Array<Ticket>>){
 			state.tickets = action.payload
 		},
+		setFilteredTickets(state, action: PayloadAction<Array<Ticket>>){
+			state.filteredTickets = action.payload
+		}
 	},
     extraReducers: (builder) => {
         builder.addCase(logout, () => {
@@ -63,5 +67,6 @@ export const {
 	setBoardInfo,
 	setStatusesToDisplay,
 	setTickets,
+	setFilteredTickets,
 } = boardSlice.actions
 export const boardReducer = boardSlice.reducer 

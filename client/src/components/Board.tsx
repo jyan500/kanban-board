@@ -25,7 +25,7 @@ import { prioritySort as sortByPriority, sortStatusByOrder } from "../helpers/fu
 import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icons/io";
 
 export const Board = () => {
-	const {board, tickets, statusesToDisplay} = useAppSelector((state) => state.board)
+	const {board, filteredTickets, tickets, statusesToDisplay} = useAppSelector((state) => state.board)
 	const { statuses: allStatuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const dispatch = useAppDispatch()
@@ -63,7 +63,7 @@ export const Board = () => {
 								{/*<button className = "--transparent" onClick={() => prioritySort(-1, status.id)}><ArrowDown className = "icon"/></button>*/}
 							</div>
 							{board[status.id]?.map((ticketId: number) => {
-								const ticket = tickets.find((t: TicketType) => t.id === ticketId)
+								const ticket = filteredTickets.find((t: TicketType) => t.id === ticketId)
 								return (
 									<div 
 										key = {ticketId} 

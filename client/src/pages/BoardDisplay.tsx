@@ -42,10 +42,10 @@ export const BoardDisplay = () => {
 			</div>
 			{
 				boardId != null ? (
-					<div className = "link-container">
+					<Link className = "link-container" to = {`/boards`}>
 						<ArrowBackward className = "icon"/>
-						<Link to = {`/boards`}>Return to Boards</Link>
-					</div>
+						<span>Return to Boards</span>
+					</Link>
 				) : (
 					<Table data={boardData} config={config}/>
 				)
