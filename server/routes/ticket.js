@@ -9,6 +9,10 @@ const {
 	validateTicketUserCreate,
 	validateTicketUserDelete,
 	validateTicketUserBulkEdit,
+	validateTicketCommentGet,
+	validateTicketCommentCreate,
+	validateTicketCommentUpdate,
+	validateTicketCommentDelete,
 
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
@@ -61,7 +65,8 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			priority_id: body.priority_id,
 			status_id: body.status_id,
 			ticket_type_id: body.ticket_type_id,
-			organization_id: body.organization_id
+			organization_id: body.organization_id,
+			user_id: req.user.id
 		}, ["id"])
 		res.json({id: id[0], message: "Ticket inserted successfully!"})
 	}	
@@ -148,6 +153,68 @@ router.delete("/:ticketId/user/:userId", validateTicketUserGet, handleValidation
 	}	
 	catch (err) {
 		console.log(`Error while getting assigned user for ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:ticketId/comment", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const comments = await db("ticket_comments").where("ticket_id", req.params.ticketId)
+		res.json(comments)
+	}	
+	catch (err) {
+		console.log(`Error while getting comments for ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:ticketId/comment/:commentId", validateTicketCommentGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const comment = await db("ticket_comments").where("id", req.params.id)
+		req.json(comment)
+	}	
+	catch (err) {
+		console.log(`Error while getting comment for ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationResult, async (req, res, next) => {
+	try {
+		const id = await db("ticket_comments").insert({
+			comment: req.body.comment,
+			ticket_id: req.params.ticketId,
+			user_id: req.user.id
+		}, ["id"])
+		res.json({id: id[0], message: "Comment inserted successfully!"})
+	}
+	catch (err){
+		console.log(`Error while creating comment for ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("ticket_comments").where("id", req.params.commentId).update(
+		{
+			comment: req.body.comment
+		})	
+		res.json({message: "Comment updated successfully!"})
+	}	
+	catch (err) {
+		console.log(`Error while updating comment: ${err.message}`)
+		next(err)
+	}
+})
+
+router.delete("/:ticketId/comment/:commentId", validateTicketCommentDelete, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("ticket_comments").where("id", req.params.commentId).del()
+		res.json({message: "Comment deleted successfully!"})
+	}	
+	catch (err){
+		console.log(`Error while deleting comment: ${err.message}`)
 		next(err)
 	}
 })

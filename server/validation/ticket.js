@@ -95,6 +95,37 @@ const ticketUserValidator = (actionType) => {
 	return validationRules
 }
 
+const ticketCommentValidator = (actionType) => {
+	let validationRules = [
+		param("ticketId").custom(async (value, {req}) => await checkEntityExistsIn("ticket", req.params.ticketId, [{
+			col: "id", 
+			value: req.params.ticketId 
+		},
+		{
+			col: "organization_id",
+			value: req.user.organization
+		}], "tickets"))
+	]
+
+	if (actionType === "get" || actionType === "delete") {
+		validationRules = [
+			...validationRules, 
+			param("commentId").custom(async (value, {req}) => await checkEntityExistsIn("ticket_comments", value, [{
+				col: "id",
+				value: value	
+			},
+			], "ticket_comments")),
+		]	
+	}
+	else if (actionType === "create") {
+		validationRules = [
+			...validationRules,
+			body("comment").notEmpty().withMessage("comment is required")
+		]
+	}
+	return validationRules
+}
+
 module.exports = {
 	validateGet: ticketValidator("get"),
 	validateCreate: ticketValidator("create"),
@@ -103,5 +134,9 @@ module.exports = {
 	validateTicketUserGet: ticketUserValidator("get"),
 	validateTicketUserCreate: ticketUserValidator("create"),
 	validateTicketUserDelete: ticketUserValidator("delete"),
-	validateTicketUserBulkEdit: ticketUserValidator("bulk-edit")
+	validateTicketUserBulkEdit: ticketUserValidator("bulk-edit"),
+	validateTicketCommentGet: ticketCommentValidator("get"),
+	validateTicketCommentCreate: ticketCommentValidator("create"),
+	validateTicketCommentUpdate: ticketCommentValidator("update"),
+	validateTicketCommentDelete: ticketCommentValidator("delete"),
 }

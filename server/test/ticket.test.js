@@ -201,6 +201,75 @@ describe("routes: ticket", function() {
 			const assignedUsers = await db("tickets_to_users").where("ticket_id", ticketId[0])
 			assert.equal(assignedUsers.length, 0)
 		})
+		it("can create comment on ticket", async () => {
+			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")
+			const ticketId = await db("tickets").insert([{
+				"name": "ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			}], ["id"])
+			const payload = {
+				"comment": "This is a comment",
+				"user_id": userId1,
+				"ticket_id": ticketId[0],
+			}
+			const res = await chai.request(app).post(`/api/ticket/${ticketId[0]}/comment`).set({
+				"Authorization": `Bearer ${token}`
+			}).send(payload)
+			res.status.should.equal(200)
+			const comments = await db("ticket_comments").where("ticket_id", ticketId[0])
+			assert.equal(comments.length, 1)
+		})
+		it("can get comment on ticket by comment id", async () => {
+			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")
+			const ticketId = await db("tickets").insert([{
+				"name": "ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			}], ["id"])
+			const comment = await db("ticket_comments").insert([{
+				"comment": "test",
+				"ticket_id": ticketId[0],
+				"user_id": userId1
+			}], ["id"])
+			const res = await chai.request(app).put(`/api/ticket/${ticketId[0]}/comment/${comment[0]}`).set({
+				"Authorization": `Bearer ${token}`
+			}).send({
+				comment: "Test Update"
+			})
+			res.status.should.equal(200)
+			const updatedComment = await db("ticket_comments").where("id", comment[0])
+			assert.equal(updatedComment.length, 1)
+			assert.equal(updatedComment[0].comment, "Test Update")
+		})
+		it("can delete comment on ticket by comment id", async () => {
+			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")
+			const ticketId = await db("tickets").insert([{
+				"name": "ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			}], ["id"])
+			const comment = await db("ticket_comments").insert([{
+				"comment": "test",
+				"ticket_id": ticketId[0],
+				"user_id": userId1
+			}], ["id"])
+			const res = await chai.request(app).delete(`/api/ticket/${ticketId[0]}/comment/${comment[0]}`).set({
+				"Authorization": `Bearer ${token}`
+			})
+			res.status.should.equal(200)
+			const updatedComment = await db("ticket_comments").where("id", comment[0])
+			assert.equal(updatedComment.length, 0)
+		})
 	})
 })
 
