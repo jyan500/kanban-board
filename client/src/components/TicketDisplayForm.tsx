@@ -42,6 +42,19 @@ export const TicketDisplayForm = () => {
 		userId: 0 
 	}	
 	const [form, setForm] = useState<FormValues>(ticket as FormValues ?? defaultForm)
+
+	const toggleFieldVisibility = (field: string, flag: boolean) => {
+		let fieldVisibility = {...editFieldVisibility}
+		for (let key in fieldVisibility){
+			if (key === field){
+				fieldVisibility[key] = flag
+			}
+			else {
+				fieldVisibility[key] = false
+			}
+		}
+		setEditFieldVisibility(fieldVisibility)
+	}
 	return (
 		<div className = "ticket-display-container">
 			<div className = "ticket-body">
@@ -49,24 +62,34 @@ export const TicketDisplayForm = () => {
 					<>
 					{
 						!editFieldVisibility.name ? (
-							<div onClick = {(e) => setEditFieldVisibility({...editFieldVisibility, name: true})} className = "__ticket-title --l-text">
+							<div onClick = {(e) => toggleFieldVisibility("name", true)} className = "__ticket-title --l-text">
 								{ticket?.name}
 							</div>
 						) : (
-							<InlineEdit value={ticket?.name ?? ""} setValue={(value: string) => setForm({...form, name: value})} onCancel={() => {setEditFieldVisibility({...editFieldVisibility, name: false})}}/>
+							<InlineEdit type = "text" value={ticket?.name ?? ""} setValue={(value: string) => setForm({...form, name: value})} onCancel={() => {toggleFieldVisibility("name", false)}}/>
 						)
 					}
 					</>
 					<div className = "__ticket-description">
 						<strong>Description</strong>
-						<p>{ticket?.description}</p>
+						<>
+							{
+								!editFieldVisibility.description ? (
+									<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "__ticket-description">
+										{ticket?.description}
+									</div>
+								) : (
+									<InlineEdit type = "textarea" value={ticket?.description ?? ""} setValue={(value: string) => setForm({...form, description: value})} onCancel={() => toggleFieldVisibility("description", false)}/>
+								)
+							}
+						</>
 					</div>
 				</div>
 				<div className = "ticket-sidebar">
 					<select value = {ticket?.statusId} className = "__select">
 						{statusesToDisplay.map((status) => {
 								return (
-									<option  key = {status.id} value = {status.id}>{status.name}</option>
+									<option key = {status.id} value = {status.id}>{status.name}</option>
 								)
 							})
 						}
