@@ -17,15 +17,16 @@ from "../services/private/ticket"
 import { addToast } from "../slices/toastSlice" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSpinner } from "./LoadingSpinner"
+import { MdOutlineArrowBackIosNew as ArrowBackward } from "react-icons/md"
 
-type FormValues = {
+export type FormValues = {
 	id?: number
 	name: string
 	description: string
 	priorityId: number
 	statusId: number
 	ticketTypeId: number
-	userId?: number
+	userId: number
 }
 
 export const TicketForm = () => {

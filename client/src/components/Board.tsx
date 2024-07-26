@@ -69,7 +69,7 @@ export const Board = () => {
 										key = {ticketId} 
 										onClick = {() => {
 											dispatch(toggleShowModal(true))
-											dispatch(setModalType("TICKET_FORM"))
+											dispatch(setModalType("TICKET_DISPLAY_FORM"))
 											dispatch(selectCurrentTicketId(ticketId))
 										}}
 										className = "cell">

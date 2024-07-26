@@ -82,8 +82,8 @@ router.get("/:ticketId/user", validateGet, handleValidationResult, async (req, r
 		.join("users", "users.id", "=", "tickets_to_users.user_id")
 		.where("ticket_id", req.params.ticketId).select(
 			"users.id",
-			"users.first_name",
-			"users.last_name",
+			"users.first_name as firstName",
+			"users.last_name as lastName",
 			"users.email"
 		)
 		res.json(assignedUsers)
@@ -102,8 +102,8 @@ router.get("/:ticketId/user/:userId", validateTicketUserGet, handleValidationRes
 		.where("user_id", req.params.userId)
 		.select(
 			"users.id",
-			"users.first_name",
-			"users.last_name",
+			"users.first_name as firstName",
+			"users.last_name as lastName",
 			"users.email",
 		).first()
 		res.json(assignedUser)

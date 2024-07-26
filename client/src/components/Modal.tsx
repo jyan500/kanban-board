@@ -4,14 +4,20 @@ import "../styles/modal.css"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { TicketForm } from "./TicketForm" 
+import { TicketDisplayForm } from "./TicketDisplayForm" 
 import { StatusForm } from "./StatusForm" 
 import { BoardForm } from "./BoardForm" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 
 export const modalTypes = {
 	"TICKET_FORM": TicketForm,
+	"TICKET_DISPLAY_FORM": TicketDisplayForm,
 	"STATUS_FORM": StatusForm,
 	"BOARD_FORM": BoardForm,
+}
+
+export const modalClassNames = {
+	"TICKET_DISPLAY_FORM": "--l-modal"
 }
 
 // type for partial subset of keys
@@ -30,11 +36,17 @@ export const Modal = () => {
 				dispatch(selectCurrentTicketId(null))
 			}
 		},
+		"TICKET_DISPLAY_FORM": {
+			dismissHandler: () => {
+				dispatch(toggleShowModal(false))
+				dispatch(selectCurrentTicketId(null))
+			}
+		}
 	} 
 
 	return (
 		<div className = {`overlay ${showModal ? "--visible": "--hidden"}`}>
-			<div className = "modal-container">
+			<div className = {`modal-container ${currentModalType in modalClassNames ? modalClassNames[currentModalType as keyof typeof modalClassNames] : ""}`}>
 				<button 
 				className = "__modal-container-close --transparent"
 				onClick={

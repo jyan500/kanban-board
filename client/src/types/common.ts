@@ -44,6 +44,7 @@ export interface Ticket {
 	statusId: number
 	ticketTypeId: number
 	organizationId: number
+	userId: number
 }
 
 export interface Cell {

@@ -29,6 +29,7 @@
 	}
 
 	& .__title {
+		padding: var(--s-spacing);
 		& .__field {
 			margin-left: var(--s-spacing);
 		}	

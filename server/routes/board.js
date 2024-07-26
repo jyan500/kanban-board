@@ -141,7 +141,8 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			"tickets.description as description",
 			"tickets.status_id as statusId",
 			"tickets.ticket_type_id as ticketTypeId",
-			"tickets.organization_id as organizationId"
+			"tickets.organization_id as organizationId",
+			"tickets.user_id as userId"
 		)
 		res.json(tickets)
 

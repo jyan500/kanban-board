@@ -17,7 +17,6 @@
 	padding: 20px;
 	border: 1px solid #888;
 	background-color: white;
-	min-width: 500px;
 
 	& .__modal-container-close {
 		position: absolute;
@@ -34,9 +33,9 @@
 }
 
 .modal-content {
+	margin-top: var(--l-spacing);
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	width: 500px;
 }

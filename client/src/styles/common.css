@@ -38,15 +38,15 @@
 	--toast-list-padding: 1em;
 	--toast-bg-color-fallback: hsl(var(--secondary-hue) 15% 100%);
   --toast-text-color-fallback: hsl(var(--secondary-hue) 10% 25%);
-	--margin-form-gap: 1.5em;
-	--margin-btn-gap: 1em;
+	--margin-form-gap: 1em;
+	--margin-btn-gap: .5em;
 	--margin-label: 0.5em;
 	--height-textarea: 250px;
 	--height-nav: 8em;
 	--icon-gap: .5em;
 	--opacity-input-disabled: 0.5;
-	--padding-inputs: .75em;
-	--padding-btn: .75em;
+	--padding-inputs: .5em;
+	--padding-btn: .5em;
 	--radius-inputs: .25em;
 	--height-icon: 20px;
 	--width-icon: 20px;
@@ -68,10 +68,29 @@
 	--width-textarea: 450px;
 	--width-menu: 600px;
 	--z-index-top: 99;
-	-xs-spacing: 4px;
+	--xs-spacing: 4px;
 	--s-spacing: 8px;
 	--m-spacing: 16px;
+	--ml-spacing: 24px;
 	--l-spacing: 32px;
+}
+
+h1,h2,h3 {
+	font-weight: bold;
+	margin-top: var(--s-spacing);
+	margin-bottom: var(--s-spacing);
+}
+
+h1 {
+	font-size: var(--l-spacing);
+}
+
+h2 {
+	font-size: var(--ml-spacing);
+}
+
+h3 {
+	font-size: var(--m-spacing);
 }
 
 textarea {
@@ -233,10 +252,9 @@ a {
 }
 
 .link-container {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
 	font-weight: bold;
+	display: inline-flex;
+	align-items: center;
 
 	& .icon {
 		margin-right: var(--s-spacing);
@@ -245,6 +263,15 @@ a {
 
 .link-container:hover {
 	color: var(--bs-primary);	
+}
+
+.icon-container {
+	display: inline-flex;
+	align-items: center;
+
+	& svg {
+		margin-right: var(--s-spacing);
+	}
 }
 
 .form-container {
@@ -349,4 +376,7 @@ a {
 	flex-direction: row;
 }
 
+.--l-modal {
+	min-width: 1000px;
+}
 
