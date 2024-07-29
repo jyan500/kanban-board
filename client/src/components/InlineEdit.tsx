@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { useFormContext } from "react-hook-form"
 import "../styles/inline-edit.css"
 
 type Props = {
@@ -6,10 +7,13 @@ type Props = {
 	value: string
 	setValue: (val: string) => void
 	onCancel: () => void
+	registerField: string
+	registerOptions: Record<string, any>
 }
 
-export const InlineEdit = ({type, value, setValue, onCancel}: Props) => {
+export const InlineEdit = ({type, value, setValue, onCancel, registerField, registerOptions}: Props) => {
 	const [editingValue, setEditingValue] = useState(value)
+	const { register } = useFormContext()
 
 	const onTextInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setEditingValue(e.target.value)
@@ -31,9 +35,9 @@ export const InlineEdit = ({type, value, setValue, onCancel}: Props) => {
 		case "text":
 			element = (
 				<input
+					{...register(registerField, registerOptions)}
 					type="text"
 					aria-label="editable-field-text"
-					value={value}
 					onChange={onTextInputChange}
 					onKeyDown={onKeyDown}
 				/>
@@ -42,8 +46,8 @@ export const InlineEdit = ({type, value, setValue, onCancel}: Props) => {
 		case "textarea":
 			element = (
 				<textarea 
+					{...register(registerField, registerOptions)}
 					aria-label="editable-field-textarea"
-					value={value}
 					onChange={onTextAreaChange}
 					onKeyDown={onKeyDown}
 				>
@@ -53,9 +57,9 @@ export const InlineEdit = ({type, value, setValue, onCancel}: Props) => {
 			break
 		default:
 			element = (<input
+					{...register(registerField, registerOptions)}
 					type="text"
 					aria-label="editable-field"
-					value={value}
 					onChange={onTextInputChange}
 					onKeyDown={onKeyDown}
 				/>)

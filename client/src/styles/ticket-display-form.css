@@ -10,17 +10,14 @@
 	gap: var(--margin-form-gap);
 }
 
-.__ticket-title {
-	font-weight: bold;	
-}
-
-.__ticket-title:hover {
+.__ticket-display-field:hover {
 	opacity: .7;
 	cursor: pointer;
 }
 
-.__ticket-description {
-
+.__ticket-title {
+	font-weight: bold;	
+	font-size: var(--l-spacing);
 }
 
 .ticket-main {
