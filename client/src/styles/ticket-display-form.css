@@ -28,7 +28,7 @@
 	flex: 1;
 }
 
-.__select {
+.status-select {
 	background: var(--bs-primary);
 	text-align: center;
 	border: 1px solid var(--bs-primary);
@@ -40,13 +40,18 @@
 	}
 }
 
-
 .ticket-details-container {
 }
 
 .ticket-details {
 	display: flex;
 	flex-direction: row;
+
+	& .__table {
+		& .__table-select {
+			width: 80%;	
+		}
+	}
 }
 
 .__comment {

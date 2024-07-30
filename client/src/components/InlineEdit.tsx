@@ -5,28 +5,19 @@ import "../styles/inline-edit.css"
 type Props = {
 	type: string
 	value: string
-	setValue: (val: string) => void
+	onSubmit: () => void
 	onCancel: () => void
 	registerField: string
 	registerOptions: Record<string, any>
 }
 
-export const InlineEdit = ({type, value, setValue, onCancel, registerField, registerOptions}: Props) => {
-	const [editingValue, setEditingValue] = useState(value)
-	const { register } = useFormContext()
-
-	const onTextInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setEditingValue(e.target.value)
-	}
-
-	const onTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setEditingValue(e.target.value)
-	}
+export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, registerOptions}: Props) => {
+	const { handleSubmit, register, resetField, setValue } = useFormContext()
 
 	const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
 		if (e.key === "Enter" || e.key === "Escape"){
 			(e.target as HTMLElement).blur()
-			setEditingValue(value)
+			setValue(registerField, value)
 		}	
 	}
 
@@ -38,7 +29,6 @@ export const InlineEdit = ({type, value, setValue, onCancel, registerField, regi
 					{...register(registerField, registerOptions)}
 					type="text"
 					aria-label="editable-field-text"
-					onChange={onTextInputChange}
 					onKeyDown={onKeyDown}
 				/>
 			)
@@ -48,7 +38,6 @@ export const InlineEdit = ({type, value, setValue, onCancel, registerField, regi
 				<textarea 
 					{...register(registerField, registerOptions)}
 					aria-label="editable-field-textarea"
-					onChange={onTextAreaChange}
 					onKeyDown={onKeyDown}
 				>
 					
@@ -60,7 +49,6 @@ export const InlineEdit = ({type, value, setValue, onCancel, registerField, regi
 					{...register(registerField, registerOptions)}
 					type="text"
 					aria-label="editable-field"
-					onChange={onTextInputChange}
 					onKeyDown={onKeyDown}
 				/>)
 			break
@@ -72,8 +60,12 @@ export const InlineEdit = ({type, value, setValue, onCancel, registerField, regi
 				{element}
 			</div>
 			<div className = "btn-group">
-				<button onClick={(e) => setValue(editingValue)}>Save</button>
-				<button onClick={onCancel} className = "--alert">Cancel</button>
+				<button type = "button" onClick={onSubmit}>Save</button>
+				<button type = "button" onClick={(e) => {
+					resetField(registerField)
+					onCancel()
+				}
+				} className = "--alert">Cancel</button>
 			</div>
 		</div>
 	)
