@@ -43,7 +43,7 @@ export const Ticket = ({ticket}: PropType) => {
 	return (
 		<div className = "ticket-card --card-shadow">
 			<div>
-				<div className = "__row __header">
+				<div className = "__header">
 					<span className = "--m-text">{ticket.name}</span>
 					<CgProfile className="--l-icon"/>
 				</div>

@@ -3,7 +3,6 @@
 	padding: var(--s-spacing);
 	word-wrap: break-word;
 	background-color: white;
-	
 
 	& .__row {
 		display: flex;	
@@ -15,10 +14,12 @@
 	}
 
 	& .__header {
+		display: flex;	
+		flex-direction: row;
 		justify-content: space-between;
-
 		& span {
 			font-weight: bold;	
+			max-width: 80%;
 		}
 
 		& svg {

@@ -155,10 +155,10 @@ export const TicketDisplayForm = () => {
 	const userProfileSelect = ( 
 		<select {...register("userId", registerOptions.userId)}
 		className = "__table-select"
-		onChange={(e) => {
+		onChange={async (e) => {
 			setValue("userId", parseInt(e.target.value))
+		    await handleSubmit(onSubmit)()
 			toggleFieldVisibility("assignee", false)
-		    handleSubmit(onSubmit)()
 		}}
 		onBlur = {(e) => toggleFieldVisibility("assignee", false)}
 		>
@@ -173,10 +173,10 @@ export const TicketDisplayForm = () => {
 	const ticketTypeSelect = (
 		<select {...register("ticketTypeId", registerOptions.ticketTypeId)} 
 		className = "__table-select"
-		onChange={(e) => {
+		onChange={async (e) => {
 			setValue("ticketTypeId", parseInt(e.target.value))
+			await handleSubmit(onSubmit)()
 			toggleFieldVisibility("ticket-type", false)
-			handleSubmit(onSubmit)()
 		}}
 		onBlur = {(e) => toggleFieldVisibility("ticket-type", false)}>
 			{ticketTypes?.map((ticketType: TicketType) => {
@@ -190,10 +190,10 @@ export const TicketDisplayForm = () => {
 	const prioritySelect = (
 		<select {...register("priorityId", registerOptions.priorityId)} 
 		className = "__table-select"
-		onChange={(e) => {
+		onChange={async (e) => {
 			setValue("priorityId", parseInt(e.target.value))
+			await handleSubmit(onSubmit)()
 			toggleFieldVisibility("priority", false)
-			handleSubmit(onSubmit)()
 		}}
 		onBlur = {(e) => toggleFieldVisibility("priority", false)}>
 			{priorities?.map((priority: Priority) => {
@@ -218,7 +218,10 @@ export const TicketDisplayForm = () => {
 									</div>
 								) : (
 									<>
-										<InlineEdit onSubmit = {handleSubmit(onSubmit)} registerField = {"name"} registerOptions = {registerOptions.name} type = "text" value={watch("name")} onCancel={() => {toggleFieldVisibility("name", false)}}/>
+										<InlineEdit onSubmit = {async () => {
+											await handleSubmit(onSubmit)()
+											toggleFieldVisibility("name", false)
+										}} registerField = {"name"} registerOptions = {registerOptions.name} type = "text" value={watch("name")} onCancel={() => {toggleFieldVisibility("name", false)}}/>
 								        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 							        </>
 								)
@@ -234,7 +237,10 @@ export const TicketDisplayForm = () => {
 											</div>
 										) : (
 											<>
-												<InlineEdit onSubmit={handleSubmit(onSubmit)} registerField = {"description"} registerOptions = {registerOptions.description} type = "textarea" value={watch("description")} onCancel={() => toggleFieldVisibility("description", false)}/>
+												<InlineEdit onSubmit={async () => {
+													await handleSubmit(onSubmit)()
+													toggleFieldVisibility("description", false)
+												}} registerField = {"description"} registerOptions = {registerOptions.description} type = "textarea" value={watch("description")} onCancel={() => toggleFieldVisibility("description", false)}/>
 										        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 											</>
 										)
