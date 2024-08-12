@@ -42,29 +42,24 @@ export const Ticket = ({ticket}: PropType) => {
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name
 	return (
 		<div className = "ticket-card --card-shadow">
-			<div>
-				<div className = "__header">
-					<span className = "--m-text">{ticket.name}</span>
-					<CgProfile className="--l-icon"/>
-				</div>
-				<div className = "__row">
-					{ticket.description}	
-				</div>
-				<div className = "__row __icon">
-					{ticketType && ticketType in ticketTypeIconMap ? (
-						ticketTypeIconMap[ticketType]
-					) : <></>}
-					{priority && priority in priorityIconMap ? 
-					(
-						<IconContext.Provider value = {{color: priority && priority in colorMap ? colorMap[priority] : "", className: "icon"}}>
-							{priority && priority in priorityIconMap && (
-								<div className = {`--icon-thumb`}>
-									{priorityIconMap[priority]}
-								</div>)}
-						</IconContext.Provider>
-					)
-					: <></>}
-				</div>
+			<div className = "__header">
+				<span className = "--s-text">{ticket.name}</span>
+				<CgProfile className="--l-icon"/>
+			</div>
+			<div className = "__row __icon">
+				{ticketType && ticketType in ticketTypeIconMap ? (
+					ticketTypeIconMap[ticketType]
+				) : <></>}
+				{priority && priority in priorityIconMap ? 
+				(
+					<IconContext.Provider value = {{color: priority && priority in colorMap ? colorMap[priority] : "", className: "icon"}}>
+						{priority && priority in priorityIconMap && (
+							<div className = {`--icon-thumb`}>
+								{priorityIconMap[priority]}
+							</div>)}
+					</IconContext.Provider>
+				)
+				: <></>}
 			</div>
 		</div>
 	)	

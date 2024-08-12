@@ -15,7 +15,7 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 	const { handleSubmit, register, resetField, setValue } = useFormContext()
 
 	const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-		if (e.key === "Enter" || e.key === "Escape"){
+		if (e.key === "Escape"){
 			(e.target as HTMLElement).blur()
 			setValue(registerField, value)
 		}	

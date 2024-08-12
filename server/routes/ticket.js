@@ -27,7 +27,8 @@ router.get("/", async (req, res, next) => {
 			"tickets.description as description",
 			"tickets.status_id as statusId",
 			"tickets.ticket_type_id as ticketTypeId",
-			"tickets.organization_id as organizationId"
+			"tickets.organization_id as organizationId",
+			"tickets.created_at as createdAt"
 		)
 		res.json(tickets)
 	}
@@ -46,7 +47,8 @@ router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, n
 			"tickets.description as description",
 			"tickets.status_id as statusId",
 			"tickets.ticket_type_id as ticketTypeId",
-			"tickets.organization_id as organizationId"
+			"tickets.organization_id as organizationId",
+			"tickets.created_at as createdAt"
 		)
 		res.json(tickets)
 	}	

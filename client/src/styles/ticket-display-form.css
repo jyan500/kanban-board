@@ -17,7 +17,7 @@
 
 .__ticket-title {
 	font-weight: bold;	
-	font-size: var(--l-spacing);
+	font-size: var(--ml-spacing);
 }
 
 .ticket-main {
@@ -65,3 +65,8 @@
 		margin-right: var(--s-spacing);
 	}
 }
+
+.--invisible {
+	border: 0;
+}
+

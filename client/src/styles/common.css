@@ -321,15 +321,15 @@ a {
 }
 
 .--s-text {
-	font-size: 16px;
+	font-size: var(--m-spacing);
 }
 
 .--m-text{
-	font-size: 24px;
+	font-size: var(--ml-spacing);
 }
 
 .--l-text {
-	font-size: 36px;
+	font-size: var(--l-spacing);
 }
 
 .--l-icon {

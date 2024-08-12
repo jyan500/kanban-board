@@ -142,7 +142,8 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			"tickets.status_id as statusId",
 			"tickets.ticket_type_id as ticketTypeId",
 			"tickets.organization_id as organizationId",
-			"tickets.user_id as userId"
+			"tickets.user_id as userId",
+			"tickets.created_at as createdAt"
 		)
 		res.json(tickets)
 
@@ -179,7 +180,8 @@ router.get("/:boardId/ticket/:ticketId", validateBoardTicketGet, handleValidatio
 			"tickets.description as description",
 			"tickets.status_id as statusId",
 			"tickets.ticket_type_id as ticketTypeId",
-			"tickets.organization_id as organizationId"
+			"tickets.organization_id as organizationId",
+			"tickets.created_at as createdAt"
 		)
 		res.json(tickets)
 

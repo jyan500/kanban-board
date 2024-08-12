@@ -4,13 +4,15 @@
 	word-wrap: break-word;
 	background-color: white;
 
+	& div {
+		margin-top: var(--xs-spacing);
+		margin-bottom: var(--xs-spacing);
+	}
+
 	& .__row {
 		display: flex;	
 		flex-direction: row;
 		align-items: center;
-		& + & {
-			margin-top: var(--icon-gap);
-		} 
 	}
 
 	& .__header {
@@ -24,6 +26,7 @@
 
 		& svg {
 			flex-shrink: 0;
+			margin-top: var(--xs-spacing);
 		}
 
 	}

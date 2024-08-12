@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react"
 import "../styles/ticket-display-form.css"
 import { CgProfile } from "react-icons/cg"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
+import { useClickOutside } from "../hooks/useClickOutside"
 import { LoadingSpinner } from "./LoadingSpinner"
 import { 
 	useGetTicketAssigneesQuery, 
@@ -39,6 +40,7 @@ export const TicketDisplayForm = () => {
 		showModal
 	} = useAppSelector((state) => state.modal)
 	const ticket = tickets.find((ticket) => ticket.id === currentTicketId)
+	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
 	const reporter = userProfiles?.find((user) => user.id === ticket?.userId)
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
 		"name": false,
@@ -60,7 +62,7 @@ export const TicketDisplayForm = () => {
 	const methods = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
-	const { register , handleSubmit, reset , setFocus, setValue, watch, formState: {errors} } = methods
+	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
 	    name: { required: "Name is required" },
 	    description: { required: "Description is required"},
@@ -72,6 +74,9 @@ export const TicketDisplayForm = () => {
 	const adminRole = userRoles?.find((role) => role.name === "ADMIN")
 	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
 
+	const userIdRegisterMethods = register("userId", registerOptions.userId)
+	const ticketTypeIdRegisterMethods = register("ticketTypeId", registerOptions.ticketTypeId)
+	const priorityIdRegisterMethods = register("priorityId", registerOptions.priorityId)
 
 	const toggleFieldVisibility = (field: string, flag: boolean) => {
 		let fieldVisibility = {...editFieldVisibility}
@@ -122,7 +127,6 @@ export const TicketDisplayForm = () => {
 	}
 
 	const onSubmit = async (values: FormValues) => {
-		console.log("here")
     	try {
     		// update existing ticket
     		if (values.id != null){
@@ -153,12 +157,12 @@ export const TicketDisplayForm = () => {
 
 
 	const userProfileSelect = ( 
-		<select {...register("userId", registerOptions.userId)}
-		className = "__table-select"
+		<select {...userIdRegisterMethods}
+		className = {`${editFieldVisibility.assignees ? "" : "--invisible"} __table-select`}
 		onChange={async (e) => {
 			setValue("userId", parseInt(e.target.value))
-		    await handleSubmit(onSubmit)()
 			toggleFieldVisibility("assignee", false)
+		    await handleSubmit(onSubmit)()
 		}}
 		onBlur = {(e) => toggleFieldVisibility("assignee", false)}
 		>
@@ -171,12 +175,12 @@ export const TicketDisplayForm = () => {
 	)
 
 	const ticketTypeSelect = (
-		<select {...register("ticketTypeId", registerOptions.ticketTypeId)} 
-		className = "__table-select"
+		<select {...ticketTypeIdRegisterMethods} 
+		className = {`${editFieldVisibility["ticket-type"] ? "" : "--invisible"} __table-select`}
 		onChange={async (e) => {
 			setValue("ticketTypeId", parseInt(e.target.value))
-			await handleSubmit(onSubmit)()
 			toggleFieldVisibility("ticket-type", false)
+			await handleSubmit(onSubmit)()
 		}}
 		onBlur = {(e) => toggleFieldVisibility("ticket-type", false)}>
 			{ticketTypes?.map((ticketType: TicketType) => {
@@ -188,12 +192,12 @@ export const TicketDisplayForm = () => {
 	)
 
 	const prioritySelect = (
-		<select {...register("priorityId", registerOptions.priorityId)} 
-		className = "__table-select"
+		<select {...priorityIdRegisterMethods} 
+		className = {`${editFieldVisibility["priority"] ? "" : "--invisible"} __table-select`}
 		onChange={async (e) => {
 			setValue("priorityId", parseInt(e.target.value))
-			await handleSubmit(onSubmit)()
 			toggleFieldVisibility("priority", false)
+			await handleSubmit(onSubmit)()
 		}}
 		onBlur = {(e) => toggleFieldVisibility("priority", false)}>
 			{priorities?.map((priority: Priority) => {
@@ -273,31 +277,16 @@ export const TicketDisplayForm = () => {
 											<tr>
 												<td>Assignee</td>
 												<td>
-												{!isTicketAssigneesLoading ? (ticketAssignees?.length === 0 ? (
-													<>
-														{!editFieldVisibility.assignees ? (
-															<span onClick = {(e) => {
-																toggleFieldVisibility("assignees", true)
-																setFocus("userId")
-															}} className = "__ticket-display-field">No Assignees</span>
-														) : (
-															userProfileSelect
-														)}
-													</>
-												) : (
-													<>
-														{!editFieldVisibility.assignees ? (
-															<div onClick = {(e) => {
-																toggleFieldVisibility("assignees", true)
-																setFocus("userId")
-														}} className = "__ticket-display-field icon-container">
-																<CgProfile className = "--l-icon"/>
-																{displayUser(watch("userId"))}
-															</div>) : (
-															userProfileSelect
-														)}
-													</>
-												)): <LoadingSpinner/>}
+												{!isTicketAssigneesLoading ? (
+													<div onClick={(e) => {
+														toggleFieldVisibility("assignees", true)
+													}}
+													className = "__ticket-display-field icon-container"
+													>
+														<CgProfile className = "--l-icon"/>
+														{userProfileSelect}	
+													</div>
+												): <LoadingSpinner/>}
 												</td>
 											</tr>
 											<tr>
@@ -308,43 +297,21 @@ export const TicketDisplayForm = () => {
 											</tr>
 											<tr>
 												<td>Priority</td>
-												<td>
-													{
-														!editFieldVisibility["priority"] ? (
-															<div onClick = {(e) => {
-																toggleFieldVisibility("priority", true)
-																setFocus("priorityId")
-															}} className = "__ticket-display-field">
-																{priorities.find((priority) => priority.id == watch("priorityId"))?.name}
-															</div>
-														) : (
-															prioritySelect
-														)	
-													}
+												<td className = "__table-display-field" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
+													{prioritySelect}
 												</td>
 											</tr>
 											<tr>
 												<td>Ticket Type</td>
-												<td>
-													{
-														!editFieldVisibility["ticket-type"] ? (
-															<div onClick = {(e) => {
-																toggleFieldVisibility("ticket-type", true)
-																setFocus("ticketTypeId")
-															}} className = "__ticket-display-field">
-																{ticketTypes.find((ticketType) => ticketType.id == watch("ticketTypeId"))?.name}
-															</div>
-														) : (
-															ticketTypeSelect
-														)
-													}
+												<td className = "__table-display-field" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
+													{ticketTypeSelect}
 												</td>
 											</tr>
 										</tbody>
 									</table>
 								</div>
 							</div>
-							<div><span>Created yesterday</span></div>
+							<div><span>Created {createdAt}</span></div>
 						</div>
 					</div>
 				</form>
