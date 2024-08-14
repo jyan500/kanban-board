@@ -19,19 +19,14 @@ type TicketAssigneeResponse = {
 	message: string
 }
 
-type CommentBody = {
-	id?: number	
-	comment: string
-}
-
 type AddTicketCommentRequest = {
 	ticketId: number
-	comment: {comment: string}
+	comment: Omit<TicketComment, "id" | "createdAt">
 }
 
 type UpdateTicketCommentRequest = {
 	ticketId: number
-	comment: {id: number, comment: string}
+	comment: Omit<TicketComment, "createdAt">
 }
 
 type DeleteTicketCommentRequest = {
@@ -70,14 +65,25 @@ export const ticketApi = privateApi.injectEndpoints({
 		addTicketComment: builder.mutation<{id: number, message: string}, AddTicketCommentRequest>({
 			query: ({ticketId, comment}) => ({
 				url: TICKET_COMMENT_URL(ticketId, ""),
-				method: "POST"
+				method: "POST",
+				body: {
+					ticket_id: comment.ticketId,
+					user_id: comment.userId,
+					comment: comment.comment
+				}
 			}),
 			invalidatesTags: ["TicketComments"]
 		}),
 		updateTicketComment: builder.mutation<{id: number, message: string}, UpdateTicketCommentRequest>({
 			query: ({ticketId, comment}) => ({
 				url: TICKET_COMMENT_URL(ticketId, comment.id),
-				method: "PUT"
+				method: "PUT",
+				body: {
+					id: comment.id,
+					ticket_id: comment.ticketId,
+					user_id: comment.userId,
+					comment: comment.comment
+				}
 			}),
 			invalidatesTags: ["TicketComments"]
 		}),
