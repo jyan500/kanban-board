@@ -6,6 +6,7 @@ import { IoMdClose } from "react-icons/io";
 import { Link, useLocation } from 'react-router-dom';
 import { CgProfile } from "react-icons/cg";
 import { LoadingSpinner } from "./LoadingSpinner" 
+import { displayUser } from "../helpers/functions"
 
 interface Props {
 	isFetching: boolean
@@ -72,7 +73,7 @@ export const SideBar = ({isFetching}: Props) => {
 									<CgProfile className = "--l-icon"/>
 								</div>
 								<div>
-									<span>{`${userProfile?.firstName} ${userProfile?.lastName}`}</span>
+									<span>{displayUser(userProfile)}</span>
 									<small>{organizations.find((org) => org.id === userProfile?.organizationId)?.name}</small>
 								</div>
 							</>

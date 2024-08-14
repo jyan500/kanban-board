@@ -2,7 +2,6 @@ import React, {useState, useEffect} from "react"
 import "../styles/ticket-display-form.css"
 import { CgProfile } from "react-icons/cg"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
-import { useClickOutside } from "../hooks/useClickOutside"
 import { LoadingSpinner } from "./LoadingSpinner"
 import { 
 	useGetTicketAssigneesQuery, 
@@ -16,6 +15,8 @@ import { Ticket, TicketType, Priority, UserProfile } from "../types/common"
 import { FormValues } from "./TicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
+import { displayUser } from "../helpers/functions"
+import { TicketCommentForm } from "./TicketCommentForm"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -56,7 +57,7 @@ export const TicketDisplayForm = () => {
 		priorityId: 0,
 		statusId: 0,
 		ticketTypeId: 0,
-		userId: 0 
+		userId: 0,
 	}	
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({
@@ -118,14 +119,6 @@ export const TicketDisplayForm = () => {
 		}
 	}, [ticketAssignees])
 
-	const displayUser = (id: number | undefined) => {
-		if (id){
-			const user = userProfiles.find((user) => user.id == id)
-			return user ? (user.firstName + " " + user.lastName) : ""
-		}
-		return ""
-	}
-
 	const onSubmit = async (values: FormValues) => {
     	try {
     		// update existing ticket
@@ -169,7 +162,7 @@ export const TicketDisplayForm = () => {
 			{userProfiles.map((profile: UserProfile) => {
 				return <option disabled={
 					(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
-					(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{profile.firstName + " " + profile.lastName}</option>
+					(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{displayUser(profile)}</option>
 			})}
 		</select>
 	)
@@ -292,7 +285,10 @@ export const TicketDisplayForm = () => {
 											<tr>
 												<td>Reporter</td>
 												<td>
-													<div className = "icon-container"><CgProfile className = "--l-icon"/>{reporter?.firstName} {reporter?.lastName}</div>
+													<div className = "icon-container">
+														<CgProfile className = "--l-icon"/>
+														<div className = "--reporter">{displayUser(reporter)}</div>
+													</div>
 												</td>
 											</tr>
 											<tr>
@@ -316,38 +312,7 @@ export const TicketDisplayForm = () => {
 					</div>
 				</form>
 			</FormProvider>
-			<div className = "ticket-comments">
-				<div>
-					<div className = "__comment">
-						<CgProfile className = "--l-icon"/>
-						<div>
-							<div>
-								<span>UserName #2</span>
-								<span>10 minutes ago</span>
-							</div>
-							<p>My first comment ...</p>
-							<div>
-								<span>Edit</span>
-								<span>Delete</span>
-							</div>
-						</div>
-					</div>
-					<div className = "__comment">
-						<CgProfile className = "--l-icon"/>
-						<div>
-							<div>
-								<span>UserName #1</span>
-								<span></span>
-							</div>
-							<p>My Second comment ...</p>
-							<div>
-								<span>Edit</span>
-								<span>Delete</span>
-							</div>
-						</div>
-					</div>
-				</div>	
-			</div>
+			<TicketCommentForm/>
 		</div>
 	)	
 }

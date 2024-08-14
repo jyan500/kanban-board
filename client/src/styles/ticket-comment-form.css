@@ -1,0 +1,20 @@
+.__comment {
+	display: flex;
+	flex-direction: row;
+	align-items: start;
+	margin-top: var(--s-spacing);
+	margin-bottom: var(--s-spacing);
+
+	& svg {
+		margin-right: var(--s-spacing);
+	}
+}
+
+.--fake-input {
+	border: 1px solid var(--bs-light-gray);
+	background-color: transparent;
+	color: var(--bs-light-gray);
+	width: 400px;
+	padding-top: var(--xs-spacing);
+	padding-button: var(--xs-spacing);
+}

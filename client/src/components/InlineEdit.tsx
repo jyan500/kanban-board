@@ -36,6 +36,8 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 		case "textarea":
 			element = (
 				<textarea 
+					rows={10}
+					cols={30}
 					{...register(registerField, registerOptions)}
 					aria-label="editable-field-textarea"
 					onKeyDown={onKeyDown}
@@ -65,7 +67,7 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 					resetField(registerField)
 					onCancel()
 				}
-				} className = "--alert">Cancel</button>
+				} className = "--secondary">Cancel</button>
 			</div>
 		</div>
 	)

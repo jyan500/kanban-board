@@ -191,7 +191,7 @@ export const TicketForm = () => {
 							</div>
 							<div className = "form-cell">
 								<label htmlFor = "ticket-description">Description</label>
-								<textarea id = "ticket-description" {...register("description", registerOptions.description)}></textarea>
+								<textarea rows={8} id = "ticket-description" {...register("description", registerOptions.description)}></textarea>
 						        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 							</div>
 								<div className = "form-cell">

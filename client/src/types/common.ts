@@ -48,6 +48,14 @@ export interface Ticket {
 	createdAt: Date
 }
 
+export interface TicketComment {
+	id: number
+	comment: string	
+	userId: number
+	ticketId: number
+	createdAt: Date
+}
+
 export interface Cell {
 	id: number 
 	rowNum?: number

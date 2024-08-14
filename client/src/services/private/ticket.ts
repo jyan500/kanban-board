@@ -3,10 +3,11 @@ import { RootState } from "../../store"
 import { 
 	BACKEND_BASE_URL, 
 	TICKET_URL, 
+	TICKET_COMMENT_URL,
 	TICKET_ASSIGNEES_URL, 
 	TICKET_BULK_EDIT_ASSIGNEES_URL } 
 from "../../helpers/urls" 
-import { CustomError, Ticket, UserProfile } from "../../types/common" 
+import { CustomError, Ticket, TicketComment, UserProfile } from "../../types/common" 
 import { privateApi } from "../private"
 
 type TicketAssigneeRequest = {
@@ -16,6 +17,26 @@ type TicketAssigneeRequest = {
 
 type TicketAssigneeResponse = {
 	message: string
+}
+
+type CommentBody = {
+	id?: number	
+	comment: string
+}
+
+type AddTicketCommentRequest = {
+	ticketId: number
+	comment: {comment: string}
+}
+
+type UpdateTicketCommentRequest = {
+	ticketId: number
+	comment: {id: number, comment: string}
+}
+
+type DeleteTicketCommentRequest = {
+	ticketId: number
+	commentId: number
 }
 
 export const ticketApi = privateApi.injectEndpoints({
@@ -38,6 +59,34 @@ export const ticketApi = privateApi.injectEndpoints({
 				method: "GET",
 			}),
 			providesTags: ["Tickets"],	
+		}),
+		getTicketComments: builder.query<Array<TicketComment>, number>({
+			query: (ticketId) => ({
+				url: TICKET_COMMENT_URL(ticketId, ""),
+				method: "GET"
+			}),
+			providesTags: ["TicketComments"]
+		}),
+		addTicketComment: builder.mutation<{id: number, message: string}, AddTicketCommentRequest>({
+			query: ({ticketId, comment}) => ({
+				url: TICKET_COMMENT_URL(ticketId, ""),
+				method: "POST"
+			}),
+			invalidatesTags: ["TicketComments"]
+		}),
+		updateTicketComment: builder.mutation<{id: number, message: string}, UpdateTicketCommentRequest>({
+			query: ({ticketId, comment}) => ({
+				url: TICKET_COMMENT_URL(ticketId, comment.id),
+				method: "PUT"
+			}),
+			invalidatesTags: ["TicketComments"]
+		}),
+		deleteTicketComment: builder.mutation<{message: string}, DeleteTicketCommentRequest>({
+			query: ({ticketId, commentId}) => ({
+				url: TICKET_COMMENT_URL(ticketId, commentId),
+				method: "DELETE"
+			}),
+			invalidatesTags: ["TicketComments"]
 		}),
 		getTicketAssignees: builder.query<Array<UserProfile>, number>({
 			query: (ticketId) => ({
@@ -103,5 +152,9 @@ export const {
 	useUpdateTicketMutation,
 	useDeleteTicketMutation,
 	useGetTicketAssigneesQuery,
+	useGetTicketCommentsQuery,
+	useAddTicketCommentMutation,
+	useUpdateTicketCommentMutation,
+	useDeleteTicketCommentMutation,
 	useBulkEditTicketAssigneesMutation,
 } = ticketApi 

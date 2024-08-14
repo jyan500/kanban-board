@@ -6,6 +6,7 @@ import { logout } from "../slices/authSlice"
 import { CgProfile } from "react-icons/cg"
 import { LoadingSpinner } from "./LoadingSpinner"
 import { privateApi } from "../services/private" 
+import { displayUser } from "../helpers/functions"
 
 interface Props {
 	isFetching: boolean
@@ -33,7 +34,7 @@ export const TopNav = ({isFetching}: Props) => {
 							<CgProfile className = "--l-icon"/>
 						</div>
 						<div>
-							<span>{`${userProfile?.firstName} ${userProfile?.lastName}`}</span>
+							<span>{displayUser(userProfile)}</span>
 						</div>
 					</>
 				) : (

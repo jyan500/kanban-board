@@ -15,6 +15,11 @@
 	cursor: pointer;
 }
 
+.--reporter {
+	padding: var(--s-spacing);
+	margin-left: 6px;
+}
+
 .__ticket-title {
 	font-weight: bold;	
 	font-size: var(--ml-spacing);
@@ -54,19 +59,7 @@
 	}
 }
 
-.__comment {
-	display: flex;
-	flex-direction: row;
-	align-items: start;
-	margin-top: var(--s-spacing);
-	margin-bottom: var(--s-spacing);
-
-	& svg {
-		margin-right: var(--s-spacing);
-	}
-}
-
 .--invisible {
-	border: 0;
+	border-color: transparent;
 }
 

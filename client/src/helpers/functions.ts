@@ -1,4 +1,4 @@
-import type { KanbanBoard, Cell, Status, Toast, Ticket, Priority } from "../types/common"
+import type { KanbanBoard, Cell, Status, Toast, Ticket, Priority, UserProfile } from "../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { AppDispatch } from "../store"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
@@ -123,6 +123,13 @@ export const parseURLParams = (params: Record<string, any>) => {
 	}, "")
 }
 
+/**
+ * @param user
+ * @return string containing the users' first and last name if the user exists, otherwise returns an empty string
+ */
+export const displayUser = (user: UserProfile | null | undefined) => {
+	return user ? (user.firstName + " " + user.lastName) : ""
+}
 
 
 

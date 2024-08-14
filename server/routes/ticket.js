@@ -161,7 +161,13 @@ router.delete("/:ticketId/user/:userId", validateTicketUserGet, handleValidation
 
 router.get("/:ticketId/comment", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const comments = await db("ticket_comments").where("ticket_id", req.params.ticketId)
+		const comments = await db("ticket_comments").where("ticket_id", req.params.ticketId).select(
+			"id as id",
+			"user_id as userId",
+			"ticket_id as ticketId",
+			"comment as comment",
+			"created_at as createdAt"
+		)
 		res.json(comments)
 	}	
 	catch (err) {
@@ -172,7 +178,12 @@ router.get("/:ticketId/comment", validateGet, handleValidationResult, async (req
 
 router.get("/:ticketId/comment/:commentId", validateTicketCommentGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const comment = await db("ticket_comments").where("id", req.params.id)
+		const comment = await db("ticket_comments").where("id", req.params.id).select(
+			"id as id",
+			"user_id as userId",
+			"ticket_id as ticketId",
+			"comment as comment",
+		)
 		req.json(comment)
 	}	
 	catch (err) {

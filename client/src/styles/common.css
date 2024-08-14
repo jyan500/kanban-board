@@ -94,8 +94,6 @@ h3 {
 }
 
 textarea {
-	width: var(--width-textarea);
-	min-height: var(--height-textarea);
 	max-width: 100%;
 }
 
@@ -271,6 +269,7 @@ a {
 
 	& svg {
 		margin-right: var(--s-spacing);
+		flex-shrink: 0;
 	}
 }
 
@@ -314,6 +313,10 @@ a {
 
 .--alert {
 	background-color: var(--bs-danger);
+}
+
+.--secondary {
+	background-color: var(--bs-secondary);
 }
 
 .--text-alert {
@@ -378,5 +381,6 @@ a {
 
 .--l-modal {
 	min-width: 1000px;
+	min-height: 700px;
 }
 
