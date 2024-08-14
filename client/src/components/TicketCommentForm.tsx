@@ -172,7 +172,7 @@ export const TicketCommentForm = () => {
 			)) : null}
 			<div>
 				{ticketComments?.map((comment: TicketComment) => (
-					<div className = "__comment">
+					<div key = { comment.id } className = "__comment">
 						<CgProfile className = "--l-icon"/>
 						<div>
 							<div className = "btn-group">
