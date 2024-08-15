@@ -11,6 +11,24 @@ import { ModificationIcon } from "../assets/icons/ModificationIcon"
 import { FeatureIcon } from "../assets/icons/FeatureIcon"
 import { CgProfile } from "react-icons/cg";
 
+export const priorityIconMap: {[key: string]: ReactNode} = {
+	"Low": <LowPriorityIcon/>,	
+	"Medium": <MediumPriorityIcon/>,
+	"High": <HighPriorityIcon/>,
+}
+
+export const ticketTypeIconMap: {[key: string]: ReactNode} = {
+	"Feature": <FeatureIcon className="icon"/>,
+	"Modification": <ModificationIcon className="icon"/>,
+	"Bug": <BugIcon className="icon"/>,
+}
+
+export const colorMap: {[key: string]: string} = {
+	"Low": "var(--bs-primary)",
+	"Medium": "var(--bs-warning)",
+	"High": "var(--bs-danger)"	
+}
+
 type PropType = {
 	ticket: TicketType
 }
@@ -20,23 +38,6 @@ export const Ticket = ({ticket}: PropType) => {
 	const {statuses} = useAppSelector((state) => state.status)
 	const {ticketTypes} = useAppSelector((state) => state.ticketType)
 
-	const priorityIconMap: {[key: string]: ReactNode} = {
-		"Low": <LowPriorityIcon/>,	
-		"Medium": <MediumPriorityIcon/>,
-		"High": <HighPriorityIcon/>,
-	}
-
-	const ticketTypeIconMap: {[key: string]: ReactNode} = {
-		"Feature": <FeatureIcon className="icon"/>,
-		"Modification": <ModificationIcon className="icon"/>,
-		"Bug": <BugIcon className="icon"/>,
-	}
-
-	const colorMap: {[key: string]: string} = {
-		"Low": "var(--bs-primary)",
-		"Medium": "var(--bs-warning)",
-		"High": "var(--bs-danger)"	
-	}
 
 	const priority = priorities.find((p) => p.id === ticket.priorityId)?.name
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name

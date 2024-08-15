@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react"
+import { IconContext } from "react-icons"
 import "../styles/ticket-display-form.css"
 import { CgProfile } from "react-icons/cg"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
@@ -17,6 +18,7 @@ import { addToast } from "../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
+import { priorityIconMap, ticketTypeIconMap, colorMap } from "./Ticket"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -78,6 +80,9 @@ export const TicketDisplayForm = () => {
 	const userIdRegisterMethods = register("userId", registerOptions.userId)
 	const ticketTypeIdRegisterMethods = register("ticketTypeId", registerOptions.ticketTypeId)
 	const priorityIdRegisterMethods = register("priorityId", registerOptions.priorityId)
+
+	const ticketTypeName = ticketTypes.find((ticketType) => ticketType.id === watch("ticketTypeId"))?.name
+	const priorityName = priorities.find((priority) => priority.id === watch("priorityId"))?.name
 
 	const toggleFieldVisibility = (field: string, flag: boolean) => {
 		let fieldVisibility = {...editFieldVisibility}
@@ -294,13 +299,23 @@ export const TicketDisplayForm = () => {
 											<tr>
 												<td>Priority</td>
 												<td className = "__table-display-field" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
-													{prioritySelect}
+													<div className = "icon-container">
+														<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "--l-icon"}}>
+															{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
+														</IconContext.Provider>
+														{prioritySelect}
+													</div>
 												</td>
 											</tr>
 											<tr>
 												<td>Ticket Type</td>
 												<td className = "__table-display-field" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
-													{ticketTypeSelect}
+													<div className = "icon-container">
+														<div className = "tw-ml-1.5">
+															{ticketTypeName && ticketTypeName in ticketTypeIconMap ? ticketTypeIconMap[ticketTypeName] : null}
+														</div>
+														{ticketTypeSelect}
+													</div>
 												</td>
 											</tr>
 										</tbody>
