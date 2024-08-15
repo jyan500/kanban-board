@@ -95,6 +95,23 @@ const ticketUserValidator = (actionType) => {
 	return validationRules
 }
 
+const ticketStatusValidator = () => {
+	let validationRules = [
+		param("ticketId").custom(async (value, {req}) => await checkEntityExistsIn("ticket", req.params.ticketId, [{
+			col: "id", 
+			value: req.params.ticketId 
+		},
+		{
+			col: "organization_id",
+			value: req.user.organization
+		}], "tickets")),
+		body("status_id").notEmpty().withMessage("status_id is required").custom(async (value, {req}) => 
+			await checkEntityExistsIn("status", value, [{"col": "id", "value": value}], "statuses")
+		),
+	]	
+	return validationRules
+}
+
 const ticketCommentValidator = (actionType) => {
 	let validationRules = [
 		param("ticketId").custom(async (value, {req}) => await checkEntityExistsIn("ticket", req.params.ticketId, [{
@@ -139,4 +156,5 @@ module.exports = {
 	validateTicketCommentCreate: ticketCommentValidator("create"),
 	validateTicketCommentUpdate: ticketCommentValidator("update"),
 	validateTicketCommentDelete: ticketCommentValidator("delete"),
+	validateTicketStatusUpdate: ticketStatusValidator(),
 }

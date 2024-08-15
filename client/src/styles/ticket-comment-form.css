@@ -1,5 +1,5 @@
 .ticket-comments {
-	overflow-y: scroll;
+	overflow-y: auto;
 	max-height: calc(var(--l-modal-height)/2);
 }
 

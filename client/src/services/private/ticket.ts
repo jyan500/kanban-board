@@ -4,6 +4,7 @@ import {
 	BACKEND_BASE_URL, 
 	TICKET_URL, 
 	TICKET_COMMENT_URL,
+	TICKET_STATUS_URL,
 	TICKET_ASSIGNEES_URL, 
 	TICKET_BULK_EDIT_ASSIGNEES_URL } 
 from "../../helpers/urls" 
@@ -147,6 +148,14 @@ export const ticketApi = privateApi.injectEndpoints({
 				method: "DELETE",
 			}),
 			invalidatesTags: ["Tickets"]
+		}),
+		updateTicketStatus: builder.mutation<{message: string}, {ticketId: number, statusId: number}>({
+			query: ({ticketId, statusId}) => ({
+				url: TICKET_STATUS_URL(ticketId),
+				method: "PATCH",
+				body: {status_id: statusId}
+			}),
+			invalidatesTags: ["Tickets", "BoardTickets"]
 		})
 	}),
 })
@@ -156,6 +165,7 @@ export const {
 	useGetTicketsQuery, 
 	useAddTicketMutation, 
 	useUpdateTicketMutation,
+	useUpdateTicketStatusMutation,
 	useDeleteTicketMutation,
 	useGetTicketAssigneesQuery,
 	useGetTicketCommentsQuery,

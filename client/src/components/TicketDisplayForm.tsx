@@ -207,7 +207,7 @@ export const TicketDisplayForm = () => {
 				<form>
 					<div className = "ticket-body">
 						<div className = "ticket-main">
-							<>
+							<div className = "tw-pb-2">
 							{
 								!editFieldVisibility.name ? (
 									<div onClick = {(e) => toggleFieldVisibility("name", true)} className = "__ticket-display-field __ticket-title">
@@ -223,7 +223,7 @@ export const TicketDisplayForm = () => {
 							        </>
 								)
 							}
-							</>
+							</div>
 							<div className = "__ticket-description">
 								<strong>Description</strong>
 								<>
@@ -307,7 +307,7 @@ export const TicketDisplayForm = () => {
 									</table>
 								</div>
 							</div>
-							<div><span>Created {createdAt}</span></div>
+							<div className = "tw-pt-2 tw-pb-2"><span>Created {createdAt}</span></div>
 						</div>
 					</div>
 				</form>

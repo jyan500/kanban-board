@@ -13,6 +13,7 @@ const {
 	validateTicketCommentCreate,
 	validateTicketCommentUpdate,
 	validateTicketCommentDelete,
+	validateTicketStatusUpdate,
 
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
@@ -247,6 +248,19 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 		})
 		res.json({message: "Ticket updated successfully!"})	
 	}	
+	catch (err) {
+		console.error(`Error while updating ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+router.patch("/:ticketId/status", validateTicketStatusUpdate, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("tickets").where("id", req.params.ticketId).update({
+			status_id: req.body.status_id
+		})
+		res.json({message: `Ticket status updated successfully!`})
+	}
 	catch (err) {
 		console.error(`Error while updating ticket: ${err.message}`)
 		next(err)

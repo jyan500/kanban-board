@@ -270,6 +270,25 @@ describe("routes: ticket", function() {
 			const updatedComment = await db("ticket_comments").where("id", comment[0])
 			assert.equal(updatedComment.length, 0)
 		})
+		it("can update status through patch request", async () => {
+			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")	
+			const ticketId = await db("tickets").insert([{
+				"name": "ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 1,
+				"organization_id": 1
+			}], ["id"])
+			const res = await chai.request(app).patch(`/api/ticket/${ticketId[0]}/status`).set({
+				"Authorization": `Bearer ${token}`	
+			}).send({
+				status_id: 2
+			})
+			res.status.should.equal(200)
+			const updatedTicket = await db("tickets").where("id", ticketId[0]).first()
+			assert.equal(updatedTicket.status_id, 2)
+		})
 	})
 })
 
