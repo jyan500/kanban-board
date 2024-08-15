@@ -22,7 +22,7 @@ export const ToolBar = () => {
 			dispatch(setFilteredTickets(tickets))
 		}
 		else {
-			const filtered = tickets.filter((obj) => obj.name.includes(value))
+			const filtered = tickets.filter((obj) => obj.name.toLowerCase().includes(value.toLowerCase()))
 			dispatch(setFilteredTickets(filtered))
 		}	
 	}, [debouncedSearchTerm])
