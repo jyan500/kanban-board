@@ -9,3 +9,9 @@
 	margin-top: var(--s-spacing);
 	margin-bottom: var(--s-spacing);
 }
+
+.assignees-row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

@@ -1,0 +1,27 @@
+.overlapping-container {
+	position: relative;
+	width: 160px;
+	height: 30px;
+}
+
+.overlapping-container:hover {
+	opacity: .7;
+}
+
+.circle {
+	border-radius: 50%;	
+	background-color: white;
+	width: 28px;
+	height: 28px;
+}
+
+.remainder-circle {
+	width: 28px;
+	height: 28px;
+
+	.__count {
+		font-weight: bold;
+		font-size: 14px;
+		position: relative;
+	}
+}

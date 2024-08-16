@@ -27,7 +27,7 @@ export const BoardDisplay = () => {
 	useEffect(() => {
 		if (boardData?.length){
 			dispatch(setBoardInfo({
-				boardInfo: boardData.map((b) => ({id: b.id, organizationId: b.organizationId, name: b.name}))})
+				boardInfo: boardData.map((b) => ({id: b.id, organizationId: b.organizationId, name: b.name, assignees: b.assignees, lastModified: b.lastModified}))})
 			)
 		}
 	}, [boardData])
