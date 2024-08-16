@@ -13,18 +13,48 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { InlineEdit } from "./InlineEdit" 
 import { useForm, FormProvider } from "react-hook-form"
 import { Ticket, TicketType, Priority, UserProfile } from "../types/common"
-import { FormValues } from "./TicketForm" 
+import { IoMdEye as WatchIcon } from "react-icons/io";
+import { BsThreeDots as MenuIcon } from "react-icons/bs";
+import { FiShare2 as ShareIcon } from "react-icons/fi";
+import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
 import { priorityIconMap, ticketTypeIconMap, colorMap } from "./Ticket"
+import { Dropdown } from "./Dropdown"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
 }
 
-export const TicketDisplayForm = () => {
+
+export const EditTicketFormToolbar = () => {
+	const [showDropdown, setShowDropdown] = useState(false)
+	return (
+		<div className = "tw-pt-2 tw-pb-2 tw-flex tw-flex-row tw-justify-end tw-w-full">
+			<IconContext.Provider value = {{color: "var(--bs-primary)"}}>
+				<WatchIcon className = "tw-ml-3 --l-icon"/>
+			</IconContext.Provider>
+			<IconContext.Provider value = {{color: "var(--bs-primary)"}}>
+				<ShareIcon className = "tw-ml-3 --l-icon"/>
+			</IconContext.Provider>
+			<div className = "tw-relative tw-inline-block tw-text-left">
+				<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
+					<button onClick={(e) => {
+						e.preventDefault()
+						setShowDropdown(!showDropdown)
+					}} className = "--transparent tw-p-0"><MenuIcon className = "tw-ml-3 --l-icon"/></button>
+					{
+						showDropdown ? (<Dropdown/>) : null
+					}
+				</IconContext.Provider>
+			</div>
+		</div>
+	)
+}
+
+export const EditTicketForm = () => {
 	const {
 		tickets,
 		currentTicketId,
@@ -251,6 +281,7 @@ export const TicketDisplayForm = () => {
 							</div>
 						</div>
 						<div className = "ticket-sidebar">
+							<EditTicketFormToolbar/>
 							<select 
 							{...register("statusId", registerOptions.statusId)} 
 							onChange={(e) => {
@@ -270,7 +301,7 @@ export const TicketDisplayForm = () => {
 									<table className = "__table">
 										<tbody>
 											<tr>
-												<td colSpan = {2}>Details</td>
+												<td colSpan = {2}><strong>Details</strong></td>
 											</tr>
 											<tr>
 												<td>Assignee</td>
@@ -281,7 +312,9 @@ export const TicketDisplayForm = () => {
 													}}
 													className = "__ticket-display-field icon-container"
 													>
-														<CgProfile className = "--l-icon"/>
+														<div className = "tw-w-10">
+															<CgProfile className = "--l-icon"/>
+														</div>
 														{userProfileSelect}	
 													</div>
 												): <LoadingSpinner/>}
@@ -291,7 +324,9 @@ export const TicketDisplayForm = () => {
 												<td>Reporter</td>
 												<td>
 													<div className = "icon-container">
-														<CgProfile className = "--l-icon"/>
+														<div className = "tw-w-10">
+															<CgProfile className = "--l-icon"/>
+														</div>
 														<div className = "--reporter">{displayUser(reporter)}</div>
 													</div>
 												</td>
@@ -300,9 +335,11 @@ export const TicketDisplayForm = () => {
 												<td>Priority</td>
 												<td className = "__table-display-field" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
 													<div className = "icon-container">
-														<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "--l-icon"}}>
-															{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
-														</IconContext.Provider>
+														<div className = "tw-w-10">
+															<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "--l-icon"}}>
+																{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
+															</IconContext.Provider>
+														</div>
 														{prioritySelect}
 													</div>
 												</td>
@@ -311,7 +348,7 @@ export const TicketDisplayForm = () => {
 												<td>Ticket Type</td>
 												<td className = "__table-display-field" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
 													<div className = "icon-container">
-														<div className = "tw-ml-1.5">
+														<div className = "tw-w-10 tw-ml-1.5">
 															{ticketTypeName && ticketTypeName in ticketTypeIconMap ? ticketTypeIconMap[ticketTypeName] : null}
 														</div>
 														{ticketTypeSelect}
@@ -322,11 +359,12 @@ export const TicketDisplayForm = () => {
 									</table>
 								</div>
 							</div>
-							<div className = "tw-pt-2 tw-pb-2"><span>Created {createdAt}</span></div>
+							<div className = "tw-pt-2 tw-pb-2"><strong>Created {createdAt}</strong></div>
 						</div>
 					</div>
 				</form>
 			</FormProvider>
+			<strong>Activity</strong>
 			<TicketCommentForm/>
 		</div>
 	)	

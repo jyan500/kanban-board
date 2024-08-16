@@ -13,7 +13,6 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { InlineEdit } from "./InlineEdit" 
 import { useForm, FormProvider } from "react-hook-form"
 import { Ticket, TicketType, TicketComment, UserProfile } from "../types/common"
-import { FormValues } from "./TicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../helpers/functions" 

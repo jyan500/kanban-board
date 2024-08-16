@@ -12,7 +12,7 @@ interface ModalState {
 
 const initialState: ModalState = {
 	showModal: false,
-	currentModalType: "TICKET_FORM",
+	currentModalType: "ADD_TICKET_FORM",
 	currentModalProps: {},
 }
 

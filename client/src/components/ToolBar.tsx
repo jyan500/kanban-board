@@ -53,7 +53,7 @@ export const ToolBar = () => {
 			<div className = "btn-group">
 				<button onClick = {() => {
 					dispatch(toggleShowModal(true))
-					dispatch(setModalType("TICKET_FORM"))
+					dispatch(setModalType("ADD_TICKET_FORM"))
 				}}>Add Ticket</button>
 				{
 					isAdminOrUserRole ? (

@@ -21,7 +21,7 @@
 	& .__modal-container-close {
 		position: absolute;
 		top: 8px;
-		right: 32px;
+		right: 14px;
 		z-index: 99;
 	}
 }

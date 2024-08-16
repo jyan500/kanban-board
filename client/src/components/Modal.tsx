@@ -3,21 +3,21 @@ import { IoMdClose } from "react-icons/io";
 import "../styles/modal.css"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
-import { TicketForm } from "./TicketForm" 
-import { TicketDisplayForm } from "./TicketDisplayForm" 
+import { AddTicketForm } from "./AddTicketForm" 
+import { EditTicketForm } from "./EditTicketForm" 
 import { StatusForm } from "./StatusForm" 
 import { BoardForm } from "./BoardForm" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 
 export const modalTypes = {
-	"TICKET_FORM": TicketForm,
-	"TICKET_DISPLAY_FORM": TicketDisplayForm,
+	"ADD_TICKET_FORM": AddTicketForm,
+	"EDIT_TICKET_FORM": EditTicketForm,
 	"STATUS_FORM": StatusForm,
 	"BOARD_FORM": BoardForm,
 }
 
 export const modalClassNames = {
-	"TICKET_DISPLAY_FORM": "--l-modal"
+	"EDIT_TICKET_FORM": "--l-modal"
 }
 
 // type for partial subset of keys
@@ -30,13 +30,13 @@ export const Modal = () => {
 
 	// define modal handlers type as the partial subset of all keys of modal types
 	const modalHandlers: PartialKeys<typeof modalTypes> = {
-		"TICKET_FORM": {
+		"ADD_TICKET_FORM": {
 			dismissHandler: () => {
 				dispatch(toggleShowModal(false))
 				dispatch(selectCurrentTicketId(null))
 			}
 		},
-		"TICKET_DISPLAY_FORM": {
+		"EDIT_TICKET_FORM": {
 			dismissHandler: () => {
 				dispatch(toggleShowModal(false))
 				dispatch(selectCurrentTicketId(null))

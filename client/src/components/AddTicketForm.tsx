@@ -29,7 +29,7 @@ export type FormValues = {
 	userId: number
 }
 
-export const TicketForm = () => {
+export const AddTicketForm = () => {
 	const dispatch = useAppDispatch()
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)

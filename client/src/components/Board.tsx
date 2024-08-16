@@ -110,7 +110,7 @@ export const Board = () => {
 											id = {`ticket_${ticketId}`}
 											onClick = {() => {
 												dispatch(toggleShowModal(true))
-												dispatch(setModalType("TICKET_DISPLAY_FORM"))
+												dispatch(setModalType("EDIT_TICKET_FORM"))
 												dispatch(selectCurrentTicketId(ticketId))
 											}}
 											draggable

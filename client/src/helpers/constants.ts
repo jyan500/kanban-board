@@ -1,6 +1,3 @@
-import { TicketForm } from "../components/TicketForm"
-import { StatusForm } from "../components/StatusForm" 
-
 
 export const defaultStatuses = [
 	{id: "1", name: "To-Do", order: 1}, 
