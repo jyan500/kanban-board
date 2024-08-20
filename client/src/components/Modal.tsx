@@ -19,8 +19,7 @@ export const modalTypes = {
 }
 
 export const modalClassNames = {
-	"EDIT_TICKET_FORM": "--l-modal",
-	"DELETE_TICKET": "--l-modal"
+	"EDIT_TICKET_FORM": "--l-modal tw-top-[50%]",
 }
 
 // type for partial subset of keys
@@ -55,7 +54,7 @@ export const Modal = () => {
 
 	return (
 		<div className = {`overlay ${showModal ? "--visible": "--hidden"}`}>
-			<div className = {`modal-container ${currentModalType in modalClassNames ? modalClassNames[currentModalType as keyof typeof modalClassNames] : ""}`}>
+			<div className = {`${currentModalType in modalClassNames ? modalClassNames[currentModalType as keyof typeof modalClassNames] : "tw-top-[30%]"} modal-container`}>
 				<button 
 				className = "__modal-container-close --transparent"
 				onClick={

@@ -49,8 +49,8 @@ export const DeleteTicketWarning = () => {
 	}
 
 	const onCancel = () => {
-		// go back to the edit ticket form
-		dispatch(setModalType("EDIT_TICKET_FORM"))
+		dispatch(toggleShowModal(false))
+		dispatch(selectCurrentTicketId(null))
 	}
 
 	return (
