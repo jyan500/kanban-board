@@ -147,7 +147,7 @@ export const ticketApi = privateApi.injectEndpoints({
 				url: `${TICKET_URL}/${ticketId}`,
 				method: "DELETE",
 			}),
-			invalidatesTags: ["Tickets"]
+			invalidatesTags: ["Tickets", "BoardTickets"]
 		}),
 		updateTicketStatus: builder.mutation<{message: string}, {ticketId: number, statusId: number}>({
 			query: ({ticketId, statusId}) => ({

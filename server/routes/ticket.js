@@ -269,6 +269,12 @@ router.patch("/:ticketId/status", validateTicketStatusUpdate, handleValidationRe
 
 router.delete("/:ticketId", validateDelete, handleValidationResult, async (req, res, next) => {
 	try {
+		// check if ticket exists on any boards and remove them from the boards first
+		const ticketsToBoards = await db("tickets_to_boards").where("ticket_id", req.params.ticketId)
+		if (ticketsToBoards.length){
+			await db("tickets_to_boards").where("ticket_id", req.params.ticketId).del()
+		}
+		// delete ticket
 		await db("tickets").where("id", req.params.ticketId).del()
 		res.json({message: "Ticket deleted successfully!"})
 	}

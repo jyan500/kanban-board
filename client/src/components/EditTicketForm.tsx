@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from "react"
 import { IconContext } from "react-icons"
-import "../styles/ticket-display-form.css"
+import "../styles/edit-ticket-form.css"
 import { CgProfile } from "react-icons/cg"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
+import { setModalType } from "../slices/modalSlice" 
 import { LoadingSpinner } from "./LoadingSpinner"
 import { 
 	useGetTicketAssigneesQuery, 
@@ -28,9 +29,43 @@ type EditFieldVisibility = {
 	[key: string]: boolean
 }
 
+export const OptionsDropdown = () => {
+	const dispatch = useAppDispatch()
+	const options = {
+		"Move": () => console.log("Clicked move"),
+		"Delete": () => {
+			console.log("test")
+			dispatch(setModalType("DELETE_TICKET"))
+		},
+		"Clone": () => console.log("Clicked clone"),
+		"Add to Epic": () => console.log("Clicked add to epic"),
+	}
+	return (
+		<Dropdown>
+			<ul className = "tw-z-1000">
+				{Object.keys(options).map((option) => (
+					<li
+						key={option}
+						onClick={() => options[option as keyof typeof options]()}
+						className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+						role="menuitem"
+					>
+						{option}
+					</li>
+				))}
+			</ul>
+		</Dropdown>
+	)	
+}
 
 export const EditTicketFormToolbar = () => {
+	const { showModal } = useAppSelector((state) => state.modal)
 	const [showDropdown, setShowDropdown] = useState(false)
+	useEffect(() => {
+		if (!showModal){
+			setShowDropdown(false)
+		}
+	}, [showModal])
 	return (
 		<div className = "tw-pt-2 tw-pb-2 tw-flex tw-flex-row tw-justify-end tw-w-full">
 			<IconContext.Provider value = {{color: "var(--bs-primary)"}}>
@@ -46,7 +81,9 @@ export const EditTicketFormToolbar = () => {
 						setShowDropdown(!showDropdown)
 					}} className = "--transparent tw-p-0"><MenuIcon className = "tw-ml-3 --l-icon"/></button>
 					{
-						showDropdown ? (<Dropdown/>) : null
+						showDropdown ? (
+							<OptionsDropdown/>
+						) : null
 					}
 				</IconContext.Provider>
 			</div>
@@ -348,7 +385,7 @@ export const EditTicketForm = () => {
 												<td>Ticket Type</td>
 												<td className = "__table-display-field" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
 													<div className = "icon-container">
-														<div className = "tw-w-10 tw-ml-1.5">
+														<div className = "tw-w-9 tw-ml-1.5">
 															{ticketTypeName && ticketTypeName in ticketTypeIconMap ? ticketTypeIconMap[ticketTypeName] : null}
 														</div>
 														{ticketTypeSelect}

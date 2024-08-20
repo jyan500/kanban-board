@@ -7,6 +7,7 @@ import { AddTicketForm } from "./AddTicketForm"
 import { EditTicketForm } from "./EditTicketForm" 
 import { StatusForm } from "./StatusForm" 
 import { BoardForm } from "./BoardForm" 
+import { DeleteTicketWarning } from "./DeleteTicketWarning" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 
 export const modalTypes = {
@@ -14,10 +15,12 @@ export const modalTypes = {
 	"EDIT_TICKET_FORM": EditTicketForm,
 	"STATUS_FORM": StatusForm,
 	"BOARD_FORM": BoardForm,
+	"DELETE_TICKET": DeleteTicketWarning
 }
 
 export const modalClassNames = {
-	"EDIT_TICKET_FORM": "--l-modal"
+	"EDIT_TICKET_FORM": "--l-modal",
+	"DELETE_TICKET": "--l-modal"
 }
 
 // type for partial subset of keys
@@ -37,6 +40,12 @@ export const Modal = () => {
 			}
 		},
 		"EDIT_TICKET_FORM": {
+			dismissHandler: () => {
+				dispatch(toggleShowModal(false))
+				dispatch(selectCurrentTicketId(null))
+			}
+		},
+		"DELETE_TICKET": {
 			dismissHandler: () => {
 				dispatch(toggleShowModal(false))
 				dispatch(selectCurrentTicketId(null))
