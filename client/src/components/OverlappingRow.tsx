@@ -32,7 +32,7 @@ export const OverlappingRow = ({total}: Props) => {
 				"zIndex": zIndex,
 			} as React.CSSProperties
 			elements.push(
-			<div style={style} className = "circle">
+			<div key={curLeft} style={style} className = "circle">
 				<CgProfile 
 				className = "--l-icon"
 				/>

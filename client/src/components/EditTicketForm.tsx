@@ -22,6 +22,7 @@ import { addToast } from "../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
+import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
 import { priorityIconMap, ticketTypeIconMap, colorMap } from "./Ticket"
 import { Dropdown } from "./Dropdown"
 
@@ -66,38 +67,6 @@ export const OptionsDropdown = () => {
 	)	
 }
 
-export const EditTicketFormToolbar = () => {
-	const { showModal } = useAppSelector((state) => state.modal)
-	const [showDropdown, setShowDropdown] = useState(false)
-	useEffect(() => {
-		if (!showModal){
-			setShowDropdown(false)
-		}
-	}, [showModal])
-	return (
-		<div className = "tw-pt-2 tw-pb-2 tw-flex tw-flex-row tw-justify-end tw-w-full">
-			<IconContext.Provider value = {{color: "var(--bs-primary)"}}>
-				<WatchIcon className = "tw-ml-3 --l-icon"/>
-			</IconContext.Provider>
-			<IconContext.Provider value = {{color: "var(--bs-primary)"}}>
-				<ShareIcon className = "tw-ml-3 --l-icon"/>
-			</IconContext.Provider>
-			<div className = "tw-relative tw-inline-block tw-text-left">
-				<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
-					<button onClick={(e) => {
-						e.preventDefault()
-						setShowDropdown(!showDropdown)
-					}} className = "--transparent tw-p-0"><MenuIcon className = "tw-ml-3 --l-icon"/></button>
-					{
-						showDropdown ? (
-							<OptionsDropdown/>
-						) : null
-					}
-				</IconContext.Provider>
-			</div>
-		</div>
-	)
-}
 
 export const EditTicketForm = () => {
 	const {

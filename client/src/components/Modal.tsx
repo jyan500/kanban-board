@@ -19,6 +19,7 @@ export const modalTypes = {
 }
 
 export const modalClassNames = {
+	"ADD_TICKET_FORM": "--l-modal tw-top-[50%]",
 	"EDIT_TICKET_FORM": "--l-modal tw-top-[50%]",
 }
 
