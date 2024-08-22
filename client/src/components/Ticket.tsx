@@ -42,7 +42,7 @@ export const Ticket = ({ticket}: PropType) => {
 	const priority = priorities.find((p) => p.id === ticket.priorityId)?.name
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name
 	return (
-		<div className = "ticket-card --card-shadow">
+		<div className = "ticket-card --card-shadow hover:tw-bg-gray-50">
 			<div className = "__header">
 				<span className = "--s-text">{ticket.name}</span>
 				<CgProfile className="--l-icon"/>
