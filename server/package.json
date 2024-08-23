@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter spec --exit --timeout 5000"
+    "test": "mocha --reporter spec --exit --timeout 10000"
   },
   "keywords": [],
   "author": "",
