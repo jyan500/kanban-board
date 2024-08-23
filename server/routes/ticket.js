@@ -14,6 +14,9 @@ const {
 	validateTicketCommentUpdate,
 	validateTicketCommentDelete,
 	validateTicketStatusUpdate,
+	validateTicketRelationshipGet,
+	validateTicketRelationshipCreate,
+	validateTicketRelationshipDelete,
 
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
@@ -236,6 +239,59 @@ router.delete("/:ticketId/comment/:commentId", validateTicketCommentDelete, hand
 	}
 })
 
+router.get("/:ticketId/relationship", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const relationships = await db("ticket_relationships").where("parent_ticket_id", req.params.ticketId).orWhere("child_ticket_id", req.params.ticketId)
+		.select(
+			"id as id", 
+			"parent_ticket_id as parentTicketId",
+			"child_ticket_id as childTicketId",
+			"ticket_relationship_id as ticketRelationshipId",
+		)
+		res.json(relationships)
+	}	
+	catch (err) {
+		console.log(`Error while getting ticket relationships: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:ticketId/relationship/:relationshipId", validateTicketRelationshipGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const relationship = await db("ticket_relationships").where("id", req.params.relationshipId)
+		res.json(relationship)
+	}	
+	catch (err) {
+		console.log(`Error while getting ticket relationship: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/:ticketId/relationship", validateTicketRelationshipCreate, handleValidationResult, async (req, res, next) => {
+	try {
+		const id = await db("ticket_relationships").insert({
+			parent_ticket_id: req.params.ticketId,
+			child_ticket_id: req.body.child_ticket_id,
+			ticket_relationship_type_id: req.body.ticket_relationship_type_id
+		}, ["id"])
+		res.json({id: id[0], message: "Ticket relationship inserted successfully!"})
+	}	
+	catch (err){
+		console.log(`Error while creating ticket relationship: ${err.message}`)
+		next(err)
+	}
+})
+
+router.delete("/:ticketId/relationship/:relationshipId", validateTicketRelationshipDelete, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("ticket_relationships").where("id", req.params.relationshipId).del()
+		res.json({message: "ticket relationship deleted successfully!"})
+	}	
+	catch (err) {
+		console.log(`Error while deleting ticket relationship: ${err.message}`)
+		next(err)
+	}
+})
 
 router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res, next) => {
 	try {

@@ -134,10 +134,52 @@ const ticketCommentValidator = (actionType) => {
 			], "ticket_comments")),
 		]	
 	}
-	else if (actionType === "create") {
+	else if (actionType === "create" || actionType === "update") {
 		validationRules = [
 			...validationRules,
 			body("comment").notEmpty().withMessage("comment is required")
+		]
+	}
+	return validationRules
+}
+
+const ticketRelationshipValidator = (actionType) => {
+	let validationRules = [
+		param("ticketId").custom(async (value, {req}) => await checkEntityExistsIn("ticket", req.params.ticketId, [{
+			col: "id",
+			value: req.params.ticketId
+		},
+		{
+			col: "organization_id",
+			value: req.user.organization
+		}
+		], "tickets"))
+	]
+
+	if (actionType === "get" || actionType === "delete") {
+		validationRules = [
+			param("relationshipId").custom(async (value, {req}) => await checkEntityExistsIn("ticket_relationships", value, [{
+				col: "id",
+				value: value
+			}], "ticket_relationships"))
+		]	
+	}
+	else if (actionType === "create"){
+		validationRules = [
+			...validationRules,
+			body("child_ticket_id").custom(async (value, {req}) => await checkEntityExistsIn("ticket", value, [{
+				col: "id",
+				value: value 
+			},
+			{
+				col: "organization_id",
+				value: req.user.organization
+			}
+			], "ticket_relationships")),
+			body("ticket_relationship_type_id").custom(async (value, {req}) => await checkEntityExistsIn("ticket_relationship_types", value, [{
+				col: "id",
+				value: value,
+			}], "ticket_relationship_types"))
 		]
 	}
 	return validationRules
@@ -157,4 +199,7 @@ module.exports = {
 	validateTicketCommentUpdate: ticketCommentValidator("update"),
 	validateTicketCommentDelete: ticketCommentValidator("delete"),
 	validateTicketStatusUpdate: ticketStatusValidator(),
+	validateTicketRelationshipGet: ticketRelationshipValidator("get"),
+	validateTicketRelationshipCreate: ticketRelationshipValidator("create"),
+	validateTicketRelationshipDelete: ticketRelationshipValidator("delete"),
 }

@@ -289,6 +289,35 @@ describe("routes: ticket", function() {
 			const updatedTicket = await db("tickets").where("id", ticketId[0]).first()
 			assert.equal(updatedTicket.status_id, 2)
 		})
+		it("can create relationship between two tickets", async () => {
+			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")	
+			const ticketId1 = await db("tickets").insert([{
+				"name": "ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 4,
+				"organization_id": 1
+			}], ["id"])
+			const ticketId2 = await db("tickets").insert([{
+				"name": "ticket #2",
+				"description": "test #2",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 4,
+				"organization_id": 1
+			}], ["id"])
+			const res = await chai.request(app).post(`/api/ticket/${ticketId1[0]}/relationship`).set({
+				"Authorization": `Bearer ${token}`
+			}).send({
+				parent_ticket_id: ticketId1[0],
+				child_ticket_id: ticketId2[0],
+				ticket_relationship_type_id: 1
+			})
+			res.status.should.equal(200)
+			const relationship = await db("ticket_relationships").where("parent_ticket_id", ticketId1[0]).where("child_ticket_id", ticketId2[0]).first()
+			assert.equal(relationship.length, 1)
+		})
 	})
 })
 
