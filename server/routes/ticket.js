@@ -246,7 +246,7 @@ router.get("/:ticketId/relationship", validateGet, handleValidationResult, async
 			"id as id", 
 			"parent_ticket_id as parentTicketId",
 			"child_ticket_id as childTicketId",
-			"ticket_relationship_id as ticketRelationshipId",
+			"ticket_relationship_type_id as ticketRelationshipTypeId",
 		)
 		res.json(relationships)
 	}	
@@ -258,7 +258,12 @@ router.get("/:ticketId/relationship", validateGet, handleValidationResult, async
 
 router.get("/:ticketId/relationship/:relationshipId", validateTicketRelationshipGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const relationship = await db("ticket_relationships").where("id", req.params.relationshipId)
+		const relationship = await db("ticket_relationships").where("id", req.params.relationshipId).select(
+			"id as id", 
+			"parent_ticket_id as parentTicketId",
+			"child_ticket_id as childTicketId",
+			"ticket_relationship_type_id as ticketRelationshipTypeId",
+		)
 		res.json(relationship)
 	}	
 	catch (err) {
@@ -269,11 +274,11 @@ router.get("/:ticketId/relationship/:relationshipId", validateTicketRelationship
 
 router.post("/:ticketId/relationship", validateTicketRelationshipCreate, handleValidationResult, async (req, res, next) => {
 	try {
-		const id = await db("ticket_relationships").insert({
+		const id = await db("ticket_relationships").insert([{
 			parent_ticket_id: req.params.ticketId,
 			child_ticket_id: req.body.child_ticket_id,
 			ticket_relationship_type_id: req.body.ticket_relationship_type_id
-		}, ["id"])
+		}], ["id"])
 		res.json({id: id[0], message: "Ticket relationship inserted successfully!"})
 	}	
 	catch (err){

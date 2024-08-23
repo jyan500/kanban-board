@@ -16,16 +16,12 @@ var db = require("../db/db")
 describe("routes: ticket-relationship-type", function() {
 	let token;
 	beforeEach(function(done) {
-		console.log("rolling back...")
 		db.migrate.rollback()
 		.then(function() {
-			console.log("migrating...")
 			db.migrate.latest()
 			.then(function() {
-				console.log("seeding...")
 				try{
 					return db.seed.run().then(function() {
-						console.log("creating token...")
 						createTokenForUserRole(
 							"Jansen", 
 							"Yan",
@@ -34,7 +30,6 @@ describe("routes: ticket-relationship-type", function() {
 							"USER",
 							"Jansen Test Company"
 						).then(function(res){
-							console.log("token: ", token)
 							token = res
 							done()
 						});

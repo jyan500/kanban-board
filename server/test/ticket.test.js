@@ -316,7 +316,77 @@ describe("routes: ticket", function() {
 			})
 			res.status.should.equal(200)
 			const relationship = await db("ticket_relationships").where("parent_ticket_id", ticketId1[0]).where("child_ticket_id", ticketId2[0]).first()
-			assert.equal(relationship.length, 1)
+			assert.equal(relationship.parent_ticket_id, ticketId1[0])
+			assert.equal(relationship.child_ticket_id, ticketId2[0])
+		})
+		it("can retrieve relationship between two tickets", async () => {
+			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")	
+			const ticketId1 = await db("tickets").insert([{
+				"name": "ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 4,
+				"organization_id": 1
+			}], ["id"])
+			const ticketId2 = await db("tickets").insert([{
+				"name": "ticket #2",
+				"description": "test #2",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 4,
+				"organization_id": 1
+			}], ["id"])
+			let res = await chai.request(app).post(`/api/ticket/${ticketId1[0]}/relationship`).set({
+				"Authorization": `Bearer ${token}`
+			}).send({
+				parent_ticket_id: ticketId1[0],
+				child_ticket_id: ticketId2[0],
+				ticket_relationship_type_id: 1
+			})
+			res.status.should.equal(200)
+
+			res = await chai.request(app).get(`/api/ticket/${ticketId1[0]}/relationship`).set({
+				"Authorization": `Bearer ${token}`
+			})
+			res.status.should.equal(200)
+			const body = JSON.parse(res.text)
+			assert.equal(body.length === 1, true)
+		})
+		it("can delete relationship between two tickets", async () => {
+			const userId1 = await createUserWithOrganization("Test", "User", "test@jansen-test-company.com")	
+			const ticketId1 = await db("tickets").insert([{
+				"name": "ticket #1",
+				"description": "test",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 4,
+				"organization_id": 1
+			}], ["id"])
+			const ticketId2 = await db("tickets").insert([{
+				"name": "ticket #2",
+				"description": "test #2",
+				"status_id": 1,
+				"priority_id": 1,
+				"ticket_type_id": 4,
+				"organization_id": 1
+			}], ["id"])
+			let res = await chai.request(app).post(`/api/ticket/${ticketId1[0]}/relationship`).set({
+				"Authorization": `Bearer ${token}`
+			}).send({
+				parent_ticket_id: ticketId1[0],
+				child_ticket_id: ticketId2[0],
+				ticket_relationship_type_id: 1
+			})
+			res.status.should.equal(200)
+
+			const relationship = await db("ticket_relationships").where("parent_ticket_id", ticketId1[0]).where("child_ticket_id", ticketId2[0]).first()
+			res = await chai.request(app).delete(`/api/ticket/${ticketId1[0]}/relationship/${relationship.id}`).set({
+				"Authorization": `Bearer ${token}`
+			})
+			res.status.should.equal(200)
+			const deletedRelationship = await db("ticket_relationships").where("id", relationship.id)
+			assert.equal(deletedRelationship.length, 0)
 		})
 	})
 })

@@ -8,7 +8,7 @@ exports.seed = async function(knex) {
   return await knex('ticket_types').insert([
     {id: 1, name: 'Feature'},
     {id: 2, name: 'Modification'},
-    {id: 3, name: 'Bug'}
+    {id: 3, name: 'Bug'},
     {id: 4, name: 'Epic'}
   ]);
 };

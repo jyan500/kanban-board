@@ -175,7 +175,7 @@ const ticketRelationshipValidator = (actionType) => {
 				col: "organization_id",
 				value: req.user.organization
 			}
-			], "ticket_relationships")),
+			], "tickets")),
 			body("ticket_relationship_type_id").custom(async (value, {req}) => await checkEntityExistsIn("ticket_relationship_types", value, [{
 				col: "id",
 				value: value,

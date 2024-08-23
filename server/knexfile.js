@@ -17,7 +17,17 @@ module.exports = {
     },
     migrations: {
       directory: "./db/migrations",
-    }
+    },
+    log: {
+      warn: (message) => {
+        // Hiding this message
+        // https://github.com/knex/knex/issues/3158
+        if (message === '.returning() is not supported by mysql and will not have any effect.') {
+          return;
+        }
+        console.warn(message);
+      },
+    },
   },
   test: {
     client: "mysql",
@@ -32,6 +42,16 @@ module.exports = {
     },
     migrations: {
       directory: "./db/migrations",
-    }
+    },
+    log: {
+      warn: (message) => {
+        // Hiding this message
+        // https://github.com/knex/knex/issues/3158
+        if (message === '.returning() is not supported by mysql and will not have any effect.') {
+          return;
+        }
+        console.warn(message);
+      },
+    },
   }
 };
