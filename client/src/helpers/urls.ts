@@ -10,6 +10,7 @@ export const BOARD_URL = `/${API_VERSION}/board`
 export const STATUS_URL = `/${API_VERSION}/status`
 export const TICKET_TYPE_URL = `/${API_VERSION}/ticket-type`
 export const PRIORITY_URL = `/${API_VERSION}/priority`
+export const TICKET_RELATIONSHIP_TYPE_URL = `/${API_VERSION}/ticket-relationship-type`
 export const BOARD_TICKET_URL = (boardId: number | string, ticketId: number | string) => `/${API_VERSION}/board/${boardId}/ticket` + (ticketId !== "" ? `/${ticketId}` : "")
 export const BOARD_STATUS_URL = (boardId: number | string, statusId: number | string) => `/${API_VERSION}/board/${boardId}/status` + (statusId !== "" ? `/${statusId}` : "")
 export const BOARD_BULK_EDIT_STATUS_URL = (boardId: number | string) => `/${API_VERSION}/board/${boardId}/status/bulk-edit`
@@ -17,3 +18,4 @@ export const TICKET_ASSIGNEES_URL = (ticketId: number | string) => `/${API_VERSI
 export const TICKET_BULK_EDIT_ASSIGNEES_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/user/bulk-edit`
 export const TICKET_COMMENT_URL = (ticketId: number | string, commentId: number | string) => `/${API_VERSION}/ticket/${ticketId}/comment` + (commentId !== "" ? `/${commentId}` : "")
 export const TICKET_STATUS_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/status`
+export const TICKET_RELATIONSHIP_URL = (ticketId: number | string, relationshipId: number | string) => `/${API_VERSION}/ticket/${ticketId}/relationship` + (relationshipId !== "" ? `/${relationshipId}` : "")

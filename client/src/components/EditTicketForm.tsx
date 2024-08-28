@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react"
 import { IconContext } from "react-icons"
 import "../styles/edit-ticket-form.css"
 import { CgProfile } from "react-icons/cg"
+import { HiOutlineLink as LinkIcon } from "react-icons/hi";
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { setModalType } from "../slices/modalSlice" 
 import { LoadingSpinner } from "./LoadingSpinner"
@@ -14,59 +15,20 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { InlineEdit } from "./InlineEdit" 
 import { useForm, FormProvider } from "react-hook-form"
 import { Ticket, TicketType, Priority, UserProfile } from "../types/common"
-import { IoMdEye as WatchIcon } from "react-icons/io";
-import { BsThreeDots as MenuIcon } from "react-icons/bs";
-import { FiShare2 as ShareIcon } from "react-icons/fi";
+
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
+import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
 import { priorityIconMap, ticketTypeIconMap, colorMap } from "./Ticket"
-import { Dropdown } from "./Dropdown"
+import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown" 
 
 type EditFieldVisibility = {
 	[key: string]: boolean
 }
-
-export const OptionsDropdown = () => {
-	const { userProfile } = useAppSelector((state) => state.userProfile)
-	const { userRoleLookup } = useAppSelector((state) => state.userRole)
-	const { tickets, currentTicketId } = useAppSelector((state) => state.board) 
-	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null
-	const ticket = tickets.find((ticket) => ticket.id === currentTicketId)
-	const dispatch = useAppDispatch()
-	const isAdminOrBoardAdmin = userRole && userRole === "ADMIN" || userRole === "BOARD_ADMIN"
-	const isTicketReporter = userRole && userRole === "USER" && ticket?.userId === userProfile?.id
-	let options = {
-		"Move": () => console.log("Clicked move"),
-		"Clone": () => console.log("Clicked clone"),
-		"Add to Epic": () => console.log("Clicked add to epic"),
-		...(isAdminOrBoardAdmin || isTicketReporter ? {
-			"Delete": () => {
-				dispatch(setModalType("DELETE_TICKET"))
-			}
-		}: {})
-	}
-	return (
-		<Dropdown>
-			<ul className = "tw-z-1000">
-				{Object.keys(options).map((option) => (
-					<li
-						key={option}
-						onClick={() => options[option as keyof typeof options]?.()}
-						className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
-						role="menuitem"
-					>
-						{option}
-					</li>
-				))}
-			</ul>
-		</Dropdown>
-	)	
-}
-
 
 export const EditTicketForm = () => {
 	const {
@@ -273,6 +235,18 @@ export const EditTicketForm = () => {
 								)
 							}
 							</div>
+							<div className = "tw-pb-2">
+								<button onClick={(e) => {
+									e.preventDefault()	
+								}}className = "--secondary">
+									<div className = "icon-container">
+										<IconContext.Provider value = {{className: "icon"}}>
+											<LinkIcon/>
+										</IconContext.Provider>
+										<span>Link Issue</span>
+									</div>
+								</button>
+							</div>
 							<div className = "__ticket-description">
 								<strong>Description</strong>
 								<>
@@ -378,8 +352,15 @@ export const EditTicketForm = () => {
 					</div>
 				</form>
 			</FormProvider>
-			<strong>Activity</strong>
-			<TicketCommentForm/>
+			<div className = "tw-flex tw-flex-row">
+				<div className = "tw-flex-3">
+					<strong>Linked Issues</strong>	
+					<LinkedTicketForm/>
+					<strong>Activity</strong>
+					<TicketCommentForm/>
+				</div>
+				<div className = "flex-1"></div>
+			</div>
 		</div>
 	)	
 }

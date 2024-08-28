@@ -85,3 +85,15 @@ export interface Toast {
 	type: "success" | "failure" | "warning"
 	animationType: string
 }
+
+export interface TicketRelationship {
+	id: number
+	parentTicketId: number
+	childTicketId: number
+	ticketRelationshipTypeId: number
+}
+
+export interface TicketRelationshipType {
+	id: number
+	name: string
+}

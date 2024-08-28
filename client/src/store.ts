@@ -9,6 +9,7 @@ import { toastReducer } from "./slices/toastSlice"
 import { organizationReducer } from "./slices/organizationSlice" 
 import { userProfileReducer }  from "./slices/userProfileSlice"
 import { ticketTypeReducer } from "./slices/ticketTypeSlice" 
+import { ticketRelationshipTypeReducer } from "./slices/ticketRelationshipTypeSlice"
 import { priorityReducer } from "./slices/prioritySlice" 
 import { statusReducer } from "./slices/statusSlice" 
 import { modalReducer } from "./slices/modalSlice" 
@@ -50,7 +51,8 @@ export const store = configureStore({
 		"priority": priorityReducer,
 		"toast": toastReducer,
 		"modal": modalReducer,
-		"userRole": userRoleReducer
+		"userRole": userRoleReducer,
+		"ticketRelationshipType": ticketRelationshipTypeReducer
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]

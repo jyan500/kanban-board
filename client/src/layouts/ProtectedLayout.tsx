@@ -7,12 +7,14 @@ import { TopNav } from "../components/TopNav"
 import { useGetUserProfileQuery, useGetUserProfilesQuery } from "../services/private/userProfile" 
 import { useGetStatusesQuery } from "../services/private/status" 
 import { useGetTicketTypesQuery } from "../services/private/ticketType" 
+import { useGetTicketRelationshipTypesQuery } from "../services/private/ticketRelationshipType"
 import { useGetPrioritiesQuery } from "../services/private/priority" 
 import { useGetUserRolesQuery } from "../services/private/userRole" 
 import { setUserProfile, setUserProfiles } from "../slices/userProfileSlice" 
 import { setUserRoles, setUserRoleLookup } from "../slices/userRoleSlice" 
 import { setStatuses } from "../slices/statusSlice" 
 import { setTicketTypes } from "../slices/ticketTypeSlice" 
+import { setTicketRelationshipTypes } from "../slices/ticketRelationshipTypeSlice"
 import { setPriorities } from "../slices/prioritySlice"
 import { UserRole } from "../types/common" 
 
@@ -23,6 +25,7 @@ const ProtectedLayout = () => {
     const {data: userProfilesData, isFetching: isUserProfilesFetching, isError: isUserProfilesError } = useGetUserProfilesQuery() 
     const {data: statusData} = useGetStatusesQuery()
     const {data: ticketTypesData} = useGetTicketTypesQuery()
+    const {data: ticketRelationshipTypeData} = useGetTicketRelationshipTypesQuery()
     const {data: priorityData} = useGetPrioritiesQuery()
     const {data: userRoleData } = useGetUserRolesQuery()
     const gutter = {margin: "var(--s-spacing)"}
@@ -39,6 +42,9 @@ const ProtectedLayout = () => {
 	        }
 	        if (ticketTypesData){
 	        	dispatch(setTicketTypes({ticketTypes: ticketTypesData}))	
+	        }
+	        if (ticketRelationshipTypeData) {
+	        	dispatch(setTicketRelationshipTypes({ticketRelationshipTypes: ticketRelationshipTypeData}))
 	        }
 	        if (statusData){
 	        	dispatch(setStatuses({statuses: statusData}))

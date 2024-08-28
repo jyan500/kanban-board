@@ -9,6 +9,7 @@ import { IconContext } from "react-icons"
 import { BugIcon } from "../assets/icons/BugIcon"
 import { ModificationIcon } from "../assets/icons/ModificationIcon"
 import { FeatureIcon } from "../assets/icons/FeatureIcon"
+import { EpicIcon } from "../assets/icons/EpicIcon"
 import { CgProfile } from "react-icons/cg";
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
@@ -21,6 +22,7 @@ export const ticketTypeIconMap: {[key: string]: ReactNode} = {
 	"Feature": <FeatureIcon className="icon"/>,
 	"Modification": <ModificationIcon className="icon"/>,
 	"Bug": <BugIcon className="icon"/>,
+	"Epic": <EpicIcon className="icon"/>
 }
 
 export const colorMap: {[key: string]: string} = {

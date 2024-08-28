@@ -6,9 +6,11 @@ import {
 	TICKET_COMMENT_URL,
 	TICKET_STATUS_URL,
 	TICKET_ASSIGNEES_URL, 
-	TICKET_BULK_EDIT_ASSIGNEES_URL } 
+	TICKET_BULK_EDIT_ASSIGNEES_URL ,
+	TICKET_RELATIONSHIP_URL,
+} 
 from "../../helpers/urls" 
-import { CustomError, Ticket, TicketComment, UserProfile } from "../../types/common" 
+import { CustomError, Ticket, TicketComment, TicketRelationship, UserProfile } from "../../types/common" 
 import { privateApi } from "../private"
 
 type TicketAssigneeRequest = {
@@ -33,6 +35,17 @@ type UpdateTicketCommentRequest = {
 type DeleteTicketCommentRequest = {
 	ticketId: number
 	commentId: number
+}
+
+type AddTicketRelationshipRequest = {
+	parentTicketId: number
+	childTicketId: number
+	ticketRelationshipTypeId: number
+}
+
+type DeleteTicketRelationshipRequest = {
+	ticketId: number
+	ticketRelationshipId: number
 }
 
 export const ticketApi = privateApi.injectEndpoints({
@@ -156,7 +169,33 @@ export const ticketApi = privateApi.injectEndpoints({
 				body: {status_id: statusId}
 			}),
 			invalidatesTags: ["Tickets", "BoardTickets"]
-		})
+		}),
+		getTicketRelationships: builder.query<Array<TicketRelationship>, number>({
+			query: (ticketId) => ({
+				url: `${TICKET_RELATIONSHIP_URL(ticketId, "")}`,
+				method: "GET"
+			}),
+			providesTags: ["TicketRelationships"]
+		}),
+		addTicketRelationship: builder.mutation<{id: number, message: string}, AddTicketRelationshipRequest>({
+			query: ({parentTicketId, childTicketId, ticketRelationshipTypeId}) => ({
+				url: TICKET_RELATIONSHIP_URL(parentTicketId, ""),
+				method: "POST",
+				body: {
+					parent_ticket_id: parentTicketId, 
+					child_ticket_id: childTicketId, 
+					ticket_relationship_type_id: ticketRelationshipTypeId
+				}
+			}),
+			invalidatesTags: ["TicketRelationships"]
+		}),
+		deleteTicketRelationship: builder.mutation<{message: string}, DeleteTicketRelationshipRequest>({
+			query: ({ticketId, ticketRelationshipId}) => ({
+				url: TICKET_RELATIONSHIP_URL(ticketId, ticketRelationshipId),
+				method: "DELETE",
+			}),	
+			invalidatesTags: ["TicketRelationships"]
+		}),
 	}),
 })
 
@@ -173,4 +212,7 @@ export const {
 	useUpdateTicketCommentMutation,
 	useDeleteTicketCommentMutation,
 	useBulkEditTicketAssigneesMutation,
+	useGetTicketRelationshipsQuery,
+	useAddTicketRelationshipMutation,
+	useDeleteTicketRelationshipMutation,
 } = ticketApi 

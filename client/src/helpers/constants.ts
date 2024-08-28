@@ -30,5 +30,7 @@ export const TAG_TYPES = [
 	"BoardStatuses",
 	"Boards",
 	"TicketTypes",
-	"Priorities"
+	"Priorities",
+	"TicketRelationshipTypes",
+	"TicketRelationships"
 ]
