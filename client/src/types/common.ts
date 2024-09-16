@@ -97,3 +97,19 @@ export interface TicketRelationshipType {
 	id: number
 	name: string
 }
+
+export interface IPagination {
+	total?: number;
+	lastPage?: number;
+	prevPage?: number
+	nextPage?: number
+	currentPage: number;
+	perPage: number;
+	from: number;
+	to: number;
+}
+
+export interface ListResponse<T> {
+	pagination: IPagination
+	data: Array<T>
+}

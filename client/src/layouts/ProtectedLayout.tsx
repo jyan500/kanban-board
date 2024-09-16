@@ -3,7 +3,8 @@ import { Link, Outlet, Navigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SideBar } from "../components/SideBar"
 import { Modal } from "../components/Modal" 
-import { TopNav } from "../components/TopNav" 
+import { TopNav } from "../components/page-elements/TopNav" 
+import { Footer } from "../components/page-elements/Footer"
 import { useGetUserProfileQuery, useGetUserProfilesQuery } from "../services/private/userProfile" 
 import { useGetStatusesQuery } from "../services/private/status" 
 import { useGetTicketTypesQuery } from "../services/private/ticketType" 
@@ -70,10 +71,11 @@ const ProtectedLayout = () => {
 	return (
 		<div>
 			<SideBar isFetching={isUserProfileFetching}/>
-			<TopNav isFetching={isUserProfileFetching}/>
-			<div style={gutter}>
+			<div className = "tw-px-16 tw-w-full tw-min-h-screen">
+				<TopNav isFetching={isUserProfileFetching}/>
 				<Outlet/>
 			</div>
+			<Footer/>
 			<Modal/>
 		</div>
 	)

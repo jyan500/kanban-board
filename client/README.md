@@ -47,6 +47,6 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## Image/Design Credits
 
-[sidebar](https://dribbble.com/shots/22486759-Simple-and-responsive-form-templates)
 [Jira icons](https://www.figma.com/design/bGqYY7Lc0UibN0XWCByiil/Atlassian-Jira-Software-Icons-(Community)?node-id=50-398&t=UIr3d6d3yCaJ69QC-0)
+[Jira Icon](https://static-00.iconduck.com/assets.00/jira-icon-512x512-kkop6eik.png)
 

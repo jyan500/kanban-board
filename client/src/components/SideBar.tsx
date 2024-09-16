@@ -7,6 +7,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { CgProfile } from "react-icons/cg";
 import { LoadingSpinner } from "./LoadingSpinner" 
 import { displayUser } from "../helpers/functions"
+import { Logo } from "../components/page-elements/Logo"
 
 interface Props {
 	isFetching: boolean
@@ -50,9 +51,7 @@ export const SideBar = ({isFetching}: Props) => {
 				>
 			<IoMdClose className = "icon"/></button>	
 			<div className = "sidebar__container">
-				<div>
-					<h2>Welcome to Kanban Board</h2>
-				</div>
+				<Logo isLandingPage={false}/>
 				<div className = "sidebar__links">
 					{ 
 						links.map((link) => 

@@ -3,11 +3,11 @@ import { useParams } from "react-router-dom"
 import { 
 	useGetBoardQuery, 
 	useGetBoardTicketsQuery, 
-	useGetBoardStatusesQuery } from "../services/private/board"
-import { Board as KanbanBoard } from "../components/Board" 
-import { KanbanBoard as KanbanBoardType } from "../types/common" 
-import { setBoard, setBoardInfo, setStatusesToDisplay, setFilteredTickets, setTickets as setBoardTickets } from "../slices/boardSlice" 
-import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
+	useGetBoardStatusesQuery } from "../../services/private/board"
+import { Board as KanbanBoard } from "../../components/Board" 
+import { KanbanBoard as KanbanBoardType } from "../../types/common" 
+import { setBoard, setBoardInfo, setStatusesToDisplay, setFilteredTickets, setTickets as setBoardTickets } from "../../slices/boardSlice" 
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
 
 export const Board = () => {

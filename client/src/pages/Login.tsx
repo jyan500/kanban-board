@@ -3,10 +3,11 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { setCredentials } from "../slices/authSlice" 
 import { useLoginMutation } from "../services/public/auth" 
 import {v4 as uuidv4} from "uuid"
-import { useLocation, useNavigate } from "react-router-dom" 
+import { useLocation, useNavigate, Link } from "react-router-dom" 
 import { useForm } from "react-hook-form"
 import { parseErrorResponse } from "../helpers/functions"
 import { useGetOrganizationQuery } from "../services/public/organization" 
+import { REGISTER } from "../helpers/routes"
 
 type FormValues = {
 	email: string
@@ -30,7 +31,7 @@ export const Login = () => {
     useEffect(() => {
     	// 
     	if (token){
-    		navigate("/")
+    		navigate("/", {replace: true})
     	}	
     }, [navigate, token])
 
@@ -48,47 +49,48 @@ export const Login = () => {
 		}
 	}
 	return (
-		<div className = "container --row --page-height">
-			<div className = "sidebar-design">
-			</div>
+		<div className = "tw-w-full">
 			{/* checking if "status" in error narrows down the type to the CustomError defined in services/auth.ts,
 			 rather than SerializedError Type */}
-			<form className = "form-container --fixed-width" onSubmit={handleSubmit(onSubmit)}>
+			<form className = "tw-flex tw-flex-col tw-gap-y-4" onSubmit={handleSubmit(onSubmit)}>
 				<div><h1>Login</h1></div>
 				{error && "status" in error ? (error.data.errors?.map((errorMessage) => <p className = "--text-alert" key = {uuidv4()}>{errorMessage}</p>)) : null}
 				{location.state?.alert ? <p>{location.state.alert}</p> : null}
-				<div className = "form-row">
-					<div className = "form-cell">
-					    <label htmlFor = "login-email">
+				<div>
+					<div>
+					    <label className = "label" htmlFor = "login-email">
 					    	Email: 
 					    </label>
 						<input 
 						id="login-email"
 						type="text"
+						className = "tw-w-full"
 						{...register("email", registerOptions.email)}
 						/>
 				        {errors?.email && <small className = "--text-alert">{errors.email.message}</small>}
 				    </div>
 				</div>
-				<div className = "form-row">
-				    <div className = "form-cell">
-					    <label htmlFor = "login-password">
+				<div>
+				    <div>
+					    <label className = "label" htmlFor = "login-password">
 					    	Password:
 					    </label>
 						<input 
 						id="login-password"
 						type="password"
+						className = "tw-w-full"
 						{...register("password", registerOptions.password)}
 						/>
 				        {errors?.password && <small className = "--text-alert">{errors.password.message}</small>}
 				    </div>
 				</div>
-				<div className = "form-row">
-				    <div className = "form-cell">
-					    <label htmlFor = "login-organization">
+				<div>
+				    <div>
+					    <label className = "label" htmlFor = "login-organization">
 					    	Organization:
 					    </label>
 						<select 
+							className = "tw-w-full"
 							id = "login-organization"
 							{...register("organizationId", registerOptions.organizationId)}
 						>
@@ -99,14 +101,14 @@ export const Login = () => {
 				        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
 				    </div>
 				</div>
-				<div className = "form-row">
-				    <div className = "form-cell">
-						<button type = "submit">Submit</button>
+				<div>
+				    <div>
+						<button className = "button" type = "submit">Submit</button>
 					</div>
 				</div>
-				<div className = "form-row">
-					<div className = "form-cell">
-						<small>Don't have an account? Click <a onClick={() => navigate("/register")}>Here</a> to Register</small>
+				<div>
+					<div>
+						<small>Don't have an account? Click <Link className = "tw-text-sky-500" to={REGISTER}>Here</Link> to Register</small>
 					</div>
 				</div>
 			</form>

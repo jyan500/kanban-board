@@ -108,12 +108,11 @@ input[type="text"] {
 	padding: var(--padding-inputs);
 	border: var(--width-input-border) solid var(--co-textfld-border);
 	border-radius: var(--radius-inputs);
-	width: var(--width-inputs);
+	/*width: var(--width-inputs);*/
 	max-width: 100%;
-	/* normalize the widths between input text and select menus */
-	-webkit-box-sizing: content-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: content-box;    /* Firefox, other Gecko */
-    box-sizing: content-box;         /* Opera/IE 8+ */
+  box-sizing: border-box;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing: border-box;
 	&:focus {
 		outline: 0;
 	}
@@ -157,11 +156,7 @@ input[type="text"] {
 	}
 }
 
-button, 
-input[type="button"], 
-input[type="submit"], 
-input[type="reset"], 
-input[type="file"]::file-selector-button {
+.button {
 	padding: var(--padding-btn);
 	border: none;
 	background-color: var(--bs-primary);
@@ -184,7 +179,7 @@ input::file-selector-button {
 	margin-right: var(--margin-form-gap);
 }
 
-label {
+.label {
 	cursor: pointer;
 	display: block;
 
@@ -236,7 +231,6 @@ a {
 .sidebar-design {	
 	width: var(--sidebar-design-width);
 	height: 100%;
-	background-image: url("/public/sidebar-design.png");
 	margin-right: 128px;
 }
 
