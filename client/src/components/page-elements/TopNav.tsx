@@ -1,6 +1,5 @@
 import React from "react"
 import { HamburgerButton } from "../HamburgerButton"
-import "../../styles/topnav.css"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { logout } from "../../slices/authSlice" 
 import { CgProfile } from "react-icons/cg"
@@ -25,7 +24,7 @@ export const TopNav = ({isFetching}: Props) => {
 	return (
 		<div className = "tw-my-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
 			<HamburgerButton/>	
-			<div className = "tw-flex tw-flex-row tw-gap-x-6 tw-items-center">
+			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 				{!isFetching ? (
 					<>
 						<div>

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { useParams } from "react-router-dom" 
+import { useParams, useNavigate } from "react-router-dom" 
 import { 
 	useGetBoardQuery, 
 	useGetBoardTicketsQuery, 
@@ -9,9 +9,11 @@ import { KanbanBoard as KanbanBoardType } from "../../types/common"
 import { setBoard, setBoardInfo, setStatusesToDisplay, setFilteredTickets, setTickets as setBoardTickets } from "../../slices/boardSlice" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
+import { ArrowButton } from "../../components/page-elements/ArrowButton"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
+	const navigate = useNavigate()
 	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
 	const {data: boardData} = useGetBoardQuery(boardId ?? skipToken)
@@ -39,6 +41,8 @@ export const Board = () => {
 
 	return (
 		<div>
+			<ArrowButton text="Back" onClick={() => navigate(-1)}/>
+			<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>
 			<KanbanBoard
 			/>
 		</div>

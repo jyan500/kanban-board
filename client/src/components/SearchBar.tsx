@@ -1,17 +1,22 @@
 import React, { useEffect } from "react"
 import { FaSearch } from "react-icons/fa";
-import "../styles/searchbar.css"
+import { IconContext } from "react-icons"
+import { useFormContext } from "react-hook-form" 
 
-type Props = {
+interface Props {
 	placeholder: string
-	onChange: (value: string) => void
+	registerField: string
+	registerOptions: Record<string, any>
 }
 
-export const SearchBar = ({placeholder, onChange}: Props) => {
+export const SearchBar = ({placeholder, registerField, registerOptions}: Props) => {
+	const { register } = useFormContext()
 	return (
-		<div className = "searchbar">
-			<FaSearch className = "icon searchbar--icon"/>
-			<input onChange={(e) => onChange(e.target.value)} placeholder = {placeholder} className = "--icon-shift" type = "text"/>
+		<div className = "tw-relative">
+			<IconContext.Provider value={{ className: "icon tw-absolute tw-top-3 tw-left-3"}}>
+				<FaSearch/>
+			</IconContext.Provider>
+			<input {...register(registerField, registerOptions)} placeholder = {placeholder} className = "tw-w-full xl:tw-w-96 !tw-pl-10" type = "text"/>
 		</div>
 	)	
 }
