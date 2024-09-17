@@ -182,6 +182,7 @@ input::file-selector-button {
 .label {
 	cursor: pointer;
 	display: block;
+	font-weight: bold;
 
 	& + &,
 	& + input,

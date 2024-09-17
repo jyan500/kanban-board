@@ -23,7 +23,7 @@ import { displayUser } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
 import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
-import { priorityIconMap, ticketTypeIconMap, colorMap } from "./Ticket"
+import { priorityIconMap, TicketTypeIcon , colorMap } from "./Ticket"
 import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown" 
 
 type EditFieldVisibility = {
@@ -162,7 +162,7 @@ export const EditTicketForm = () => {
 
 	const userProfileSelect = ( 
 		<select {...userIdRegisterMethods}
-		className = {`${editFieldVisibility.assignees ? "" : "--invisible"} __table-select`}
+		className = {`tw-w-full ${editFieldVisibility.assignees ? "" : "tw-border-transparent"}`}
 		onChange={async (e) => {
 			setValue("userId", parseInt(e.target.value))
 			toggleFieldVisibility("assignee", false)
@@ -180,7 +180,7 @@ export const EditTicketForm = () => {
 
 	const ticketTypeSelect = (
 		<select {...ticketTypeIdRegisterMethods} 
-		className = {`${editFieldVisibility["ticket-type"] ? "" : "--invisible"} __table-select`}
+		className = {`tw-w-full ${editFieldVisibility["ticket-type"] ? "" : "tw-border-transparent"}`}
 		onChange={async (e) => {
 			setValue("ticketTypeId", parseInt(e.target.value))
 			toggleFieldVisibility("ticket-type", false)
@@ -197,7 +197,7 @@ export const EditTicketForm = () => {
 
 	const prioritySelect = (
 		<select {...priorityIdRegisterMethods} 
-		className = {`${editFieldVisibility["priority"] ? "" : "--invisible"} __table-select`}
+		className = {`tw-w-full ${editFieldVisibility["priority"] ? "" : "tw-border-transparent"}`}
 		onChange={async (e) => {
 			setValue("priorityId", parseInt(e.target.value))
 			toggleFieldVisibility("priority", false)
@@ -213,11 +213,11 @@ export const EditTicketForm = () => {
 	)
 
 	return (
-		<div className = "ticket-display-container">
+		<div className = "tw-flex tw-flex-col tw-w-full">
 			<FormProvider {...methods}>
 				<form>
-					<div className = "ticket-body">
-						<div className = "ticket-main">
+					<div className = "tw-flex tw-flex-row">
+						<div className = "tw-w-2/3">
 							<div className = "tw-pb-2">
 							{
 								!editFieldVisibility.name ? (
@@ -238,7 +238,7 @@ export const EditTicketForm = () => {
 							<div className = "tw-pb-2">
 								<button onClick={(e) => {
 									e.preventDefault()	
-								}}className = "--secondary">
+								}} className = "button !tw-bg-gray-500">
 									<div className = "icon-container">
 										<IconContext.Provider value = {{className: "icon"}}>
 											<LinkIcon/>
@@ -268,83 +268,63 @@ export const EditTicketForm = () => {
 								</>
 							</div>
 						</div>
-						<div className = "ticket-sidebar">
+						<div className = "tw-w-1/3">
 							<EditTicketFormToolbar/>
-							<select 
-							{...register("statusId", registerOptions.statusId)} 
-							onChange={(e) => {
-								setValue("statusId", parseInt(e.target.value))
-							    handleSubmit(onSubmit)()
-							}}
-							className = "status-select">
-								{statusesToDisplay.map((status) => {
-										return (
-											<option key = {status.id} value = {status.id}>{status.name}</option>
-										)
-									})
-								}
-							</select>
-							<div className = "ticket-details-container">
-								<div className = "ticket-details">
-									<table className = "__table">
-										<tbody>
-											<tr>
-												<td colSpan = {2}><strong>Details</strong></td>
-											</tr>
-											<tr>
-												<td>Assignee</td>
-												<td>
-												{!isTicketAssigneesLoading ? (
-													<div onClick={(e) => {
-														toggleFieldVisibility("assignees", true)
-													}}
-													className = "__ticket-display-field icon-container"
-													>
-														<div className = "tw-w-10">
-															<CgProfile className = "--l-icon"/>
-														</div>
-														{userProfileSelect}	
-													</div>
-												): <LoadingSpinner/>}
-												</td>
-											</tr>
-											<tr>
-												<td>Reporter</td>
-												<td>
-													<div className = "icon-container">
-														<div className = "tw-w-10">
-															<CgProfile className = "--l-icon"/>
-														</div>
-														<div className = "--reporter">{displayUser(reporter)}</div>
-													</div>
-												</td>
-											</tr>
-											<tr>
-												<td>Priority</td>
-												<td className = "__table-display-field" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
-													<div className = "icon-container">
-														<div className = "tw-w-10">
-															<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "--l-icon"}}>
-																{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
-															</IconContext.Provider>
-														</div>
-														{prioritySelect}
-													</div>
-												</td>
-											</tr>
-											<tr>
-												<td>Ticket Type</td>
-												<td className = "__table-display-field" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
-													<div className = "icon-container">
-														<div className = "tw-w-9 tw-ml-1.5">
-															{ticketTypeName && ticketTypeName in ticketTypeIconMap ? ticketTypeIconMap[ticketTypeName] : null}
-														</div>
-														{ticketTypeSelect}
-													</div>
-												</td>
-											</tr>
-										</tbody>
-									</table>
+							<div className = "tw-flex tw-flex-col tw-gap-y-2">
+								<select 
+								{...register("statusId", registerOptions.statusId)} 
+								onChange={(e) => {
+									setValue("statusId", parseInt(e.target.value))
+								    handleSubmit(onSubmit)()
+								}}
+								className = "tw-w-full status-select">
+									{statusesToDisplay.map((status) => {
+											return (
+												<option key = {status.id} value = {status.id}>{status.name}</option>
+											)
+										})
+									}
+								</select>
+								<div className = "tw-flex tw-flex-col tw-gap-y-2">
+									<span className = "tw-font-bold tw-text-xl">Details</span>
+									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
+										<span className = "tw-w-1/2">Assignee</span>
+										{
+											!isTicketAssigneesLoading ? (
+												<div className = "tw-flex tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
+													<IconContext.Provider value = {{className: "tw-flex-shrink-0 tw-h-8 tw-w-8"}}>
+														<CgProfile/>
+													</IconContext.Provider>
+													{userProfileSelect}		
+												</div>
+											) : <LoadingSpinner/>
+										}	
+									</div>
+									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
+										<span className = "tw-w-1/2">Reporter</span>	
+										<div className = "tw-flex tw-flex-1 tw-flex-row tw-items-center">
+											<IconContext.Provider value = {{className: "tw-flex-shrink-0 tw-h-8 tw-w-8"}}>
+												<CgProfile/>
+											</IconContext.Provider>
+											<div className = "tw-ml-3.5">{displayUser(reporter)}</div>
+										</div>
+									</div>
+									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
+										<span className = "tw-w-1/2">Priority</span>
+										<div className = "tw-flex tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
+											<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "tw-flex-shrink-0 tw-w-8 tw-h-8"}}>
+												{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
+											</IconContext.Provider>	
+											{prioritySelect}
+										</div>
+									</div>
+									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
+										<span className = "tw-w-1/2">Ticket Type</span>	
+										<div className = "tw-flex tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
+											{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-1.5 tw-w-6 tw-h-6 tw-flex-shrink-0"/> : null}
+											<div className = "tw-ml-1">{ticketTypeSelect}</div>
+										</div>
+									</div>
 								</div>
 							</div>
 							<div className = "tw-pt-2 tw-pb-2"><strong>Created {createdAt}</strong></div>

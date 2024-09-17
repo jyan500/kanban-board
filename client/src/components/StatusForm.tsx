@@ -155,32 +155,26 @@ export const StatusForm = () => {
 	// }
 
 	return (
-		<div className = "container">
-			<div>
-				{[...statuses].sort(sortStatusByOrder).map((status: Status) => {
-					return (
-						<div key = {status.id} className="form-row">
-							<div className = "form-cell">
-								<input id = {`status-${status.id}`} checked = {formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
-							</div>
-							<div className = "form-cell">
-								<label htmlFor = {`status-${status.id}`}>{status.name}</label>
-							</div>
+		<div className = "tw-flex tw-flex-col tw-gap-y-2">
+			{[...statuses].sort(sortStatusByOrder).map((status: Status) => {
+				return (
+					<div className = "tw-flex tw-flex-row tw-gap-x-2" key = {status.id}>
+						<div>
+							<input id = {`status-${status.id}`} checked = {formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
 						</div>
-					)
-				})}
-				<div className = "form-row">
-					<div className = "btn-group">
-						<button onClick={onSubmit}>Save Changes</button>	
+						<div>
+							<label htmlFor = {`status-${status.id}`}>{status.name}</label>
+						</div>
 					</div>
-					{/*<button onClick={addStatus}>Add Status</button>*/}
-					{
-						// you can only remove statuses that don't have any tickets associated with that status
-						// selectedStatusId != null && !doTicketsContainStatus(selectedStatusId, boardTicketIds) ? (
-						// 	<button onClick = {removeStatus} className = "--alert">Remove Status</button>) : null
-					}
-				</div>
-			</div>
+				)
+			})}
+			<button className = "button" onClick={onSubmit}>Save Changes</button>	
+			{/*<button onClick={addStatus}>Add Status</button>*/}
+			{
+				// you can only remove statuses that don't have any tickets associated with that status
+				// selectedStatusId != null && !doTicketsContainStatus(selectedStatusId, boardTicketIds) ? (
+				// 	<button onClick = {removeStatus} className = "--alert">Remove Status</button>) : null
+			}
 		</div>
 	)	
 }

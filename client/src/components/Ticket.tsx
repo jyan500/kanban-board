@@ -18,12 +18,26 @@ export const priorityIconMap: {[key: string]: ReactNode} = {
 	"High": <HighPriorityIcon/>,
 }
 
-export const ticketTypeIconMap: {[key: string]: ReactNode} = {
-	"Feature": <FeatureIcon className="icon"/>,
-	"Modification": <ModificationIcon className="icon"/>,
-	"Bug": <BugIcon className="icon"/>,
-	"Epic": <EpicIcon className="icon"/>
+type TicketTypeIconProps = {
+	type: string	
+	className?: string
 }
+
+export const TicketTypeIcon = ({type, className}: TicketTypeIconProps) => {
+	const defaultClass = className ?? "tw-w-6 tw-h-6 tw-flex-shrink-0"
+	switch (type) {
+		case "Feature":
+			return <FeatureIcon className={defaultClass}/>
+		case "Modification":
+			return <ModificationIcon className={defaultClass}/>
+		case "Bug":
+			return <BugIcon className={defaultClass}/>
+		case "Epic":
+			return <EpicIcon className={defaultClass}/>
+	}
+	return <div></div>
+}
+
 
 export const colorMap: {[key: string]: string} = {
 	"Low": "var(--bs-primary)",
@@ -44,18 +58,18 @@ export const Ticket = ({ticket}: PropType) => {
 	const priority = priorities.find((p) => p.id === ticket.priorityId)?.name
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name
 	return (
-		<div className = "tw-w-full tw-h-full tw-flex tw-flex-col tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2">
+		<div className = "tw-w-full tw-h-full tw-flex tw-flex-col tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2">
 			<div className = "tw-flex tw-flex-row tw-justify-between">
 				<span className = "tw-font-bold">{ticket.name}</span>
-				<CgProfile className="tw-flex-shrink-0 tw-w-8 tw-h-8"/>
+				<CgProfile className="tw-mt-1 tw-flex-shrink-0 tw-w-6 tw-h-6"/>
 			</div>
 			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-				{ticketType && ticketType in ticketTypeIconMap ? (
-					ticketTypeIconMap[ticketType]
+				{ticketType ? (
+					<TicketTypeIcon type = {ticketType} className = {"tw-flex-shrink-0 tw-w-5 tw-h-5"}/>
 				) : <></>}
 				{priority && priority in priorityIconMap ? 
 				(
-					<IconContext.Provider value = {{color: priority && priority in colorMap ? colorMap[priority] : "", className: "tw-w-8 tw-h-8"}}>
+					<IconContext.Provider value = {{color: priority && priority in colorMap ? colorMap[priority] : "", className: "tw-flex-shrink-0 tw-w-5 tw-h-5"}}>
 						{priority && priority in priorityIconMap && (
 							<>
 								{priorityIconMap[priority]}

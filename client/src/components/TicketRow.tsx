@@ -1,6 +1,6 @@
 import React from "react"
 import { Ticket } from "../types/common"
-import { colorMap, priorityIconMap, ticketTypeIconMap } from "./Ticket" 
+import { colorMap, priorityIconMap, TicketTypeIcon } from "./Ticket" 
 import { CgProfile } from "react-icons/cg"
 import { IconContext } from "react-icons"
 import { useAppSelector } from "../hooks/redux-hooks"
@@ -20,8 +20,8 @@ export const TicketRow = ({ticket}: Props) => {
 		<div className = "tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-border tw-border-gray-200 tw-rounded-md">
 			<div className = "tw-p-1 tw-flex tw-flex-row tw-items-center">
 				<div className = "tw-px-1">
-					{ticketType && ticketType in ticketTypeIconMap ? (
-							ticketTypeIconMap[ticketType]
+					{ticketType ? (
+							<TicketTypeIcon type={ticketType} />	
 						) : <></>}
 				</div>
 				<div className = "tw-px-1"><strong>{ticket?.name}</strong></div>
