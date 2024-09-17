@@ -85,23 +85,30 @@ export const Board = () => {
 	}
 
 	return (
-		<div className = "board-container">
+		<div className = "tw-flex tw-flex-col">
 			<ToolBar/>
 			<div style = {boardStyle}>
 				{statusesToDisplay.map((status: Status) => {
-					return (<div id = {`status_${status.id}`} key = {status.id} onDrop={handleDrop} onDragOver={enableDropping} className = "grid-col">
+					return (
+					<div 
+						id = {`status_${status.id}`} 
+						key = {status.id} 
+						onDrop={handleDrop} 
+						onDragOver={enableDropping} 
+						className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[600px]"
+					>
 						<div>
-							<div className = "grid-col-header">
+							<div className = "tw-ml-2 tw-py-2 tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 								{/*<button className = "--transparent" onClick={() => prioritySort(1, status.id)}><ArrowUp className = "icon"/></button>*/}
-								<p className = "__title">
+								<p className = "tw-font-bold">
 									{allStatuses.find((s: Status) => s.id === status.id)?.name}
-									<span className = "__field">
-										{board[status.id]?.length}
-									</span>
 								</p>
+								<span>
+									{board[status.id]?.length}
+								</span>
 								{/*<button className = "--transparent" onClick={() => prioritySort(-1, status.id)}><ArrowDown className = "icon"/></button>*/}
 							</div>
-							<div>
+							<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-p-2">
 								{board[status.id]?.map((ticketId: number) => {
 									const ticket = filteredTickets.find((t: TicketType) => t.id === ticketId)
 									return (
@@ -115,7 +122,7 @@ export const Board = () => {
 											}}
 											draggable
 											onDragStart={dragStart}
-											className = "cell">
+											>
 											{ticket ? <Ticket 
 												ticket = {ticket}
 											/> : null}

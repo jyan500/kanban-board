@@ -63,7 +63,7 @@ export const ToolBar = () => {
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-row tw-items-center">
+		<div className = "tw-py-4 tw-flex tw-flex-row tw-items-center">
 			<FormProvider {...methods}>
 				<form className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 					<SearchBar 

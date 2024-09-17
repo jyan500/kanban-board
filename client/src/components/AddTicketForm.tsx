@@ -168,80 +168,76 @@ export const AddTicketForm = () => {
     }
 
 	return (
-		<div className = "container">
+		<div className = "tw-flex tw-flex-col">
 			<form>
 				{!isTicketAssigneesLoading ? (
-					<>
-						<div className = "form-row">
-							<div className = "form-cell">
-								<label htmlFor="ticket-name">Name</label>
-								<input id = "ticket-name" type = "text"
-								{...register("name", registerOptions.name)}
-								/>
-						        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
-							</div>
-							<div className = "form-cell">
-								<label htmlFor = "ticket-status">Status</label>
-								<select id = "ticket-status" {...register("statusId", registerOptions.statusId)}>
-									{statusesToDisplay.map((status: Status) => {
-										return <option key = {status.id} value = {status.id}>{status.name}</option>
-									})}
-								</select>	
-						        {errors?.statusId && <small className = "--text-alert">{errors.statusId.message}</small>}
-							</div>
-							<div className = "form-cell">
-								<label htmlFor = "ticket-description">Description</label>
-								<textarea rows={8} id = "ticket-description" {...register("description", registerOptions.description)}></textarea>
-						        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
-							</div>
-								<div className = "form-cell">
-								<label htmlFor = "ticket-priority">Priority</label>
-								<select id = "ticket-priority" {...register("priorityId", registerOptions.priorityId)}>
-									{priorities.map((priority: Priority) => {
-										return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
-									})}
-								</select>
-						        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
-							</div>
-							<div className = "form-cell">
-								<label htmlFor = "ticket-type">Ticket Type</label>
-								<select id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
-									{ticketTypes.map((ticketType: TicketType) => {
-										return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
-									})}
-								</select>
-						        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
-							</div>
-							<div className = "form-cell">
-								<label htmlFor = "ticket-assignee">Assignee</label>
-								<select id = "ticket-assignee" {...register("userId", registerOptions.userId)}>
-									{userProfiles.map((profile: UserProfile) => {
-										return <option disabled={
-											(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
-											(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{profile.firstName + " " + profile.lastName}</option>
-									})}
-								</select>
-						        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
-							</div>
+					<div className = "tw-flex tw-flex-col tw-gap-y-2">
+						<div>
+							<label className = "label" htmlFor="ticket-name">Name</label>
+							<input className = "tw-w-full" id = "ticket-name" type = "text"
+							{...register("name", registerOptions.name)}
+							/>
+					        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 						</div>
-						<div className = "form-row">
-							<div className = "btn-group">
-								<button onClick={handleSubmit(onSubmit)} className = "btn">Submit</button>
-							</div>
+						<div>
+							<label className = "label" htmlFor = "ticket-status">Status</label>
+							<select className = "tw-w-full" id = "ticket-status" {...register("statusId", registerOptions.statusId)}>
+								{statusesToDisplay.map((status: Status) => {
+									return <option key = {status.id} value = {status.id}>{status.name}</option>
+								})}
+							</select>	
+					        {errors?.statusId && <small className = "--text-alert">{errors.statusId.message}</small>}
+						</div>
+						<div>
+							<label className = "label" htmlFor = "ticket-description">Description</label>
+							<textarea className = "tw-w-full" rows={8} id = "ticket-description" {...register("description", registerOptions.description)}></textarea>
+					        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
+					    </div>
+						<div>
+							<label className = "label" htmlFor = "ticket-priority">Priority</label>
+							<select className = "tw-w-full" id = "ticket-priority" {...register("priorityId", registerOptions.priorityId)}>
+								{priorities.map((priority: Priority) => {
+									return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
+								})}
+							</select>
+					        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
+						</div>
+						<div>
+							<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
+							<select className = "tw-w-full" id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
+								{ticketTypes.map((ticketType: TicketType) => {
+									return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
+								})}
+							</select>
+					        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
+						</div>
+						<div>
+							<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
+							<select className = "tw-w-full" id = "ticket-assignee" {...register("userId", registerOptions.userId)}>
+								{userProfiles.map((profile: UserProfile) => {
+									return <option disabled={
+										(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
+										(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{profile.firstName + " " + profile.lastName}</option>
+								})}
+							</select>
+					        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
+						</div>
+						<div>
+							<button onClick={handleSubmit(onSubmit)} className = "button">Submit</button>
 							{
 								currentTicketId && boardInfo?.id ? (
-									<div className = "btn-group">
+									<>
 										<button onClick={
 											(e) => {
 												e.preventDefault()
 												onDelete()
 											}
 										} className = "btn --alert">Delete</button>
-									</div>
+									</>
 								) : null
 							}
 						</div>
-					</>
+					</div>
 				) : (
 					<LoadingSpinner/>	
 				)}
