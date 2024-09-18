@@ -221,7 +221,7 @@ export const EditTicketForm = () => {
 							<div className = "tw-pb-2">
 							{
 								!editFieldVisibility.name ? (
-									<div onClick = {(e) => toggleFieldVisibility("name", true)} className = "__ticket-display-field __ticket-title">
+									<div onClick = {(e) => toggleFieldVisibility("name", true)} className = "hover:tw-opacity-60 tw-cursor-pointer tw-font-bold tw-text-3xl">
 										{watch("name")}
 									</div>
 								) : (
@@ -247,12 +247,12 @@ export const EditTicketForm = () => {
 									</div>
 								</button>
 							</div>
-							<div className = "__ticket-description">
+							<div className = "">
 								<strong>Description</strong>
 								<>
 									{
 										!editFieldVisibility.description ? (
-											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "__ticket-display-field">
+											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
 												{watch("description")}
 											</div>
 										) : (
@@ -332,10 +332,12 @@ export const EditTicketForm = () => {
 					</div>
 				</form>
 			</FormProvider>
-			<div className = "tw-flex tw-flex-row">
-				<div className = "tw-w-2/3">
+			<div className = "tw-flex tw-flex-col tw-w-2/3 tw-gap-y-2">
+				<div>
 					<strong>Linked Issues</strong>	
 					<LinkedTicketForm/>
+				</div>
+				<div>
 					<strong>Activity</strong>
 					<TicketCommentForm/>
 				</div>

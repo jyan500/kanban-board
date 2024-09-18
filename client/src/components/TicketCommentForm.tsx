@@ -11,7 +11,7 @@ import {
 } from "../services/private/ticket"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { InlineEdit } from "./InlineEdit" 
-import { useForm, FormProvider } from "react-hook-form"
+import { useForm, useFormContext, FormProvider } from "react-hook-form"
 import { Ticket, TicketType, TicketComment, UserProfile } from "../types/common"
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
@@ -22,6 +22,26 @@ type CommentFormValues = {
 	ticketId: number,
 	userId: number,
 	comment: string
+}
+
+type CommentFieldProps = {
+	registerOptions: Record<string, any>
+	onSubmit: (e: any) => void 
+	onCancel: (e: any) => void
+}
+
+export const CommentField = ({registerOptions, onSubmit, onCancel}: CommentFieldProps) => {
+	const { handleSubmit, register, resetField, setValue, formState: {errors} } = useFormContext<CommentFormValues>()
+	return (
+		<form className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
+			<textarea {...register("comment", registerOptions)} className = "tw-w-full" rows={8}></textarea>
+	        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
+			<div className = "tw-flex tw-flex-row tw-gap-x-2">
+				<button className = "button" onClick={onSubmit}>Save</button>
+				<button onClick = {onCancel} className = "button --secondary">Cancel</button>
+			</div>
+		</form>
+	)
 }
 
 /* 
@@ -49,13 +69,13 @@ export const TicketCommentForm = () => {
 		comment: ""
 	}
 	const [preloadedValues, setPreloadedValues] = useState<CommentFormValues>(defaultForm)
-	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = useForm<CommentFormValues>({
+	const methods = useForm<CommentFormValues>({
 		defaultValues: preloadedValues
 	})
+	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
 	    comment: { required: "Comment is required" },
     }
-
 	/* 
 	Because only one comment can exist on the form at once, the 
 	behavior is as follows:
@@ -149,22 +169,23 @@ export const TicketCommentForm = () => {
 			) : (
 				<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2 tw-w-full">
 					<CgProfile className = "tw-w-8 tw-h-8"/>
-					<form className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
-						<textarea {...register("comment")} className = "tw-w-full" rows={8}></textarea>
-				        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
-						<div className = "tw-flex tw-flex-row tw-gap-x-2">
-							<button className = "button" onClick = {async (e) => {
+					<FormProvider {...methods}>
+						<CommentField 
+							registerOptions={registerOptions.comment}
+							onSubmit={async (e) => {
 								e.preventDefault()
-								setShowAddCommentForm(false)
 								await handleSubmit(onSubmit)()
-								reset(defaultForm)
-							}}>Save</button>
-							<button onClick = {() => {
+								if (!Object.keys(errors).length){
+									setShowAddCommentForm(false)
+									reset(defaultForm)
+								}
+							}} 
+							onCancel={(e) => {
 								setShowAddCommentForm(false)
 								reset(defaultForm)
-							}} className = "button --secondary">Cancel</button>
-						</div>
-					</form>
+							}}
+						/>
+					</FormProvider>
 				</div>
 			)) : null}
 			<div className = "tw-flex tw-flex-col tw-gap-y-2">
@@ -177,24 +198,25 @@ export const TicketCommentForm = () => {
 								<span>{comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ""}</span>
 							</div>
 							{showEditCommentId === comment.id ? (
-								<form className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
-									<textarea {...register("comment")} className = "tw-w-full" rows={8}></textarea>
-							        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
-									<div className = "tw-flex tw-flex-row tw-gap-x-2">
-										<button className = "button" onClick={async (e) => {
-											e.preventDefault()
-											await handleSubmit(onSubmit)()
-											setShowEditCommentId(undefined)	
-											setShowAddCommentField(true)
-											reset(defaultForm)
-										}}>Save</button>
-										<button onClick = {() => {
-											reset(defaultForm)
-											setShowAddCommentField(true)
+								<FormProvider {...methods}>
+									<CommentField
+									registerOptions={registerOptions.comment}
+									onSubmit={async (e) => {
+										e.preventDefault()
+										await handleSubmit(onSubmit)()
+										if (!Object.keys(errors).length){
 											setShowEditCommentId(undefined)
-										}} className = "button --secondary">Cancel</button>
-									</div>
-								</form>
+											setShowAddCommentField(true)
+											reset(defaultForm)
+										}
+									}}
+									onCancel={() => {
+										reset(defaultForm)
+										setShowAddCommentField(true)
+										setShowEditCommentId(undefined)
+									}}
+									/>
+								</FormProvider>
 							) : (
 								<p>{comment.comment}</p>
 							)}
