@@ -71,11 +71,13 @@ const ProtectedLayout = () => {
 	return (
 		<div>
 			<SideBar isFetching={isUserProfileFetching}/>
-			<div className = "tw-px-16 tw-w-full tw-min-h-screen">
-				<TopNav isFetching={isUserProfileFetching}/>
-				<Outlet/>
+			<div className = "tw-flex tw-flex-col tw-gap-y-4">
+				<div className = "tw-px-16 tw-w-full tw-min-h-screen">
+					<TopNav isFetching={isUserProfileFetching}/>
+					<Outlet/>
+				</div>
+				<Footer/>
 			</div>
-			<Footer/>
 			<Modal/>
 		</div>
 	)

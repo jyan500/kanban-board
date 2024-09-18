@@ -140,50 +140,48 @@ export const TicketCommentForm = () => {
 	}
 
 	return (
-		<div className = "ticket-comments">
+		<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-auto tw-max-h-[calc(var(--l-modal-height)/2)]">
 			{showAddCommentField ? (!showAddCommentForm ? (
-				<div className = "__comment">
-					<CgProfile className = "--l-icon"/>	
-					<button onClick = {() => setShowAddCommentForm(true)} className = "--fake-input"><i>Add a comment...</i></button>
+				<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
+					<CgProfile className = "tw-w-8 tw-h-8"/>	
+					<button onClick = {() => setShowAddCommentForm(true)} className = "tw-bg-gray-50 tw-p-1 tw-w-[400px] tw-border tw-border-gray-300"><i>Add a comment...</i></button>
 				</div>
 			) : (
-				<div className = "__comment">
-					<CgProfile className = "--l-icon"/>
-					<div>
-						<form>
-							<textarea {...register("comment")} cols={15} rows={3}></textarea>
-					        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
-							<div className = "btn-group">
-								<button onClick = {async (e) => {
-									e.preventDefault()
-									setShowAddCommentForm(false)
-									await handleSubmit(onSubmit)()
-									reset(defaultForm)
-								}}>Save</button>
-								<button onClick = {() => {
-									setShowAddCommentForm(false)
-									reset(defaultForm)
-								}} className = "--secondary">Cancel</button>
-							</div>
-						</form>
-					</div>
+				<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2 tw-w-full">
+					<CgProfile className = "tw-w-8 tw-h-8"/>
+					<form className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
+						<textarea {...register("comment")} className = "tw-w-full" rows={8}></textarea>
+				        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
+						<div className = "tw-flex tw-flex-row tw-gap-x-2">
+							<button className = "button" onClick = {async (e) => {
+								e.preventDefault()
+								setShowAddCommentForm(false)
+								await handleSubmit(onSubmit)()
+								reset(defaultForm)
+							}}>Save</button>
+							<button onClick = {() => {
+								setShowAddCommentForm(false)
+								reset(defaultForm)
+							}} className = "button --secondary">Cancel</button>
+						</div>
+					</form>
 				</div>
 			)) : null}
-			<div>
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
 				{ticketComments?.map((comment: TicketComment) => (
-					<div key = { comment.id } className = "__comment">
-						<CgProfile className = "--l-icon"/>
-						<div>
-							<div className = "btn-group">
+					<div key = { comment.id } className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
+						<CgProfile className = "tw-w-8 tw-h-8"/>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
+							<div className = "tw-flex tw-flex-row tw-gap-x-2">
 								<span>{displayUser(userProfiles.find(userProfile => userProfile.id === comment.userId))}</span>
 								<span>{comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ""}</span>
 							</div>
 							{showEditCommentId === comment.id ? (
-								<form>
-									<textarea {...register("comment")} cols={15} rows={3}></textarea>
+								<form className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
+									<textarea {...register("comment")} className = "tw-w-full" rows={8}></textarea>
 							        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
-									<div className = "btn-group">
-										<button onClick={async (e) => {
+									<div className = "tw-flex tw-flex-row tw-gap-x-2">
+										<button className = "button" onClick={async (e) => {
 											e.preventDefault()
 											await handleSubmit(onSubmit)()
 											setShowEditCommentId(undefined)	
@@ -194,15 +192,15 @@ export const TicketCommentForm = () => {
 											reset(defaultForm)
 											setShowAddCommentField(true)
 											setShowEditCommentId(undefined)
-										}} className = "--secondary">Cancel</button>
+										}} className = "button --secondary">Cancel</button>
 									</div>
 								</form>
 							) : (
 								<p>{comment.comment}</p>
 							)}
 							{comment.userId === userProfile?.id && !showAddCommentForm && !showEditCommentId ? (
-								<div className = "btn-group">
-									<button onClick={() => {
+								<div className = "tw-flex tw-flex-row tw-gap-x-2">
+									<button className = "button" onClick={() => {
 										reset({
 											id: comment.id,
 											ticketId: comment.ticketId,
@@ -212,7 +210,7 @@ export const TicketCommentForm = () => {
 										setShowAddCommentField(false)
 										setShowEditCommentId(comment.id)
 									}}>Edit</button>
-									<button onClick={() => onDelete(comment.id)} className = "--alert">Delete</button>
+									<button onClick={() => onDelete(comment.id)} className = "button --alert">Delete</button>
 								</div>
 							) : null}
 						</div>

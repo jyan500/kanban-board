@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { useFormContext } from "react-hook-form"
-import "../styles/inline-edit.css"
 
 type Props = {
 	type: string
@@ -27,6 +26,7 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 			element = (
 				<input
 					{...register(registerField, registerOptions)}
+					className = "tw-w-full"
 					type="text"
 					aria-label="editable-field-text"
 					onKeyDown={onKeyDown}
@@ -38,6 +38,7 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 				<textarea 
 					rows={10}
 					cols={30}
+					className = "tw-w-full"
 					{...register(registerField, registerOptions)}
 					aria-label="editable-field-textarea"
 					onKeyDown={onKeyDown}
@@ -50,6 +51,7 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 			element = (<input
 					{...register(registerField, registerOptions)}
 					type="text"
+					className = "tw-w-full"
 					aria-label="editable-field"
 					onKeyDown={onKeyDown}
 				/>)
@@ -57,17 +59,17 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 	}
 
 	return (
-		<div>
-			<div className = "inline-edit-element">
+		<div className = "tw-flex tw-flex-col tw-gap-y-2">
+			<div>
 				{element}
 			</div>
-			<div className = "btn-group">
-				<button type = "button" onClick={onSubmit}>Save</button>
+			<div className = "tw-flex tw-flex-row tw-gap-x-2">
+				<button type = "button" className = "button" onClick={onSubmit}>Save</button>
 				<button type = "button" onClick={(e) => {
 					resetField(registerField)
 					onCancel()
 				}
-				} className = "--secondary">Cancel</button>
+				} className = "button --secondary">Cancel</button>
 			</div>
 		</div>
 	)

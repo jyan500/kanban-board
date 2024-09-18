@@ -73,8 +73,8 @@
 	--m-spacing: 16px;
 	--ml-spacing: 24px;
 	--l-spacing: 32px;
-	--l-modal-width: 1000px;
-	--l-modal-height: 700px;
+	--l-modal-width: 1200px;
+	--l-modal-height: 800px;
 }
 
 h1,h2,h3 {
@@ -214,12 +214,12 @@ a {
 	color: black;
 }
 
-:read-only { cursor: default }
-:disabled {
+/* :read-only { cursor: default } */
+/*:disabled {
   opacity: var(--opacity-input-disabled);
   cursor: not-allowed;
 }
-
+*/
 /* elements */
 
 .jumbotron {

@@ -64,14 +64,14 @@ export const LinkedTicketForm = () => {
 	return (
 		<div>
 			<form>
-				<div>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
 					{groupedByRelationshipTypeId && Object.keys(groupedByRelationshipTypeId).length > 0 ? Object.keys(groupedByRelationshipTypeId).map((relationshipTypeId) => {
 						const type = ticketRelationshipTypes.find((type) => type.id === parseInt(relationshipTypeId))
 						const groupedTicketRelationships = groupedByRelationshipTypeId[relationshipTypeId as keyof typeof groupedByRelationshipTypeId]
 						return (
 							<>
-								<div className = "tw-py-2"><span className = "tw-font-medium tw-text-gray-500">{type?.name}</span></div>
-								<div className = "tw-py-2">
+								<div className = ""><span className = "tw-font-medium tw-text-gray-500">{type?.name}</span></div>
+								<div className = "">
 									{
 										groupedTicketRelationships?.length && groupedTicketRelationships.map((relationship: TicketRelationship) => {
 											return (<TicketRow ticket={tickets.find((ticket) => ticket?.id === relationship.childTicketId || ticket?.id === relationship.parentTicketId)}/>)
@@ -82,21 +82,21 @@ export const LinkedTicketForm = () => {
 						)
 					}
 					) : null}
-					<div className = "tw-py-2">
+					<div className = "tw-flex tw-flex-row tw-gap-x-2">
 						<select {...register("ticketRelationshipTypeId", registerOptions.ticketRelationshipTypeId)}>
 							{ticketRelationshipTypes.map((type) => 
 								<option key = {type.id} value = {type.id}>{type.name}</option>
 							)}
 						</select>
 						{/* TODO: autocomplete search box instead of select menu */}	
-						<select {...register("childTicketId", registerOptions.childTicketId)}>	
+						<select className = "tw-w-full" {...register("childTicketId", registerOptions.childTicketId)}>	
 							{tickets.map((ticket) => 
 								<option key = {ticket.id} value = {ticket.id}>{ticket.name}</option>
 							)}
 						</select>
 					</div>
 				</div>
-				<div className = "tw-py-2 tw-flex tw-flex-row tw-justify-between">
+				<div className = "tw-flex tw-flex-row tw-justify-between">
 					{/*<button onClick = {(e) => {
 						e.preventDefault()
 					}}>Create Linked Issue</button>*/}
