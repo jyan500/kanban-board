@@ -3,6 +3,7 @@ import { Link, Outlet, Navigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SideBar } from "../components/SideBar"
 import { Modal } from "../components/Modal" 
+import { SecondaryModal } from "../components/SecondaryModal" 
 import { TopNav } from "../components/page-elements/TopNav" 
 import { Footer } from "../components/page-elements/Footer"
 import { useGetUserProfileQuery, useGetUserProfilesQuery } from "../services/private/userProfile" 
@@ -79,6 +80,7 @@ const ProtectedLayout = () => {
 				<Footer/>
 			</div>
 			<Modal/>
+			<SecondaryModal/>
 		</div>
 	)
 }

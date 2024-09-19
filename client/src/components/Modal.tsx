@@ -9,6 +9,7 @@ import { StatusForm } from "./StatusForm"
 import { BoardForm } from "./BoardForm" 
 import { DeleteTicketWarning } from "./DeleteTicketWarning" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
+import { PRIMARY_MODAL_Z_INDEX } from "../helpers/constants"
 
 export const modalTypes = {
 	"ADD_TICKET_FORM": AddTicketForm,
@@ -54,7 +55,7 @@ export const Modal = () => {
 	} 
 
 	return (
-		<div className = {`overlay ${showModal ? "--visible": "--hidden"}`}>
+		<div className = {`${PRIMARY_MODAL_Z_INDEX} overlay ${showModal ? "--visible": "--hidden"}`}>
 			<div className = {`${currentModalType in modalClassNames ? modalClassNames[currentModalType as keyof typeof modalClassNames] : "tw-top-[30%]"} modal-container`}>
 				<button 
 				className = "__modal-container-close --transparent"

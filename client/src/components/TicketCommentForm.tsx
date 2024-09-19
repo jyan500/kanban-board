@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from "react"
-import "../styles/ticket-comment-form.css"
 import { CgProfile } from "react-icons/cg"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { LoadingSpinner } from "./LoadingSpinner"
@@ -16,6 +15,9 @@ import { Ticket, TicketType, TicketComment, UserProfile } from "../types/common"
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../helpers/functions" 
+import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
+import { DeleteCommentWarningProps } from "./secondary-modals/DeleteCommentWarning"
+import { LoadingButton } from "./page-elements/LoadingButton"
 
 type CommentFormValues = {
 	id: number
@@ -26,38 +28,44 @@ type CommentFormValues = {
 
 type CommentFieldProps = {
 	registerOptions: Record<string, any>
-	onSubmit: (e: any) => void 
-	onCancel: (e: any) => void
+	isLoading: boolean
+	onSubmit: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void 
+	onCancel: () => void
 }
 
-export const CommentField = ({registerOptions, onSubmit, onCancel}: CommentFieldProps) => {
+export const CommentField = ({isLoading, registerOptions, onSubmit, onCancel}: CommentFieldProps) => {
 	const { handleSubmit, register, resetField, setValue, formState: {errors} } = useFormContext<CommentFormValues>()
 	return (
 		<form className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
 			<textarea {...register("comment", registerOptions)} className = "tw-w-full" rows={8}></textarea>
 	        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<button className = "button" onClick={onSubmit}>Save</button>
+				<LoadingButton isLoading={isLoading} className = "button" text={"Save"} onClick={onSubmit}></LoadingButton>
 				<button onClick = {onCancel} className = "button --secondary">Cancel</button>
 			</div>
 		</form>
 	)
 }
 
+type TicketCommentFormProps = {
+	ticketComments: Array<TicketComment>
+}
+
 /* 
 Add new comment on ticket, and displays existing comments for the ticket
 */
-export const TicketCommentForm = () => {
+export const TicketCommentForm = ({ticketComments}: TicketCommentFormProps) => {
 	const dispatch = useAppDispatch()
 	const {
 		tickets,
 		currentTicketId,
 		statusesToDisplay
 	} = useAppSelector((state) => state.board)	
+	const { showModal } = useAppSelector(state => state.modal)
 	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
 
-	const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ?? skipToken)
+	// const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ?? skipToken)
 	const [ addTicketComment, {isLoading: isAddTicketCommentLoading, error: isAddTicketCommentError }] = useAddTicketCommentMutation()
 	const [ updateTicketComment, {isLoading: isUpdateTicketCommentLoading, error: isUpdateTicketCommentError }] = useUpdateTicketCommentMutation()
 	const [ deleteTicketComment, {isLoading: isDeleteTicketCommentLoading, error: isDeleteTicketCommentError }] = useDeleteTicketCommentMutation()
@@ -90,6 +98,7 @@ export const TicketCommentForm = () => {
 
 	const adminRole = userRoles?.find((role) => role.name === "ADMIN")
 	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
+
 
 	const onSubmit = async (values: CommentFormValues) => {
 		try {
@@ -161,83 +170,94 @@ export const TicketCommentForm = () => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-auto tw-max-h-[calc(var(--l-modal-height)/2)]">
-			{showAddCommentField ? (!showAddCommentForm ? (
-				<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
-					<CgProfile className = "tw-w-8 tw-h-8"/>	
-					<button onClick = {() => setShowAddCommentForm(true)} className = "tw-bg-gray-50 tw-p-1 tw-w-[400px] tw-border tw-border-gray-300"><i>Add a comment...</i></button>
-				</div>
-			) : (
-				<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2 tw-w-full">
-					<CgProfile className = "tw-w-8 tw-h-8"/>
-					<FormProvider {...methods}>
-						<CommentField 
-							registerOptions={registerOptions.comment}
-							onSubmit={async (e) => {
-								e.preventDefault()
-								await handleSubmit(onSubmit)()
-								if (!Object.keys(errors).length){
+			{
+				showAddCommentField ? (!showAddCommentForm ? (
+					<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
+						<CgProfile className = "tw-w-8 tw-h-8"/>	
+						<button onClick = {() => setShowAddCommentForm(true)} className = "tw-bg-gray-50 tw-p-1 tw-w-[400px] tw-border tw-border-gray-300"><i>Add a comment...</i></button>
+					</div>
+				) : (
+					<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2 tw-w-full">
+						<CgProfile className = "tw-w-8 tw-h-8"/>
+						<FormProvider {...methods}>
+							<CommentField 
+								isLoading={isAddTicketCommentLoading}
+								registerOptions={registerOptions.comment}
+								onSubmit={async (e) => {
+									e.preventDefault()
+									await handleSubmit(onSubmit)()
+									if (!Object.keys(errors).length){
+										setShowAddCommentForm(false)
+										reset(defaultForm)
+									}
+								}} 
+								onCancel={() => {
 									setShowAddCommentForm(false)
 									reset(defaultForm)
-								}
-							}} 
-							onCancel={(e) => {
-								setShowAddCommentForm(false)
-								reset(defaultForm)
-							}}
-						/>
-					</FormProvider>
-				</div>
-			)) : null}
-			<div className = "tw-flex tw-flex-col tw-gap-y-2">
-				{ticketComments?.map((comment: TicketComment) => (
-					<div key = { comment.id } className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
-						<CgProfile className = "tw-w-8 tw-h-8"/>
-						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
-							<div className = "tw-flex tw-flex-row tw-gap-x-2">
-								<span>{displayUser(userProfiles.find(userProfile => userProfile.id === comment.userId))}</span>
-								<span>{comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ""}</span>
-							</div>
-							{showEditCommentId === comment.id ? (
-								<FormProvider {...methods}>
-									<CommentField
-									registerOptions={registerOptions.comment}
-									onSubmit={async (e) => {
-										e.preventDefault()
-										await handleSubmit(onSubmit)()
-										if (!Object.keys(errors).length){
-											setShowEditCommentId(undefined)
-											setShowAddCommentField(true)
-											reset(defaultForm)
-										}
-									}}
-									onCancel={() => {
-										reset(defaultForm)
-										setShowAddCommentField(true)
-										setShowEditCommentId(undefined)
-									}}
-									/>
-								</FormProvider>
-							) : (
-								<p>{comment.comment}</p>
-							)}
-							{comment.userId === userProfile?.id && !showAddCommentForm && !showEditCommentId ? (
-								<div className = "tw-flex tw-flex-row tw-gap-x-2">
-									<button className = "button" onClick={() => {
-										reset({
-											id: comment.id,
-											ticketId: comment.ticketId,
-											userId: comment.userId,
-											comment: comment.comment
-										})
-										setShowAddCommentField(false)
-										setShowEditCommentId(comment.id)
-									}}>Edit</button>
-									<button onClick={() => onDelete(comment.id)} className = "button --alert">Delete</button>
-								</div>
-							) : null}
-						</div>
+								}}
+							/>
+						</FormProvider>
 					</div>
-				))}
+				)) : null
+			}
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				{
+					ticketComments?.map((comment: TicketComment) => (
+						<div key = { comment.id } className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
+							<CgProfile className = "tw-w-8 tw-h-8"/>
+							<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
+								<div className = "tw-flex tw-flex-row tw-gap-x-2">
+									<span>{displayUser(userProfiles.find(userProfile => userProfile.id === comment.userId))}</span>
+									<span>{comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ""}</span>
+								</div>
+								{showEditCommentId === comment.id ? (
+									<FormProvider {...methods}>
+										<CommentField
+										isLoading={isUpdateTicketCommentLoading}
+										registerOptions={registerOptions.comment}
+										onSubmit={async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+											e.preventDefault()
+											await handleSubmit(onSubmit)()
+											if (!Object.keys(errors).length){
+												setShowEditCommentId(undefined)
+												setShowAddCommentField(true)
+												reset(defaultForm)
+											}
+										}}
+										onCancel={() => {
+											reset(defaultForm)
+											setShowAddCommentField(true)
+											setShowEditCommentId(undefined)
+										}}
+										/>
+									</FormProvider>
+								) : (
+									<p>{comment.comment}</p>
+								)}
+								{comment.userId === userProfile?.id && !showAddCommentForm && !showEditCommentId ? (
+									<div className = "tw-flex tw-flex-row tw-gap-x-2">
+										<button className = "button" onClick={() => {
+											reset({
+												id: comment.id,
+												ticketId: comment.ticketId,
+												userId: comment.userId,
+												comment: comment.comment
+											})
+											setShowAddCommentField(false)
+											setShowEditCommentId(comment.id)
+										}}>Edit</button>
+										{/*<button onClick={() => onDelete(comment.id)} className = "button --alert">Delete</button>*/}
+										<button onClick={() => {
+											dispatch(toggleShowSecondaryModal(true))
+											dispatch(setSecondaryModalProps<DeleteCommentWarningProps>({commentId: comment.id}))
+											dispatch(setSecondaryModalType("SHOW_DELETE_COMMENT_WARNING"))
+										}} className = "button --alert">Delete</button>
+									</div>
+								) : null}
+							</div>
+						</div>
+					))
+				}
 			</div>	
 		</div>
 	)

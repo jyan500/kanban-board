@@ -24,7 +24,7 @@ type TicketTypeIconProps = {
 }
 
 export const TicketTypeIcon = ({type, className}: TicketTypeIconProps) => {
-	const defaultClass = className ?? "tw-w-6 tw-h-6 tw-flex-shrink-0"
+	const defaultClass = className ?? "tw-w-6 tw-h-6 tw-shrink-0"
 	switch (type) {
 		case "Feature":
 			return <FeatureIcon className={defaultClass}/>
@@ -59,17 +59,17 @@ export const Ticket = ({ticket}: PropType) => {
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name
 	return (
 		<div className = "tw-w-full tw-h-full tw-flex tw-flex-col tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2">
-			<div className = "tw-flex tw-flex-row tw-justify-between">
+			<div className = "tw-flex tw-flex-row tw-justify-between tw-gap-x-1">
 				<span className = "tw-font-bold">{ticket.name}</span>
-				<CgProfile className="tw-mt-1 tw-flex-shrink-0 tw-w-6 tw-h-6"/>
+				<CgProfile className="tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>
 			</div>
 			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 				{ticketType ? (
-					<TicketTypeIcon type = {ticketType} className = {"tw-flex-shrink-0 tw-w-5 tw-h-5"}/>
+					<TicketTypeIcon type = {ticketType} className = {"tw-shrink-0 tw-w-5 tw-h-5"}/>
 				) : <></>}
 				{priority && priority in priorityIconMap ? 
 				(
-					<IconContext.Provider value = {{color: priority && priority in colorMap ? colorMap[priority] : "", className: "tw-flex-shrink-0 tw-w-5 tw-h-5"}}>
+					<IconContext.Provider value = {{color: priority && priority in colorMap ? colorMap[priority] : "", className: "tw-shrink-0 tw-w-5 tw-h-5"}}>
 						{priority && priority in priorityIconMap && (
 							<>
 								{priorityIconMap[priority]}

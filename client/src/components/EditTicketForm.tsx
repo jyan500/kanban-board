@@ -8,6 +8,8 @@ import { setModalType } from "../slices/modalSlice"
 import { LoadingSpinner } from "./LoadingSpinner"
 import { 
 	useGetTicketAssigneesQuery, 
+	useGetTicketRelationshipsQuery, 
+	useGetTicketCommentsQuery,
 	useUpdateTicketMutation, 
 	useBulkEditTicketAssigneesMutation 
 } from "../services/private/ticket"
@@ -43,6 +45,8 @@ export const EditTicketForm = () => {
 	const { priorities } = useAppSelector((state) => state.priority) 
 	const { ticketTypes } = useAppSelector((state) => state.ticketType) 
 	const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ?? skipToken)
+	const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ?? skipToken)
+	const { data: ticketRelationships, isLoading: isTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ?? skipToken)
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const {
@@ -58,6 +62,7 @@ export const EditTicketForm = () => {
 		"priority": false,
 		"ticket-type": false
 	})
+	const [showAddLinkedIssue, setShowAddLinkedIssue] = useState(false)
 	const defaultForm: FormValues = {
 		id: 0,
 		name: "",
@@ -112,6 +117,7 @@ export const EditTicketForm = () => {
 				"priority": false,
 				"ticket-type": false
 			})
+			setShowAddLinkedIssue(false)
 		}
 		// initialize with current values if the ticket exists
 		if (currentTicketId){
@@ -216,7 +222,7 @@ export const EditTicketForm = () => {
 		<div className = "tw-flex tw-flex-col tw-w-full">
 			<FormProvider {...methods}>
 				<form>
-					<div className = "tw-flex tw-flex-row tw-gap-x-2">
+					<div className = "tw-flex tw-flex-row tw-gap-x-4">
 						<div className = "tw-w-2/3">
 							<div className = "tw-pb-2">
 							{
@@ -238,6 +244,7 @@ export const EditTicketForm = () => {
 							<div className = "tw-pb-2">
 								<button onClick={(e) => {
 									e.preventDefault()	
+									setShowAddLinkedIssue(!showAddLinkedIssue)
 								}} className = "button !tw-bg-gray-500">
 									<div className = "icon-container">
 										<IconContext.Provider value = {{className: "icon"}}>
@@ -292,7 +299,7 @@ export const EditTicketForm = () => {
 										{
 											!isTicketAssigneesLoading ? (
 												<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
-													<IconContext.Provider value = {{className: "tw-flex-shrink-0 tw-h-8 tw-w-8"}}>
+													<IconContext.Provider value = {{className: "tw-shrink-0 tw-h-8 tw-w-8"}}>
 														<CgProfile/>
 													</IconContext.Provider>
 													{userProfileSelect}		
@@ -303,7 +310,7 @@ export const EditTicketForm = () => {
 									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
 										<span className = "tw-font-semibold tw-w-1/2">Reporter</span>	
 										<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center">
-											<IconContext.Provider value = {{className: "tw-flex-shrink-0 tw-h-8 tw-w-8"}}>
+											<IconContext.Provider value = {{className: "tw-shrink-0 tw-h-8 tw-w-8"}}>
 												<CgProfile/>
 											</IconContext.Provider>
 											<div className = "tw-ml-3.5">{displayUser(reporter)}</div>
@@ -312,7 +319,7 @@ export const EditTicketForm = () => {
 									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
 										<span className = "tw-font-semibold tw-w-1/2">Priority</span>
 										<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
-											<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "tw-flex-shrink-0 tw-w-8 tw-h-8"}}>
+											<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "tw-shrink-0 tw-w-8 tw-h-8"}}>
 												{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
 											</IconContext.Provider>	
 											{prioritySelect}
@@ -321,7 +328,7 @@ export const EditTicketForm = () => {
 									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
 										<span className = "tw-font-semibold tw-w-1/2">Ticket Type</span>	
 										<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
-											{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-1.5 tw-w-6 tw-h-6 tw-flex-shrink-0"/> : null}
+											{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-1.5 tw-w-6 tw-h-6 tw-shrink-0"/> : null}
 											<div className = "tw-w-full tw-ml-0.5">{ticketTypeSelect}</div>
 										</div>
 									</div>
@@ -333,13 +340,22 @@ export const EditTicketForm = () => {
 				</form>
 			</FormProvider>
 			<div className = "tw-flex tw-flex-col tw-w-2/3 tw-gap-y-2">
-				<div>
-					<strong>Linked Issues</strong>	
-					<LinkedTicketForm/>
+				<div className = "tw-space-y-2">
+					{!isTicketRelationshipsLoading ? (
+						setShowAddLinkedIssue || ticketRelationships?.length ? 
+						<>
+							<strong>Linked Issues</strong>	
+							<LinkedTicketForm showAddLinkedIssue={showAddLinkedIssue} setShowAddLinkedIssue={setShowAddLinkedIssue} ticketRelationships={ticketRelationships?.length ? ticketRelationships : []}/>
+						</> : null
+					) : <LoadingSpinner/>}
 				</div>
-				<div>
-					<strong>Activity</strong>
-					<TicketCommentForm/>
+				<div className = "tw-space-y-2">
+					{!isTicketCommentsLoading ? (
+						<>
+							<strong>Activity</strong>
+							<TicketCommentForm ticketComments={ticketComments?.length ? ticketComments : []}/>
+						</>
+					) : <LoadingSpinner/>}
 				</div>
 			</div>
 		</div>

@@ -108,7 +108,7 @@ export const Board = () => {
 								</span>
 								{/*<button className = "--transparent" onClick={() => prioritySort(-1, status.id)}><ArrowDown className = "icon"/></button>*/}
 							</div>
-							<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-p-2">
+							<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
 								{board[status.id]?.map((ticketId: number) => {
 									const ticket = filteredTickets.find((t: TicketType) => t.id === ticketId)
 									return (

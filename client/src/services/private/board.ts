@@ -85,7 +85,11 @@ export const boardApi = privateApi.injectEndpoints({
 				url: BOARD_TICKET_URL(id, ""),
 				method: "GET",
 			}),
-			providesTags: ["BoardTickets"]
+			providesTags: ["BoardTickets"],
+			// sort by ticket name
+			transformResponse: (response: Array<Ticket>) => {
+				return response.sort((a,b) => a.name.localeCompare(b.name))
+			}
 		}),
 		getBoardStatuses: builder.query<Array<Status>, number>({
 			query: (id) => ({

@@ -21,6 +21,10 @@ export const defaultStatusesToDisplay = [
 
 export const defaultRows = 4
 
+export const PRIMARY_MODAL_Z_INDEX = "tw-z-[100]"
+
+export const SECONDARY_MODAL_Z_INDEX = "tw-z-[200]" 
+
 export const TAG_TYPES = [
 	"Tickets",
 	"TicketComments",

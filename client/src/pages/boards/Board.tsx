@@ -10,15 +10,16 @@ import { setBoard, setBoardInfo, setStatusesToDisplay, setFilteredTickets, setTi
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ArrowButton } from "../../components/page-elements/ArrowButton"
+import { LoadingSpinner } from "../../components/LoadingSpinner"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
 	const navigate = useNavigate()
 	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
-	const {data: boardData} = useGetBoardQuery(boardId ?? skipToken)
-	const {data: boardTicketData} = useGetBoardTicketsQuery(boardId ?? skipToken)
-	const {data: statusData} = useGetBoardStatusesQuery(boardId ?? skipToken)
+	const {data: boardData, isLoading: isGetBoardLoading } = useGetBoardQuery(boardId ?? skipToken)
+	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading } = useGetBoardTicketsQuery(boardId ?? skipToken)
+	const {data: statusData, isLoading: isGetBoardStatusesLoading } = useGetBoardStatusesQuery(boardId ?? skipToken)
 	const board = useAppSelector((state) => state.board)
 
 	useEffect(() => {
@@ -40,11 +41,16 @@ export const Board = () => {
 	}, [boardData, statusData, boardTicketData])
 
 	return (
-		<div>
+		<div className = "tw-space-y-2">
 			<ArrowButton text="Back" onClick={() => navigate(-1)}/>
-			<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>
-			<KanbanBoard
-			/>
+			{ !isGetBoardLoading && !isGetBoardTicketsLoading && !isGetBoardStatusesLoading ? 
+				<>
+					<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>
+					<KanbanBoard
+					/> 
+				</>
+				: <LoadingSpinner className = "!tw-w-8 !tw-h-8"/>
+			}
 		</div>
 	)
 }
