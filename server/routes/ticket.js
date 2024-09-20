@@ -335,6 +335,12 @@ router.delete("/:ticketId", validateDelete, handleValidationResult, async (req, 
 		if (ticketsToBoards.length){
 			await db("tickets_to_boards").where("ticket_id", req.params.ticketId).del()
 		}
+
+		// check if ticket exists in any ticket relationships and delete these relationships
+		const ticketRelationships = await db("ticket_relationships").where("parent_ticket_id", req.params.ticketId).orWhere("child_ticket_id", req.params.ticketId)
+		if (ticketRelationships.length){
+			await db("ticket_relationships").whereIn("id", ticketRelationships.map((relationship) => relationship.id)).del()
+		}
 		// delete ticket
 		await db("tickets").where("id", req.params.ticketId).del()
 		res.json({message: "Ticket deleted successfully!"})

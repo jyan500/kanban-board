@@ -5,12 +5,14 @@ import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../slices/secondaryModalSlice" 
 import { DeleteCommentWarning } from "./secondary-modals/DeleteCommentWarning"
 import { UnlinkTicketWarning } from "./secondary-modals/UnlinkTicketWarning"
+import { DeleteTicketWarning } from "./secondary-modals/DeleteTicketWarning" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SECONDARY_MODAL_Z_INDEX } from "../helpers/constants"
 
 export const secondaryModalTypes = {
 	"SHOW_DELETE_COMMENT_WARNING": DeleteCommentWarning,
-	"SHOW_UNLINK_TICKET_WARNING": UnlinkTicketWarning
+	"SHOW_UNLINK_TICKET_WARNING": UnlinkTicketWarning,
+	"DELETE_TICKET_WARNING": DeleteTicketWarning
 }
 
 export const SecondaryModal = () => {

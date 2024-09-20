@@ -1,7 +1,7 @@
 import React, { useRef } from "react" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { Dropdown } from "./Dropdown" 
-import { setModalType } from "../slices/modalSlice" 
+import { toggleShowSecondaryModal, setSecondaryModalType } from "../slices/secondaryModalSlice" 
 
 export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, unknown>((props, ref) => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -18,7 +18,8 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, unkno
 		"Add to Epic": () => console.log("Clicked add to epic"),
 		...(isAdminOrBoardAdmin || isTicketReporter ? {
 			"Delete": () => {
-				dispatch(setModalType("DELETE_TICKET"))
+				dispatch(toggleShowSecondaryModal(true))
+				dispatch(setSecondaryModalType("DELETE_TICKET_WARNING"))
 			}
 		}: {})
 	}

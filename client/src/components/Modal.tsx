@@ -7,7 +7,6 @@ import { AddTicketForm } from "./AddTicketForm"
 import { EditTicketForm } from "./EditTicketForm" 
 import { StatusForm } from "./StatusForm" 
 import { BoardForm } from "./BoardForm" 
-import { DeleteTicketWarning } from "./DeleteTicketWarning" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { PRIMARY_MODAL_Z_INDEX } from "../helpers/constants"
 
@@ -16,7 +15,6 @@ export const modalTypes = {
 	"EDIT_TICKET_FORM": EditTicketForm,
 	"STATUS_FORM": StatusForm,
 	"BOARD_FORM": BoardForm,
-	"DELETE_TICKET": DeleteTicketWarning
 }
 
 export const modalClassNames = {
@@ -46,12 +44,6 @@ export const Modal = () => {
 				dispatch(selectCurrentTicketId(null))
 			}
 		},
-		"DELETE_TICKET": {
-			dismissHandler: () => {
-				dispatch(toggleShowModal(false))
-				dispatch(selectCurrentTicketId(null))
-			}
-		}
 	} 
 
 	return (
