@@ -15,8 +15,8 @@ import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps
 
 type LinkedTicketFormValues = {
 	parentTicketId: number | null
-	childTicketId: number
-	ticketRelationshipTypeId: number
+	childTicketId: string
+	ticketRelationshipTypeId: number | string
 }
 
 type Props = {
@@ -49,8 +49,8 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 
 	const defaultForm = {
 		parentTicketId: currentTicketId,
-		childTicketId: 0,
-		ticketRelationshipTypeId: ticket?.ticketTypeId === epicTicketType?.id ? (epicTicketRelationshipType?.id ?? 0) : 0
+		childTicketId: "",
+		ticketRelationshipTypeId: ticket?.ticketTypeId === epicTicketType?.id ? (epicTicketRelationshipType?.id ?? "") : "" 
 	}
 	const [preloadedValues, setPreloadedValues] = useState<LinkedTicketFormValues>(defaultForm)
 	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = useForm<LinkedTicketFormValues>({
@@ -61,13 +61,8 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 	    ticketRelationshipTypeId: { required: "Ticket Relationship Type is required" },
     }
 
-    console.log("childTicketId: ", watch("childTicketId"))
-    console.log("ticketrelationshiptypeid: ", watch("ticketRelationshipTypeId"))
-
-
     useEffect(() => {
     	if (showModal){
-    		console.log("resetted?")
     		reset(defaultForm)
     	}	
     }, [showModal])
@@ -82,28 +77,6 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
     }
 
     const onUnlink = async (ticketId: number | undefined, ticketRelationshipId: number) => {
-    	// let defaultToast: Toast = {
-		// 	id: uuidv4(),
-		// 	message: "Something went wrong while un-linking ticket.",
-		// 	animationType: "animation-in",
-		// 	type: "failure"
-    	// }
-    	// if (ticketId && ticketRelationshipId){
-	    // 	try {
-		//     	await deleteTicketRelationship({ticketId, ticketRelationshipId}).unwrap()
-		//     	dispatch(addToast({
-		//     		...defaultToast,
-		//     		message: "Ticket unlinked successfully!",
-		//     		type: "success"
-		//     	}))
-	    // 	}
-	    // 	catch (e) {
-	    // 		dispatch(addToast(defaultToast))
-	    // 	}
-    	// }
-    	// else {
-    	// 	dispatch(addToast(defaultToast))
-    	// }
     	dispatch(toggleShowSecondaryModal(true))
     	dispatch(setSecondaryModalProps({ticketId: ticketId, ticketRelationshipId: ticketRelationshipId}))
     	dispatch(setSecondaryModalType("SHOW_UNLINK_TICKET_WARNING"))
@@ -120,8 +93,8 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 	    	try {
 		    	await addTicketRelationship({
 		    		parentTicketId: values.parentTicketId ?? 0,
-		    		childTicketId: values.childTicketId ?? 0,
-		    		ticketRelationshipTypeId: values.ticketRelationshipTypeId ?? 0
+		    		childTicketId: Number(values.childTicketId) ?? 0,
+		    		ticketRelationshipTypeId: Number(values.ticketRelationshipTypeId) ?? 0
 		    	}).unwrap()
 		    	dispatch(addToast({
 		    		...defaultToast,
@@ -171,6 +144,7 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 							<div className = "tw-flex tw-flex-row tw-gap-x-2">
 								<div className = "tw-w-1/3 tw-w-full tw-flex tw-flex-col tw-gap-y-1">
 									<select className = "tw-w-full" {...register("ticketRelationshipTypeId", registerOptions.ticketRelationshipTypeId)}>
+										<option value="" disabled></option>
 										{ticketRelationshipTypes.map((type) => 
 											<option key = {type.id} value = {type.id}>{type.name}</option>
 										)}
@@ -181,6 +155,7 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 									{/* TODO: autocomplete search box instead of select menu */}	
 									<select className = "tw-w-full" {...register("childTicketId", registerOptions.childTicketId)}>	
 										{/* The current ticket should not be available for selection, as well as any ticket that has already been linked as a parent or child*/}
+										<option value="" disabled></option>
 										{tickets.filter((ticket) => ticket.id !== currentTicketId && !isTicketAlreadyLinked(ticket.id)).map((ticket) => 
 											<option key = {ticket.id} value = {ticket.id}>{ticket.name}</option>
 										)}
