@@ -37,7 +37,7 @@ export interface TicketType {
 }
 
 export interface Ticket {
-	id:number 
+	id: number 
 	priorityId: number
 	name: string
 	description: string
@@ -46,6 +46,8 @@ export interface Ticket {
 	organizationId: number
 	userId: number
 	createdAt: Date
+	inEpic?: boolean
+	hasRelationship?: boolean
 }
 
 export interface TicketComment {

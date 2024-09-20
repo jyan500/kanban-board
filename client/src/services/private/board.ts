@@ -80,10 +80,11 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Boards"]
 		}),
-		getBoardTickets: builder.query<Array<Ticket>, number>({
-			query: (id) => ({
+		getBoardTickets: builder.query<Array<Ticket>, {id: number, urlParams: Record<string, any>}>({
+			query: ({id, urlParams}) => ({
 				url: BOARD_TICKET_URL(id, ""),
 				method: "GET",
+				params: urlParams
 			}),
 			providesTags: ["BoardTickets"],
 			// sort by ticket name

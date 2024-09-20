@@ -131,7 +131,7 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 
 router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const tickets = await db("tickets_to_boards")
+		let tickets = await db("tickets_to_boards")
 		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
 		.where("board_id", req.params.boardId)
 		.select(
@@ -145,6 +145,25 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			"tickets.user_id as userId",
 			"tickets.created_at as createdAt"
 		)
+		if (req.query.includeRelationshipInfo){
+			const epicTicketType = await db("ticket_relationship_types").where("name" , "Epic").first()
+			tickets = await Promise.all(
+				tickets.map(async (ticket) => {
+					const hasRelationship = await db("ticket_relationships")
+					.where("child_ticket_id", ticket.id)
+					.orWhere("parent_ticket_id", ticket.id).limit(1).first() != null
+					const inEpic = await db("ticket_relationships")
+					.where("child_ticket_id", ticket.id)
+					.orWhere("parent_ticket_id", ticket.id).where("ticket_relationship_type_id", epicTicketType?.id)
+					.first() != null
+					return {
+						...ticket,
+						hasRelationship,
+						inEpic
+					}
+				}
+			))
+		}
 		res.json(tickets)
 
 	}	
