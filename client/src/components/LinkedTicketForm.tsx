@@ -11,7 +11,7 @@ import { TicketRelationship, TicketRelationshipType, Toast } from "../types/comm
 import { LoadingSpinner } from "./LoadingSpinner"
 import { v4 as uuidv4 } from "uuid"
 import { addToast } from "../slices/toastSlice"
-import { toggleShowSecondaryModal, setSecondaryModalType } from "../slices/secondaryModalSlice"
+import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 
 type LinkedTicketFormValues = {
 	parentTicketId: number | null
@@ -32,9 +32,6 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 	const { currentTicketId, tickets } = useAppSelector((state) => state.board) 
 	const { ticketRelationshipTypes } = useAppSelector((state) => state.ticketRelationshipType)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)  
-	console.log(currentTicketId)
-	console.log(ticketRelationships)
-	// const { data: ticketRelationships, isLoading: isTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ?? skipToken)
 	const [ addTicketRelationship, { error: addTicketRelationshipError, isLoading: isAddTicketRelationshipLoading }] = useAddTicketRelationshipMutation()
 	const [ deleteTicketRelationship, { error: deleteTicketRelationshipError, isLoading: isDeleteTicketRelationshipLoading }] = useDeleteTicketRelationshipMutation()
 	const ticket = tickets?.find((ticket) => ticket.id === currentTicketId)
@@ -64,9 +61,13 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 	    ticketRelationshipTypeId: { required: "Ticket Relationship Type is required" },
     }
 
+    console.log("childTicketId: ", watch("childTicketId"))
+    console.log("ticketrelationshiptypeid: ", watch("ticketRelationshipTypeId"))
+
 
     useEffect(() => {
     	if (showModal){
+    		console.log("resetted?")
     		reset(defaultForm)
     	}	
     }, [showModal])
@@ -103,7 +104,9 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
     	// else {
     	// 	dispatch(addToast(defaultToast))
     	// }
-    	// dispatch(toggleShowSecondaryModal(true))
+    	dispatch(toggleShowSecondaryModal(true))
+    	dispatch(setSecondaryModalProps({ticketId: ticketId, ticketRelationshipId: ticketRelationshipId}))
+    	dispatch(setSecondaryModalType("SHOW_UNLINK_TICKET_WARNING"))
     }
 
     const onSubmit = async (values: LinkedTicketFormValues) => {
@@ -186,13 +189,13 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 								</div>
 							</div>
 							<div className = "tw-flex tw-flex-row tw-justify-end">
-								{/*<button onClick = {(e) => {
-									e.preventDefault()
-								}}>Create Linked Issue</button>*/}
 								<div className = "btn-group">
 									<button className = "button" onClick = {async (e) => {
 										e.preventDefault()
 										await handleSubmit(onSubmit)()
+										if (!Object.keys(errors).length){
+											reset(defaultForm)
+										}
 									}}>Link</button>
 									<button className = "button --secondary" onClick = {(e) => {
 										e.preventDefault()

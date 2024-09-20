@@ -249,7 +249,7 @@ export const TicketCommentForm = ({ticketComments}: TicketCommentFormProps) => {
 										{/*<button onClick={() => onDelete(comment.id)} className = "button --alert">Delete</button>*/}
 										<button onClick={() => {
 											dispatch(toggleShowSecondaryModal(true))
-											dispatch(setSecondaryModalProps<DeleteCommentWarningProps>({commentId: comment.id}))
+											dispatch(setSecondaryModalProps<DeleteCommentWarningProps>({ticketId: currentTicketId ?? undefined, commentId: comment.id}))
 											dispatch(setSecondaryModalType("SHOW_DELETE_COMMENT_WARNING"))
 										}} className = "button --alert">Delete</button>
 									</div>

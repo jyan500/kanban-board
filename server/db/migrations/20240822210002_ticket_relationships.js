@@ -10,7 +10,7 @@ exports.up = function(knex) {
 		table.integer("ticket_relationship_type_id").unsigned().notNullable()
 		table.foreign("parent_ticket_id").references("tickets.id").onDelete("cascade")
 		table.foreign("child_ticket_id").references("tickets.id").onDelete("cascade")
-		table.foreign("ticket_relationship_type_id").references("ticket_relationships.id").onDelete("cascade")
+		table.foreign("ticket_relationship_type_id").references("ticket_relationship_types.id").onDelete("cascade")
 		table.timestamp('created_at').defaultTo(knex.fn.now());	
  		table.timestamp('updated_at').defaultTo(knex.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
 	})

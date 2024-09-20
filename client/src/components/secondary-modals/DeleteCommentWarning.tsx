@@ -8,13 +8,11 @@ import { v4 as uuidv4 } from "uuid"
 import { addToast } from "../../slices/toastSlice"
 
 export interface DeleteCommentWarningProps {
-	commentId: number
+	ticketId: number | undefined
+	commentId: number | undefined
 }
 
-export const DeleteCommentWarning = ({commentId}: DeleteCommentWarningProps) => {
-	const {
-		currentTicketId,
-	} = useAppSelector((state) => state.board)
+export const DeleteCommentWarning = ({ticketId, commentId}: DeleteCommentWarningProps) => {
 	const dispatch = useAppDispatch()
 	const [ deleteTicketComment, {isLoading: isDeleteTicketCommentLoading, error: isDeleteTicketCommentError }] = useDeleteTicketCommentMutation()
 
@@ -31,9 +29,9 @@ export const DeleteCommentWarning = ({commentId}: DeleteCommentWarningProps) => 
 			type: "failure",
 			animationType: "animation-in"
 		}
-		if (currentTicketId && commentId){
+		if (ticketId && commentId){
 			try {
-				await deleteTicketComment({commentId, ticketId: currentTicketId}).unwrap()
+				await deleteTicketComment({commentId, ticketId}).unwrap()
 				closeSecondaryModal()
 				dispatch(addToast({
 					...defaultToast, 
