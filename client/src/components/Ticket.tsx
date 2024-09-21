@@ -59,7 +59,7 @@ export const Ticket = ({ticket}: PropType) => {
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name
 	return (
 		<div className = "tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2">
-			<div className = "tw-flex tw-flex-row tw-justify-between tw-gap-x-1">
+			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1">
 				<span className = "tw-font-bold">{ticket.name}</span>
 				<CgProfile className="tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>
 			</div>
