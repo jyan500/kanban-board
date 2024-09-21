@@ -146,20 +146,30 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			"tickets.created_at as createdAt"
 		)
 		if (req.query.includeRelationshipInfo){
-			const epicTicketType = await db("ticket_relationship_types").where("name" , "Epic").first()
+			const epicTicketRelationshipType = await db("ticket_relationship_types").where("name" , "Epic").first()
+			const epicTicketType = await db("ticket_types").where("name", "Epic").first()
 			tickets = await Promise.all(
 				tickets.map(async (ticket) => {
 					const hasRelationship = await db("ticket_relationships")
 					.where("child_ticket_id", ticket.id)
 					.orWhere("parent_ticket_id", ticket.id).limit(1).first() != null
-					const inEpic = await db("ticket_relationships")
-					.where("child_ticket_id", ticket.id)
-					.orWhere("parent_ticket_id", ticket.id).where("ticket_relationship_type_id", epicTicketType?.id)
-					.first() != null
+					// figure out if this ticket is attached as a child to a relationship that's typed as an Epic
+					// note that the ticket itself cannot be an epic since you can't attach an epic to itself
+					let epicParentTickets = []
+					if (ticket.ticketTypeId !== epicTicketType?.id){
+						epicParentTickets = await db("ticket_relationships")
+						.where("child_ticket_id", ticket.id)
+						.where("ticket_relationship_type_id", epicTicketRelationshipType?.id)
+						.join("tickets", "tickets.id", "=", "ticket_relationships.parent_ticket_id")
+						.select(
+							"tickets.id as id",
+							"tickets.name as name"
+						)
+					}
 					return {
 						...ticket,
 						hasRelationship,
-						inEpic
+						epicParentTickets,
 					}
 				}
 			))

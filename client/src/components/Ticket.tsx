@@ -11,6 +11,7 @@ import { ModificationIcon } from "../assets/icons/ModificationIcon"
 import { FeatureIcon } from "../assets/icons/FeatureIcon"
 import { EpicIcon } from "../assets/icons/EpicIcon"
 import { CgProfile } from "react-icons/cg";
+import { Badge } from "./page-elements/Badge"
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
 	"Low": <LowPriorityIcon/>,	
@@ -54,15 +55,20 @@ export const Ticket = ({ticket}: PropType) => {
 	const {statuses} = useAppSelector((state) => state.status)
 	const {ticketTypes} = useAppSelector((state) => state.ticketType)
 
-
 	const priority = priorities.find((p) => p.id === ticket.priorityId)?.name
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name
 	return (
-		<div className = "tw-w-full tw-h-full tw-flex tw-flex-col tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2">
+		<div className = "tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2">
 			<div className = "tw-flex tw-flex-row tw-justify-between tw-gap-x-1">
 				<span className = "tw-font-bold">{ticket.name}</span>
 				<CgProfile className="tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>
 			</div>
+			{
+				ticket.epicParentTickets?.map((parentTicket) => 
+					// TODO: make this a link to the epic ticket later on once the tickets page is built
+					<Badge className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>
+				)
+			}
 			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 				{ticketType ? (
 					<TicketTypeIcon type = {ticketType} className = {"tw-shrink-0 tw-w-5 tw-h-5"}/>

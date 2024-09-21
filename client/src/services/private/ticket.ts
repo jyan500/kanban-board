@@ -187,14 +187,14 @@ export const ticketApi = privateApi.injectEndpoints({
 					ticket_relationship_type_id: ticketRelationshipTypeId
 				}
 			}),
-			invalidatesTags: ["TicketRelationships"]
+			invalidatesTags: ["Tickets", "TicketRelationships"]
 		}),
 		deleteTicketRelationship: builder.mutation<{message: string}, DeleteTicketRelationshipRequest>({
 			query: ({ticketId, ticketRelationshipId}) => ({
 				url: TICKET_RELATIONSHIP_URL(ticketId, ticketRelationshipId),
 				method: "DELETE",
 			}),	
-			invalidatesTags: ["TicketRelationships"]
+			invalidatesTags: ["Tickets", "TicketRelationships"]
 		}),
 	}),
 })

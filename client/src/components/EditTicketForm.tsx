@@ -27,6 +27,8 @@ import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
 import { priorityIconMap, TicketTypeIcon , colorMap } from "./Ticket"
 import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown" 
+import { ImTree as AddToEpicIcon } from "react-icons/im";
+
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -93,6 +95,7 @@ export const EditTicketForm = () => {
 	const priorityIdRegisterMethods = register("priorityId", registerOptions.priorityId)
 
 	const ticketTypeName = ticketTypes.find((ticketType) => ticketType.id === watch("ticketTypeId"))?.name
+	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	const priorityName = priorities.find((priority) => priority.id === watch("priorityId"))?.name
 
 	const toggleFieldVisibility = (field: string, flag: boolean) => {
@@ -193,7 +196,7 @@ export const EditTicketForm = () => {
 			await handleSubmit(onSubmit)()
 		}}
 		onBlur = {(e) => toggleFieldVisibility("ticket-type", false)}>
-			{ticketTypes?.map((ticketType: TicketType) => {
+			{ticketTypes?.filter((ticketType) => ticketType?.id !== epicTicketType?.id).map((ticketType: TicketType) => {
 				return (
 					<option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
 				)
@@ -223,8 +226,8 @@ export const EditTicketForm = () => {
 			<FormProvider {...methods}>
 				<form>
 					<div className = "tw-flex tw-flex-row tw-gap-x-4">
-						<div className = "tw-w-2/3">
-							<div className = "tw-pb-2">
+						<div className = "tw-w-2/3 tw-flex tw-flex-col tw-gap-y-2">
+							<div>
 							{
 								!editFieldVisibility.name ? (
 									<div onClick = {(e) => toggleFieldVisibility("name", true)} className = "hover:tw-opacity-60 tw-cursor-pointer tw-font-bold tw-text-3xl">
@@ -241,7 +244,7 @@ export const EditTicketForm = () => {
 								)
 							}
 							</div>
-							<div className = "tw-pb-2">
+							<div className = "tw-flex tw-flex-row tw-gap-x-2">
 								<button onClick={(e) => {
 									e.preventDefault()	
 									setShowAddLinkedIssue(!showAddLinkedIssue)
@@ -253,6 +256,21 @@ export const EditTicketForm = () => {
 										<span>Link Issue</span>
 									</div>
 								</button>
+								{
+									epicTicketType?.id === ticket?.ticketTypeId ? 
+									(
+										<button onClick={(e) => {
+										e.preventDefault()	
+										}} className = "button !tw-bg-light-purple">
+											<div className = "icon-container">
+												<IconContext.Provider value = {{className: "icon"}}>
+													<AddToEpicIcon/>
+												</IconContext.Provider>
+												<span>Add To Epic</span>
+											</div>
+										</button>
+									) : null
+								}
 							</div>
 							<div className = "">
 								<strong>Description</strong>
@@ -327,10 +345,22 @@ export const EditTicketForm = () => {
 									</div>
 									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
 										<span className = "tw-font-semibold tw-w-1/2">Ticket Type</span>	
-										<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
-											{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-1.5 tw-w-6 tw-h-6 tw-shrink-0"/> : null}
-											<div className = "tw-w-full tw-ml-0.5">{ticketTypeSelect}</div>
-										</div>
+										{
+											<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
+												{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-1.5 tw-w-6 tw-h-6 tw-shrink-0"/> : null}
+												{
+													epicTicketType?.id !== ticket?.ticketTypeId ?
+														<div className = "tw-w-full tw-ml-0.5">
+														{ticketTypeSelect}
+														</div>
+													: (
+													<div className = "tw-ml-3.5">
+														{ticketTypeName}	
+													</div>
+													)
+												}
+											</div>
+									}
 									</div>
 								</div>
 							</div>

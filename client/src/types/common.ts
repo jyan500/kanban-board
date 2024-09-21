@@ -46,8 +46,8 @@ export interface Ticket {
 	organizationId: number
 	userId: number
 	createdAt: Date
-	inEpic?: boolean
 	hasRelationship?: boolean
+	epicParentTickets?: Array<{id: number, name: string}>
 }
 
 export interface TicketComment {

@@ -18,6 +18,8 @@ import { addToast } from "../slices/toastSlice"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSpinner } from "./LoadingSpinner"
 import { MdOutlineArrowBackIosNew as ArrowBackward } from "react-icons/md"
+import { IoIosWarning as WarningIcon } from "react-icons/io"
+import { IconContext } from "react-icons"
 
 export type FormValues = {
 	id?: number
@@ -35,7 +37,6 @@ export const AddTicketForm = () => {
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
-	// const { tickets } = useAppSelector((state) => state.ticket) 
 	const { userRoles } = useAppSelector((state) => state.userRole) 
 	const { 
 		currentTicketId, 
@@ -66,12 +67,13 @@ export const AddTicketForm = () => {
 		userId: 0 
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { register , handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
+	const { register , handleSubmit, reset , setValue, getValues, watch, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
 
 	const adminRole = userRoles?.find((role) => role.name === "ADMIN")
 	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
+	const epicTicketType = ticketTypes?.find((ticketType) => ticketType?.name === "Epic")
 
 	const registerOptions = {
 	    name: { required: "Name is required" },
@@ -168,7 +170,7 @@ export const AddTicketForm = () => {
     }
 
 	return (
-		<div className = "tw-flex tw-flex-col">
+		<div className = "tw-flex tw-flex-col tw-w-[500px]">
 			<form>
 				{!isTicketAssigneesLoading ? (
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
@@ -202,14 +204,26 @@ export const AddTicketForm = () => {
 							</select>
 					        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
 						</div>
-						<div>
-							<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
-							<select className = "tw-w-full" id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
-								{ticketTypes.map((ticketType: TicketType) => {
-									return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
-								})}
-							</select>
+						<div className = "tw-space-y-2">
+							<>
+								<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
+								<select className = "tw-w-full" id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
+									{ticketTypes.map((ticketType: TicketType) => {
+										return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
+									})}
+								</select>
+							</>
 					        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
+					        {
+					        	watch("ticketTypeId") == epicTicketType?.id ? (
+							        <div className = "tw-flex tw-flex tw-items-center tw-gap-x-2">
+								        <IconContext.Provider value={{color: "var(--bs-warning)"}}>
+											<WarningIcon className = "tw-h-6 tw-w-6"/>
+										</IconContext.Provider>
+										<span className = "tw-font-bold">If the ticket type is "Epic", it cannot changed once saved.</span>
+									</div>
+					        	) : null
+					        }
 						</div>
 						<div>
 							<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
