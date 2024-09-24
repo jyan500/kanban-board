@@ -38,11 +38,13 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 	const epicTicketType = ticketTypes?.find((type) => type.name === "Epic")
 	const epicTicketRelationshipType = ticketRelationshipTypes?.find((type) => type.name === "Epic")
     const groupedByRelationshipTypeId = ticketRelationships?.reduce((acc: {[id: string]: Array<TicketRelationship>}, obj: TicketRelationship) => {
-    	if (obj.ticketRelationshipTypeId in acc){
-    		acc[obj.ticketRelationshipTypeId].push(obj)
-    	}	
-    	else {
-    		acc[obj.ticketRelationshipTypeId] = [obj]
+    	if (obj.ticketRelationshipTypeId !== epicTicketRelationshipType?.id){
+	    	if (obj.ticketRelationshipTypeId in acc){
+	    		acc[obj.ticketRelationshipTypeId].push(obj)
+	    	}	
+	    	else {
+	    		acc[obj.ticketRelationshipTypeId] = [obj]
+	    	}
     	}
     	return acc
     }, {})
@@ -145,7 +147,7 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 								<div className = "tw-w-1/3 tw-w-full tw-flex tw-flex-col tw-gap-y-1">
 									<select className = "tw-w-full" {...register("ticketRelationshipTypeId", registerOptions.ticketRelationshipTypeId)}>
 										<option value="" disabled></option>
-										{ticketRelationshipTypes.map((type) => 
+										{ticketRelationshipTypes.filter(type => type.id !== epicTicketRelationshipType?.id).map((type) => 
 											<option key = {type.id} value = {type.id}>{type.name}</option>
 										)}
 									</select>
