@@ -187,14 +187,16 @@ export const ticketApi = privateApi.injectEndpoints({
 					ticket_relationship_type_id: ticketRelationshipTypeId
 				}
 			}),
-			invalidatesTags: ["Tickets", "TicketRelationships"]
+			// TODO: should not invalidate all tickets and board tickets, just the specific ticket that was changed
+			invalidatesTags: ["BoardTickets", "Tickets", "TicketRelationships"]
 		}),
 		deleteTicketRelationship: builder.mutation<{message: string}, DeleteTicketRelationshipRequest>({
 			query: ({ticketId, ticketRelationshipId}) => ({
 				url: TICKET_RELATIONSHIP_URL(ticketId, ticketRelationshipId),
 				method: "DELETE",
 			}),	
-			invalidatesTags: ["Tickets", "TicketRelationships"]
+			// TODO: should not invalidate all tickets and board tickets, just the specific ticket that was changed
+			invalidatesTags: ["BoardTickets", "Tickets", "TicketRelationships"]
 		}),
 	}),
 })

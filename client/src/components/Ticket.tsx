@@ -63,12 +63,14 @@ export const Ticket = ({ticket}: PropType) => {
 				<span className = "tw-font-bold">{ticket.name}</span>
 				<CgProfile className="tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>
 			</div>
-			{
-				ticket.epicParentTickets?.map((parentTicket) => 
-					// TODO: make this a link to the epic ticket later on once the tickets page is built
-					<Badge className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>
-				)
-			}
+			<div className = "tw-flex tw-flex-row tw-gap-x-2">
+				{
+					ticket.epicParentTickets?.map((parentTicket) => 
+						// TODO: make this a link to the epic ticket later on once the tickets page is built
+						<Badge className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>
+					)
+				}
+			</div>
 			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 				{ticketType ? (
 					<TicketTypeIcon type = {ticketType} className = {"tw-shrink-0 tw-w-5 tw-h-5"}/>

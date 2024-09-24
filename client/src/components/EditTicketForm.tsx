@@ -28,6 +28,7 @@ import { EditTicketFormToolbar } from "./EditTicketFormToolbar"
 import { priorityIconMap, TicketTypeIcon , colorMap } from "./Ticket"
 import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown" 
 import { ImTree as AddToEpicIcon } from "react-icons/im";
+import { Badge } from "./page-elements/Badge"
 
 
 type EditFieldVisibility = {
@@ -65,6 +66,7 @@ export const EditTicketForm = () => {
 		"ticket-type": false
 	})
 	const [showAddLinkedIssue, setShowAddLinkedIssue] = useState(false)
+	const [showAddToEpic, setShowAddToEpic] = useState(false)
 	const defaultForm: FormValues = {
 		id: 0,
 		name: "",
@@ -121,6 +123,7 @@ export const EditTicketForm = () => {
 				"ticket-type": false
 			})
 			setShowAddLinkedIssue(false)
+			setShowAddToEpic(false)
 		}
 		// initialize with current values if the ticket exists
 		if (currentTicketId){
@@ -261,6 +264,7 @@ export const EditTicketForm = () => {
 									(
 										<button onClick={(e) => {
 										e.preventDefault()	
+										setShowAddToEpic(!showAddToEpic)
 										}} className = "button !tw-bg-light-purple">
 											<div className = "icon-container">
 												<IconContext.Provider value = {{className: "icon"}}>
@@ -364,6 +368,14 @@ export const EditTicketForm = () => {
 									</div>
 								</div>
 							</div>
+							<div className = "tw-flex tw-flex-row tw-gap-x-2">
+							{
+								ticket?.epicParentTickets?.map((parentTicket) => 
+									// TODO: make this a link to the epic ticket later on once the tickets page is built
+									<Badge className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>
+								)
+							}
+							</div>
 							<div className = "tw-pt-2 tw-pb-2"><strong>Created {createdAt}</strong></div>
 						</div>
 					</div>
@@ -373,10 +385,17 @@ export const EditTicketForm = () => {
 				<div className = "tw-space-y-2">
 					{!isTicketRelationshipsLoading ? (
 						setShowAddLinkedIssue || ticketRelationships?.length ? 
-						<>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							{ticket?.ticketTypeId === epicTicketType?.id ? (
+								<>
+									<strong>Epic Tickets</strong>
+									<LinkedTicketForm isEpicParent={true} showAddLinkedIssue={showAddToEpic} setShowAddLinkedIssue={setShowAddToEpic} ticketRelationships={ticketRelationships?.length ? ticketRelationships : []}/>
+								</>
+							) : null
+							}
 							<strong>Linked Issues</strong>	
 							<LinkedTicketForm showAddLinkedIssue={showAddLinkedIssue} setShowAddLinkedIssue={setShowAddLinkedIssue} ticketRelationships={ticketRelationships?.length ? ticketRelationships : []}/>
-						</> : null
+						</div> : null
 					) : <LoadingSpinner/>}
 				</div>
 				<div className = "tw-space-y-2">

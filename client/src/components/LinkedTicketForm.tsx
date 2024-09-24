@@ -23,9 +23,10 @@ type Props = {
 	ticketRelationships: Array<TicketRelationship>
 	showAddLinkedIssue: boolean
 	setShowAddLinkedIssue: (val: boolean) => void
+	isEpicParent?: boolean
 }
 
-export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, ticketRelationships}: Props) => {
+export const LinkedTicketForm = ({isEpicParent, showAddLinkedIssue, setShowAddLinkedIssue, ticketRelationships}: Props) => {
 	const { showModal } = useAppSelector((state) => state.modal) 
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
 	const dispatch = useAppDispatch()
@@ -37,18 +38,22 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 	const ticket = tickets?.find((ticket) => ticket.id === currentTicketId)
 	const epicTicketType = ticketTypes?.find((type) => type.name === "Epic")
 	const epicTicketRelationshipType = ticketRelationshipTypes?.find((type) => type.name === "Epic")
-    const groupedByRelationshipTypeId = ticketRelationships?.reduce((acc: {[id: string]: Array<TicketRelationship>}, obj: TicketRelationship) => {
-    	if (obj.ticketRelationshipTypeId !== epicTicketRelationshipType?.id){
-	    	if (obj.ticketRelationshipTypeId in acc){
-	    		acc[obj.ticketRelationshipTypeId].push(obj)
-	    	}	
-	    	else {
-	    		acc[obj.ticketRelationshipTypeId] = [obj]
-	    	}
+
+    const groupedByRelationshipTypeId = !isEpicParent ? ticketRelationships?.filter((ticketRelationship) => ticketRelationship.ticketRelationshipTypeId !== epicTicketRelationshipType?.id).reduce((acc: {[id: string]: Array<TicketRelationship>}, obj: TicketRelationship) => {
+    	if (obj.ticketRelationshipTypeId in acc){
+    		acc[obj.ticketRelationshipTypeId].push(obj)
+    	}	
+    	else {
+    		acc[obj.ticketRelationshipTypeId] = [obj]
     	}
     	return acc
-    }, {})
+    }, {}) : {}
 
+    console.log(groupedByRelationshipTypeId)
+
+	const childEpicTickets = isEpicParent ? ticketRelationships?.filter((ticketRelationship) => {
+    	return ticketRelationship.ticketRelationshipTypeId === epicTicketRelationshipType?.id && ticketRelationship.parentTicketId === currentTicketId 
+    }) : []
 	const defaultForm = {
 		parentTicketId: currentTicketId,
 		childTicketId: "",
@@ -70,7 +75,14 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
     }, [showModal])
 
     const isTicketInRelationship = (ticketId: number, relationship: TicketRelationship) => {
-	    return ticketId !== currentTicketId && (ticketId === relationship.childTicketId || ticketId === relationship.parentTicketId)
+    	if (!isEpicParent){
+		    return ticketId !== currentTicketId && (ticketId === relationship.childTicketId || ticketId === relationship.parentTicketId)
+    	}	
+    	// for epics, the ticket is considered in a relationship if the current ticket is the parent, and the 
+    	// ticket being considered is the child 
+    	else {
+    		return ticketId !== currentTicketId && relationship.parentTicketId === currentTicketId && ticketId === relationship.childTicketId
+    	}
     }
 
     const isTicketAlreadyLinked = (ticketId: number) => {
@@ -117,28 +129,48 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 		<div>
 			<div className = "tw-flex tw-flex-col tw-gap-y-2">
 				{
-					groupedByRelationshipTypeId && Object.keys(groupedByRelationshipTypeId).length > 0 ? Object.keys(groupedByRelationshipTypeId).map((relationshipTypeId) => {
-						const type = ticketRelationshipTypes.find((type) => type.id === parseInt(relationshipTypeId))
-						const groupedTicketRelationships = groupedByRelationshipTypeId[relationshipTypeId as keyof typeof groupedByRelationshipTypeId]
-						return (
-							<div key = {`relationship_type_${relationshipTypeId}`} className = "tw-flex tw-flex-col tw-gap-y-2">
-								<div><span className = "tw-font-medium tw-text-gray-500">{type?.name}</span></div>
-								<div className = "tw-flex tw-flex-col tw-gap-y-1">
-									{
-										groupedTicketRelationships?.length && groupedTicketRelationships.map((relationship: TicketRelationship) => {
-											return (<TicketRow 
-												key={`relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`} 
-												ticket={tickets.find((ticket) => isTicketInRelationship(ticket.id, relationship))}
+					!isEpicParent ? (
+						groupedByRelationshipTypeId && Object.keys(groupedByRelationshipTypeId).length > 0 ? Object.keys(groupedByRelationshipTypeId).map((relationshipTypeId) => {
+							const type = ticketRelationshipTypes.find((type) => type.id === parseInt(relationshipTypeId))
+							const groupedTicketRelationships = groupedByRelationshipTypeId[relationshipTypeId as keyof typeof groupedByRelationshipTypeId]
+							return (
+								<div key = {`relationship_type_${relationshipTypeId}`} className = "tw-flex tw-flex-col tw-gap-y-2">
+									<div><span className = "tw-font-medium tw-text-gray-500">{type?.name}</span></div>
+									<div className = "tw-flex tw-flex-col tw-gap-y-1">
+										{
+											groupedTicketRelationships?.length && groupedTicketRelationships.map((relationship: TicketRelationship) => {
+												return (<TicketRow 
+													key={`relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`} 
+													ticket={tickets.find((ticket) => isTicketInRelationship(ticket.id, relationship))}
+													ticketRelationshipId={relationship.id}
+													onUnlink={onUnlink}
+													showUnlink={true}
+												/>)
+											})
+										}
+									</div>
+								</div>
+							)
+						}) : null
+					) : (
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<div className = "tw-flex tw-flex-col tw-gap-y-1">
+								{
+									childEpicTickets.map((relationship: TicketRelationship) => {
+										return (
+											<TicketRow 
+												key={`epic_relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`}
+												ticket={tickets.find(ticket => isTicketInRelationship(ticket.id, relationship))}
 												ticketRelationshipId={relationship.id}
 												onUnlink={onUnlink}
 												showUnlink={true}
-											/>)
-										})
-									}
-								</div>
+											/>
+										)
+									})
+								}
 							</div>
-						)
-					}) : null
+						</div>
+					)
 				}
 				{
 					showAddLinkedIssue ? (
@@ -147,9 +179,11 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 								<div className = "tw-w-1/3 tw-w-full tw-flex tw-flex-col tw-gap-y-1">
 									<select className = "tw-w-full" {...register("ticketRelationshipTypeId", registerOptions.ticketRelationshipTypeId)}>
 										<option value="" disabled></option>
-										{ticketRelationshipTypes.filter(type => type.id !== epicTicketRelationshipType?.id).map((type) => 
+										{!isEpicParent ? ticketRelationshipTypes.filter(type => type.id !== epicTicketRelationshipType?.id).map((type) => 
 											<option key = {type.id} value = {type.id}>{type.name}</option>
-										)}
+										) : 
+										<option value = {epicTicketRelationshipType?.id}>{epicTicketRelationshipType?.name}</option>
+									}
 									</select>
 							        {errors?.ticketRelationshipTypeId && <small className = "--text-alert">{errors.ticketRelationshipTypeId.message}</small>}
 								</div>
@@ -158,7 +192,7 @@ export const LinkedTicketForm = ({showAddLinkedIssue, setShowAddLinkedIssue, tic
 									<select className = "tw-w-full" {...register("childTicketId", registerOptions.childTicketId)}>	
 										{/* The current ticket should not be available for selection, as well as any ticket that has already been linked as a parent or child*/}
 										<option value="" disabled></option>
-										{tickets.filter((ticket) => ticket.id !== currentTicketId && !isTicketAlreadyLinked(ticket.id)).map((ticket) => 
+										{tickets.filter((ticket) => ticket.id !== currentTicketId && ticket.ticketTypeId !== epicTicketType?.id && !isTicketAlreadyLinked(ticket.id)).map((ticket) => 
 											<option key = {ticket.id} value = {ticket.id}>{ticket.name}</option>
 										)}
 									</select>

@@ -20,6 +20,7 @@ import { LoadingSpinner } from "./LoadingSpinner"
 import { MdOutlineArrowBackIosNew as ArrowBackward } from "react-icons/md"
 import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { IconContext } from "react-icons"
+import { LoadingButton } from "./page-elements/LoadingButton"
 
 export type FormValues = {
 	id?: number
@@ -237,16 +238,20 @@ export const AddTicketForm = () => {
 					        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
 						</div>
 						<div>
-							<button onClick={handleSubmit(onSubmit)} className = "button">Submit</button>
+							<LoadingButton onClick={handleSubmit(onSubmit)} className = "button" text={"Submit"}></LoadingButton>
 							{
 								currentTicketId && boardInfo?.id ? (
 									<>
-										<button onClick={
+									{/*	<button onClick={
 											(e) => {
 												e.preventDefault()
 												onDelete()
 											}
-										} className = "btn --alert">Delete</button>
+										} className = "btn --alert">Delete</button>*/}
+										<LoadingButton className = "button --alert" text={"Delete"} onClick={(e) => {
+											e.preventDefault()
+											onDelete()
+										}}/>
 									</>
 								) : null
 							}
