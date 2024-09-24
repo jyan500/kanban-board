@@ -372,7 +372,7 @@ export const EditTicketForm = () => {
 							{
 								ticket?.epicParentTickets?.map((parentTicket) => 
 									// TODO: make this a link to the epic ticket later on once the tickets page is built
-									<Badge className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>
+									<Badge key = {`edit_ticket_parent_epic_${parentTicket.id}`} className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>
 								)
 							}
 							</div>
