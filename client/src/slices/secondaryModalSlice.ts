@@ -29,7 +29,6 @@ export const secondaryModalSlice = createSlice({
 		},
 		setSecondaryModalProps: <T>(state: SecondaryModalState<T>, action: PayloadAction<T>) => {
 			state.currentSecondaryModalProps = action.payload
-			console.log(state.currentSecondaryModalProps)
 		}
 	},
     extraReducers: (builder) => {

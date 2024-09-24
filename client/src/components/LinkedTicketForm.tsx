@@ -49,8 +49,6 @@ export const LinkedTicketForm = ({isEpicParent, showAddLinkedIssue, setShowAddLi
     	return acc
     }, {}) : {}
 
-    console.log(groupedByRelationshipTypeId)
-
 	const childEpicTickets = isEpicParent ? ticketRelationships?.filter((ticketRelationship) => {
     	return ticketRelationship.ticketRelationshipTypeId === epicTicketRelationshipType?.id && ticketRelationship.parentTicketId === currentTicketId 
     }) : []
