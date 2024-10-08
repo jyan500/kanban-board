@@ -46,7 +46,6 @@ export const TicketDisplay = () => {
 								</button>
 							)
 						})}
-					
 					</div>
 					<div className = "tw-w-3/4 tw-flex tw-flex-col tw-gap-y-4">
 						<Outlet/>
