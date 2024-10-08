@@ -225,11 +225,11 @@ export const EditTicketForm = () => {
 	)
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-w-full">
+		<div className = "tw-flex tw-flex-col tw-w-full tw-gap-y-2">
 			<FormProvider {...methods}>
 				<form>
 					<div className = "tw-flex tw-flex-row tw-gap-x-4">
-						<div className = "tw-w-2/3 tw-flex tw-flex-col tw-gap-y-2">
+						<div className = "tw-break-words tw-w-2/3 tw-flex tw-flex-col tw-gap-y-2">
 							<div>
 							{
 								!editFieldVisibility.name ? (
@@ -282,7 +282,7 @@ export const EditTicketForm = () => {
 									{
 										!editFieldVisibility.description ? (
 											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
-												{watch("description")}
+												<span>{watch("description")}</span>
 											</div>
 										) : (
 											<>
@@ -381,7 +381,7 @@ export const EditTicketForm = () => {
 					</div>
 				</form>
 			</FormProvider>
-			<div className = "tw-flex tw-flex-col tw-w-2/3 tw-gap-y-2">
+			<div className = "tw-flex tw-flex-col tw-break-words tw-w-2/3 tw-gap-y-2">
 				<div className = "tw-space-y-2">
 					{!isTicketRelationshipsLoading ? (
 						setShowAddLinkedIssue || ticketRelationships?.length ? 

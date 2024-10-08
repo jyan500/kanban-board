@@ -10,7 +10,7 @@ import {
 	TICKET_RELATIONSHIP_URL,
 } 
 from "../../helpers/urls" 
-import { CustomError, Ticket, TicketComment, TicketRelationship, UserProfile } from "../../types/common" 
+import { CustomError, ListResponse, Ticket, TicketComment, TicketRelationship, UserProfile } from "../../types/common" 
 import { privateApi } from "../private"
 
 type TicketAssigneeRequest = {
@@ -51,10 +51,11 @@ type DeleteTicketRelationshipRequest = {
 export const ticketApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
-		getTickets: builder.query<Array<Ticket>, Record<string, any>>({
+		getTickets: builder.query<ListResponse<Ticket>, Record<string, any>>({
 			query: (urlParams) => ({
 				url: TICKET_URL,
 				method: "GET",
+				params: urlParams
 			}),
 			providesTags: ["Tickets"],	
 			// providesTags: (result, error, arg) =>
