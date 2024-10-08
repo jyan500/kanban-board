@@ -32,7 +32,8 @@ router.get("/", async (req, res, next) => {
 			"tickets.status_id as statusId",
 			"tickets.ticket_type_id as ticketTypeId",
 			"tickets.organization_id as organizationId",
-			"tickets.created_at as createdAt"
+			"tickets.created_at as createdAt",
+			"tickets.user_id as userId",
 		)
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(tickets)
@@ -53,7 +54,8 @@ router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, n
 			"tickets.status_id as statusId",
 			"tickets.ticket_type_id as ticketTypeId",
 			"tickets.organization_id as organizationId",
-			"tickets.created_at as createdAt"
+			"tickets.created_at as createdAt",
+			"tickets.user_id as userId",
 		)
 		res.json(tickets)
 	}	

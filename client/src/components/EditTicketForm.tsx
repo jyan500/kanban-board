@@ -16,8 +16,7 @@ import {
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { InlineEdit } from "./InlineEdit" 
 import { useForm, FormProvider } from "react-hook-form"
-import { Ticket, TicketType, Priority, UserProfile } from "../types/common"
-
+import { Ticket, TicketType, Priority, Status, UserProfile } from "../types/common"
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
@@ -35,13 +34,14 @@ type EditFieldVisibility = {
 	[key: string]: boolean
 }
 
-export const EditTicketForm = () => {
-	const {
-		tickets,
-		currentTicketId,
-		statusesToDisplay
-	} = useAppSelector((state) => state.board)
+type Props = {
+	ticket: Ticket | null | undefined
+	statusesToDisplay: Array<Status>
+}
+
+export const EditTicketForm = ({ticket, statusesToDisplay}: Props) => {
 	const dispatch = useAppDispatch()
+	const currentTicketId = ticket?.id
 	const { statuses } = useAppSelector((state) => state.status)
 	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
@@ -55,7 +55,6 @@ export const EditTicketForm = () => {
 	const {
 		showModal
 	} = useAppSelector((state) => state.modal)
-	const ticket = tickets.find((ticket) => ticket.id === currentTicketId)
 	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
 	const reporter = userProfiles?.find((user) => user.id === ticket?.userId)
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
@@ -127,7 +126,6 @@ export const EditTicketForm = () => {
 		}
 		// initialize with current values if the ticket exists
 		if (currentTicketId){
-			let ticket = tickets.find((t: Ticket) => t.id === currentTicketId)
 			reset({...ticket, userId: ticketAssignees?.length ? ticketAssignees[0].id : 0} ?? defaultForm)
 		}
 		else {
@@ -137,7 +135,6 @@ export const EditTicketForm = () => {
 
 	useEffect(() => {
 		if (!isTicketAssigneesLoading){
-			let ticket = tickets.find((t: Ticket) => t.id === currentTicketId)
 			setValue("userId", ticketAssignees?.length ? ticketAssignees[0].id : 0, { shouldDirty: true })
 		}
 	}, [ticketAssignees])

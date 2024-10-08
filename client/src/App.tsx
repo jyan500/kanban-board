@@ -7,6 +7,7 @@ import { HamburgerButton } from "./components/HamburgerButton"
 import { Register } from "./pages/Register" 
 import { BoardDisplay } from "./pages/boards/BoardDisplay" 
 import { TicketDisplay } from "./pages/tickets/TicketDisplay" 
+import { Ticket as TicketPage } from "./pages/tickets/Ticket"
 import { Boards } from "./pages/boards/Boards"
 import { Board } from "./pages/boards/Board" 
 import DefaultLayout from "./layouts/DefaultLayout"
@@ -74,7 +75,13 @@ const router = createBrowserRouter([
 					<>
 						<ScrollRestoration/>
 						<TicketDisplay/>
-					</>
+					</>,
+				children: [
+				{
+					path: TICKET_ID,
+					element: <TicketPage/>
+				}
+				]
 			},
 			{
 				path: "*",

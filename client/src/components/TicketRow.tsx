@@ -9,7 +9,7 @@ import { IconButton } from "./page-elements/IconButton"
 
 type Props = {
 	ticket: Ticket | undefined
-	ticketRelationshipId: number
+	ticketRelationshipId?: number
 	showUnlink?: boolean
 	onUnlink?: (ticketId: number | undefined, ticketRelationshipId: number) => void
 }
@@ -48,7 +48,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 				<div><CgProfile className = "--l-icon"/></div>
 				<div>{status?.name}</div>
 				{
-					showUnlink && onUnlink ? (
+					showUnlink && onUnlink && ticketRelationshipId ? (
 						<IconButton className = "group-hover:tw-visible tw-invisible" onClick={(e) => {
 							onUnlink(ticket?.id, ticketRelationshipId)
 						}}>

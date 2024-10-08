@@ -4,7 +4,7 @@ import "../styles/modal.css"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { AddTicketForm } from "./AddTicketForm" 
-import { EditTicketForm } from "./EditTicketForm" 
+import { EditTicketFormModal } from "./primary-modals/EditTicketFormModal" 
 import { StatusForm } from "./StatusForm" 
 import { BoardForm } from "./BoardForm" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
@@ -12,7 +12,7 @@ import { PRIMARY_MODAL_Z_INDEX } from "../helpers/constants"
 
 export const modalTypes = {
 	"ADD_TICKET_FORM": AddTicketForm,
-	"EDIT_TICKET_FORM": EditTicketForm,
+	"EDIT_TICKET_FORM": EditTicketFormModal,
 	"STATUS_FORM": StatusForm,
 	"BOARD_FORM": BoardForm,
 }
