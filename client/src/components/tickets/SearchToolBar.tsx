@@ -54,12 +54,14 @@ export const SearchToolBar = ({currentPage, paginationData, setPage}: Props) => 
 					<button onClick={handleSubmit(onSubmit)} className = "button tw-bg-primary">Search</button>
 				</form>
 			</FormProvider>
-			<PaginationRow
-				showPageNums={false}
-				currentPage={currentPage}
-				paginationData={paginationData}
-				setPage={setPage}
-			/>
+			<div className = "tw-p-4 tw-rounded-md tw-border tw-border-gray-300">
+				<PaginationRow
+					showPageNums={false}
+					currentPage={currentPage}
+					paginationData={paginationData}
+					setPage={setPage}
+				/>
+			</div>
 		</div>
 	)
 }

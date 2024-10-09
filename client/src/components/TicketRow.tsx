@@ -24,7 +24,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 	const [showConfirmUnlink, setShowConfirmUnlink] = useState(false)
 	return (
 		<div className = "hover:tw-bg-gray-50 tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-border tw-border-gray-200 tw-rounded-md tw-group">
-			<div className = "tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+			<div className = "tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4">
 				<div>
 					{ticketType ? (
 							<TicketTypeIcon type={ticketType} />	
