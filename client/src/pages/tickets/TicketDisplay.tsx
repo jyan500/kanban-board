@@ -6,6 +6,7 @@ import { TICKETS } from "../../helpers/routes"
 import { PaginationRow } from "../../components/page-elements/PaginationRow"
 import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { TicketRow } from "../../components/TicketRow"
+import { SearchToolBar } from "../../components/tickets/SearchToolBar"
 
 export const TicketDisplay = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
@@ -13,6 +14,8 @@ export const TicketDisplay = () => {
 	const navigate = useNavigate()
 	const {data: data, isFetching } = useGetTicketsQuery({page: searchParams.get("page") ?? 1})
 	const ticketId = params.ticketId ? parseInt(params.ticketId) : undefined 
+	const pageParam = (searchParams.get("page") != null && searchParams.get("page") !== "" ? searchParams.get("page") : "") as string
+	const currentPage = pageParam !== "" ? parseInt(pageParam) : 1
 	const url = `${TICKETS}${ticketId ? `/${ticketId}` : ""}`
 
 	const setPage = (pageNum: number) => {
@@ -21,24 +24,22 @@ export const TicketDisplay = () => {
 	}
 
 	const showTicket = (id: number) => {
-		const pageUrl = `${TICKETS}/${id}?page=${searchParams.get("page") ?? 1}`
+		const pageUrl = `${TICKETS}/${id}?page=${currentPage}`
 		navigate(pageUrl)
 	}
 
 	return (
-		<>
+		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			<h1>Tickets Backlog</h1>
+			<SearchToolBar 
+				paginationData={data?.pagination} 
+				setPage={setPage} 
+				currentPage={currentPage ?? 1}
+			/>
 			{isFetching ? <LoadingSpinner/> : (
-				<div className = "tw-flex tw-flex-row tw-gap-x-4">
-					<div className = "tw-w-1/4 tw-flex tw-flex-col tw-gap-y-4">
-						<div className = "tw-p-4 tw-border tw-border-gray-300 tw-rounded-lg">
-							<PaginationRow
-								showPageNums={false}
-								currentPage={searchParams.get("page") ? Number(searchParams.get("page")) : 1}
-								paginationData={data?.pagination}
-								setPage={setPage}
-							/>
-						</div>
+				<div className = "tw-flex tw-flex-row tw-gap-x-6">
+					<div className = "tw-w-1/3 tw-flex tw-flex-col tw-gap-y-4">
+						
 						{data?.data?.map((ticket: Ticket) => {
 							return (
 								<button className = "hover:tw-gray-50" onClick={() => showTicket(ticket.id)}>
@@ -47,11 +48,11 @@ export const TicketDisplay = () => {
 							)
 						})}
 					</div>
-					<div className = "tw-w-3/4 tw-flex tw-flex-col tw-gap-y-4">
+					<div className = "tw-w-2/3 tw-flex tw-flex-col tw-gap-y-4">
 						<Outlet/>
 					</div>
 				</div>
 			)}
-		</>
+		</div>
 	)	
 }

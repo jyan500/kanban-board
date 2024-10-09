@@ -19,7 +19,7 @@ interface Props {
 export const PaginationRow = ({showPageNums, paginationData, setPage, url, urlParams, currentPage}: Props) => {
 
 	return (
-		<div className = {`${!showPageNums ? "tw-justify-between": ""} tw-w-full tw-flex tw-items-center tw-gap-x-4`}>
+		<div className = {`tw-flex tw-flex-row tw-items-center tw-gap-x-4`}>
 			{
 				paginationData ? (
 					<>
