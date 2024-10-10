@@ -24,7 +24,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 	const [showConfirmUnlink, setShowConfirmUnlink] = useState(false)
 	return (
 		<div className = "hover:tw-bg-gray-50 tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-border tw-border-gray-200 tw-rounded-md tw-group">
-			<div className = "tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4">
+			<div className = "tw-w-3/5 tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4">
 				<div>
 					{ticketType ? (
 							<TicketTypeIcon type={ticketType} />	
@@ -32,7 +32,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 				</div>
 				<div className = "tw-text-left tw-break-words"><strong>{ticket?.name}</strong></div>
 			</div>
-			<div className = "tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+			<div className = "tw-w-2/5 tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 				<div>
 					{priority && priority in priorityIconMap ? 
 					(
@@ -46,7 +46,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 					: <></>}	
 				</div>
 				<div><CgProfile className = "--l-icon"/></div>
-				<div>{status?.name}</div>
+				<div className = "tw-text-left tw-break-words">{status?.name}</div>
 				{
 					showUnlink && onUnlink && ticketRelationshipId ? (
 						<IconButton className = "group-hover:tw-visible tw-invisible" onClick={(e) => {
