@@ -12,6 +12,8 @@ import { useForm, FormProvider } from "react-hook-form"
 export type FormValues = {
 	searchBy: string
 	query: string	
+	ticketType: string
+	priority: string
 }
 
 type StateSearchParams = FormValues & {
@@ -25,7 +27,9 @@ export const TicketDisplay = () => {
 	const {data: data, isFetching } = useGetTicketsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
 		query: searchParams.get("query") ?? "",
-		page: searchParams.get("page") ?? 1
+		ticketType: searchParams.get("ticketType") ?? "",
+		priority: searchParams.get("priority") ?? "",
+		page: searchParams.get("page") ?? 1,
 	})
 	const ticketId = params.ticketId ? parseInt(params.ticketId) : undefined 
 	const pageParam = (searchParams.get("page") != null && searchParams.get("page") !== "" ? searchParams.get("page") : "") as string
@@ -34,13 +38,20 @@ export const TicketDisplay = () => {
 	const defaultForm: FormValues = {
 		searchBy: searchParams.get("searchBy") ?? "title",
 		query: searchParams.get("query") ?? "",
+		ticketType: searchParams.get("ticketType") ?? "",
+		priority: searchParams.get("priority") ?? ""
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
 	const { register, handleSubmit, reset, watch, setValue, formState: {errors} } = methods
 	const registerOptions = {
 		searchBy: {"required": "Search By is Required"},
-		query: {"required": "Search Query is required"},
+		query: {"validate": (value: string) => {
+			if (value === "" && watch("ticketType") === "" && watch("priority") === ""){
+				return "Search Query is required"
+			}
+			return true
+		}},
 	}
 
 	const onSubmit = (values: FormValues) => {

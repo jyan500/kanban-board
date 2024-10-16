@@ -6,6 +6,8 @@ import { useFormContext, FormProvider, SubmitHandler } from "react-hook-form"
 import { IPagination } from "../../types/common"
 import { PaginationRow } from "../page-elements/PaginationRow"
 import { FormValues } from "../../pages/tickets/TicketDisplay"
+import { MdOutlineKeyboardArrowDown as ArrowDown } from "react-icons/md";
+import { Filters } from "./Filters"
 
 type Props = {
 	currentPage: number
@@ -19,6 +21,7 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
+	const [showFilter, setShowFilter] = useState(false)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const methods = useFormContext()
 	const searchOptions = {"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}
@@ -46,8 +49,9 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 							e.preventDefault()
 							onFormSubmit()
 						}} className = "button">Search</button>
-						<button type = "button" className = "button">
-							<div className = "tw-flex tw-flex-row tw-gap-x-2">
+						<button onClick={() => setShowFilter(true)} type = "button" className = "button">
+							<div className = "tw-flex tw-flex-row tw-justify-center tw-items-center tw-gap-x-0.5">
+								<ArrowDown className = "tw-w-6 tw-h-6"/>
 								<span>Filters</span>	
 							</div>
 						</button>
@@ -67,6 +71,15 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 			https://stackoverflow.com/questions/73222938/type-mergefielderror-fielderrorsimpldeeprequiredany-undefined-is-not 
 			*/}
 			{errors?.query ? <small className = "--text-alert">{errors?.query?.message?.toString()}</small> : null}
+			<div>
+			{
+				showFilter ? (
+					<FormProvider {...methods}>
+						<Filters/>
+					</FormProvider>
+				) : null
+			}
+			</div>
 		</div>
 	)
 }

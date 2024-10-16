@@ -46,6 +46,13 @@ router.get("/", async (req, res, next) => {
 			else if (req.query.searchBy === "reporter"){
 				queryBuilder.join("users", "users.id", "=", "tickets.user_id").whereILike("users.first_name", `%${req.query.query}%`)
 			}
+
+			if (req.query.ticketType) {
+				queryBuilder.where("tickets.ticket_type_id", req.query.ticketType)
+			}
+			if (req.query.priority){
+				queryBuilder.where("tickets.priority_id", req.query.priority)
+			}
 		})
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(tickets)
