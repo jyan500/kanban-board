@@ -32,7 +32,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 				</div>
 				<div className = "tw-text-left tw-break-words"><strong>{ticket?.name}</strong></div>
 			</div>
-			<div className = "tw-w-2/5 tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+			<div className = "tw-w-2/5 tw-p-1 tw-flex tw-flex-row tw-justify-start tw-items-center tw-gap-x-2">
 				<div>
 					{priority && priority in priorityIconMap ? 
 					(

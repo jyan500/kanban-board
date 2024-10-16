@@ -34,7 +34,19 @@ router.get("/", async (req, res, next) => {
 			"tickets.organization_id as organizationId",
 			"tickets.created_at as createdAt",
 			"tickets.user_id as userId",
-		)
+		).modify((queryBuilder) => {
+			if (req.query.searchBy === "title"){
+				queryBuilder.whereILike("name", `%${req.query.query}%`)
+			}
+			else if (req.query.searchBy === "assignee"){
+				queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
+				.join("users", "tickets_to_users.user_id", "=", "users.id")
+				.whereILike("users.first_name", `%${req.query.query}%`)
+			}
+			else if (req.query.searchBy === "reporter"){
+				queryBuilder.join("users", "users.id", "=", "tickets.user_id").whereILike("users.first_name", `%${req.query.query}%`)
+			}
+		})
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(tickets)
 	}

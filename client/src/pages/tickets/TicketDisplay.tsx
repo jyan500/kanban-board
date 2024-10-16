@@ -14,18 +14,26 @@ export type FormValues = {
 	query: string	
 }
 
+type StateSearchParams = FormValues & {
+	page: number | string 
+}
+
 export const TicketDisplay = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const params = useParams<{ticketId: string}>()
 	const navigate = useNavigate()
-	const {data: data, isFetching } = useGetTicketsQuery({page: searchParams.get("page") ?? 1})
+	const {data: data, isFetching } = useGetTicketsQuery({
+		searchBy: searchParams.get("searchBy") ?? "",
+		query: searchParams.get("query") ?? "",
+		page: searchParams.get("page") ?? 1
+	})
 	const ticketId = params.ticketId ? parseInt(params.ticketId) : undefined 
 	const pageParam = (searchParams.get("page") != null && searchParams.get("page") !== "" ? searchParams.get("page") : "") as string
 	const currentPage = pageParam !== "" ? parseInt(pageParam) : 1
 	const url = `${TICKETS}${ticketId ? `/${ticketId}` : ""}`
 	const defaultForm: FormValues = {
-		searchBy: "title",
-		query: "",
+		searchBy: searchParams.get("searchBy") ?? "title",
+		query: searchParams.get("query") ?? "",
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
@@ -36,7 +44,10 @@ export const TicketDisplay = () => {
 	}
 
 	const onSubmit = (values: FormValues) => {
-		console.log("values: ", values)
+		// reset back to page 1 if modifying search results
+		// setting the search params 
+		// modifying the search params will then retrigger the useGetTicketsQuery
+		setSearchParams({...values, page: "1"})
 	}
 
 	const setPage = (pageNum: number) => {
