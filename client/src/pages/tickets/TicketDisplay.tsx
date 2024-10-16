@@ -51,12 +51,24 @@ export const TicketDisplay = () => {
 	}
 
 	const setPage = (pageNum: number) => {
-		const pageUrl = `${TICKETS}${ticketId ? `/${ticketId}` : ""}?page=${pageNum}`
+		let pageUrl = `${TICKETS}${ticketId ? `/${ticketId}` : ""}?page=${pageNum}`
+		if (searchParams.get("query")){
+			pageUrl += `&query=${searchParams.get("query")}`
+		}
+		if (searchParams.get("searchBy")){
+			pageUrl += `&searchBy=${searchParams.get("searchBy")}`
+		}
 	    navigate(pageUrl, {replace:true});
 	}
 
 	const showTicket = (id: number) => {
-		const pageUrl = `${TICKETS}/${id}?page=${currentPage}`
+		let pageUrl = `${TICKETS}/${id}?page=${currentPage}`
+		if (searchParams.get("query")){
+			pageUrl += `&query=${searchParams.get("query")}`
+		}
+		if (searchParams.get("searchBy")){
+			pageUrl += `&searchBy=${searchParams.get("searchBy")}`
+		}
 		navigate(pageUrl)
 	}
 

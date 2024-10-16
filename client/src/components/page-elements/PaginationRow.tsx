@@ -41,8 +41,8 @@ export const PaginationRow = ({showPageNums, paginationData, setPage, url, urlPa
 										{
 											Array.from(Array(paginationData.lastPage), (_, i) => {
 												const urlParamsWithPage = {
-													...urlParams,	
-													page: i+1
+													page: i+1,
+													...urlParams
 												}
 											return (
 											<Link 
