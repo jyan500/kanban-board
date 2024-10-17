@@ -53,6 +53,9 @@ router.get("/", async (req, res, next) => {
 			if (req.query.priority){
 				queryBuilder.where("tickets.priority_id", req.query.priority)
 			}
+			if (req.query.board){
+				queryBuilder.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id").where("tickets_to_boards.board_id", "=", req.query.board)
+			}
 		})
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(tickets)

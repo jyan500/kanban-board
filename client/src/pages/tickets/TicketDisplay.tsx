@@ -14,6 +14,7 @@ export type FormValues = {
 	query: string	
 	ticketType: string
 	priority: string
+	board: string
 }
 
 type StateSearchParams = FormValues & {
@@ -29,6 +30,7 @@ export const TicketDisplay = () => {
 		query: searchParams.get("query") ?? "",
 		ticketType: searchParams.get("ticketType") ?? "",
 		priority: searchParams.get("priority") ?? "",
+		board: searchParams.get("board") ?? "",
 		page: searchParams.get("page") ?? 1,
 	})
 	const ticketId = params.ticketId ? parseInt(params.ticketId) : undefined 
@@ -39,7 +41,8 @@ export const TicketDisplay = () => {
 		query: searchParams.get("query") ?? "",
 		searchBy: searchParams.get("searchBy") ?? "title",
 		ticketType: searchParams.get("ticketType") ?? "",
-		priority: searchParams.get("priority") ?? ""
+		priority: searchParams.get("priority") ?? "",
+		board: searchParams.get("board") ?? ""
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
@@ -47,7 +50,7 @@ export const TicketDisplay = () => {
 	const registerOptions = {
 		searchBy: {"required": "Search By is Required"},
 		query: {"validate": (value: string) => {
-			if (value === "" && watch("ticketType") === "" && watch("priority") === ""){
+			if (value === "" && watch("ticketType") === "" && watch("priority") === "" && watch("board") === ""){
 				return "Search Query is required"
 			}
 			return true
@@ -55,18 +58,9 @@ export const TicketDisplay = () => {
 	}
 
 	const withUrlParams = (pageUrl: string) => {
-		if (searchParams.get("query")){
-			pageUrl += `&query=${searchParams.get("query")}`
-		}
-		if (searchParams.get("searchBy")){
-			pageUrl += `&searchBy=${searchParams.get("searchBy")}`
-		}
-		if (searchParams.get("ticketType")){
-			pageUrl += `&ticketType=${searchParams.get("ticketType")}`
-		}
-		if (searchParams.get("priority")){
-			pageUrl += `&priority=${searchParams.get("priority")}`
-		}
+		Object.keys(defaultForm).forEach((key) => {
+			pageUrl += `&${key}=${searchParams.get(key)}`
+		})
 		return pageUrl
 	}
 
@@ -129,12 +123,7 @@ export const TicketDisplay = () => {
 						setPage={setPage}	
 						paginationData={data?.pagination}
 						currentPage={currentPage}
-						urlParams={{
-							query: searchParams.get("query") ?? "",
-							searchBy: searchParams.get("searchBy") ?? "",
-							ticketType: searchParams.get("ticketType") ?? "",
-							priority: searchParams.get("priority") ?? ""
-						}}
+						urlParams={defaultForm}
 						url={`${TICKETS}`}	
 					/>
 				</div>
