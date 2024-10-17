@@ -130,7 +130,7 @@ export const TicketDisplay = () => {
 						paginationData={data?.pagination}
 						currentPage={currentPage}
 						urlParams={defaultForm}
-						url={`${TICKETS}`}	
+						url={`${TICKETS}${ticketId ? `/${ticketId}` : ""}`}	
 					/>
 				</div>
 				</>
