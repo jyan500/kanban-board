@@ -224,7 +224,7 @@ export const EditTicketForm = ({ticket, statusesToDisplay}: Props) => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-w-full tw-gap-y-2">
 			<FormProvider {...methods}>
-				<form>
+				<form onSubmit={(e) => {e.preventDefault()}}>
 					<div className = "tw-flex tw-flex-row tw-gap-x-4">
 						<div className = "tw-break-words tw-w-2/3 tw-flex tw-flex-col tw-gap-y-2">
 							<div>

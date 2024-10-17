@@ -172,7 +172,7 @@ export const LinkedTicketForm = ({isEpicParent, showAddLinkedIssue, setShowAddLi
 				}
 				{
 					showAddLinkedIssue ? (
-						<form className = "tw-flex tw-flex-col tw-gap-y-2">
+						<form onSubmit={(e) => e.preventDefault()} className = "tw-flex tw-flex-col tw-gap-y-2">
 							<div className = "tw-flex tw-flex-row tw-gap-x-2">
 								<div className = "tw-w-1/3 tw-w-full tw-flex tw-flex-col tw-gap-y-1">
 									<select className = "tw-w-full" {...register("ticketRelationshipTypeId", registerOptions.ticketRelationshipTypeId)}>

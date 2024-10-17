@@ -36,8 +36,8 @@ export const TicketDisplay = () => {
 	const currentPage = pageParam !== "" ? parseInt(pageParam) : 1
 	const url = `${TICKETS}${ticketId ? `/${ticketId}` : ""}`
 	const defaultForm: FormValues = {
-		searchBy: searchParams.get("searchBy") ?? "title",
 		query: searchParams.get("query") ?? "",
+		searchBy: searchParams.get("searchBy") ?? "title",
 		ticketType: searchParams.get("ticketType") ?? "",
 		priority: searchParams.get("priority") ?? ""
 	}
@@ -54,32 +54,41 @@ export const TicketDisplay = () => {
 		}},
 	}
 
-	const onSubmit = (values: FormValues) => {
-		// reset back to page 1 if modifying search results
-		// setting the search params 
-		// modifying the search params will then retrigger the useGetTicketsQuery
-		setSearchParams({...values, page: "1"})
-	}
-
-	const setPage = (pageNum: number) => {
-		let pageUrl = `${TICKETS}${ticketId ? `/${ticketId}` : ""}?page=${pageNum}`
+	const withUrlParams = (pageUrl: string) => {
 		if (searchParams.get("query")){
 			pageUrl += `&query=${searchParams.get("query")}`
 		}
 		if (searchParams.get("searchBy")){
 			pageUrl += `&searchBy=${searchParams.get("searchBy")}`
 		}
+		if (searchParams.get("ticketType")){
+			pageUrl += `&ticketType=${searchParams.get("ticketType")}`
+		}
+		if (searchParams.get("priority")){
+			pageUrl += `&priority=${searchParams.get("priority")}`
+		}
+		return pageUrl
+	}
+
+	const onSubmit = (values: FormValues) => {
+		// reset back to page 1 if modifying search results
+		// setting the search params 
+		// modifying the search params will then retrigger the useGetTicketsQuery
+		setSearchParams({
+			page: "1",
+			...values
+		})
+	}
+
+	const setPage = (pageNum: number) => {
+		let pageUrl = `${TICKETS}${ticketId ? `/${ticketId}` : ""}?page=${pageNum}`
+		pageUrl = withUrlParams(pageUrl)
 	    navigate(pageUrl, {replace:true});
 	}
 
 	const showTicket = (id: number) => {
 		let pageUrl = `${TICKETS}/${id}?page=${currentPage}`
-		if (searchParams.get("query")){
-			pageUrl += `&query=${searchParams.get("query")}`
-		}
-		if (searchParams.get("searchBy")){
-			pageUrl += `&searchBy=${searchParams.get("searchBy")}`
-		}
+		pageUrl = withUrlParams(pageUrl)
 		navigate(pageUrl)
 	}
 
@@ -123,6 +132,8 @@ export const TicketDisplay = () => {
 						urlParams={{
 							query: searchParams.get("query") ?? "",
 							searchBy: searchParams.get("searchBy") ?? "",
+							ticketType: searchParams.get("ticketType") ?? "",
+							priority: searchParams.get("priority") ?? ""
 						}}
 						url={`${TICKETS}`}	
 					/>

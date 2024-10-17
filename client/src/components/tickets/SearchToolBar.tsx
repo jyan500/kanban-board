@@ -31,7 +31,10 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-w-full tw-flex tw-flex-row tw-items-center tw-justify-between">
 				<FormProvider {...methods}>
-					<form className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+					<form onSubmit={(e) => {
+						e.preventDefault()
+						onFormSubmit()
+					}} className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 						<select {...register("searchBy", registerOptions.searchBy)}>
 							{Object.keys(searchOptions).map((option) => {
 								const value = searchOptions[option as keyof typeof searchOptions]

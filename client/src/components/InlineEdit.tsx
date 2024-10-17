@@ -18,6 +18,9 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 			(e.target as HTMLElement).blur()
 			setValue(registerField, value)
 		}	
+		if (e.key == "Enter" && type !== "textarea"){
+			e.preventDefault()
+		}
 	}
 
 	let element: React.ReactElement;
@@ -64,8 +67,12 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 				{element}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<button type = "button" className = "button" onClick={onSubmit}>Save</button>
+				<button type = "button" className = "button" onClick={(e) => {
+					e.preventDefault()
+					onSubmit()
+				}}>Save</button>
 				<button type = "button" onClick={(e) => {
+					e.preventDefault()
 					resetField(registerField)
 					onCancel()
 				}
