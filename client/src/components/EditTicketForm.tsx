@@ -248,7 +248,7 @@ export const EditTicketForm = ({ticket, statusesToDisplay}: Props) => {
 								<button onClick={(e) => {
 									e.preventDefault()	
 									setShowAddLinkedIssue(!showAddLinkedIssue)
-								}} className = "button !tw-bg-gray-500">
+								}} className = "button !tw-bg-secondary">
 									<div className = "icon-container">
 										<IconContext.Provider value = {{className: "icon"}}>
 											<LinkIcon/>

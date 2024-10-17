@@ -9,12 +9,15 @@ import { TicketRow } from "../../components/TicketRow"
 import { SearchToolBar } from "../../components/tickets/SearchToolBar"
 import { useForm, FormProvider } from "react-hook-form"
 
-export type FormValues = {
-	searchBy: string
-	query: string	
+export type Filters = {
 	ticketType: string
 	priority: string
 	board: string
+}
+
+export type FormValues = Filters & {
+	searchBy: string
+	query: string	
 }
 
 type StateSearchParams = FormValues & {
@@ -25,13 +28,16 @@ export const TicketDisplay = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const params = useParams<{ticketId: string}>()
 	const navigate = useNavigate()
+	const filters: Filters = {
+		"ticketType": searchParams.get("ticketType") ?? "",
+		"priority": searchParams.get("priority") ?? "",
+		"board": searchParams.get("board") ?? "",
+	}
 	const {data: data, isFetching } = useGetTicketsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
 		query: searchParams.get("query") ?? "",
-		ticketType: searchParams.get("ticketType") ?? "",
-		priority: searchParams.get("priority") ?? "",
-		board: searchParams.get("board") ?? "",
 		page: searchParams.get("page") ?? 1,
+		...filters
 	})
 	const ticketId = params.ticketId ? parseInt(params.ticketId) : undefined 
 	const pageParam = (searchParams.get("page") != null && searchParams.get("page") !== "" ? searchParams.get("page") : "") as string
@@ -40,9 +46,7 @@ export const TicketDisplay = () => {
 	const defaultForm: FormValues = {
 		query: searchParams.get("query") ?? "",
 		searchBy: searchParams.get("searchBy") ?? "title",
-		ticketType: searchParams.get("ticketType") ?? "",
-		priority: searchParams.get("priority") ?? "",
-		board: searchParams.get("board") ?? ""
+		...filters
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
@@ -50,7 +54,8 @@ export const TicketDisplay = () => {
 	const registerOptions = {
 		searchBy: {"required": "Search By is Required"},
 		query: {"validate": (value: string) => {
-			if (value === "" && watch("ticketType") === "" && watch("priority") === "" && watch("board") === ""){
+			const allFilters = Object.keys(filters).map((filter: string) => watch(filter as keyof Filters))
+			if (value === "" && allFilters.every((val: string) => val === "")){
 				return "Search Query is required"
 			}
 			return true
@@ -98,6 +103,7 @@ export const TicketDisplay = () => {
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()
 					}}
+					filters={Object.keys(filters)}
 				/>
 			</FormProvider>
 			{isFetching ? <LoadingSpinner/> : (

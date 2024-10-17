@@ -8,6 +8,7 @@ import { PaginationRow } from "../page-elements/PaginationRow"
 import { FormValues } from "../../pages/tickets/TicketDisplay"
 import { MdOutlineKeyboardArrowDown as ArrowDown } from "react-icons/md";
 import { Filters } from "./Filters"
+import { Filters as FiltersType } from "../../pages/tickets/TicketDisplay"
 
 type Props = {
 	currentPage: number
@@ -15,9 +16,10 @@ type Props = {
 	setPage: (pageNum: number) => void
 	registerOptions: Record<string, any>
 	onFormSubmit: () => void
+	filters: Array<string>,
 }
 
-export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, paginationData, setPage}: Props) => {
+export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, paginationData, setPage, filters}: Props) => {
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
@@ -25,7 +27,7 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const methods = useFormContext()
 	const searchOptions = {"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}
-	const {register, formState: {errors}} = methods
+	const {register, reset, getValues, formState: {errors}} = methods
 
 	return (
 		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
@@ -52,12 +54,26 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 							e.preventDefault()
 							onFormSubmit()
 						}} className = "button">Search</button>
-						<button onClick={() => setShowFilter(true)} type = "button" className = "button">
+						<button onClick={() => setShowFilter(!showFilter)} type = "button" className = "button">
 							<div className = "tw-flex tw-flex-row tw-justify-center tw-items-center tw-gap-x-0.5">
 								<ArrowDown className = "tw-w-6 tw-h-6"/>
 								<span>Filters</span>	
 							</div>
 						</button>
+						{showFilter ? (
+							<button onClick={(e) => {
+								e.preventDefault()
+								reset({
+									...getValues(),
+									...(filters.reduce((acc: Record<string, any>, filterKey: string) => {
+										acc[filterKey] = ""
+										return acc
+									}, {})),
+								})
+							}} type = "button" className = "button !tw-bg-secondary">
+								Clear Filters
+							</button>
+						) : null}
 					</form>
 				</FormProvider>
 				<div className = "tw-p-4 tw-rounded-md tw-border tw-border-gray-300">
