@@ -28,6 +28,7 @@ import { priorityIconMap, TicketTypeIcon , colorMap } from "./Ticket"
 import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown" 
 import { ImTree as AddToEpicIcon } from "react-icons/im";
 import { Badge } from "./page-elements/Badge"
+import { PaginationRow } from "./page-elements/PaginationRow"
 
 
 type EditFieldVisibility = {
@@ -47,9 +48,17 @@ export const EditTicketForm = ({ticket, statusesToDisplay}: Props) => {
 	const { userRoles } = useAppSelector((state) => state.userRole) 
 	const { priorities } = useAppSelector((state) => state.priority) 
 	const { ticketTypes } = useAppSelector((state) => state.ticketType) 
+	const [ epicTicketPage, setEpicTicketPage ] = useState(1)
+	const [ linkedTicketPage, setLinkedTicketPage ] = useState(1)
+	const [ commentPage, setCommentPage ] = useState(1)
 	const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ?? skipToken)
-	const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ?? skipToken)
-	const { data: ticketRelationships, isLoading: isTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ?? skipToken)
+	const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: commentPage}} : skipToken)
+	const { data: ticketRelationships, isLoading: isTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
+		{ticketId: currentTicketId, params: {page: linkedTicketPage, isEpic: false}} : skipToken
+	)
+	const { data: epicTicketRelationships, isLoading: isEpicTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
+		{ticketId: currentTicketId, params: {page: epicTicketPage, isEpic: true}} : skipToken
+	)
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const {
@@ -369,11 +378,7 @@ export const EditTicketForm = ({ticket, statusesToDisplay}: Props) => {
 							{
 								ticket?.epicParentTickets?.map((parentTicket) => 
 									// TODO: make this a link to the epic ticket later on once the tickets page is built
-									<Badge key = {`edit_ticket_parent_epic_${parentTicket.id}`} className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>
-								)
-							}
-							</div>
-							<div className = "tw-pt-2 tw-pb-2"><strong>Created {createdAt}</strong></div>
+									<Badge key = {`edit_ticket_parent_epic_${parentTicket.id}`} className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge> ) } </div> <div className = "tw-pt-2 tw-pb-2"><strong>Created {createdAt}</strong></div>
 						</div>
 					</div>
 				</form>
@@ -381,25 +386,46 @@ export const EditTicketForm = ({ticket, statusesToDisplay}: Props) => {
 			<div className = "tw-flex tw-flex-col tw-break-words tw-w-2/3 tw-gap-y-2">
 				<div className = "tw-space-y-2">
 					{!isTicketRelationshipsLoading ? (
-						setShowAddLinkedIssue || ticketRelationships?.length ? 
+						currentTicketId && (setShowAddLinkedIssue || ticketRelationships?.data?.length) ? 
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							{ticket?.ticketTypeId === epicTicketType?.id ? (
 								<>
 									<strong>Epic Tickets</strong>
-									<LinkedTicketForm isEpicParent={true} showAddLinkedIssue={showAddToEpic} setShowAddLinkedIssue={setShowAddToEpic} ticketRelationships={ticketRelationships?.length ? ticketRelationships : []}/>
+									<LinkedTicketForm currentTicketId={currentTicketId} isEpicParent={true} showAddLinkedIssue={showAddToEpic} setShowAddLinkedIssue={setShowAddToEpic} ticketRelationships={epicTicketRelationships?.data?.length ? epicTicketRelationships.data : []}/>
+									<PaginationRow
+										showNumResults={false}
+										showPageNums={false}
+										setPage={(page: number) => { setEpicTicketPage(page)}}	
+										paginationData={epicTicketRelationships?.pagination}
+										currentPage={epicTicketPage}
+									/>
 								</>
 							) : null
 							}
 							<strong>Linked Issues</strong>	
-							<LinkedTicketForm showAddLinkedIssue={showAddLinkedIssue} setShowAddLinkedIssue={setShowAddLinkedIssue} ticketRelationships={ticketRelationships?.length ? ticketRelationships : []}/>
+							<LinkedTicketForm currentTicketId={currentTicketId} showAddLinkedIssue={showAddLinkedIssue} setShowAddLinkedIssue={setShowAddLinkedIssue} ticketRelationships={ticketRelationships?.data?.length ? ticketRelationships.data : []}/>
+							<PaginationRow
+								showNumResults={false}
+								showPageNums={false}
+								setPage={(page: number) => { setLinkedTicketPage(page)}}	
+								paginationData={ticketRelationships?.pagination}
+								currentPage={linkedTicketPage}
+							/>
 						</div> : null
 					) : <LoadingSpinner/>}
 				</div>
 				<div className = "tw-space-y-2">
-					{!isTicketCommentsLoading ? (
+					{!isTicketCommentsLoading && currentTicketId ? (
 						<>
 							<strong>Activity</strong>
-							<TicketCommentForm ticketComments={ticketComments?.length ? ticketComments : []}/>
+							<TicketCommentForm currentTicketId={currentTicketId} ticketComments={ticketComments?.data?.length ? ticketComments.data : []}/>
+						 	<PaginationRow
+								showNumResults={false}
+								showPageNums={false}
+								setPage={(page: number) => { setCommentPage(page)} }	
+								paginationData={ticketComments?.pagination}
+								currentPage={commentPage}
+							/>
 						</>
 					) : <LoadingSpinner/>}
 				</div>

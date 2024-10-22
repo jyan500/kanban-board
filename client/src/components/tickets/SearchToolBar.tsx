@@ -78,6 +78,7 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 				</FormProvider>
 				<div className = "tw-p-4 tw-rounded-md tw-border tw-border-gray-300">
 					<PaginationRow
+						showNumResults={true}
 						showPageNums={false}
 						setPage={setPage}
 						currentPage={currentPage}

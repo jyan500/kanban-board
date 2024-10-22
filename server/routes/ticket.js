@@ -56,6 +56,9 @@ router.get("/", async (req, res, next) => {
 			if (req.query.board){
 				queryBuilder.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id").where("tickets_to_boards.board_id", "=", req.query.board)
 			}
+			if (req.query.ticketIds){
+				queryBuilder.whereIn("id", req.query.ticketIds.split(","))
+			}
 		})
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(tickets)
@@ -199,6 +202,7 @@ router.get("/:ticketId/comment", validateGet, handleValidationResult, async (req
 			"comment as comment",
 			"created_at as createdAt"
 		)
+		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(comments)
 	}	
 	catch (err) {
@@ -266,13 +270,24 @@ router.delete("/:ticketId/comment/:commentId", validateTicketCommentDelete, hand
 
 router.get("/:ticketId/relationship", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const relationships = await db("ticket_relationships").where("parent_ticket_id", req.params.ticketId).orWhere("child_ticket_id", req.params.ticketId)
+		const epicTicketRelationshipType = await db("ticket_relationship_types").where("name", "Epic").first()
+		const relationships = await db("ticket_relationships")
+		.modify((queryBuilder) => {
+			if (req.query.isEpic === "true"){
+				queryBuilder.where("ticket_relationship_type_id", epicTicketRelationshipType?.id)
+				.where("parent_ticket_id", req.params.ticketId)
+			}
+			else {
+				queryBuilder.where("ticket_relationship_type_id", "!=", epicTicketRelationshipType?.id)
+				.where((queryBuilder) => queryBuilder.where("child_ticket_id", req.params.ticketId).orWhere("parent_ticket_id", req.params.ticketId))
+			}
+		})
 		.select(
 			"id as id", 
 			"parent_ticket_id as parentTicketId",
 			"child_ticket_id as childTicketId",
 			"ticket_relationship_type_id as ticketRelationshipTypeId",
-		)
+		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(relationships)
 	}	
 	catch (err) {

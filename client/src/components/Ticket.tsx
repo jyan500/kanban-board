@@ -12,6 +12,8 @@ import { FeatureIcon } from "../assets/icons/FeatureIcon"
 import { EpicIcon } from "../assets/icons/EpicIcon"
 import { CgProfile } from "react-icons/cg";
 import { Badge } from "./page-elements/Badge"
+import { TICKETS } from "../helpers/routes"
+import { Link } from "react-router-dom"
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
 	"Low": <LowPriorityIcon/>,	
@@ -67,7 +69,9 @@ export const Ticket = ({ticket}: PropType) => {
 				{
 					ticket.epicParentTickets?.map((parentTicket) => 
 						// TODO: make this a link to the epic ticket later on once the tickets page is built
-						<Badge key = {`epic_parent_${parentTicket.id}`} className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>
+						<Link to={`${TICKETS}/${parentTicket.id}`}>
+							<Badge key = {`epic_parent_${parentTicket.id}`} className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>
+						</Link>
 					)
 				}
 			</div>

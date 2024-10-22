@@ -48,6 +48,11 @@ type DeleteTicketRelationshipRequest = {
 	ticketRelationshipId: number
 }
 
+type TicketEntityPaginationRequest = {
+	ticketId: number | string
+	params: Record<string, any>
+}
+
 export const ticketApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
@@ -70,10 +75,11 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Tickets"],	
 		}),
-		getTicketComments: builder.query<Array<TicketComment>, number>({
-			query: (ticketId) => ({
+		getTicketComments: builder.query<ListResponse<TicketComment>, TicketEntityPaginationRequest>({
+			query: ({ticketId, params}) => ({
 				url: TICKET_COMMENT_URL(ticketId, ""),
-				method: "GET"
+				method: "GET",
+				params: params
 			}),
 			providesTags: ["TicketComments"]
 		}),
@@ -171,10 +177,11 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Tickets", "BoardTickets"]
 		}),
-		getTicketRelationships: builder.query<Array<TicketRelationship>, number>({
-			query: (ticketId) => ({
+		getTicketRelationships: builder.query<ListResponse<TicketRelationship>, TicketEntityPaginationRequest>({
+			query: ({ticketId, params}) => ({
 				url: `${TICKET_RELATIONSHIP_URL(ticketId, "")}`,
-				method: "GET"
+				method: "GET",
+				params: params
 			}),
 			providesTags: ["TicketRelationships"]
 		}),

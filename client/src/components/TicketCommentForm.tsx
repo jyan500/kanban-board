@@ -48,19 +48,15 @@ export const CommentField = ({isLoading, registerOptions, onSubmit, onCancel}: C
 }
 
 type TicketCommentFormProps = {
+	currentTicketId: number | null | undefined
 	ticketComments: Array<TicketComment>
 }
 
 /* 
 Add new comment on ticket, and displays existing comments for the ticket
 */
-export const TicketCommentForm = ({ticketComments}: TicketCommentFormProps) => {
+export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketCommentFormProps) => {
 	const dispatch = useAppDispatch()
-	const {
-		tickets,
-		currentTicketId,
-		statusesToDisplay
-	} = useAppSelector((state) => state.board)	
 	const { showModal } = useAppSelector(state => state.modal)
 	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 

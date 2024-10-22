@@ -32,7 +32,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 				</div>
 				<div className = "tw-text-left tw-break-words"><strong>{ticket?.name}</strong></div>
 			</div>
-			<div className = "tw-w-2/5 tw-p-1 tw-flex tw-flex-row tw-justify-start tw-items-center tw-gap-x-2">
+			<div className = "tw-w-1/5 tw-p-1 tw-flex tw-flex-row tw-justify-start tw-items-center tw-gap-x-2">
 				<div>
 					{priority && priority in priorityIconMap ? 
 					(
@@ -47,6 +47,8 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 				</div>
 				<div><CgProfile className = "--l-icon"/></div>
 				<div className = "tw-text-left tw-break-words">{status?.name}</div>
+			</div>
+			<div className = "tw-w-1/5 tw-flex tw-flex-row tw-justify-end">
 				{
 					showUnlink && onUnlink && ticketRelationshipId ? (
 						<IconButton className = "group-hover:tw-visible tw-invisible" onClick={(e) => {
@@ -55,7 +57,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 							<Unlink className = "tw-w-6 tw-h-6 tw-shrink-0"/>	
 						</IconButton>
 					) : null
-				}
+				}	
 			</div>
 		</div>
 	)

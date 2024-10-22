@@ -7,35 +7,44 @@ import {
 } from "../services/private/ticket"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { TicketRow } from "./TicketRow"
+import { useGetTicketsQuery } from "../services/private/ticket"
 import { TicketRelationship, TicketRelationshipType, Toast } from "../types/common"
 import { LoadingSpinner } from "./LoadingSpinner"
 import { v4 as uuidv4 } from "uuid"
 import { addToast } from "../slices/toastSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
+import { PaginationRow } from "./page-elements/PaginationRow"
 
 type LinkedTicketFormValues = {
-	parentTicketId: number | null
+	parentTicketId: number | null | undefined
 	childTicketId: string
 	ticketRelationshipTypeId: number | string
 }
 
 type Props = {
+	currentTicketId: number | null | undefined
 	ticketRelationships: Array<TicketRelationship>
 	showAddLinkedIssue: boolean
 	setShowAddLinkedIssue: (val: boolean) => void
 	isEpicParent?: boolean
 }
 
-export const LinkedTicketForm = ({isEpicParent, showAddLinkedIssue, setShowAddLinkedIssue, ticketRelationships}: Props) => {
+export const LinkedTicketForm = ({currentTicketId, isEpicParent, showAddLinkedIssue, setShowAddLinkedIssue, ticketRelationships}: Props) => {
 	const { showModal } = useAppSelector((state) => state.modal) 
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
 	const dispatch = useAppDispatch()
-	const { currentTicketId, tickets } = useAppSelector((state) => state.board) 
+	const ticketIdSet = new Set()
+	ticketRelationships.forEach((ticketRelationship) => {
+		ticketIdSet.add(ticketRelationship.childTicketId)
+		ticketIdSet.add(ticketRelationship.parentTicketId)
+	})
+	// load in the child/parent ticket information
+	const { data: tickets } = useGetTicketsQuery({ticketIds: Array.from(ticketIdSet)})
 	const { ticketRelationshipTypes } = useAppSelector((state) => state.ticketRelationshipType)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)  
 	const [ addTicketRelationship, { error: addTicketRelationshipError, isLoading: isAddTicketRelationshipLoading }] = useAddTicketRelationshipMutation()
 	const [ deleteTicketRelationship, { error: deleteTicketRelationshipError, isLoading: isDeleteTicketRelationshipLoading }] = useDeleteTicketRelationshipMutation()
-	const ticket = tickets?.find((ticket) => ticket.id === currentTicketId)
+	const ticket = tickets?.data?.find((ticket) => ticket.id === currentTicketId)
 	const epicTicketType = ticketTypes?.find((type) => type.name === "Epic")
 	const epicTicketRelationshipType = ticketRelationshipTypes?.find((type) => type.name === "Epic")
 
@@ -139,7 +148,7 @@ export const LinkedTicketForm = ({isEpicParent, showAddLinkedIssue, setShowAddLi
 											groupedTicketRelationships?.length && groupedTicketRelationships.map((relationship: TicketRelationship) => {
 												return (<TicketRow 
 													key={`relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`} 
-													ticket={tickets.find((ticket) => isTicketInRelationship(ticket.id, relationship))}
+													ticket={tickets?.data?.find((ticket) => isTicketInRelationship(ticket.id, relationship))}
 													ticketRelationshipId={relationship.id}
 													onUnlink={onUnlink}
 													showUnlink={true}
@@ -158,7 +167,7 @@ export const LinkedTicketForm = ({isEpicParent, showAddLinkedIssue, setShowAddLi
 										return (
 											<TicketRow 
 												key={`epic_relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`}
-												ticket={tickets.find(ticket => isTicketInRelationship(ticket.id, relationship))}
+												ticket={tickets?.data?.find(ticket => isTicketInRelationship(ticket.id, relationship))}
 												ticketRelationshipId={relationship.id}
 												onUnlink={onUnlink}
 												showUnlink={true}
@@ -190,7 +199,7 @@ export const LinkedTicketForm = ({isEpicParent, showAddLinkedIssue, setShowAddLi
 									<select className = "tw-w-full" {...register("childTicketId", registerOptions.childTicketId)}>	
 										{/* The current ticket should not be available for selection, as well as any ticket that has already been linked as a parent or child*/}
 										<option value="" disabled></option>
-										{tickets.filter((ticket) => ticket.id !== currentTicketId && ticket.ticketTypeId !== epicTicketType?.id && !isTicketAlreadyLinked(ticket.id)).map((ticket) => 
+										{tickets?.data?.filter((ticket) => ticket.id !== currentTicketId && ticket.ticketTypeId !== epicTicketType?.id && !isTicketAlreadyLinked(ticket.id)).map((ticket) => 
 											<option key = {ticket.id} value = {ticket.id}>{ticket.name}</option>
 										)}
 									</select>

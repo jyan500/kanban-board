@@ -14,16 +14,18 @@ interface Props {
 	url?: string
 	urlParams?: Record<string, any>
 	currentPage?: number
+	showNumResults?: boolean
 }
 
-export const PaginationRow = ({showPageNums, paginationData, setPage, url, urlParams, currentPage}: Props) => {
+export const PaginationRow = ({showPageNums, showNumResults, paginationData, setPage, url, urlParams, currentPage}: Props) => {
 
 	return (
 		<div className = {`tw-flex tw-flex-row tw-items-center tw-gap-x-4`}>
 			{
 				paginationData ? (
 					<>
-						<p>Showing {paginationData.from} - {paginationData.to} out of {paginationData.total} results</p>
+
+						{showNumResults ? <p>Showing {paginationData.from} - {paginationData.to} out of {paginationData.total} results</p> : null}
 						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 							{
 								paginationData?.prevPage ? (
