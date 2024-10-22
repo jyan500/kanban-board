@@ -94,41 +94,41 @@ export const LinkedTicketForm = ({currentTicketId, isEpicParent, showAddLinkedIs
     	}
     }
 
-const isTicketAlreadyLinked = (ticketId: number) => {
-	const linkedTickets = ticketRelationships?.filter((relationship) => isTicketInRelationship(ticketId, relationship))
-	return linkedTickets.length 
-}
-
-const onUnlink = async (ticketId: number | undefined, ticketRelationshipId: number) => {
-	dispatch(toggleShowSecondaryModal(true))
-	dispatch(setSecondaryModalProps({ticketId: ticketId, ticketRelationshipId: ticketRelationshipId}))
-	dispatch(setSecondaryModalType("SHOW_UNLINK_TICKET_WARNING"))
-}
-
-const onSubmit = async (values: LinkedTicketFormValues) => {
-	let defaultToast: Toast = {
-		id: uuidv4(),
-		message: "Something went wrong while linking ticket.",
-		animationType: "animation-in",
-		type: "failure"
+	const isTicketAlreadyLinked = (ticketId: number) => {
+		const linkedTickets = ticketRelationships?.filter((relationship) => isTicketInRelationship(ticketId, relationship))
+		return linkedTickets.length 
 	}
-	if (currentTicketId){
-    	try {
-	    	await addTicketRelationship({
-	    		parentTicketId: values.parentTicketId ?? 0,
-	    		childTicketId: Number(values.childTicketId) ?? 0,
-	    		ticketRelationshipTypeId: Number(values.ticketRelationshipTypeId) ?? 0
-		    	}).unwrap()
-		    	dispatch(addToast({
-		    		...defaultToast,
-		    		message: "Ticket linked successfully!",
-		    		type: "success"
-		    	}))
+
+	const onUnlink = async (ticketId: number | undefined, ticketRelationshipId: number) => {
+		dispatch(toggleShowSecondaryModal(true))
+		dispatch(setSecondaryModalProps({ticketId: ticketId, ticketRelationshipId: ticketRelationshipId}))
+		dispatch(setSecondaryModalType("SHOW_UNLINK_TICKET_WARNING"))
+	}
+
+	const onSubmit = async (values: LinkedTicketFormValues) => {
+		let defaultToast: Toast = {
+			id: uuidv4(),
+			message: "Something went wrong while linking ticket.",
+			animationType: "animation-in",
+			type: "failure"
+		}
+		if (currentTicketId){
+	    	try {
+		    	await addTicketRelationship({
+		    		parentTicketId: values.parentTicketId ?? 0,
+		    		childTicketId: Number(values.childTicketId) ?? 0,
+		    		ticketRelationshipTypeId: Number(values.ticketRelationshipTypeId) ?? 0
+			    	}).unwrap()
+			    	dispatch(addToast({
+			    		...defaultToast,
+			    		message: "Ticket linked successfully!",
+			    		type: "success"
+			    	}))
+		    	}
+		    	catch (e){
+		    		dispatch(addToast(defaultToast))
+		    	}
 	    	}
-	    	catch (e){
-	    		dispatch(addToast(defaultToast))
-	    	}
-    	}
     	else {
     		dispatch(addToast(defaultToast))
     	}
