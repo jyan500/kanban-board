@@ -16,6 +16,8 @@ import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps
 import { PaginationRow } from "./page-elements/PaginationRow"
 import { Link } from "react-router-dom"
 import { TICKETS } from "../helpers/routes"
+import { selectCurrentTicketId } from "../slices/boardSlice"
+import { toggleShowModal } from "../slices/modalSlice" 
 
 type LinkedTicketFormValues = {
 	parentTicketId: number | null | undefined
@@ -29,9 +31,10 @@ type Props = {
 	showAddLinkedIssue: boolean
 	setShowAddLinkedIssue: (val: boolean) => void
 	isEpicParent?: boolean
+	isModal?: boolean
 }
 
-export const LinkedTicketForm = ({currentTicketId, isEpicParent, showAddLinkedIssue, setShowAddLinkedIssue, ticketRelationships}: Props) => {
+export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAddLinkedIssue, setShowAddLinkedIssue, ticketRelationships}: Props) => {
 	const { showModal } = useAppSelector((state) => state.modal) 
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
 	const dispatch = useAppDispatch()
@@ -149,7 +152,12 @@ export const LinkedTicketForm = ({currentTicketId, isEpicParent, showAddLinkedIs
 										{
 											groupedTicketRelationships?.length && groupedTicketRelationships.map((relationship: TicketRelationship) => {
 												return (
-													<Link to={`${TICKETS}/${relationship.childTicketId}`}>
+													<Link onClick={() => {
+														if (isModal){
+															dispatch(selectCurrentTicketId(null))
+															dispatch(toggleShowModal(false))
+														}
+													}} to={`${TICKETS}/${relationship.childTicketId}`}>
 														<TicketRow 
 															key={`relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`} 
 															ticket={tickets?.data?.find((ticket) => isTicketInRelationship(ticket.id, relationship))}
@@ -171,7 +179,12 @@ export const LinkedTicketForm = ({currentTicketId, isEpicParent, showAddLinkedIs
 								{
 									childEpicTickets.map((relationship: TicketRelationship) => {
 										return (
-											<Link to={`${TICKETS}/${relationship.childTicketId}`}>
+											<Link onClick={() => {
+												if (isModal){
+													dispatch(selectCurrentTicketId(null))
+													dispatch(toggleShowModal(false))
+												}	
+											}} to={`${TICKETS}/${relationship.childTicketId}`}>
 												<TicketRow 
 													key={`epic_relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`}
 													ticket={tickets?.data?.find(ticket => isTicketInRelationship(ticket.id, relationship))}

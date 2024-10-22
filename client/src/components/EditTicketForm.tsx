@@ -29,6 +29,10 @@ import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown"
 import { ImTree as AddToEpicIcon } from "react-icons/im";
 import { Badge } from "./page-elements/Badge"
 import { PaginationRow } from "./page-elements/PaginationRow"
+import { Link } from "react-router-dom"
+import { TICKETS } from "../helpers/routes"
+import { selectCurrentTicketId } from "../slices/boardSlice"
+import { toggleShowModal } from "../slices/modalSlice" 
 
 
 type EditFieldVisibility = {
@@ -38,9 +42,10 @@ type EditFieldVisibility = {
 type Props = {
 	ticket: Ticket | null | undefined
 	statusesToDisplay: Array<Status>
+	isModal?: boolean
 }
 
-export const EditTicketForm = ({ticket, statusesToDisplay}: Props) => {
+export const EditTicketForm = ({isModal, ticket, statusesToDisplay}: Props) => {
 	const dispatch = useAppDispatch()
 	const currentTicketId = ticket?.id
 	const { statuses } = useAppSelector((state) => state.status)
@@ -376,9 +381,24 @@ export const EditTicketForm = ({ticket, statusesToDisplay}: Props) => {
 							</div>
 							<div className = "tw-flex tw-flex-row tw-gap-x-2">
 							{
-								ticket?.epicParentTickets?.map((parentTicket) => 
-									// TODO: make this a link to the epic ticket later on once the tickets page is built
-									<Badge key = {`edit_ticket_parent_epic_${parentTicket.id}`} className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge> ) } </div> <div className = "tw-pt-2 tw-pb-2"><strong>Created {createdAt}</strong></div>
+								ticket?.epicParentTickets?.map((parentTicket) => {
+									return (
+										<Link onClick = {() => {
+											// if we're in a modal, close the modal first
+											if (isModal){
+												dispatch(toggleShowModal(false))
+												dispatch(selectCurrentTicketId(null))
+											}
+										}} to = {`${TICKETS}/${parentTicket.id}`}>
+											<Badge key = {`edit_ticket_parent_epic_${parentTicket.id}`} className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>  
+										</Link>
+									)
+								})
+							} 
+							</div> 
+							<div className = "tw-pt-2 tw-pb-2">
+								<strong>Created {createdAt}</strong>
+							</div>
 						</div>
 					</div>
 				</form>
@@ -391,7 +411,7 @@ export const EditTicketForm = ({ticket, statusesToDisplay}: Props) => {
 							{ticket?.ticketTypeId === epicTicketType?.id ? (
 								<>
 									<strong>Epic Tickets</strong>
-									<LinkedTicketForm currentTicketId={currentTicketId} isEpicParent={true} showAddLinkedIssue={showAddToEpic} setShowAddLinkedIssue={setShowAddToEpic} ticketRelationships={epicTicketRelationships?.data?.length ? epicTicketRelationships.data : []}/>
+									<LinkedTicketForm isModal={isModal} currentTicketId={currentTicketId} isEpicParent={true} showAddLinkedIssue={showAddToEpic} setShowAddLinkedIssue={setShowAddToEpic} ticketRelationships={epicTicketRelationships?.data?.length ? epicTicketRelationships.data : []}/>
 									<PaginationRow
 										showNumResults={false}
 										showPageNums={false}
