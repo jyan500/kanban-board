@@ -68,8 +68,9 @@ export const Ticket = ({ticket}: PropType) => {
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				{
 					ticket.epicParentTickets?.map((parentTicket) => 
-						// TODO: make this a link to the epic ticket later on once the tickets page is built
-						<Link to={`${TICKETS}/${parentTicket.id}`}>
+						<Link onClick={(e) => {
+							e.stopPropagation()
+						}} to={`${TICKETS}/${parentTicket.id}`}>
 							<Badge key = {`epic_parent_${parentTicket.id}`} className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>
 						</Link>
 					)

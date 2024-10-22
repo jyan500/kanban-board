@@ -14,6 +14,8 @@ import { v4 as uuidv4 } from "uuid"
 import { addToast } from "../slices/toastSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { PaginationRow } from "./page-elements/PaginationRow"
+import { Link } from "react-router-dom"
+import { TICKETS } from "../helpers/routes"
 
 type LinkedTicketFormValues = {
 	parentTicketId: number | null | undefined
@@ -92,30 +94,30 @@ export const LinkedTicketForm = ({currentTicketId, isEpicParent, showAddLinkedIs
     	}
     }
 
-    const isTicketAlreadyLinked = (ticketId: number) => {
-    	const linkedTickets = ticketRelationships?.filter((relationship) => isTicketInRelationship(ticketId, relationship))
-    	return linkedTickets.length 
-    }
+const isTicketAlreadyLinked = (ticketId: number) => {
+	const linkedTickets = ticketRelationships?.filter((relationship) => isTicketInRelationship(ticketId, relationship))
+	return linkedTickets.length 
+}
 
-    const onUnlink = async (ticketId: number | undefined, ticketRelationshipId: number) => {
-    	dispatch(toggleShowSecondaryModal(true))
-    	dispatch(setSecondaryModalProps({ticketId: ticketId, ticketRelationshipId: ticketRelationshipId}))
-    	dispatch(setSecondaryModalType("SHOW_UNLINK_TICKET_WARNING"))
-    }
+const onUnlink = async (ticketId: number | undefined, ticketRelationshipId: number) => {
+	dispatch(toggleShowSecondaryModal(true))
+	dispatch(setSecondaryModalProps({ticketId: ticketId, ticketRelationshipId: ticketRelationshipId}))
+	dispatch(setSecondaryModalType("SHOW_UNLINK_TICKET_WARNING"))
+}
 
-    const onSubmit = async (values: LinkedTicketFormValues) => {
-    	let defaultToast: Toast = {
-			id: uuidv4(),
-			message: "Something went wrong while linking ticket.",
-			animationType: "animation-in",
-			type: "failure"
-    	}
-    	if (currentTicketId){
-	    	try {
-		    	await addTicketRelationship({
-		    		parentTicketId: values.parentTicketId ?? 0,
-		    		childTicketId: Number(values.childTicketId) ?? 0,
-		    		ticketRelationshipTypeId: Number(values.ticketRelationshipTypeId) ?? 0
+const onSubmit = async (values: LinkedTicketFormValues) => {
+	let defaultToast: Toast = {
+		id: uuidv4(),
+		message: "Something went wrong while linking ticket.",
+		animationType: "animation-in",
+		type: "failure"
+	}
+	if (currentTicketId){
+    	try {
+	    	await addTicketRelationship({
+	    		parentTicketId: values.parentTicketId ?? 0,
+	    		childTicketId: Number(values.childTicketId) ?? 0,
+	    		ticketRelationshipTypeId: Number(values.ticketRelationshipTypeId) ?? 0
 		    	}).unwrap()
 		    	dispatch(addToast({
 		    		...defaultToast,
@@ -146,13 +148,17 @@ export const LinkedTicketForm = ({currentTicketId, isEpicParent, showAddLinkedIs
 									<div className = "tw-flex tw-flex-col tw-gap-y-1">
 										{
 											groupedTicketRelationships?.length && groupedTicketRelationships.map((relationship: TicketRelationship) => {
-												return (<TicketRow 
-													key={`relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`} 
-													ticket={tickets?.data?.find((ticket) => isTicketInRelationship(ticket.id, relationship))}
-													ticketRelationshipId={relationship.id}
-													onUnlink={onUnlink}
-													showUnlink={true}
-												/>)
+												return (
+													<Link to={`${TICKETS}/${relationship.childTicketId}`}>
+														<TicketRow 
+															key={`relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`} 
+															ticket={tickets?.data?.find((ticket) => isTicketInRelationship(ticket.id, relationship))}
+															ticketRelationshipId={relationship.id}
+															onUnlink={onUnlink}
+															showUnlink={true}
+														/>
+													</Link>
+												)
 											})
 										}
 									</div>
@@ -165,13 +171,15 @@ export const LinkedTicketForm = ({currentTicketId, isEpicParent, showAddLinkedIs
 								{
 									childEpicTickets.map((relationship: TicketRelationship) => {
 										return (
-											<TicketRow 
-												key={`epic_relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`}
-												ticket={tickets?.data?.find(ticket => isTicketInRelationship(ticket.id, relationship))}
-												ticketRelationshipId={relationship.id}
-												onUnlink={onUnlink}
-												showUnlink={true}
-											/>
+											<Link to={`${TICKETS}/${relationship.childTicketId}`}>
+												<TicketRow 
+													key={`epic_relationship_ticket_${relationship.childTicketId},${relationship.parentTicketId}`}
+													ticket={tickets?.data?.find(ticket => isTicketInRelationship(ticket.id, relationship))}
+													ticketRelationshipId={relationship.id}
+													onUnlink={onUnlink}
+													showUnlink={true}
+												/>
+											</Link>
 										)
 									})
 								}

@@ -52,6 +52,9 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 				{
 					showUnlink && onUnlink && ticketRelationshipId ? (
 						<IconButton className = "group-hover:tw-visible tw-invisible" onClick={(e) => {
+							// prevent click on this component from triggering an onclick of the parent component
+							e.stopPropagation()
+							e.preventDefault()
 							onUnlink(ticket?.id, ticketRelationshipId)
 						}}>
 							<Unlink className = "tw-w-6 tw-h-6 tw-shrink-0"/>	
