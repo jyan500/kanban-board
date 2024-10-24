@@ -1,0 +1,21 @@
+import React from "react"
+import { AsyncSelect } from "../AsyncSelect"
+import { useAppSelector } from "../../hooks/redux-hooks"
+import { TICKET_URL } from "../../helpers/urls" 
+
+export const AddToEpicFormModal = () => {
+	const { ticketTypes } = useAppSelector((state) => state.ticketType)
+	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
+	const handleSelect = (selectedOption: {label: string, value: string} | null) => {
+		if (selectedOption){
+
+		}
+	}
+
+	return (
+		<div>
+			<p>Add To Epic</p>		
+			<AsyncSelect endpoint={TICKET_URL} urlParams={{ticketType: epicTicketType?.id}} onSelect={handleSelect}/>
+		</div>
+	)		
+}

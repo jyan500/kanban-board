@@ -15,7 +15,10 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, unkno
 	let options = {
 		"Move": () => console.log("Clicked move"),
 		"Clone": () => console.log("Clicked clone"),
-		"Add to Epic": () => console.log("Clicked add to epic"),
+		"Add to Epic": () => {
+			dispatch(toggleShowSecondaryModal(true))
+			dispatch(setSecondaryModalType("ADD_TO_EPIC_FORM_MODAL"))
+		},
 		...(isAdminOrBoardAdmin || isTicketReporter ? {
 			"Delete": () => {
 				dispatch(toggleShowSecondaryModal(true))

@@ -6,13 +6,15 @@ import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType
 import { DeleteCommentWarning } from "./secondary-modals/DeleteCommentWarning"
 import { UnlinkTicketWarning } from "./secondary-modals/UnlinkTicketWarning"
 import { DeleteTicketWarning } from "./secondary-modals/DeleteTicketWarning" 
+import { AddToEpicFormModal } from "./secondary-modals/AddToEpicFormModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SECONDARY_MODAL_Z_INDEX } from "../helpers/constants"
 
 export const secondaryModalTypes = {
 	"SHOW_DELETE_COMMENT_WARNING": DeleteCommentWarning,
 	"SHOW_UNLINK_TICKET_WARNING": UnlinkTicketWarning,
-	"DELETE_TICKET_WARNING": DeleteTicketWarning
+	"DELETE_TICKET_WARNING": DeleteTicketWarning,
+	"ADD_TO_EPIC_FORM_MODAL": AddToEpicFormModal
 }
 
 export const SecondaryModal = () => {
