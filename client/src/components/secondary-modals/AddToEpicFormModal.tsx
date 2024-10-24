@@ -13,7 +13,7 @@ export const AddToEpicFormModal = () => {
 	}
 
 	return (
-		<div>
+		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			<p>Add To Epic</p>		
 			<AsyncSelect endpoint={TICKET_URL} urlParams={{ticketType: epicTicketType?.id}} onSelect={handleSelect}/>
 		</div>

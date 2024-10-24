@@ -27,7 +27,7 @@
 .modal {
 	position: relative;
 	max-height:calc(100vh - 125px);
-	overflow-y:auto;
+	overflow: auto;
 }
 
 .modal-content {
@@ -37,4 +37,5 @@
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
+	height: 100%;
 }

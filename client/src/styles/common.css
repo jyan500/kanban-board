@@ -73,6 +73,8 @@
 	--m-spacing: 16px;
 	--ml-spacing: 24px;
 	--l-spacing: 32px;
+	--m-modal-width: 800px;
+	--m-modal-height: 400px;
 	--l-modal-width: 1200px;
 	--l-modal-height: 800px;
 }
@@ -379,5 +381,10 @@ a {
 .--l-modal {
 	min-width: var(--l-modal-width);
 	min-height: var(--l-modal-height);
+}
+
+.--m-modal {
+	min-width: var(--m-modal-width);
+	min-height: var(--m-modal-height);
 }
 
