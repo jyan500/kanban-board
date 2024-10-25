@@ -25,5 +25,6 @@ export const genericApi = privateApi.injectEndpoints({
 })
 
 export const {
-	useGenericFetchQuery
+	useGenericFetchQuery,
+	useLazyGenericFetchQuery,
 } = genericApi
