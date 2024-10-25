@@ -42,24 +42,24 @@ export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps 
 		additional: {page: number} | undefined) => {
 		const {data, pagination} = await genericFetch({
 			endpoint,
-			urlParams: {...urlParams, query: query},
+			urlParams: {...urlParams, query: query, page: additional?.page ? additional.page : 1},
 		}).unwrap()
-		console.log("data: ", data)
 
 		if (!data) {
 			return {
 				options: [],
 				hasMore: false,
+				additional: {page: 1}
 			}
 		}
 		// merge newly fetched options with already loaded options
-		// const options = [...loadedOptions, ...data?.data]
 		const options = [...loadedOptions, ...data]
-		return {
+		const next = {
 			options,
-			hasMore: pagination.nextPage != null, 
-			...(additional ? {page: pagination.nextPage} : {})
+			hasMore: pagination.currentPage !== pagination.lastPage, 
+			...(additional ? {additional: {page: additional?.page ? additional?.page + 1 : 1}} : {})
 		}
+		return next
 	}
 
 	const handleInputChange = (newValue: string) => {
@@ -86,6 +86,7 @@ export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps 
 		<AsyncPaginate
 			loadOptions={loadOptions}
 			onInputChange={handleInputChange}
+			additional={{page: 1}}
 			onChange={handleChange}
 			getOptionLabel={(option) => option.label}
 			getOptionValue={(option) => option.value}
