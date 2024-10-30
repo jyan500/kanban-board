@@ -25,7 +25,7 @@ interface AsyncSelectProps {
 	onSelect: (selectedOption: OptionType | null) => void
 }
 
-export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps ) => {
+export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps) => {
 	const [searchTerm, setSearchTerm] = useState("")
 
 	// skip initial fetch when the searchTerm is empty
@@ -34,7 +34,6 @@ export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps 
 	// 	urlParams
 	// } : skipToken)
 	const [ genericFetch ] = useLazyGenericFetchQuery()
-
 
 	const loadOptions = async (
 		query: string, 
@@ -53,7 +52,7 @@ export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps 
 			}
 		}
 		// merge newly fetched options with already loaded options
-		const options = [...loadedOptions, ...data]
+		const options = [...data]
 		const next = {
 			options,
 			hasMore: pagination.currentPage !== pagination.lastPage, 
@@ -87,13 +86,17 @@ export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps 
 			loadOptions={loadOptions}
 			onInputChange={handleInputChange}
 			additional={{page: 1}}
+			classNames={{
+			    control: () => "tw-overflow-visible tw-w-64 tw-border tw-border-gray-300 tw-rounded-md",
+			}}
 			onChange={handleChange}
 			getOptionLabel={(option) => option.label}
 			getOptionValue={(option) => option.value}
 			placeholder="Search"
-			// wait milliseconds amount after using stops typing before searching
+			// wait milliseconds amount after user stops typing before searching
 			debounceTimeout={300}
 			isClearable
+			menuShouldScrollIntoView={false}
 		/>
 	)
 

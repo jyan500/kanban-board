@@ -5,7 +5,6 @@ import {
 	useAddTicketRelationshipMutation,
 	useDeleteTicketRelationshipMutation,
 } from "../services/private/ticket"
-import { skipToken } from '@reduxjs/toolkit/query/react'
 import { TicketRow } from "./TicketRow"
 import { useGetTicketsQuery } from "../services/private/ticket"
 import { TicketRelationship, TicketRelationshipType, Toast } from "../types/common"
@@ -18,6 +17,7 @@ import { Link } from "react-router-dom"
 import { TICKETS } from "../helpers/routes"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
+import { skipToken } from '@reduxjs/toolkit/query/react'
 
 type LinkedTicketFormValues = {
 	parentTicketId: number | null | undefined
@@ -44,7 +44,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 		ticketIdSet.add(ticketRelationship.parentTicketId)
 	})
 	// load in the child/parent ticket information
-	const { data: tickets } = useGetTicketsQuery({ticketIds: Array.from(ticketIdSet)})
+	const { data: tickets } = useGetTicketsQuery(ticketIdSet.size ? {ticketIds: Array.from(ticketIdSet)} : skipToken)
 	const { ticketRelationshipTypes } = useAppSelector((state) => state.ticketRelationshipType)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)  
 	const [ addTicketRelationship, { error: addTicketRelationshipError, isLoading: isAddTicketRelationshipLoading }] = useAddTicketRelationshipMutation()

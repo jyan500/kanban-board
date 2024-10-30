@@ -18,7 +18,7 @@ export const secondaryModalTypes = {
 }
 
 export const secondaryModalClassNames = {
-	"ADD_TO_EPIC_FORM_MODAL": {"modal-container": "tw-top-[50%] --m-modal", "modal": "tw-min-h-96"},
+	"ADD_TO_EPIC_FORM_MODAL": {"modal-container": "tw-top-[50%] --m-modal", "modal": "!tw-overflow-visible tw-min-h-96"},
 }
 
 export const SecondaryModal = () => {
@@ -46,7 +46,8 @@ export const SecondaryModal = () => {
 				<div className = {`${modalClassName} modal`}>
 					<div className = "modal-content">
 						{
-							ModalContent ? <ModalContent {...currentSecondaryModalProps} /> : null
+							ModalContent ? (
+								<ModalContent {...currentSecondaryModalProps} />) : null
 						}
 					</div>
 				</div>
