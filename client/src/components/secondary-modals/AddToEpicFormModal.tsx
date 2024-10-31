@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form"
 import { TICKET_URL } from "../../helpers/urls" 
 import { useAddTicketRelationshipMutation } from "../../services/private/ticket"
 import { addToast } from "../../slices/toastSlice"
+import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 
@@ -64,6 +65,8 @@ export const AddToEpicFormModal = ({childTicketId}: Props) => {
     	else {
     		dispatch(addToast(defaultToast))
     	}
+    	dispatch(toggleShowSecondaryModal(false))
+    	dispatch(setSecondaryModalProps({}))
 	}
 
 	return (
@@ -76,7 +79,7 @@ export const AddToEpicFormModal = ({childTicketId}: Props) => {
 	                render={({ field: { onChange, value, name, ref } }) => (
 	                	<AsyncSelect 
 		                	endpoint={TICKET_URL} 
-		                	urlParams={{excludeAddedEpicParent: true, searchBy: "title", ticketType: epicTicketType?.id}} 
+		                	urlParams={{childTicketId: childTicketId, excludeAddedEpicParent: true, searchBy: "title", ticketType: epicTicketType?.id}} 
 		                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 		                		onChange(selectedOption?.value ?? "") 	
 		                	}}

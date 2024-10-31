@@ -24,6 +24,8 @@ const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
 	try {
+		const epicTicketType = await db("ticket_types").where("name", "Epic").first()
+		const epicTicketRelationshipType = await db("ticket_relationship_types").where("name", "Epic").first()
 		const tickets = await db("tickets").where("organization_id", req.user.organization).select(
 			"tickets.id as id",
 			"tickets.priority_id as priorityId",
@@ -46,7 +48,6 @@ router.get("/", async (req, res, next) => {
 			else if (req.query.searchBy === "reporter"){
 				queryBuilder.join("users", "users.id", "=", "tickets.user_id").whereILike("users.first_name", `%${req.query.query}%`)
 			}
-
 			if (req.query.ticketType) {
 				queryBuilder.where("tickets.ticket_type_id", req.query.ticketType)
 			}
@@ -58,6 +59,11 @@ router.get("/", async (req, res, next) => {
 			}
 			if (req.query.ticketIds){
 				queryBuilder.whereIn("id", req.query.ticketIds.split(","))
+			}
+			if (req.query.childTicketId && req.query.excludeAddedEpicParent){
+				queryBuilder.whereNotIn("tickets.id", 
+					db("ticket_relationships").where("child_ticket_id", req.query.childTicketId).where("ticket_relationship_type_id", epicTicketRelationshipType?.id).select("ticket_relationships.parent_ticket_id")
+				)
 			}
 		})
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
