@@ -309,7 +309,7 @@ export const EditTicketForm = ({isModal, ticket, statusesToDisplay}: Props) => {
 							</div>
 						</div>
 						<div className = "tw-w-1/3">
-							<EditTicketFormToolbar/>
+							<EditTicketFormToolbar ticket={ticket}/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<select 
 								{...register("statusId", registerOptions.statusId)} 

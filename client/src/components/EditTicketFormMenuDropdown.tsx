@@ -1,24 +1,31 @@
 import React, { useRef } from "react" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { Dropdown } from "./Dropdown" 
-import { toggleShowSecondaryModal, setSecondaryModalType } from "../slices/secondaryModalSlice" 
+import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../slices/secondaryModalSlice" 
+import { Ticket } from "../types/common"
 
-export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, unknown>((props, ref) => {
+type Props = {
+	ticket: Ticket | null | undefined
+}
+
+export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticket}: Props, ref) => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
-	const { tickets, currentTicketId } = useAppSelector((state) => state.board) 
+	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null
-	const ticket = tickets.find((ticket) => ticket.id === currentTicketId)
 	const dispatch = useAppDispatch()
 	const isAdminOrBoardAdmin = userRole && userRole === "ADMIN" || userRole === "BOARD_ADMIN"
 	const isTicketReporter = userRole && userRole === "USER" && ticket?.userId === userProfile?.id
+	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	let options = {
 		"Move": () => console.log("Clicked move"),
 		"Clone": () => console.log("Clicked clone"),
-		"Add to Epic": () => {
+		// if it's an epic, do not show this button
+		...(epicTicketType?.id !== ticket?.ticketTypeId ? {"Add to Epic": () => {
 			dispatch(toggleShowSecondaryModal(true))
 			dispatch(setSecondaryModalType("ADD_TO_EPIC_FORM_MODAL"))
-		},
+			dispatch(setSecondaryModalProps({"childTicketId": ticket?.id}))
+		}} : {}),
 		...(isAdminOrBoardAdmin || isTicketReporter ? {
 			"Delete": () => {
 				dispatch(toggleShowSecondaryModal(true))
