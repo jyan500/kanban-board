@@ -20,11 +20,11 @@ export const Boards = () => {
 	}
 
 	return (
-		<div>
+		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			<div>
 				<h1>Boards</h1>
 				{!boardId && userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN") ? (
-					<button onClick={addNewBoard}>Add New Board</button>
+					<button className = "button" onClick={addNewBoard}>Add New Board</button>
 				) : null}
 			</div>
 			<Table data={boardInfo} config={config}/>

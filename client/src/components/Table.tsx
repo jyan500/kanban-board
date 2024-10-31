@@ -31,7 +31,7 @@ export const Table = ({config, data}: Props) => {
 								}
 								else if (headerKey === config.editCol?.col){
 									return (
-										<td key = {headerKey}><button onClick={() => config.editCol?.onClick(row.id)}>{config.editCol?.text}</button></td>
+										<td key = {headerKey}><button className = "button" onClick={() => config.editCol?.onClick(row.id)}>{config.editCol?.text}</button></td>
 									)
 								}
 								else if (headerKey in config.modifiers){
