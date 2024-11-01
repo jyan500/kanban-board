@@ -81,7 +81,7 @@ router.get("/", async (req, res, next) => {
 				}
 				else {
 					// should not contain tickets where the current ticket is a parent and the ticket relationship type is an epic
-					queryBuilder.whereNotIn("tickets.id", db("ticket_relationships").where("parent_ticket_id", req.query.parentTicketId).wnere("ticket_relationship_type_id", epicTicketRelationshipType?.id).select("ticket_relationships.child_ticket_id"))
+					queryBuilder.whereNotIn("tickets.id", db("ticket_relationships").where("parent_ticket_id", req.query.parentTicketId).where("ticket_relationship_type_id", epicTicketRelationshipType?.id).select("ticket_relationships.child_ticket_id"))
 					// ticket cannot be linked to itself
 					.whereNot("tickets.id", req.query.parentTicketId)
 					// ticket cannot be an epic
