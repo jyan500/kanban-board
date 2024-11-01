@@ -243,7 +243,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 						                	<AsyncSelect 
 						                		ref={selectRef}
 							                	endpoint={TICKET_URL} 
-							                	urlParams={{parentTicketId: currentTicketId, searchBy: "title", isLinkableTicket: true}} 
+							                	urlParams={{isEpicParent: isEpicParent, parentTicketId: currentTicketId, searchBy: "title", isLinkableTicket: true}} 
 							                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 							                		onChange(selectedOption?.value ?? "") 	
 							                	}}

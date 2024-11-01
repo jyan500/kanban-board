@@ -60,10 +60,33 @@ router.get("/", async (req, res, next) => {
 			if (req.query.ticketIds){
 				queryBuilder.whereIn("id", req.query.ticketIds.split(","))
 			}
-			if (req.query.childTicketId && req.query.excludeAddedEpicParent){
-				queryBuilder.whereNotIn("tickets.id", 
-					db("ticket_relationships").where("child_ticket_id", req.query.childTicketId).where("ticket_relationship_type_id", epicTicketRelationshipType?.id).select("ticket_relationships.parent_ticket_id")
-				)
+			if (req.query.childTicketId){
+				if (req.query.excludeAddedEpicParent){
+					queryBuilder.whereNotIn("tickets.id", 
+						db("ticket_relationships").where("child_ticket_id", req.query.childTicketId).where("ticket_relationship_type_id", epicTicketRelationshipType?.id).select("ticket_relationships.parent_ticket_id")
+					)
+				}
+			}
+			if (req.query.parentTicketId && req.query.isLinkableTicket){
+				// the current ticket id being passed in cannot be the parent or the child of another ticket to be considered linkable
+				if (req.query.isEpicParent){
+					// should not contain tickets where the current ticket is a parent
+					queryBuilder.whereNotIn("tickets.id", db("ticket_relationships").where("parent_ticket_id", req.query.parentTicketId).select("ticket_relationships.child_ticket_id"))
+					// should not contain tickets where the current ticket is a child 
+					.whereNotIn("tickets.id", db("ticket_relationships").where("child_ticket_id", req.query.parentTicketId).select("ticket_relationships.parent_ticket_id"))
+					// ticket cannot be linked to itself
+					.whereNot("tickets.id", req.query.parentTicketId)
+					// ticket cannot be an epic
+					.whereNot("tickets.ticket_type_id", epicTicketType?.id)
+				}
+				else {
+					// should not contain tickets where the current ticket is a parent and the ticket relationship type is an epic
+					queryBuilder.whereNotIn("tickets.id", db("ticket_relationships").where("parent_ticket_id", req.query.parentTicketId).wnere("ticket_relationship_type_id", epicTicketRelationshipType?.id).select("ticket_relationships.child_ticket_id"))
+					// ticket cannot be linked to itself
+					.whereNot("tickets.id", req.query.parentTicketId)
+					// ticket cannot be an epic
+					.whereNot("tickets.ticket_type_id", epicTicketType?.id)
+				}
 			}
 		})
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});

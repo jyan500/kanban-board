@@ -35,7 +35,7 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 			urlParams: {...urlParams, query: query, page: additional?.page ? additional.page : 1},
 		}).unwrap()
 
-		if (!data) {
+		if (!data.length) {
 			return {
 				options: [],
 				hasMore: false,
