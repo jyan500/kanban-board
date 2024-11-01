@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
-import { useForm, FormProvider } from "react-hook-form"
+import { useForm, FormProvider, Controller } from "react-hook-form"
 import { 
 	useAddTicketRelationshipMutation,
 	useDeleteTicketRelationshipMutation,
@@ -18,6 +18,10 @@ import { TICKETS } from "../helpers/routes"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
+import { AsyncSelect } from "../components/AsyncSelect"
+import { TICKET_URL } from "../helpers/urls"
+import { GroupBase, SelectInstance } from "react-select"
+import { OptionType } from "../types/common"
 
 type LinkedTicketFormValues = {
 	parentTicketId: number | null | undefined
@@ -35,6 +39,7 @@ type Props = {
 }
 
 export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAddLinkedIssue, setShowAddLinkedIssue, ticketRelationships}: Props) => {
+	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 	const { showModal } = useAppSelector((state) => state.modal) 
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
 	const dispatch = useAppDispatch()
@@ -72,7 +77,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 		ticketRelationshipTypeId: ticket?.ticketTypeId === epicTicketType?.id ? (epicTicketRelationshipType?.id ?? "") : "" 
 	}
 	const [preloadedValues, setPreloadedValues] = useState<LinkedTicketFormValues>(defaultForm)
-	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = useForm<LinkedTicketFormValues>({
+	const { register, control, handleSubmit, reset, setValue, watch, formState: {errors} } = useForm<LinkedTicketFormValues>({
 		defaultValues: preloadedValues
 	})
 	const registerOptions = {
@@ -108,6 +113,10 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 		dispatch(setSecondaryModalType("SHOW_UNLINK_TICKET_WARNING"))
 	}
 
+	const clearValue = () => {
+		selectRef?.current?.clearValue()
+	}
+
 	const onSubmit = async (values: LinkedTicketFormValues) => {
 		let defaultToast: Toast = {
 			id: uuidv4(),
@@ -135,6 +144,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
     	else {
     		dispatch(addToast(defaultToast))
     	}
+    	clearValue()
     }
 
 	return (
@@ -217,13 +227,29 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 								</div>
 								<div className = "tw-w-2/3 tw-w-full tw-flex tw-flex-col tw-gap-y-1">
 									{/* TODO: autocomplete search box instead of select menu */}	
+									{/*
 									<select className = "tw-w-full" {...register("childTicketId", registerOptions.childTicketId)}>	
-										{/* The current ticket should not be available for selection, as well as any ticket that has already been linked as a parent or child*/}
 										<option value="" disabled></option>
 										{tickets?.data?.filter((ticket) => ticket.id !== currentTicketId && ticket.ticketTypeId !== epicTicketType?.id && !isTicketAlreadyLinked(ticket.id)).map((ticket) => 
 											<option key = {ticket.id} value = {ticket.id}>{ticket.name}</option>
 										)}
 									</select>
+									*/}
+									{/* The current ticket should not be available for selection, as well as any ticket that has already been linked as a parent or child*/}
+						        	<Controller
+										name={"childTicketId"}
+										control={control}
+						                render={({ field: { onChange, value, name, ref } }) => (
+						                	<AsyncSelect 
+						                		ref={selectRef}
+							                	endpoint={TICKET_URL} 
+							                	urlParams={{parentTicketId: currentTicketId, searchBy: "title", isLinkableTicket: true}} 
+							                	onSelect={(selectedOption: {label: string, value: string} | null) => {
+							                		onChange(selectedOption?.value ?? "") 	
+							                	}}
+							                />
+						                )}
+									/>
 							        {errors?.childTicketId && <small className = "--text-alert">{errors.childTicketId.message}</small>}
 								</div>
 							</div>

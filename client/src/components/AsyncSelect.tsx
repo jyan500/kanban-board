@@ -1,15 +1,11 @@
 import React, { useState, useCallback } from "react"
 // import Select from "react-select"
-import type { GroupBase, OptionsOrGroups } from "react-select";
 import { AsyncPaginate } from 'react-select-async-paginate';
 import { useLazyGenericFetchQuery } from "../services/private/generic"
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { ListResponse } from "../types/common"
+import { ListResponse, OptionType } from "../types/common"
+import { OptionsOrGroups, GroupBase, SelectInstance } from "react-select"
 
-interface OptionType {
-	label: string
-	value: string
-}
 
 interface LoadOptionsType {
 	options: ListResponse<any>
@@ -21,18 +17,13 @@ interface LoadOptionsType {
 
 interface AsyncSelectProps {
 	endpoint: string
+	className?: string 
 	urlParams: Record<string, any>
 	onSelect: (selectedOption: OptionType | null) => void
 }
 
-export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps) => {
+export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, GroupBase<OptionType>>, AsyncSelectProps>(({ className, endpoint, onSelect, urlParams }, ref) => {
 	const [searchTerm, setSearchTerm] = useState("")
-
-	// skip initial fetch when the searchTerm is empty
-	// const { data, isFetching } = useGenericFetchQuery(searchTerm !== "" ? {
-	// 	endpoint,
-	// 	urlParams
-	// } : skipToken)
 	const [ genericFetch ] = useLazyGenericFetchQuery()
 
 	const loadOptions = async (
@@ -51,7 +42,6 @@ export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps)
 				additional: {page: 1}
 			}
 		}
-		// merge newly fetched options with already loaded options
 		const options = [...data]
 		const next = {
 			options,
@@ -74,20 +64,18 @@ export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps)
 	)
 
 	return (
-		// <Select
-		// 	isLoading={isFetching}
-		// 	options={data?.data ?? []}
-		// 	onInputChange={handleInputChange}
-		// 	onChange={handleChange}
-		// 	placeholder={"Search"}
-		// 	isClearable
-		// />
 		<AsyncPaginate
+			selectRef={ref}
 			loadOptions={loadOptions}
 			onInputChange={handleInputChange}
 			additional={{page: 1}}
-			classNames={{
-			    control: () => "tw-overflow-visible tw-w-64 tw-border tw-border-gray-300 tw-rounded-md",
+			styles={{
+			    control: (baseStyles, state) => ({
+			      ...baseStyles,
+			      border: "var(--width-input-border) solid var(--co-textfld-border)",
+			      padding: ".1em",
+			      width: "100%"
+			    }),
 			}}
 			onChange={handleChange}
 			getOptionLabel={(option) => option.label}
@@ -99,5 +87,4 @@ export const AsyncSelect = ({ endpoint, onSelect, urlParams }: AsyncSelectProps)
 			menuShouldScrollIntoView={false}
 		/>
 	)
-
-}
+})

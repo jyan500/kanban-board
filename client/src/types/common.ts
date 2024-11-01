@@ -115,3 +115,8 @@ export interface ListResponse<T> {
 	pagination: IPagination
 	data: Array<T>
 }
+
+export interface OptionType {
+	label: string
+	value: string
+}
