@@ -58,7 +58,7 @@ export const UnlinkTicketWarning = ({ticketId, ticketRelationshipId}: UnlinkTick
 				onSubmit={onSubmit}
 				onCancel={onCancel}
 				isLoading={isDeleteTicketRelationshipLoading}
-				submitText={"Delete"}
+				submitText={"Unlink"}
 				cancelText={"Cancel"}
 			>
 				<div className = "tw-py-4">
