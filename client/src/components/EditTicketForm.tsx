@@ -383,7 +383,7 @@ export const EditTicketForm = ({isModal, ticket, statusesToDisplay}: Props) => {
 							{
 								ticket?.epicParentTickets?.map((parentTicket) => {
 									return (
-										<Link onClick = {() => {
+										<Link key={`edit_ticket_parent_epic_link_${parentTicket.id}`} onClick = {() => {
 											// if we're in a modal, close the modal first
 											if (isModal){
 												dispatch(toggleShowModal(false))

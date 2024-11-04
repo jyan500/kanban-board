@@ -41,7 +41,7 @@ export const OverlappingRow = ({total}: Props) => {
 		}
 		if (remainder > 0){
 			elements.push(
-			<div style = {{position: "absolute", top: 0, left: `${curLeft + 30}px`}} className = "remainder-circle">
+			<div key={`container_${curLeft}`} style = {{position: "absolute", top: 0, left: `${curLeft + 30}px`}} className = "remainder-circle">
 				<span className = "__count">+{remainder}</span>	
 			</div>)
 		}

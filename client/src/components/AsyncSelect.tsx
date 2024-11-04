@@ -1,13 +1,13 @@
-import React, { useState, useCallback } from "react"
+import React, { useState, useCallback, useEffect } from "react"
 // import Select from "react-select"
 import { AsyncPaginate } from 'react-select-async-paginate';
 import { useLazyGenericFetchQuery } from "../services/private/generic"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ListResponse, OptionType } from "../types/common"
 import { OptionsOrGroups, GroupBase, SelectInstance } from "react-select"
+import { v4 as uuidv4 } from "uuid"
 
-
-interface LoadOptionsType {
+export interface LoadOptionsType {
 	options: ListResponse<any>
 	hasMore: boolean
 	additional: {
@@ -19,10 +19,11 @@ interface AsyncSelectProps {
 	endpoint: string
 	className?: string 
 	urlParams: Record<string, any>
+	cacheKey?: string
 	onSelect: (selectedOption: OptionType | null) => void
 }
 
-export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, GroupBase<OptionType>>, AsyncSelectProps>(({ className, endpoint, onSelect, urlParams }, ref) => {
+export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, GroupBase<OptionType>>, AsyncSelectProps>(({ cacheKey, className, endpoint, onSelect, urlParams }, ref) => {
 	const [searchTerm, setSearchTerm] = useState("")
 	const [ genericFetch ] = useLazyGenericFetchQuery()
 
@@ -84,6 +85,7 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 			// wait milliseconds amount after user stops typing before searching
 			debounceTimeout={300}
 			isClearable
+			cacheUniqs={[cacheKey ?? ""]}
 			menuShouldScrollIntoView={false}
 		/>
 	)

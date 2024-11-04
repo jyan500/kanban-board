@@ -69,7 +69,7 @@ router.get("/", async (req, res, next) => {
 			}
 			if (req.query.parentTicketId && req.query.isLinkableTicket){
 				// the current ticket id being passed in cannot be the parent or the child of another ticket to be considered linkable
-				if (req.query.isEpicParent){
+				if (!req.query.isEpicParent){
 					// should not contain tickets where the current ticket is a parent
 					queryBuilder.whereNotIn("tickets.id", db("ticket_relationships").where("parent_ticket_id", req.query.parentTicketId).select("ticket_relationships.child_ticket_id"))
 					// should not contain tickets where the current ticket is a child 

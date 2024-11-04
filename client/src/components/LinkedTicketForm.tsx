@@ -18,7 +18,7 @@ import { TICKETS } from "../helpers/routes"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { AsyncSelect } from "../components/AsyncSelect"
+import { AsyncSelect, LoadOptionsType } from "../components/AsyncSelect"
 import { TICKET_URL } from "../helpers/urls"
 import { GroupBase, SelectInstance } from "react-select"
 import { OptionType } from "../types/common"
@@ -42,6 +42,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 	const { showModal } = useAppSelector((state) => state.modal) 
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
+	const [cacheKey, setCacheKey] = useState(uuidv4())
 	const dispatch = useAppDispatch()
 	const ticketIdSet = new Set()
 	ticketRelationships.forEach((ticketRelationship) => {
@@ -114,7 +115,10 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 	}
 
 	const clearValue = () => {
+		// reset the selected value
 		selectRef?.current?.clearValue()
+		// flush the cached options of async select
+		setCacheKey(uuidv4())
 	}
 
 	const onSubmit = async (values: LinkedTicketFormValues) => {
@@ -162,7 +166,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 										{
 											groupedTicketRelationships?.length && groupedTicketRelationships.map((relationship: TicketRelationship) => {
 												return (
-													<Link onClick={() => {
+													<Link key={`relationship_ticket_link_${relationship.childTicketId},${relationship.parentTicketId}`} onClick={() => {
 														if (isModal){
 															dispatch(selectCurrentTicketId(null))
 															dispatch(toggleShowModal(false))
@@ -189,7 +193,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 								{
 									childEpicTickets.map((relationship: TicketRelationship) => {
 										return (
-											<Link onClick={() => {
+											<Link key={`epic_relationship_ticket_link_${relationship.childTicketId},${relationship.parentTicketId}`} onClick={() => {
 												if (isModal){
 													dispatch(selectCurrentTicketId(null))
 													dispatch(toggleShowModal(false))
@@ -242,6 +246,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 						                render={({ field: { onChange, value, name, ref } }) => (
 						                	<AsyncSelect 
 						                		ref={selectRef}
+						                		cacheKey={cacheKey}
 							                	endpoint={TICKET_URL} 
 							                	urlParams={{isEpicParent: isEpicParent, parentTicketId: currentTicketId, searchBy: "title", isLinkableTicket: true}} 
 							                	onSelect={(selectedOption: {label: string, value: string} | null) => {
