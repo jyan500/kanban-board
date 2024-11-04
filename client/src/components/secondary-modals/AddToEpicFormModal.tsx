@@ -79,6 +79,7 @@ export const AddToEpicFormModal = ({childTicketId}: Props) => {
 	                render={({ field: { onChange, value, name, ref } }) => (
 	                	<AsyncSelect 
 		                	endpoint={TICKET_URL} 
+		                	className={"tw-w-64"}
 		                	urlParams={{childTicketId: childTicketId, excludeAddedEpicParent: true, searchBy: "title", ticketType: epicTicketType?.id}} 
 		                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 		                		onChange(selectedOption?.value ?? "") 	

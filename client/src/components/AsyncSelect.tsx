@@ -70,12 +70,14 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 			loadOptions={loadOptions}
 			onInputChange={handleInputChange}
 			additional={{page: 1}}
+			classNames={{
+			    control: (state) => className ?? "tw-w-full"
+			}}
 			styles={{
 			    control: (baseStyles, state) => ({
 			      ...baseStyles,
 			      border: "var(--width-input-border) solid var(--co-textfld-border)",
 			      padding: ".1em",
-			      width: "100%"
 			    }),
 			}}
 			onChange={handleChange}
