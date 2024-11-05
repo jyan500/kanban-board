@@ -100,7 +100,7 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const tickets = await db("tickets").where("id", req.params.ticketId).select(
+		let tickets = await db("tickets").where("id", req.params.ticketId).select(
 			"tickets.id as id",
 			"tickets.priority_id as priorityId",
 			"tickets.name as name",
@@ -111,6 +111,24 @@ router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, n
 			"tickets.created_at as createdAt",
 			"tickets.user_id as userId",
 		)
+		const epicTicketType = await db("ticket_types").where("name", "Epic").first()
+		const epicTicketRelationshipType = await db("ticket_relationship_types").where("name", "Epic").first()
+		if (tickets?.length){
+			let epicParentTickets = []
+			let ticket = tickets[0]
+			// include any epics that this child ticket is attached to
+			if (ticket.ticketTypeId !== epicTicketType?.id){
+				epicParentTickets = await db("ticket_relationships")
+				.where("child_ticket_id", ticket.id)
+				.where("ticket_relationship_type_id", epicTicketRelationshipType?.id)
+				.join("tickets", "tickets.id", "=", "ticket_relationships.parent_ticket_id")
+				.select(
+					"tickets.id as id",
+					"tickets.name as name"
+				)
+			}
+			tickets = [{...ticket, epicParentTickets: epicParentTickets}]
+		}
 		res.json(tickets)
 	}	
 	catch (err) {
