@@ -64,7 +64,7 @@ export const TicketDisplay = () => {
 
 	const withUrlParams = (pageUrl: string) => {
 		Object.keys(defaultForm).forEach((key) => {
-			pageUrl += `&${key}=${searchParams.get(key)}`
+			pageUrl += `&${key}=${searchParams.get(key) ?? ""}`
 		})
 		return pageUrl
 	}
