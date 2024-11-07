@@ -26,7 +26,7 @@ router.get("/", async (req, res, next) => {
 	try {
 		const epicTicketType = await db("ticket_types").where("name", "Epic").first()
 		const epicTicketRelationshipType = await db("ticket_relationship_types").where("name", "Epic").first()
-		const tickets = await db("tickets").where("organization_id", req.user.organization).select(
+		let tickets = db("tickets").where("organization_id", req.user.organization).select(
 			"tickets.id as id",
 			"tickets.priority_id as priorityId",
 			"tickets.name as name",
@@ -89,7 +89,17 @@ router.get("/", async (req, res, next) => {
 				}
 			}
 		})
-		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		// hack to keep the tickets paginate data format into {data, pagination},
+		// which finds the total amount of data and 
+		// loads all data into one page. Should prioritize using pagination when possible.
+		if (req.query.skipPaginate){
+			const ticketsForAmt = await tickets
+			const total = ticketsForAmt.length
+			tickets = await tickets.paginate({ perPage: total, currentPage: 1, isLengthAware: true})
+		}
+		else {
+			tickets = await tickets.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		}
 		res.json(tickets)
 	}
 	catch (err) {

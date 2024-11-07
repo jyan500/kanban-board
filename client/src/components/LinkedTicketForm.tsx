@@ -51,7 +51,8 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 		ticketIdSet.add(ticketRelationship.parentTicketId)
 	})
 	// load in the child/parent ticket information
-	const { data: tickets } = useGetTicketsQuery(ticketIdSet.size ? {ticketIds: Array.from(ticketIdSet)} : skipToken)
+	// skip paginate because we're only loading in a set of ids, and it's anticipated that there will be < 100 tickets per epic on general use case.
+	const { data: tickets } = useGetTicketsQuery(ticketIdSet.size ? {skipPaginate: true, ticketIds: Array.from(ticketIdSet)} : skipToken)
 	const { ticketRelationshipTypes } = useAppSelector((state) => state.ticketRelationshipType)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)  
