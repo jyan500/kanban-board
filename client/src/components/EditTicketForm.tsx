@@ -69,6 +69,7 @@ export const EditTicketForm = ({isModal, ticket, statusesToDisplay}: Props) => {
 	const {
 		showModal
 	} = useAppSelector((state) => state.modal)
+	const isCompletedStatusIds = statuses.filter((status) => status.isCompleted).map((status) => status.id)
 	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
 	const reporter = userProfiles?.find((user) => user.id === ticket?.userId)
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
@@ -316,6 +317,10 @@ export const EditTicketForm = ({isModal, ticket, statusesToDisplay}: Props) => {
 								onChange={(e) => {
 									setValue("statusId", parseInt(e.target.value))
 								    handleSubmit(onSubmit)()
+								}}
+								style={{
+									background: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)",
+									borderColor: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)"
 								}}
 								className = "tw-w-full status-select">
 									{statusesToDisplay.map((status) => {
