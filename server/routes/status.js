@@ -10,7 +10,8 @@ router.get("/", async (req, res, next) => {
 			"statuses.id as id",
 			"statuses.name as name",
 			"statuses.order as order",
-			"statuses.organization_id as organizationId"
+			"statuses.organization_id as organizationId",
+			"statuses.is_completed as isCompleted"
 		)
 		res.json(statuses)
 	}	
@@ -26,7 +27,8 @@ router.get("/:id", validateGet, handleValidationResult, async (req, res, next) =
 			"statuses.id as id",
 			"statuses.name as name",
 			"statuses.order as order",
-			"statuses.organization_id as organizationId"
+			"statuses.organization_id as organizationId",
+			"statuses.is_completed as isCompleted"
 		)
 		res.json(statuses)
 	}	

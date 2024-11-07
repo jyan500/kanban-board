@@ -21,7 +21,8 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { AsyncSelect, LoadOptionsType } from "../components/AsyncSelect"
 import { TICKET_URL } from "../helpers/urls"
 import { GroupBase, SelectInstance } from "react-select"
-import { OptionType } from "../types/common"
+import { OptionType, ProgressBarPercentage } from "../types/common"
+import { ProgressBar } from "./page-elements/ProgressBar"
 
 type LinkedTicketFormValues = {
 	parentTicketId: number | null | undefined
@@ -52,12 +53,14 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 	// load in the child/parent ticket information
 	const { data: tickets } = useGetTicketsQuery(ticketIdSet.size ? {ticketIds: Array.from(ticketIdSet)} : skipToken)
 	const { ticketRelationshipTypes } = useAppSelector((state) => state.ticketRelationshipType)
+	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)  
 	const [ addTicketRelationship, { error: addTicketRelationshipError, isLoading: isAddTicketRelationshipLoading }] = useAddTicketRelationshipMutation()
 	const [ deleteTicketRelationship, { error: deleteTicketRelationshipError, isLoading: isDeleteTicketRelationshipLoading }] = useDeleteTicketRelationshipMutation()
 	const ticket = tickets?.data?.find((ticket) => ticket.id === currentTicketId)
 	const epicTicketType = ticketTypes?.find((type) => type.name === "Epic")
 	const epicTicketRelationshipType = ticketRelationshipTypes?.find((type) => type.name === "Epic")
+	const isCompletedStatusIds = statuses.filter((status) => status.isCompleted).map((status) => status.id)
 
     const groupedByRelationshipTypeId = !isEpicParent ? ticketRelationships?.filter((ticketRelationship) => ticketRelationship.ticketRelationshipTypeId !== epicTicketRelationshipType?.id).reduce((acc: {[id: string]: Array<TicketRelationship>}, obj: TicketRelationship) => {
     	if (obj.ticketRelationshipTypeId in acc){
@@ -69,9 +72,22 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
     	return acc
     }, {}) : {}
 
+    // calculate percentages for the epic progress bar based on the amount of statuses with the is_completed flag
 	const childEpicTickets = isEpicParent ? ticketRelationships?.filter((ticketRelationship) => {
     	return ticketRelationship.ticketRelationshipTypeId === epicTicketRelationshipType?.id && ticketRelationship.parentTicketId === currentTicketId 
     }) : []
+	const isCompletedChildTickets = isEpicParent ? childEpicTickets.filter((ticketRelationship) => {
+		const t = tickets?.data?.find((ticket) => ticket.id === ticketRelationship.childTicketId)
+		if (t){
+			return isCompletedStatusIds.includes(t.statusId)
+		}
+		return false
+	}) : []
+	const percentages: Array<ProgressBarPercentage> = isEpicParent ? [
+		{className: "tw-bg-primary", label: "Not Completed", value: ((childEpicTickets.length - isCompletedChildTickets.length) / childEpicTickets.length) * 100},
+		{className: "tw-bg-success", label: "Completed", value: (isCompletedChildTickets.length / childEpicTickets.length) * 100},
+	] : []
+
 	const defaultForm = {
 		parentTicketId: currentTicketId,
 		childTicketId: "",
@@ -211,6 +227,11 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 									})
 								}
 							</div>
+							{
+								childEpicTickets?.length ? (
+									<ProgressBar percentages={percentages}/>
+								) : <div></div>
+							}
 						</div>
 					)
 				}

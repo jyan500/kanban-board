@@ -74,6 +74,7 @@ export interface Status {
 	name: string
 	order: number
 	organizationId: number
+	isCompleted: boolean
 }
 
 export interface CustomError {
@@ -119,4 +120,10 @@ export interface ListResponse<T> {
 export interface OptionType {
 	label: string
 	value: string
+}
+
+export interface ProgressBarPercentage {
+	className: string
+	value: number
+	label: string
 }
