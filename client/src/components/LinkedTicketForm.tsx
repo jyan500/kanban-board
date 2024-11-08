@@ -37,9 +37,10 @@ type Props = {
 	setShowAddLinkedIssue: (val: boolean) => void
 	isEpicParent?: boolean
 	isModal?: boolean
+	percentageCompleted?: number
 }
 
-export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAddLinkedIssue, setShowAddLinkedIssue, ticketRelationships}: Props) => {
+export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAddLinkedIssue, setShowAddLinkedIssue, ticketRelationships, percentageCompleted}: Props) => {
 	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 	const { showModal } = useAppSelector((state) => state.modal) 
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
@@ -73,20 +74,13 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
     	return acc
     }, {}) : {}
 
-    // calculate percentages for the epic progress bar based on the amount of statuses with the is_completed flag
 	const childEpicTickets = isEpicParent ? ticketRelationships?.filter((ticketRelationship) => {
     	return ticketRelationship.ticketRelationshipTypeId === epicTicketRelationshipType?.id && ticketRelationship.parentTicketId === currentTicketId 
     }) : []
-	const isCompletedChildTickets = isEpicParent ? childEpicTickets.filter((ticketRelationship) => {
-		const t = tickets?.data?.find((ticket) => ticket.id === ticketRelationship.childTicketId)
-		if (t){
-			return isCompletedStatusIds.includes(t.statusId)
-		}
-		return false
-	}) : []
+
 	const percentages: Array<ProgressBarPercentage> = isEpicParent ? [
-		{className: "tw-bg-primary", label: "Not Completed", value: ((childEpicTickets.length - isCompletedChildTickets.length) / childEpicTickets.length) * 100},
-		{className: "tw-bg-success", label: "Completed", value: (isCompletedChildTickets.length / childEpicTickets.length) * 100},
+		{className: "tw-bg-primary", label: "Completed", value: percentageCompleted ?? 0},
+		{className: "tw-bg-secondary", label: "Not Completed", value: 100 - (percentageCompleted ?? 0)},
 	] : []
 
 	const defaultForm = {

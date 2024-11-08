@@ -115,6 +115,7 @@ export interface IPagination {
 export interface ListResponse<T> {
 	pagination: IPagination
 	data: Array<T>
+	additional?: Record<string, any>
 }
 
 export interface OptionType {
