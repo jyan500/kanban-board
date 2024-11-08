@@ -328,6 +328,7 @@ router.delete("/:ticketId/comment/:commentId", validateTicketCommentDelete, hand
 router.get("/:ticketId/relationship", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const epicTicketRelationshipType = await db("ticket_relationship_types").where("name", "Epic").first()
+		const isCompletedStatuses = await db("statuses").where("is_completed", true)
 		const relationships = await db("ticket_relationships")
 		.modify((queryBuilder) => {
 			if (req.query.isEpic === "true"){
@@ -345,8 +346,20 @@ router.get("/:ticketId/relationship", validateGet, handleValidationResult, async
 			"child_ticket_id as childTicketId",
 			"ticket_relationship_type_id as ticketRelationshipTypeId",
 		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		res.json(relationships)
-	}	
+		let total = relationships.pagination.total
+		let completedTickets = []
+		if (req.query.includeEpicPercentageCompletion){
+			// find amount of completed tasks
+			completedTickets = await db("ticket_relationships").join("tickets", "ticket_relationships.child_ticket_id", "=", "tickets.id").where("ticket_relationship_type_id", epicTicketRelationshipType?.id)
+			.where("parent_ticket_id", req.params.ticketId).whereIn("tickets.status_id", isCompletedStatuses.map((status)=>status.id))
+		}
+		res.json({
+			...relationships, 
+			additional: {
+				...(req.query.includeEpicPercentageCompletion ? {percentageCompleted: (completedTickets.length/total) * 100} : {})	
+			}
+		})	
+	}
 	catch (err) {
 		console.log(`Error while getting ticket relationships: ${err.message}`)
 		next(err)

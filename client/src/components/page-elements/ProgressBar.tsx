@@ -7,11 +7,12 @@ type Props = {
 
 export const ProgressBar = ({percentages}: Props) => {
 	return (
-		<div className = "tw-w-full tw-flex tw-flex-row">
+		// overflow-hidden must be added so the colored bars do not overflow on top of the rounded borders
+		<div className = "tw-mb-4 tw-rounded-md tw-overflow-hidden tw-bg-gray-100 tw-w-full tw-h-2.5 tw-flex tw-flex-row">
 			{percentages.map((percentage: ProgressBarPercentage, i: number) => {
 				if (percentage.value > 0){
 					return (
-						<div style={{width: `${percentage.value}%`}} className = {`${i === 0 ? "tw-rounded-l-md" : "tw-rounded-r-md"} tw-text-white tw-text-center tw-h-8 ${percentage.className}`}></div>
+						<div style={{width: `${percentage.value}%`}} className = {`tw-text-white tw-text-center ${percentage.className}`}></div>
 					)
 				}
 			})}	

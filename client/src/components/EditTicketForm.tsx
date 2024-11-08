@@ -62,7 +62,7 @@ export const EditTicketForm = ({isModal, ticket, statusesToDisplay}: Props) => {
 		{ticketId: currentTicketId, params: {page: linkedTicketPage, isEpic: false}} : skipToken
 	)
 	const { data: epicTicketRelationships, isLoading: isEpicTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
-		{ticketId: currentTicketId, params: {page: epicTicketPage, isEpic: true}} : skipToken
+		{ticketId: currentTicketId, params: {page: epicTicketPage, includeEpicPercentageCompletion: true, isEpic: true}} : skipToken
 	)
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
@@ -415,20 +415,21 @@ export const EditTicketForm = ({isModal, ticket, statusesToDisplay}: Props) => {
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							{ticket?.ticketTypeId === epicTicketType?.id ? (
 								<>
-									<strong>Epic Tickets</strong>
-									<LinkedTicketForm isModal={isModal} currentTicketId={currentTicketId} isEpicParent={true} showAddLinkedIssue={showAddToEpic} setShowAddLinkedIssue={setShowAddToEpic} ticketRelationships={epicTicketRelationships?.data?.length ? epicTicketRelationships.data : []}/>
-									<PaginationRow
-										showNumResults={false}
-										showPageNums={false}
-										setPage={(page: number) => { setEpicTicketPage(page)}}	
-										paginationData={epicTicketRelationships?.pagination}
-										currentPage={epicTicketPage}
-									/>
+									<div className = "tw-flex tw-flex-row tw-justify-between">
+										<strong>Epic Tickets</strong>
+										<PaginationRow
+											showNumResults={false}
+											showPageNums={false}
+											setPage={(page: number) => { setEpicTicketPage(page)}}	
+											paginationData={epicTicketRelationships?.pagination}
+											currentPage={epicTicketPage}
+										/>
+									</div>
+									<LinkedTicketForm percentageCompleted={epicTicketRelationships?.additional?.percentageCompleted} isModal={isModal} currentTicketId={currentTicketId} isEpicParent={true} showAddLinkedIssue={showAddToEpic} setShowAddLinkedIssue={setShowAddToEpic} ticketRelationships={epicTicketRelationships?.data?.length ? epicTicketRelationships.data : []}/>
 								</>
 							) : null
 							}
 							<strong>Linked Issues</strong>	
-							<LinkedTicketForm currentTicketId={currentTicketId} showAddLinkedIssue={showAddLinkedIssue} setShowAddLinkedIssue={setShowAddLinkedIssue} ticketRelationships={ticketRelationships?.data?.length ? ticketRelationships.data : []}/>
 							<PaginationRow
 								showNumResults={false}
 								showPageNums={false}
@@ -436,6 +437,7 @@ export const EditTicketForm = ({isModal, ticket, statusesToDisplay}: Props) => {
 								paginationData={ticketRelationships?.pagination}
 								currentPage={linkedTicketPage}
 							/>
+							<LinkedTicketForm currentTicketId={currentTicketId} showAddLinkedIssue={showAddLinkedIssue} setShowAddLinkedIssue={setShowAddLinkedIssue} ticketRelationships={ticketRelationships?.data?.length ? ticketRelationships.data : []}/>
 						</div> : null
 					) : <LoadingSpinner/>}
 				</div>
