@@ -189,6 +189,7 @@ input::file-selector-button {
 	& + &,
 	& + input,
 	& + select,
+	& + div,
 	& + button,
 	& + textarea {
 		margin-top: var(--margin-label);	

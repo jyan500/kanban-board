@@ -27,7 +27,7 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const methods = useFormContext()
 	const searchOptions = {"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}
-	const {register, reset, getValues, formState: {errors}} = methods
+	const {register, reset, getValues, control, formState: {errors}} = methods
 
 	return (
 		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">

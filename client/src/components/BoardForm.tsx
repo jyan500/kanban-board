@@ -128,31 +128,25 @@ export const BoardForm = () => {
     }
 
 	return (
-		<div className = "container">
+		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<form>
-				<div className = "form-row">
-					<div className = "form-cell">
-						<label htmlFor = "board-name">Name</label>
-						<input id = "board-name" type = "text"
-						{...register("name", registerOptions.name)}
-						/>
-				        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
-					</div>
+				<div className = "tw-flex tw-flex-col">
+					<label className = "label" htmlFor = "board-name">Name</label>
+					<input id = "board-name" type = "text"
+					{...register("name", registerOptions.name)}
+					/>
+			        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 				</div>
+				<div className = "tw-flex tw-flex-col">
 				{ !isStatusDataLoading ? (statuses.map((status) => (
-					<div key = {status.id} className="form-row">
-						<div className = "form-cell">
-							<input id = {`board-status-${status.id}`} checked = {formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
-						</div>
-						<div className = "form-cell">
-							<label htmlFor = {`board-status-${status.id}`}>{status.name}</label>
-						</div>
+					<div key = {status.id} className="tw-flex tw-flex-row tw-gap-x-2 tw-py-2">
+						<input id = {`board-status-${status.id}`} checked = {formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
+						<label htmlFor = {`board-status-${status.id}`}>{status.name}</label>
 					</div>
 				))) : <LoadingSpinner/>}
-				<div className = "form-row">
-					<div className = "btn-group">
-						<button onClick={handleSubmit(onSubmit)} className = "btn">Submit</button>
-					</div>
+				</div>
+				<div className = "tw-flex tw-flex-col">
+					<button onClick={handleSubmit(onSubmit)} className = "button">Submit</button>
 				</div>
 			</form>
 		</div>

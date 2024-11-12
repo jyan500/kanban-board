@@ -11,14 +11,7 @@ export const BoardDisplay = () => {
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 
-	const {data: boardData } = useGetBoardsQuery({lastModified: true, numTickets: true, assignees: true})
 	const dispatch = useAppDispatch()
-
-	useEffect(() => {
-		if (boardData?.length){
-			dispatch(setBoardInfo({boardInfo: boardData}))
-		}
-	}, [boardData])
 
 	return (
 		<div>

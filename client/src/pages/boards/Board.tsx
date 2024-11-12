@@ -17,7 +17,7 @@ export const Board = () => {
 	const navigate = useNavigate()
 	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
-	const {data: boardData, isLoading: isGetBoardLoading } = useGetBoardQuery(boardId ?? skipToken)
+	const {data: boardData, isLoading: isGetBoardLoading } = useGetBoardQuery(boardId ? {id: boardId, urlParams: {assignees: true}} : skipToken)
 	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading } = useGetBoardTicketsQuery(boardId ? {id: boardId, urlParams: {"includeRelationshipInfo": true}} : skipToken)
 	const {data: statusData, isLoading: isGetBoardStatusesLoading } = useGetBoardStatusesQuery(boardId ?? skipToken)
 	const board = useAppSelector((state) => state.board)
