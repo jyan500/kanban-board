@@ -33,7 +33,6 @@ export const ToolBar = () => {
 	}
 
 	// const debouncedSearchTerm = useDebouncedValue(value, 300)
-	// const boardInfo = allBoards.find((board) => board.id === primaryBoardInfo?.id)
 
 	// useEffect(() => {
 	// 	if (value === ""){
