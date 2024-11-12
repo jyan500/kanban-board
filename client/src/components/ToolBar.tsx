@@ -8,6 +8,7 @@ import { prioritySort as sortByPriority } from "../helpers/functions"
 import { useForm, FormProvider } from "react-hook-form"
 import { useDebouncedValue } from "../hooks/useDebouncedValue" 
 import { OverlappingRow } from "./OverlappingRow" 
+import { Board } from "../types/common"
 
 type FormValues = {
 	query: string	
@@ -15,7 +16,6 @@ type FormValues = {
 
 export const ToolBar = () => {
 	const dispatch = useAppDispatch()
-	const { boardInfo: allBoards } = useAppSelector((state) => state.boardInfo)
 	const { board, boardInfo: primaryBoardInfo, tickets } = useAppSelector((state) => state.board)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -33,7 +33,7 @@ export const ToolBar = () => {
 	}
 
 	// const debouncedSearchTerm = useDebouncedValue(value, 300)
-	const boardInfo = allBoards.find((board) => board.id === primaryBoardInfo?.id)
+	// const boardInfo = allBoards.find((board) => board.id === primaryBoardInfo?.id)
 
 	// useEffect(() => {
 	// 	if (value === ""){
@@ -75,8 +75,8 @@ export const ToolBar = () => {
 				</form>
 			</FormProvider>
 			<div>
-				{boardInfo?.assignees && boardInfo?.assignees?.length > 0 ? 
-					<OverlappingRow total={boardInfo?.assignees?.length}/>
+				{primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length > 0 ? 
+					<OverlappingRow total={primaryBoardInfo?.assignees?.length}/>
 					: null
 				}
 			</div>

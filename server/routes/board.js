@@ -22,6 +22,9 @@ router.get("/", async (req, res, next) => {
 		let resData;
 		const boards = await db("boards").where("organization_id", req.user.organization)
 		.modify((queryBuilder) => {
+			if (req.query.query){
+				queryBuilder.whereILike("name", req.query.query)
+			}
 			if (req.query.lastModified === "true"){
 				queryBuilder.leftJoin("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
 				.leftJoin("boards_to_statuses","boards_to_statuses.board_id", "=", "boards.id")
@@ -35,13 +38,14 @@ router.get("/", async (req, res, next) => {
 		})	
 		.select(
 			"boards.id as id", "boards.name as name", "boards.organization_id as organizationId"
-		)
+		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 
 		let boardAssignees;
 		let boardAssigneesRes = {}
 		if (req.query.assignees === "true"){
 			boardAssignees = await db("boards")
 			.where("organization_id", req.user.organization)
+			.whereIn("boards.id", boards.data.map((b) => b.id))
 			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
 			.join("tickets_to_users", "tickets_to_boards.ticket_id", "=", "tickets_to_users.ticket_id")
 			.groupBy("boards.id")
@@ -54,6 +58,7 @@ router.get("/", async (req, res, next) => {
 		let numTicketsRes = {}
 		if (req.query.numTickets === "true") {
 			numTickets = await db("boards").where("organization_id", req.user.organization)
+			.whereIn("boards.id", boards.data.map((b) => b.id))
 			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
 			.groupBy("tickets_to_boards.board_id")
 			.count("tickets_to_boards.ticket_id as numTickets")
@@ -62,7 +67,7 @@ router.get("/", async (req, res, next) => {
 		}
 
 		if (req.query.lastModified === "true" || req.query.assignees === "true" || req.query.numTickets === "true"){
-			resData = boards.map((board) => {
+			resData = boards.data.map((board) => {
 				let lastUpdated;
 				if (req.query.lastModified === "true"){
 					lastUpdated = new Date(Math.max(board.boardStatusesUpdatedAt, board.ticketsUpdatedAt, board.boardUpdatedAt))
@@ -81,6 +86,7 @@ router.get("/", async (req, res, next) => {
 				}
 				return boardRes
 			})
+			resData = {data: resData, pagination: boards.pagination}
 		}
 		else {
 			resData = boards
@@ -100,7 +106,31 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 			"boards.name as name",
 			"boards.organization_id as organizationId",
 		)
-		res.json(boards)
+		let boardAssignees;
+		let boardAssigneesRes = {}
+		if (req.query.assignees === "true"){
+			boardAssignees = await db("boards")
+			.where("organization_id", req.user.organization)
+			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
+			.join("tickets_to_users", "tickets_to_boards.ticket_id", "=", "tickets_to_users.ticket_id")
+			.groupBy("boards.id")
+			.groupBy("tickets_to_users.user_id")
+			.where("boards.id", req.params.boardId)
+			.select("boards.id as id", "tickets_to_users.user_id")
+			boardAssigneesRes = mapIdToRowAggregateArray(boardAssignees, "user_id")
+		}
+		const resData = boards.map((board) => {
+			let boardRes = {
+				id: board.id,
+				name: board.name,
+				organizationId: board.organizationId,
+			}
+			if (req.query.assignees === "true" && board.id in boardAssigneesRes){
+				boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : 0}
+			}	
+			return boardRes
+		})
+		res.json(resData)
 	}	
 	catch (err) {
 		console.log(`Error while getting Boards: ${err.message}`)	

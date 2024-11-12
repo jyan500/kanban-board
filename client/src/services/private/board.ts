@@ -7,7 +7,7 @@ import {
 	BOARD_STATUS_URL, 
 	BOARD_BULK_EDIT_STATUS_URL 
 } from "../../helpers/urls" 
-import { CustomError, Board, Status, Ticket } from "../../types/common" 
+import { CustomError, Board, ListResponse, Status, Ticket } from "../../types/common" 
 import { privateApi } from "../private"
 import { parseURLParams } from "../../helpers/functions" 
 
@@ -42,7 +42,7 @@ type BoardStatusResponse = {
 export const boardApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
-		getBoards: builder.query<Array<Board>, Record<string, any>>({
+		getBoards: builder.query<ListResponse<Board>, Record<string, any>>({
 			query: (urlParams) => ({
 				url: `${BOARD_URL}`,
 				method: "GET",
@@ -50,10 +50,11 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Boards"]
 		}),
-		getBoard: builder.query<Array<Board>, number>({
-			query: (id) => ({
+		getBoard: builder.query<Array<Board>, {id: number | string, urlParams: Record<string, any>}>({
+			query: ({id, urlParams}) => ({
 				url: `${BOARD_URL}/${id}`,
 				method: "GET",
+				params: urlParams
 			}),
 			providesTags: ["Boards"]
 		}),
