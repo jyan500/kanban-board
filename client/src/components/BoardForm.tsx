@@ -4,6 +4,7 @@ import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { 
 	useAddBoardMutation, 
+	useGetBoardQuery,
 	useUpdateBoardMutation, 
 	useBulkEditBoardStatusesMutation, 
 	useGetBoardStatusesQuery 
@@ -26,13 +27,14 @@ export const BoardForm = () => {
 		showModal
 	} = useAppSelector((state) => state.modal)
 	const { statuses } = useAppSelector((state) => state.status)
-	const { boardInfo, currentBoardId } = useAppSelector((state) => state.boardInfo)
+	const { currentBoardId } = useAppSelector((state) => state.boardInfo)
 	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
 	}
 	const [ addBoard ] = useAddBoardMutation() 
 	const [ updateBoard ] = useUpdateBoardMutation()
+	const { data: boardInfo, isLoading: isGetBoardDataLoading  } = useGetBoardQuery(currentBoardId ? {id: currentBoardId, urlParams: {}} : skipToken)
 	const { data: statusData, isLoading: isStatusDataLoading } = useGetBoardStatusesQuery(currentBoardId ?? skipToken)
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const [formStatuses, setFormStatuses] = useState<Array<Status>>([])
@@ -45,14 +47,13 @@ export const BoardForm = () => {
     }
 	useEffect(() => {
 		// initialize with current values if the board exists
-		if (currentBoardId){
-			let board = boardInfo.find((b: Board) => b.id === currentBoardId)
-			reset({id: board?.id, name: board?.name})
+		if (currentBoardId && boardInfo?.length){
+			reset({id: currentBoardId, name: boardInfo?.[0].name})
 		}
 		else {
 			reset(defaultForm)
 		}
-	}, [showModal, currentBoardId])
+	}, [showModal, boardInfo, currentBoardId])
 
 	useEffect(() => {
 		if (!isStatusDataLoading && statusData){
