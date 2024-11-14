@@ -8,6 +8,7 @@ const db = require("../db/db")
 const userValidator = require("../validation/user")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { body, validationResult } = require("express-validator")
+const { authenticateToken } = require("../middleware/authMiddleware")
 
 router.post("/login", userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
@@ -55,6 +56,27 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 	}
 	catch (err){
 		console.error(`Something went wrong when registering user: ${err}`)
+	}
+})
+
+router.post("/org-login", authenticateToken, async (req, res, next) => {
+	try {
+		const user = req.user
+		const userInOrganization = await db("organization_user_roles").where("organization_id", req.body.organization_id).where("user_id", user.id).first()
+		if (!userInOrganization){
+			res.status(400).json({errors: [error]})
+			return
+		}
+		const userRole = await db("user_roles").where("id", userInOrganization.user_role_id).first()
+		if (!userRole){
+			res.status(400).json({errors: [error]})
+			return
+		}
+		const token = jwt.sign({"id": user.id, "email": user.email, "organization": req.body.organization_id, "userRole": userRole.name}, process.env.SECRET_KEY, {expiresIn: "1d"})
+		res.json({message: "user switched organizations successfully!", token: token})
+	}	
+	catch (err) {
+		console.error(`Something went wrong while switching organizations: ${err}`)
 	}
 })
 
