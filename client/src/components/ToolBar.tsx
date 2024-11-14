@@ -83,7 +83,7 @@ export const ToolBar = () => {
 				<button className = "button" onClick = {() => {
 					dispatch(toggleShowModal(true))
 					dispatch(setModalType("ADD_TICKET_FORM"))
-					dispatch(setModalProps({statusesToDisplay: statusesToDisplay, boardId: board?.id}))
+					dispatch(setModalProps({statusesToDisplay: statusesToDisplay, boardId: primaryBoardInfo?.id}))
 				}}>Add Ticket</button>
 				{
 					isAdminOrUserRole ? (
