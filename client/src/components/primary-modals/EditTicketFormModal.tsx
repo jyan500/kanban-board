@@ -7,10 +7,11 @@ export const EditTicketFormModal = () => {
 	const {
 		tickets,
 		currentTicketId,
-		statusesToDisplay
+		statusesToDisplay,
+		boardInfo,
 	} = useAppSelector((state) => state.board)
 
 	return (
-		<EditTicketForm isModal={true} ticket={tickets.find((ticket: Ticket) => ticket.id === currentTicketId)} statusesToDisplay={statusesToDisplay}/>
+		<EditTicketForm boardId={boardInfo?.id} isModal={true} ticket={tickets.find((ticket: Ticket) => ticket.id === currentTicketId)} statusesToDisplay={statusesToDisplay}/>
 	)	
 }

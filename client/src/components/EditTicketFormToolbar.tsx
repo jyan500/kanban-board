@@ -10,9 +10,10 @@ import { Ticket } from "../types/common"
 
 type Props = {
 	ticket: Ticket | null | undefined	
+	boardId: number | string | null | undefined
 }
 
-export const EditTicketFormToolbar = ({ticket}: Props) => {
+export const EditTicketFormToolbar = ({ticket, boardId}: Props) => {
 	const { showModal } = useAppSelector((state) => state.modal)
 	const [showDropdown, setShowDropdown] = useState(false)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
@@ -45,7 +46,7 @@ export const EditTicketFormToolbar = ({ticket}: Props) => {
 					}} className = "--transparent tw-p-0"><MenuIcon className = "tw-ml-3 --l-icon"/></button>
 					{
 						showDropdown ? (
-							<EditTicketFormMenuDropdown ticket={ticket} ref = {menuDropdownRef}/>
+							<EditTicketFormMenuDropdown boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
 						) : null
 					}
 				</IconContext.Provider>
