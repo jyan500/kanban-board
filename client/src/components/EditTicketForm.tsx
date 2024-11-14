@@ -41,11 +41,12 @@ type EditFieldVisibility = {
 
 type Props = {
 	ticket: Ticket | null | undefined
+	boardId?: number | string | null | undefined
 	statusesToDisplay: Array<Status>
 	isModal?: boolean
 }
 
-export const EditTicketForm = ({isModal, ticket, statusesToDisplay}: Props) => {
+export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Props) => {
 	const dispatch = useAppDispatch()
 	const currentTicketId = ticket?.id
 	const { statuses } = useAppSelector((state) => state.status)
@@ -310,7 +311,7 @@ export const EditTicketForm = ({isModal, ticket, statusesToDisplay}: Props) => {
 							</div>
 						</div>
 						<div className = "tw-w-1/3">
-							<EditTicketFormToolbar ticket={ticket}/>
+							<EditTicketFormToolbar boardId={boardId} ticket={ticket}/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<select 
 								{...register("statusId", registerOptions.statusId)} 

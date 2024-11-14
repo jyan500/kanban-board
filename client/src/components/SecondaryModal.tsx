@@ -7,18 +7,23 @@ import { DeleteCommentWarning } from "./secondary-modals/DeleteCommentWarning"
 import { UnlinkTicketWarning } from "./secondary-modals/UnlinkTicketWarning"
 import { DeleteTicketWarning } from "./secondary-modals/DeleteTicketWarning" 
 import { AddToEpicFormModal } from "./secondary-modals/AddToEpicFormModal"
+import { MoveTicketFormModal } from "./secondary-modals/MoveTicketFormModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SECONDARY_MODAL_Z_INDEX } from "../helpers/constants"
+
+const avoidAsyncSelectMenuOverflow =  {"modal-container": "tw-top-[50%] --m-modal", "modal": "!tw-overflow-visible tw-min-h-96"}
 
 export const secondaryModalTypes = {
 	"SHOW_DELETE_COMMENT_WARNING": DeleteCommentWarning,
 	"SHOW_UNLINK_TICKET_WARNING": UnlinkTicketWarning,
 	"DELETE_TICKET_WARNING": DeleteTicketWarning,
-	"ADD_TO_EPIC_FORM_MODAL": AddToEpicFormModal
+	"ADD_TO_EPIC_FORM_MODAL": AddToEpicFormModal,
+	"MOVE_TICKET_FORM_MODAL": MoveTicketFormModal
 }
 
 export const secondaryModalClassNames = {
-	"ADD_TO_EPIC_FORM_MODAL": {"modal-container": "tw-top-[50%] --m-modal", "modal": "!tw-overflow-visible tw-min-h-96"},
+	"ADD_TO_EPIC_FORM_MODAL": avoidAsyncSelectMenuOverflow,
+	"MOVE_TICKET_FORM_MODAL": avoidAsyncSelectMenuOverflow,
 }
 
 export const SecondaryModal = () => {

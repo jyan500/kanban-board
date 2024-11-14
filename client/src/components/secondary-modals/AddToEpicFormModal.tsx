@@ -20,6 +20,7 @@ type FormValues = {
 export const AddToEpicFormModal = ({childTicketId}: Props) => {
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { ticketRelationshipTypes } = useAppSelector((state) => state.ticketRelationshipType)
+	const [cacheKey, setCacheKey] = useState(uuidv4())
 	const dispatch = useAppDispatch()
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	const epicTicketRelationshipType = ticketRelationshipTypes.find((ticketRelationshipType) => ticketRelationshipType.name === "Epic")
@@ -66,12 +67,15 @@ export const AddToEpicFormModal = ({childTicketId}: Props) => {
     		dispatch(addToast(defaultToast))
     	}
     	dispatch(toggleShowSecondaryModal(false))
+    	dispatch(setSecondaryModalType(undefined))
     	dispatch(setSecondaryModalProps({}))
+    	// flush cached options after submitting
+    	setCacheKey(uuidv4())
 	}
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
-			<p>Add To Epic</p>		
+			<p className = "tw-font-bold">Add To Epic</p>		
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
 				<Controller
 					name={"parentTicketId"}
@@ -79,6 +83,7 @@ export const AddToEpicFormModal = ({childTicketId}: Props) => {
 	                render={({ field: { onChange, value, name, ref } }) => (
 	                	<AsyncSelect 
 		                	endpoint={TICKET_URL} 
+		                	cacheKey={cacheKey}
 		                	className={"tw-w-64"}
 		                	urlParams={{childTicketId: childTicketId, excludeAddedEpicParent: true, searchBy: "title", ticketType: epicTicketType?.id}} 
 		                	onSelect={(selectedOption: {label: string, value: string} | null) => {

@@ -6,9 +6,10 @@ import { Ticket } from "../types/common"
 
 type Props = {
 	ticket: Ticket | null | undefined
+	boardId: string | number | null | undefined
 }
 
-export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticket}: Props, ref) => {
+export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({boardId, ticket}: Props, ref) => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -18,7 +19,11 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 	const isTicketReporter = userRole && userRole === "USER" && ticket?.userId === userProfile?.id
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	let options = {
-		"Move": () => console.log("Clicked move"),
+		"Move": () => {
+			dispatch(toggleShowSecondaryModal(true))
+			dispatch(setSecondaryModalType("MOVE_TICKET_FORM_MODAL"))
+			dispatch(setSecondaryModalProps({"boardId": boardId, "ticketId": ticket?.id}))
+		},
 		"Clone": () => console.log("Clicked clone"),
 		// if it's an epic, do not show this button
 		...(epicTicketType?.id !== ticket?.ticketTypeId ? {"Add to Epic": () => {
