@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { SearchBar } from "./SearchBar" 
 import "../styles/toolbar.css"
 import { setBoard, setFilteredTickets } from "../slices/boardSlice" 
-import { toggleShowModal, setModalType } from "../slices/modalSlice" 
+import { toggleShowModal, setModalProps, setModalType } from "../slices/modalSlice" 
 import { prioritySort as sortByPriority } from "../helpers/functions"
 import { useForm, FormProvider } from "react-hook-form"
 import { useDebouncedValue } from "../hooks/useDebouncedValue" 
@@ -16,7 +16,7 @@ type FormValues = {
 
 export const ToolBar = () => {
 	const dispatch = useAppDispatch()
-	const { board, boardInfo: primaryBoardInfo, tickets } = useAppSelector((state) => state.board)
+	const { board, boardInfo: primaryBoardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
@@ -83,6 +83,7 @@ export const ToolBar = () => {
 				<button className = "button" onClick = {() => {
 					dispatch(toggleShowModal(true))
 					dispatch(setModalType("ADD_TICKET_FORM"))
+					dispatch(setModalProps({statusesToDisplay: statusesToDisplay, boardId: board?.id}))
 				}}>Add Ticket</button>
 				{
 					isAdminOrUserRole ? (

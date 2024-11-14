@@ -2,8 +2,8 @@ import React, {ReactNode} from "react"
 import { IoMdClose } from "react-icons/io";
 import "../styles/modal.css"
 import { selectCurrentTicketId } from "../slices/boardSlice"
-import { toggleShowModal } from "../slices/modalSlice" 
-import { AddTicketForm } from "./AddTicketForm" 
+import { setModalType, setModalProps, toggleShowModal } from "../slices/modalSlice" 
+import { AddTicketFormModal } from "./primary-modals/AddTicketFormModal" 
 import { EditTicketFormModal } from "./primary-modals/EditTicketFormModal" 
 import { StatusForm } from "./StatusForm" 
 import { BoardForm } from "./BoardForm" 
@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { PRIMARY_MODAL_Z_INDEX } from "../helpers/constants"
 
 export const modalTypes = {
-	"ADD_TICKET_FORM": AddTicketForm,
+	"ADD_TICKET_FORM": AddTicketFormModal,
 	"EDIT_TICKET_FORM": EditTicketFormModal,
 	"STATUS_FORM": StatusForm,
 	"BOARD_FORM": BoardForm,
@@ -27,20 +27,24 @@ type PartialKeys<T> = Partial<{ [K in keyof T]: Record<string, any>}>
 
 export const Modal = () => {
 	const dispatch = useAppDispatch()
-	const { currentModalType, showModal }  = useAppSelector((state) => state.modal)
-	const ModalContent = modalTypes[currentModalType as keyof typeof modalTypes] 
+	const { currentModalType, showModal, currentModalProps }  = useAppSelector((state) => state.modal)
+	const ModalContent = modalTypes[currentModalType as keyof typeof modalTypes] as React.FC 
 
 	// define modal handlers type as the partial subset of all keys of modal types
 	const modalHandlers: PartialKeys<typeof modalTypes> = {
 		"ADD_TICKET_FORM": {
 			dismissHandler: () => {
 				dispatch(toggleShowModal(false))
+				dispatch(setModalType(undefined))
+				dispatch(setModalProps({}))
 				dispatch(selectCurrentTicketId(null))
 			}
 		},
 		"EDIT_TICKET_FORM": {
 			dismissHandler: () => {
 				dispatch(toggleShowModal(false))
+				dispatch(setModalType(undefined))
+				dispatch(setModalProps({}))
 				dispatch(selectCurrentTicketId(null))
 			}
 		},
@@ -48,16 +52,18 @@ export const Modal = () => {
 
 	return (
 		<div className = {`${PRIMARY_MODAL_Z_INDEX} overlay ${showModal ? "--visible": "--hidden"}`}>
-			<div className = {`${currentModalType in modalClassNames ? modalClassNames[currentModalType as keyof typeof modalClassNames] : "tw-top-[30%]"} modal-container`}>
+			<div className = {`${currentModalType && currentModalType in modalClassNames ? modalClassNames[currentModalType as keyof typeof modalClassNames] : "tw-top-[30%]"} modal-container`}>
 				<button 
 				className = "__modal-container-close --transparent"
 				onClick={
 					() => {
-						if (modalHandlers[currentModalType as keyof typeof modalHandlers]?.dismissHandler){
+						if (currentModalType && modalHandlers[currentModalType as keyof typeof modalHandlers]?.dismissHandler){
 							modalHandlers[currentModalType as keyof typeof modalHandlers]?.dismissHandler()
 						}
 						else {
 							dispatch(toggleShowModal(false))
+							dispatch(setModalType(undefined))
+							dispatch(setModalProps({}))
 						}
 					}
 				}
@@ -67,7 +73,7 @@ export const Modal = () => {
 				<div className = "modal">
 					<div className = "modal-content">
 						{
-							ModalContent ? <ModalContent/> : null
+							ModalContent ? <ModalContent {...currentModalProps} /> : null
 						}
 					</div>
 				</div>

@@ -97,10 +97,12 @@ export const MoveTicketFormModal = ({boardId: currentBoardId, ticketId}: Props) 
 		                />
 	                )}
 				/>
-				<div className = "tw-flex tw-flex-row tw-gap-x-2">
-					<input id = "should-unlink" type = "checkbox" {...register("shouldUnlink")}/>
-					<label className = "label" htmlFor="should-unlink">Unlink from current board</label>	
-				</div>
+				{currentBoardId ? (
+					<div className = "tw-flex tw-flex-row tw-gap-x-2">
+						<input id = "should-unlink" type = "checkbox" {...register("shouldUnlink")}/>
+						<label className = "label" htmlFor="should-unlink">Unlink from current board</label>	
+					</div>
+				) : null}
 				<button className = "button">Submit</button>
 			</form>
 		</div>

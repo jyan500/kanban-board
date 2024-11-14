@@ -6,13 +6,13 @@ import { logout } from "./authSlice"
 
 interface ModalState {
 	showModal: boolean
-	currentModalType: keyof typeof modalTypes
+	currentModalType: keyof typeof modalTypes | undefined
 	currentModalProps: Record<string, any>
 }
 
 const initialState: ModalState = {
 	showModal: false,
-	currentModalType: "ADD_TICKET_FORM",
+	currentModalType: undefined,
 	currentModalProps: {},
 }
 
@@ -23,7 +23,7 @@ export const modalSlice = createSlice({
 		toggleShowModal(state, action: PayloadAction<boolean>){
 			state.showModal = action.payload
 		},
-		setModalType(state, action: PayloadAction<keyof typeof modalTypes>){
+		setModalType(state, action: PayloadAction<keyof typeof modalTypes | undefined>){
 			state.currentModalType = action.payload	
 		},
 		setModalProps(state, action: PayloadAction<Record<string, any>>){
