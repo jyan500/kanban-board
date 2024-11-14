@@ -9,10 +9,7 @@ import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../ser
 import { 
 	useAddTicketMutation, 
 	useDeleteTicketMutation, 
-	useUpdateTicketMutation,
 	useBulkEditTicketAssigneesMutation,
-	useGetTicketAssigneesQuery,
-	useGetTicketQuery,
 } 
 from "../services/private/ticket"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"

@@ -10,9 +10,6 @@ type Props = {
 }
 
 export const AddTicketFormModal = ({boardId, ticket, statusesToDisplay}: Props) => {
-	console.log('add ticket form modal')
-	console.log("boardId: ", boardId)
-	console.log("statusesToDisplay: ", statusesToDisplay)
 	return (
 		<AddTicketForm boardId={boardId} ticket={ticket} statusesToDisplay={statusesToDisplay}/>
 	)	
