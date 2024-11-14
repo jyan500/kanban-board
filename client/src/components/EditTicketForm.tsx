@@ -311,7 +311,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							</div>
 						</div>
 						<div className = "tw-w-1/3">
-							<EditTicketFormToolbar boardId={boardId} ticket={ticket}/>
+							<EditTicketFormToolbar statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket}/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<select 
 								{...register("statusId", registerOptions.statusId)} 

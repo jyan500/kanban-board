@@ -1,17 +1,19 @@
 import React, {useState, useEffect} from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { AddTicketForm } from "../AddTicketForm"
-import { Ticket } from "../../types/common"
+import { Ticket, Status } from "../../types/common"
 
-export const AddTicketFormModal = () => {
-	const {
-		tickets,
-		currentTicketId,
-		statusesToDisplay,
-		boardInfo,
-	} = useAppSelector((state) => state.board)
+type Props = {
+	statusesToDisplay?: Array<Status>
+	ticket?: Ticket | null | undefined
+	boardId?: number | null | undefined
+}
 
+export const AddTicketFormModal = ({boardId, ticket, statusesToDisplay}: Props) => {
+	console.log('add ticket form modal')
+	console.log("boardId: ", boardId)
+	console.log("statusesToDisplay: ", statusesToDisplay)
 	return (
-		<AddTicketForm boardId={boardInfo?.id} ticket={tickets.find((ticket: Ticket) => ticket.id === currentTicketId)} statusesToDisplay={statusesToDisplay}/>
+		<AddTicketForm boardId={boardId} ticket={ticket} statusesToDisplay={statusesToDisplay}/>
 	)	
 }

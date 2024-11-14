@@ -6,14 +6,15 @@ import { IoMdEye as WatchIcon } from "react-icons/io";
 import { BsThreeDots as MenuIcon } from "react-icons/bs";
 import { FiShare2 as ShareIcon } from "react-icons/fi";
 import { useClickOutside } from "../hooks/useClickOutside" 
-import { Ticket } from "../types/common"
+import { Ticket, Status } from "../types/common"
 
 type Props = {
 	ticket: Ticket | null | undefined	
 	boardId: number | string | null | undefined
+	statusesToDisplay: Array<Status>
 }
 
-export const EditTicketFormToolbar = ({ticket, boardId}: Props) => {
+export const EditTicketFormToolbar = ({statusesToDisplay, ticket, boardId}: Props) => {
 	const { showModal } = useAppSelector((state) => state.modal)
 	const [showDropdown, setShowDropdown] = useState(false)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
@@ -46,7 +47,7 @@ export const EditTicketFormToolbar = ({ticket, boardId}: Props) => {
 					}} className = "--transparent tw-p-0"><MenuIcon className = "tw-ml-3 --l-icon"/></button>
 					{
 						showDropdown ? (
-							<EditTicketFormMenuDropdown boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
+							<EditTicketFormMenuDropdown statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
 						) : null
 					}
 				</IconContext.Provider>

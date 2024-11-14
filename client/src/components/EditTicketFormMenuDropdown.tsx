@@ -2,14 +2,15 @@ import React, { useRef } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { Dropdown } from "./Dropdown" 
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../slices/secondaryModalSlice" 
-import { Ticket } from "../types/common"
+import { Ticket, Status } from "../types/common"
 
 type Props = {
 	ticket: Ticket | null | undefined
 	boardId: string | number | null | undefined
+	statusesToDisplay: Array<Status>
 }
 
-export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({boardId, ticket}: Props, ref) => {
+export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({statusesToDisplay, boardId, ticket}: Props, ref) => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -24,7 +25,11 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 			dispatch(setSecondaryModalType("MOVE_TICKET_FORM_MODAL"))
 			dispatch(setSecondaryModalProps({"boardId": boardId, "ticketId": ticket?.id}))
 		},
-		"Clone": () => console.log("Clicked clone"),
+		"Clone": () => {
+			dispatch(toggleShowSecondaryModal(true))
+			dispatch(setSecondaryModalType("CLONE_TICKET_FORM_MODAL"))
+			dispatch(setSecondaryModalProps({"statusesToDisplay": statusesToDisplay, "boardId": boardId, "ticket": ticket}))
+		},
 		// if it's an epic, do not show this button
 		...(epicTicketType?.id !== ticket?.ticketTypeId ? {"Add to Epic": () => {
 			dispatch(toggleShowSecondaryModal(true))

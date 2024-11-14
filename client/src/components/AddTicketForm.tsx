@@ -15,6 +15,7 @@ import {
 	useGetTicketQuery,
 } 
 from "../services/private/ticket"
+import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { addToast } from "../slices/toastSlice" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSpinner } from "./LoadingSpinner"
@@ -46,12 +47,8 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
-	const {
-		showModal
-	} = useAppSelector((state) => state.modal)
 	// only run query if currentTicketId is not null, otherwise it will pass in the skipToken,
 	// which notifies RTK query to skip this 
-	// const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ?? skipToken)
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const [ addTicket, {isLoading: isAddTicketLoading, error: isAddTicketError} ] = useAddTicketMutation() 
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
@@ -87,43 +84,36 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	useEffect(() => {
 		// initialize with current values if the ticket exists
 		if (ticket){
-			reset(ticket)
+			reset({
+				...ticket, 
+				id: undefined,
+				userId: 0
+			})
 		}
 		else {
 			reset(defaultForm)
 		}
-	}, [showModal, ticket])
+	}, [ticket])
 
     const onSubmit = async (values: FormValues) => {
     	try {
-    		// update existing ticket
-    		if (values.id != null){
-    			await updateTicket({...values, id: values.id}).unwrap()
-    			// update ticket assignees
-    			// TODO: need to update this line to include all userIds if allowing multiple 
-    			// assignees per ticket
-    			if (values.userId){
-	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [values.userId]}).unwrap()
-    			}
-    		}
-    		// add new ticket
-    		else {
-		    	const data = await addTicket(values).unwrap()
-		    	if (boardId){
-			    	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()
-		    	}
-		    	// update ticket assignees
-		    	if (values.userId){
-		    		await bulkEditTicketAssignees({ticketId: data.id, userIds: [values.userId]}).unwrap()
-		    	}
-    		}
+	    	const data = await addTicket(values).unwrap()
+	    	if (boardId){
+		    	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()
+	    	}
+	    	// update ticket assignees
+	    	if (values.userId){
+	    		await bulkEditTicketAssignees({ticketId: data.id, userIds: [values.userId]}).unwrap()
+	    	}
 			dispatch(toggleShowModal(false))
-			dispatch(selectCurrentTicketId(null))
+			dispatch(toggleShowSecondaryModal(false))
+			dispatch(setSecondaryModalProps({}))
+			dispatch(setSecondaryModalType(undefined))
     		dispatch(addToast({
     			id: uuidv4(),
     			type: "success",
     			animationType: "animation-in",
-    			message: `Ticket ${values.id != null ? "updated" : "added"} successfully!`,
+    			message: `Ticket added successfully!`,
     		}))
     	}
     	catch (e) { 
@@ -133,31 +123,6 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
     			animationType: "animation-in",
     			message: "Failed to submit ticket",
     		}))
-    	}
-    }
-
-    const onDelete = async () => {
-    	if (ticket && boardId){
-	    	try {
-		    	await deleteBoardTicket({boardId: boardId, ticketId: ticket?.id}).unwrap()
-		    	await deleteTicket(ticket?.id).unwrap()
-				dispatch(toggleShowModal(false))
-				dispatch(selectCurrentTicketId(null))
-	    		dispatch(addToast({
-	    			id: uuidv4(),
-	    			type: "success",
-	    			animationType: "animation-in",
-	    			message: "Ticket deleted successfully!",
-	    		}))
-	    	}
-	    	catch (e) {
-	    		dispatch(addToast({
-	    			id: uuidv4(),
-	    			type: "failure",
-	    			animationType: "animation-in",
-	    			message: "Failed to delete ticket",
-	    		}))
-	    	}
     	}
     }
 
@@ -229,22 +194,6 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 					</div>
 					<div>
 						<LoadingButton onClick={handleSubmit(onSubmit)} className = "button" text={"Submit"}></LoadingButton>
-						{
-							ticket ? (
-								<>
-								{/*	<button onClick={
-										(e) => {
-											e.preventDefault()
-											onDelete()
-										}
-									} className = "btn --alert">Delete</button>*/}
-									<LoadingButton className = "button --alert" text={"Delete"} onClick={(e) => {
-										e.preventDefault()
-										onDelete()
-									}}/>
-								</>
-							) : null
-						}
 					</div>
 				</div>
 			</form>

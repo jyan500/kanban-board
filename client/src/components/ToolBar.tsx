@@ -16,7 +16,7 @@ type FormValues = {
 
 export const ToolBar = () => {
 	const dispatch = useAppDispatch()
-	const { board, boardInfo: primaryBoardInfo, tickets } = useAppSelector((state) => state.board)
+	const { board, boardInfo: primaryBoardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
@@ -83,7 +83,7 @@ export const ToolBar = () => {
 				<button className = "button" onClick = {() => {
 					dispatch(toggleShowModal(true))
 					dispatch(setModalType("ADD_TICKET_FORM"))
-					dispatch(setModalProps({boardId: board?.id}))
+					dispatch(setModalProps({statusesToDisplay: statusesToDisplay, boardId: board?.id}))
 				}}>Add Ticket</button>
 				{
 					isAdminOrUserRole ? (
