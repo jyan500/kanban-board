@@ -1,6 +1,6 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../../store" 
-import { BACKEND_BASE_URL, USER_PROFILE_URL, ORG_LOGIN_URL } from "../../helpers/urls" 
+import { BACKEND_BASE_URL, USER_PROFILE_URL, USER_PROFILE_ORG_URL, ORG_LOGIN_URL } from "../../helpers/urls" 
 import { CustomError, ListResponse, Organization, UserProfile } from "../../types/common" 
 import { privateApi } from "../private"
 import { UserResponse } from "../public/auth"
@@ -22,7 +22,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 		}),
 		getUserOrganizations: builder.query<ListResponse<Organization>, Record<string, any>>({
 			query: (urlParams) => ({
-				url: `${USER_PROFILE_URL}/organization`,
+				url: `${USER_PROFILE_ORG_URL}`,
 				method: "GET",
 				params: urlParams
 			})
