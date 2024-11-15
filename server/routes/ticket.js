@@ -88,6 +88,16 @@ router.get("/", async (req, res, next) => {
 					.whereNot("tickets.ticket_type_id", epicTicketType?.id)
 				}
 			}
+			if (req.query.assignedToUser){
+				queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
+				.join("users", "tickets_to_users.user_id", "=", "users.id")
+				.where("users.id", req.query.assignedToUser)
+			}
+			if (req.query.sortBy && req.query.order){
+				if (req.query.sortBy === "createdAt"){
+					queryBuilder.orderBy("tickets.created_at", req.query.order)
+				}	
+			}
 		})
 		// hack to keep the tickets paginate data format into {data, pagination},
 		// which finds the total amount of data and 
