@@ -1,8 +1,9 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../../store" 
-import { BACKEND_BASE_URL, USER_PROFILE_URL } from "../../helpers/urls" 
-import { CustomError, UserProfile } from "../../types/common" 
+import { BACKEND_BASE_URL, USER_PROFILE_URL, ORG_LOGIN_URL } from "../../helpers/urls" 
+import { CustomError, ListResponse, Organization, UserProfile } from "../../types/common" 
 import { privateApi } from "../private"
+import { UserResponse } from "../public/auth"
 
 export const userProfileApi = privateApi.injectEndpoints({
 	overrideExisting: false,
@@ -18,8 +19,27 @@ export const userProfileApi = privateApi.injectEndpoints({
 				url: USER_PROFILE_URL,	
 				method: "GET",
 			})
-		})
+		}),
+		getUserOrganizations: builder.query<ListResponse<Organization>, Record<string, any>>({
+			query: (urlParams) => ({
+				url: `${USER_PROFILE_URL}/organization`,
+				method: "GET",
+				params: urlParams
+			})
+		}),
+		switchUserOrganization: builder.mutation<UserResponse, {organizationId: number}>({
+			query: ({organizationId}) => ({
+				url: ORG_LOGIN_URL,	
+				method: "POST",
+				body: {organization_id: organizationId}
+			})	
+		})	
 	}),
 })
 
-export const { useGetUserProfileQuery, useGetUserProfilesQuery } = userProfileApi 
+export const { 
+	useGetUserProfileQuery, 
+	useGetUserProfilesQuery, 
+	useGetUserOrganizationsQuery, 
+	useSwitchUserOrganizationMutation 
+} = userProfileApi 

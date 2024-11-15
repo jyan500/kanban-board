@@ -28,6 +28,26 @@ router.get("/me", async (req, res, next) => {
 	}
 })
 
+router.get("/organization", async (req, res, next) => {
+	try {
+		const {id: userId, organization: organizationId} = req.user
+		const organizations = await db("organization_user_roles")
+		.join("organizations", "organizations.id", "=", "organization_user_roles.organization_id")
+		.where("organization_user_roles.user_id", userId)
+		// exclude the currently logged in organization
+		.whereNot("organizations.id", organizationId)
+		.select(
+			"organizations.id as id",
+			"organizations.name",
+		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		res.json(organizations)
+	}	
+	catch (err) {
+		console.log(`Error while getting organizations: ${err.message}`)	
+		next(err)
+	}
+})
+
 router.get("/", async (req, res, next) => {
 	try {
 		// pulled from token middleware 

@@ -12,10 +12,12 @@ import { useGetTicketTypesQuery } from "../services/private/ticketType"
 import { useGetTicketRelationshipTypesQuery } from "../services/private/ticketRelationshipType"
 import { useGetPrioritiesQuery } from "../services/private/priority" 
 import { useGetUserRolesQuery } from "../services/private/userRole" 
+import { useGetOrganizationQuery } from "../services/public/organization"
 import { setUserProfile, setUserProfiles } from "../slices/userProfileSlice" 
 import { setUserRoles, setUserRoleLookup } from "../slices/userRoleSlice" 
 import { setStatuses } from "../slices/statusSlice" 
 import { setTicketTypes } from "../slices/ticketTypeSlice" 
+import { setOrganization } from "../slices/organizationSlice"
 import { setTicketRelationshipTypes } from "../slices/ticketRelationshipTypeSlice"
 import { setPriorities } from "../slices/prioritySlice"
 import { UserRole } from "../types/common" 
@@ -28,6 +30,7 @@ const ProtectedLayout = () => {
     const {data: statusData} = useGetStatusesQuery()
     const {data: ticketTypesData} = useGetTicketTypesQuery()
     const {data: ticketRelationshipTypeData} = useGetTicketRelationshipTypesQuery()
+    const {data: organizationsData } = useGetOrganizationQuery()
     const {data: priorityData} = useGetPrioritiesQuery()
     const {data: userRoleData } = useGetUserRolesQuery()
     const gutter = {margin: "var(--s-spacing)"}
@@ -62,8 +65,11 @@ const ProtectedLayout = () => {
 	        	}, {})
 	        	dispatch(setUserRoleLookup(userRoleLookup))
 	        }
+	        if (organizationsData){
+	        	dispatch(setOrganization({organizations: organizationsData}))	
+	        }
         }
-    }, [userProfileData, ticketTypesData, statusData, priorityData]);
+    }, [userProfileData, ticketTypesData, statusData, priorityData, organizationsData]);
 
 	if (!token){
 		return <Navigate replace to = {"/login"} state={{alert: "You have been logged out"}}/>

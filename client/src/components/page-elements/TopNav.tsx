@@ -19,7 +19,6 @@ export const TopNav = ({isFetching}: Props) => {
 	const onLogout = () => {
 		dispatch(logout())
 		dispatch(privateApi.util.resetApiState())
-
 	}
 	return (
 		<div className = "tw-my-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
