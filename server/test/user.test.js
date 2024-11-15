@@ -115,6 +115,47 @@ describe("routes: user", function() {
 			let body = JSON.parse(loginRes.text)
 			assert.isNotNull(body.token)
 		})	
+		it("should switch organizations", async () => {
+			// register a user first
+			const res = await chai.request(app).post("/api/user/register").send({
+				first_name: "Jansen",
+				last_name: "Yan",
+				email: "jansen@jansen-test-company.com",
+				password: "Fakepassword123!",
+				confirm_password: "Fakepassword123!",
+			})
+			res.status.should.equal(200)
+			res.type.should.equal("application/json")
+			let user = await db("users").where("email", "jansen@jansen-test-company.com").first()
+			assert.isNotNull(user)
+
+			// add both organizations to the user (this is not part of the register flow yet)
+			await db("organization_user_roles").insert({user_id: user.id, organization_id: 1, user_role_id: 1})
+			await db("organization_user_roles").insert({user_id: user.id, organization_id: 2, user_role_id: 1})
+
+			user = await db("users").where("email", "jansen@jansen-test-company.com").first()
+			const loginRes = await chai.request(app).post("/api/user/login").send({
+				email: "jansen@jansen-test-company.com",
+				password: "Fakepassword123!",
+				organization_id: 1
+			})
+			loginRes.status.should.equal(200)
+			loginRes.type.should.equal("application/json")
+			let body = JSON.parse(loginRes.text)
+			assert.isNotNull(body.token)
+			const token = body.token
+
+			// send request to switch organizations
+			const orgLoginRes = await chai.request(app).post("/api/user/org-login").send({
+				organization_id: 2
+			}).set({"Authorization": `Bearer ${token}`})
+
+			orgLoginRes.status.should.equal(200)
+			orgLoginRes.type.should.equal("application/json")
+
+			body = JSON.parse(orgLoginRes.text)
+			assert.isNotNull(body.token)
+		})	
 	})
 })
 

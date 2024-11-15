@@ -1,9 +1,11 @@
 export const API_VERSION = "api"
 export const BACKEND_BASE_URL = "http://localhost:8000"
 export const LOGIN_URL = `/${API_VERSION}/user/login`
+export const ORG_LOGIN_URL = `/${API_VERSION}/user/org-login`
 export const REGISTER_URL = `/${API_VERSION}/user/register`
 export const ORGANIZATION_URL = `/${API_VERSION}/organization`
-export const USER_PROFILE_URL = `/${API_VERSION}/user-profile/`
+export const USER_PROFILE_URL = `/${API_VERSION}/user-profile`
+export const USER_PROFILE_ORG_URL = `${USER_PROFILE_URL}/organization`
 export const USER_ROLE_URL = `/${API_VERSION}/user-role/`
 export const TICKET_URL = `/${API_VERSION}/ticket`
 export const BOARD_URL = `/${API_VERSION}/board`
