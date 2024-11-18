@@ -50,7 +50,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, boardId}: Prop
 		<div className = "tw-pt-2 tw-pb-2 tw-flex tw-flex-row tw-justify-end tw-w-full">
 			<div className = "tw-relative tw-inline-block tw-text-left">
 				<IconContext.Provider value = {{color: "var(--bs-primary)"}}>
-					<button ref = {watchButtonRef} onClick={(e) => {
+					<button className = "hover:tw-opacity-60" ref = {watchButtonRef} onClick={(e) => {
 						e.preventDefault()	
 						setShowWatchDropdown(!showWatchDropdown)
 					}}>
@@ -64,7 +64,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, boardId}: Prop
 				</IconContext.Provider>
 			</div>
 			<IconContext.Provider value = {{color: "var(--bs-primary)"}}>
-				<button onClick={(e) => {
+				<button className = "hover:tw-opacity-60" onClick={(e) => {
 					e.preventDefault()	
 					navigator.clipboard.writeText(`${window.location.origin}${TICKETS}/${ticket?.id}`)
 					dispatch(addToast({
@@ -82,7 +82,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, boardId}: Prop
 					<button ref = {buttonRef} onClick={(e) => {
 						e.preventDefault()
 						setShowDropdown(!showDropdown)
-					}} className = "--transparent tw-p-0"><MenuIcon className = "tw-ml-3 --l-icon"/></button>
+					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-ml-3 --l-icon"/></button>
 					{
 						showDropdown ? (
 							<EditTicketFormMenuDropdown statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
