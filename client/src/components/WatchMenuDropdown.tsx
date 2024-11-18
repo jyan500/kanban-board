@@ -6,11 +6,9 @@ import { Ticket, Status } from "../types/common"
 
 type Props = {
 	ticket: Ticket | null | undefined
-	boardId: string | number | null | undefined
-	statusesToDisplay: Array<Status>
 }
 
-export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({statusesToDisplay, boardId, ticket}: Props, ref) => {
+export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticket}: Props, ref) => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -20,28 +18,13 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 	const isTicketReporter = userRole && userRole === "USER" && ticket?.userId === userProfile?.id
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	let options = {
-		"Move": () => {
-			dispatch(toggleShowSecondaryModal(true))
-			dispatch(setSecondaryModalType("MOVE_TICKET_FORM_MODAL"))
-			dispatch(setSecondaryModalProps({"boardId": boardId, "ticketId": ticket?.id}))
+		"Start Watching": () => {
 		},
-		"Clone": () => {
-			dispatch(toggleShowSecondaryModal(true))
-			dispatch(setSecondaryModalType("CLONE_TICKET_FORM_MODAL"))
-			dispatch(setSecondaryModalProps({"statusesToDisplay": statusesToDisplay, "boardId": boardId, "ticket": ticket}))
-		},
-		// if it's an epic, do not show this button
-		...(epicTicketType?.id !== ticket?.ticketTypeId ? {"Add to Epic": () => {
-			dispatch(toggleShowSecondaryModal(true))
-			dispatch(setSecondaryModalType("ADD_TO_EPIC_FORM_MODAL"))
-			dispatch(setSecondaryModalProps({"childTicketId": ticket?.id}))
-		}} : {}),
 		...(isAdminOrBoardAdmin || isTicketReporter ? {
-			"Delete": () => {
-				dispatch(toggleShowSecondaryModal(true))
-				dispatch(setSecondaryModalType("DELETE_TICKET_WARNING"))
+			"Add Watchers": () => {
+			
 			}
-		}: {})
+		} : {}),
 	}
 	return (
 		<Dropdown ref = {ref}>
