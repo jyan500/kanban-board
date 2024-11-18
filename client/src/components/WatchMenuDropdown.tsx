@@ -19,14 +19,10 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticke
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	let options = {
 		"Start Watching": () => {
-			// dispatch(toggleShowSecondaryModal(true))
-			// dispatch(setSecondaryModalType("MOVE_TICKET_FORM_MODAL"))
-			// dispatch(setSecondaryModalProps({"boardId": boardId, "ticketId": ticket?.id}))
 		},
 		...(isAdminOrBoardAdmin || isTicketReporter ? {
 			"Add Watchers": () => {
-				dispatch(toggleShowSecondaryModal(true))
-				dispatch(setSecondaryModalType("DELETE_TICKET_WARNING"))
+			
 			}
 		} : {}),
 	}
