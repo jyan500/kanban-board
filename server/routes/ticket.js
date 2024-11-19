@@ -92,6 +92,7 @@ router.get("/", async (req, res, next) => {
 				queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
 				.join("users", "tickets_to_users.user_id", "=", "users.id")
 				.where("users.id", req.query.assignedToUser)
+				.where("tickets.is_watcher", false)
 			}
 			if (req.query.sortBy && req.query.order){
 				if (req.query.sortBy === "createdAt"){
@@ -179,15 +180,19 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 
 router.get("/:ticketId/user", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const assignedUsers = await db("tickets_to_users")
+		const users = await db("tickets_to_users")
 		.join("users", "users.id", "=", "tickets_to_users.user_id")
 		.where("ticket_id", req.params.ticketId).select(
 			"users.id",
 			"users.first_name as firstName",
 			"users.last_name as lastName",
 			"users.email"
-		)
-		res.json(assignedUsers)
+		).modify((queryBuilder) => {
+			if (req.query.isWatcher === "false"){
+				queryBuilder.where("is_watcher", false)
+			}
+		})
+		res.json(users)
 	}	
 	catch (err){
 		console.log(`Error while getting assigned users for ticket: ${err.message}`)
@@ -217,9 +222,10 @@ router.get("/:ticketId/user/:userId", validateTicketUserGet, handleValidationRes
 
 router.post("/:ticketId/user/", validateTicketUserCreate, handleValidationResult, async (req, res, next) => {
 	try {
-		const users = req.body.user_ids
+		const userIds = req.body.user_ids
+		const isWatcher = req.body.is_watcher
 		const ticketId = req.params.ticketId
-		await db("tickets_to_users").insert(users.map((userId) => ({user_id: userId , ticket_id: ticketId})))
+		await db("tickets_to_users").insert([{user_id: userIds[0], ticket_id: ticketId, is_watcher: isWatcher}])
 		res.json({message: "users assigned to tickets successfully!"})
 	}	
 	catch (err) {
@@ -232,7 +238,7 @@ router.post("/:ticketId/user/bulk-edit", validateTicketUserBulkEdit, handleValid
 	try {
 		const userIds = req.body.user_ids
 		const ticketId = req.params.ticketId
-		// delete all status ids attached to this board and then re-insert
+		// delete all users attached to this ticket and then re-insert
 		const toInsert = userIds.map((id) => ({ticket_id: ticketId, user_id: id}))
 		await db("tickets_to_users").where("ticket_id", ticketId).delete()
 		await db("tickets_to_users").insert(toInsert)
@@ -249,6 +255,7 @@ router.delete("/:ticketId/user/:userId", validateTicketUserGet, handleValidation
 		const assignedUser = await db("tickets_to_users")
 		.where("ticket_id", req.params.ticketId)
 		.where("user_id", req.params.userId)
+		.where("is_watcher", true)
 		.del()
 		res.json({"message": "user unassigned from ticket successfully!"})
 	}	

@@ -3,22 +3,24 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { IconContext } from "react-icons" 
 import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown"
 import { WatchMenuDropdown } from "./WatchMenuDropdown"
-import { IoMdEye as WatchIcon } from "react-icons/io";
+import { IoMdEye as WatchIcon, IoMdEyeOff as WatchOffIcon } from "react-icons/io";
 import { BsThreeDots as MenuIcon } from "react-icons/bs";
 import { FiShare2 as ShareIcon } from "react-icons/fi";
 import { useClickOutside } from "../hooks/useClickOutside" 
-import { Ticket, Status } from "../types/common"
+import { Ticket, Status, UserProfile } from "../types/common"
 import { TICKETS } from "../helpers/routes"
 import { addToast } from "../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 
 type Props = {
 	ticket: Ticket | null | undefined	
+	ticketWatchers: Array<UserProfile> | null | undefined 
+	ticketAssignee: UserProfile | null | undefined
 	boardId: number | string | null | undefined
 	statusesToDisplay: Array<Status>
 }
 
-export const EditTicketFormToolbar = ({statusesToDisplay, ticket, boardId}: Props) => {
+export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee, ticketWatchers, boardId}: Props) => {
 	const { showModal } = useAppSelector((state) => state.modal)
 	const [showDropdown, setShowDropdown] = useState(false)
 	const [showWatchDropdown, setShowWatchDropdown] = useState(false)
@@ -54,14 +56,22 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, boardId}: Prop
 						e.preventDefault()	
 						setShowWatchDropdown(!showWatchDropdown)
 					}}>
-						<WatchIcon className = "tw-ml-3 --l-icon"/>
+						<div className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
+							<WatchIcon className = "tw-ml-3 --l-icon"/>
+							{
+								(ticketWatchers && ticketWatchers?.length > 0 ? (
+									<span className = "tw-text-primary">{ticketWatchers.length}</span>
+								) : null)
+							}
+						</div>
 					</button>
-					{
-						showWatchDropdown ? (
-							<WatchMenuDropdown ticket={ticket} ref = {watchMenuDropdownRef}/>
-						) : null
-					}
+					
 				</IconContext.Provider>
+				{
+					showWatchDropdown ? (
+						<WatchMenuDropdown ticketAssignee={ticketAssignee} ticketWatchers={ticketWatchers} ticket={ticket} ref = {watchMenuDropdownRef}/>
+					) : null
+				}
 			</div>
 			<IconContext.Provider value = {{color: "var(--bs-primary)"}}>
 				<button className = "hover:tw-opacity-60" onClick={(e) => {

@@ -57,7 +57,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const [ epicTicketPage, setEpicTicketPage ] = useState(1)
 	const [ linkedTicketPage, setLinkedTicketPage ] = useState(1)
 	const [ commentPage, setCommentPage ] = useState(1)
-	const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ?? skipToken)
+	const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: false}} : skipToken)
+	const { data: ticketWatchers, isLoading: isTicketWatchersLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: true}} : skipToken)
 	const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: commentPage}} : skipToken)
 	const { data: ticketRelationships, isLoading: isTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
 		{ticketId: currentTicketId, params: {page: linkedTicketPage, isEpic: false}} : skipToken
@@ -164,7 +165,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			// TODO: need to update this line to include all userIds if allowing multiple 
     			// assignees per ticket
     			if (values.userId){
-	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [values.userId]}).unwrap()
+	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [values.userId], isWatcher: false}).unwrap()
     			}
     		}
     		dispatch(addToast({
@@ -311,7 +312,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							</div>
 						</div>
 						<div className = "tw-w-1/3">
-							<EditTicketFormToolbar statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket}/>
+							<EditTicketFormToolbar ticketAssignee={ticketAssignees?.[0]} ticketWatchers={ticketWatchers} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket}/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<select 
 								{...register("statusId", registerOptions.statusId)} 
