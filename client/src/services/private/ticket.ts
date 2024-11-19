@@ -6,6 +6,7 @@ import {
 	TICKET_COMMENT_URL,
 	TICKET_STATUS_URL,
 	TICKET_ASSIGNEES_URL, 
+	TICKET_ASSIGNEE_URL,
 	TICKET_BULK_EDIT_ASSIGNEES_URL ,
 	TICKET_RELATIONSHIP_URL,
 } 
@@ -15,7 +16,14 @@ import { privateApi } from "../private"
 
 type TicketAssigneeRequest = {
 	ticketId: number
+	isWatcher: boolean
 	userIds: Array<number>
+}
+
+type SingleTicketAssigneeRequest = {
+	ticketId: number
+	userId: number
+	isWatcher?: boolean
 }
 
 type TicketAssigneeResponse = {
@@ -115,22 +123,46 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["TicketComments"]
 		}),
-		getTicketAssignees: builder.query<Array<UserProfile>, number>({
-			query: (ticketId) => ({
+		getTicketAssignees: builder.query<Array<UserProfile>, {ticketId: number | string, params: Record<string, any>}>({
+			query: ({ticketId, params}) => ({
 				url: TICKET_ASSIGNEES_URL(ticketId),
 				method: "GET",
+				params: params
 			}),
 			providesTags: ["TicketAssignees"]
 		}),
 		bulkEditTicketAssignees: builder.mutation<TicketAssigneeResponse, TicketAssigneeRequest>({
-			query: ({ticketId, userIds}) => ({
+			query: ({ticketId, userIds, isWatcher}) => ({
 				url: TICKET_BULK_EDIT_ASSIGNEES_URL(ticketId),	
 				method: "POST",
 				body: {
-					user_ids: userIds 
+					user_ids: userIds,
+					is_watcher: isWatcher
 				}
 			}),
 			invalidatesTags: ["TicketAssignees"]
+		}),
+		addTicketAssignee: builder.mutation<TicketAssigneeResponse, TicketAssigneeRequest>({
+			query: ({ticketId, userIds, isWatcher}) => ({
+				url: TICKET_ASSIGNEES_URL(ticketId),
+				method: "POST",
+				body: {
+					user_ids: userIds,
+					is_watcher: isWatcher
+				}
+			}),
+			invalidatesTags: ["TicketAssignees"],
+		}),
+		deleteTicketAssignee: builder.mutation<TicketAssigneeResponse, SingleTicketAssigneeRequest>({
+			query: ({ticketId, userId}) => ({
+				url: TICKET_ASSIGNEE_URL(ticketId, userId),
+				method: "DELETE",
+				body: {
+					user_id: userId,
+					ticket_id: ticketId
+				}
+			}),
+			invalidatesTags: ["TicketAssignees"],
 		}),
 		addTicket: builder.mutation<{id: number, message: string}, Omit<Ticket, "organizationId" | "id" | "createdAt">>({
 			query: (ticket) => ({
@@ -217,6 +249,8 @@ export const {
 	useUpdateTicketStatusMutation,
 	useDeleteTicketMutation,
 	useGetTicketAssigneesQuery,
+	useAddTicketAssigneeMutation,
+	useDeleteTicketAssigneeMutation,
 	useGetTicketCommentsQuery,
 	useAddTicketCommentMutation,
 	useUpdateTicketCommentMutation,

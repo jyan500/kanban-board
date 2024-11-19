@@ -99,7 +99,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	    	}
 	    	// update ticket assignees
 	    	if (values.userId){
-	    		await bulkEditTicketAssignees({ticketId: data.id, userIds: [values.userId]}).unwrap()
+	    		await bulkEditTicketAssignees({ticketId: data.id, isWatcher: false, userIds: [values.userId]}).unwrap()
 	    	}
 			dispatch(toggleShowModal(false))
 			dispatch(toggleShowSecondaryModal(false))
