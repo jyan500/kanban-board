@@ -106,14 +106,14 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticke
 							<li
 								key={option}
 								onClick={() => options[option as keyof typeof options]?.()}
-								className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+								className="tw-border-b tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
 								role="menuitem"
 							>
-							<div className = "tw-flex tw-flex-row tw-gap-x-2">
-								{option === "Start Watching" ? 
-								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center"><WatchIcon className = "tw-w-6 tw-h-6"/><p>{option}</p></div>
-								: <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center"><WatchOffIcon className = "tw-w-6 tw-h-6"/><p>{option}</p></div>}
-							</div>
+								<div className = "tw-flex tw-flex-row tw-gap-x-2">
+									{option === "Start Watching" ? 
+									<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center"><WatchIcon className = "tw-w-6 tw-h-6"/><p>{option}</p></div>
+									: <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center"><WatchOffIcon className = "tw-w-6 tw-h-6"/><p>{option}</p></div>}
+								</div>
 							</li>
 						)
 					}
@@ -122,7 +122,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticke
 					className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
 					role = "menuitem"
 				>
-					<div className = "tw-border-t tw-border-b tw-flex tw-flex-col tw-gap-y-2 tw-py-1">
+					<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-py-1">
 						<p>Watching This Issue</p>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							{
@@ -140,7 +140,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticke
 					</div>
 				</li>
 				<li
-					className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+					className="tw-border-t tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
 					onClick={() => options["Add Watchers"]?.()}
 					role = "menuitem"
 				>
