@@ -15,13 +15,12 @@ router.get("/", async (req, res, next) => {
 				}
 				if (req.query.filterOnUserRole){
 					if (userRole === "USER"){
-						queryBuilder
-						.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
+						queryBuilder.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
 						.where("user_roles.name", "USER")	
 					}
 				}
 				if (req.query.excludeUsers){
-					queryBuilder.whereNotIn("organization_user_roles.user_id", req.query.excludeUsers)	
+					queryBuilder.whereNotIn("organization_user_roles.user_id", req.query.excludeUsers.split(","))	
 				}
 			})
 			// .modify((queryBuilder) => {
