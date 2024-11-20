@@ -56,6 +56,7 @@ export interface TicketComment {
 	userId: number
 	ticketId: number
 	createdAt: Date
+	user?: Omit<UserProfile, "organizationId" | "userRoleId">
 }
 
 export interface Cell {

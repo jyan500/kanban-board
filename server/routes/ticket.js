@@ -270,14 +270,29 @@ router.get("/:ticketId/comment", validateGet, handleValidationResult, async (req
 		const comments = await db("ticket_comments").where("ticket_id", req.params.ticketId).orderBy(
 			"created_at", "desc"
 		).select(
-			"id as id",
+			"ticket_comments.id as id",
 			"user_id as userId",
 			"ticket_id as ticketId",
 			"comment as comment",
 			"created_at as createdAt"
 		)
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		res.json(comments)
+		Promise.all(comments.data.map(async (comment) => {
+			const user = await db("users").where("users.id", comment.userId).select(
+				"users.id as id", 
+				"users.first_name as firstName", 
+				"users.last_name as lastName", 
+				"users.email as email").first()
+			return {
+				...comment,
+				user: user
+			}
+		})).then((commentsWithUsers) => {
+			res.json({
+				data: commentsWithUsers,
+				pagination: comments.pagination
+			})
+		})
 	}	
 	catch (err) {
 		console.log(`Error while getting comments for ticket: ${err.message}`)
