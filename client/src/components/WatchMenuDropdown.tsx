@@ -58,7 +58,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 
 	const showAddWatchersModal = () => {
 		dispatch(toggleShowSecondaryModal(true))
-		dispatch(setSecondaryModalProps({ticketId: ticket?.id}))
+		dispatch(setSecondaryModalProps({ticketAssigneeId: ticketAssignee?.id, ticketId: ticket?.id}))
 		dispatch(setSecondaryModalType("ADD_TICKET_WATCHERS_MODAL"))
 	}
 

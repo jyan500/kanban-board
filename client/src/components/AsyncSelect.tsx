@@ -19,12 +19,13 @@ interface AsyncSelectProps {
 	endpoint: string
 	defaultValue?: OptionType 
 	clearable?: boolean
-	onBlur?: () => void
+	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
 	className?: string 
 	urlParams: Record<string, any>
 	cacheKey?: string
 	onSelect: (selectedOption: OptionType | null) => void
 }
+
 
 export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, GroupBase<OptionType>>, AsyncSelectProps>((
 	{ cacheKey, clearable, className, defaultValue, endpoint, onSelect, urlParams, onBlur }, ref) => {
@@ -35,25 +36,34 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 		query: string, 
 		loadedOptions: OptionsOrGroups<OptionType, GroupBase<OptionType>>, 
 		additional: {page: number} | undefined) => {
-		const {data, pagination} = await genericFetch({
-			endpoint,
-			urlParams: {...urlParams, query: query, page: additional?.page ? additional.page : 1},
-		}).unwrap()
+		try {
+			const {data, pagination} = await genericFetch({
+				endpoint,
+				urlParams: {...urlParams, query: query, page: additional?.page ? additional.page : 1},
+			}).unwrap()
 
-		if (!data.length) {
+			if (!data.length) {
+				return {
+					options: [],
+					hasMore: false,
+					additional: {page: 1}
+				}
+			}
+			const options = [...data]
+			const next = {
+				options,
+				hasMore: pagination.currentPage !== pagination.lastPage, 
+				...(additional ? {additional: {page: additional?.page ? additional?.page + 1 : 1}} : {})
+			}
+			return next
+		}
+		catch (e){
 			return {
 				options: [],
 				hasMore: false,
 				additional: {page: 1}
-			}
+			}	
 		}
-		const options = [...data]
-		const next = {
-			options,
-			hasMore: pagination.currentPage !== pagination.lastPage, 
-			...(additional ? {additional: {page: additional?.page ? additional?.page + 1 : 1}} : {})
-		}
-		return next
 	}
 
 	const handleInputChange = (newValue: string) => {
