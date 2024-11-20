@@ -1,30 +1,40 @@
-import React, {useState} from "react"
+import React, {useRef, useState} from "react"
 import { AsyncSelect } from "../AsyncSelect"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { useForm, Controller } from "react-hook-form"
+import { IoMdClose } from "react-icons/io";
 import { TICKET_ASSIGNEE_URL, USER_PROFILE_URL } from "../../helpers/urls" 
 import { addToast } from "../../slices/toastSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
+import { GroupBase, SelectInstance } from "react-select"
 import { 
+	useGetTicketAssigneesQuery,
 	useAddTicketAssigneeMutation,
 	useDeleteTicketAssigneeMutation, 
 } from "../../services/private/ticket"
-import { Toast } from "../../types/common"
+import { OptionType, Toast } from "../../types/common"
+import { skipToken } from '@reduxjs/toolkit/query/react'
+import { Badge } from "../page-elements/Badge"
 import { v4 as uuidv4 } from "uuid"
+import { displayUser } from "../../helpers/functions"
+import { LoadingSpinner } from "../LoadingSpinner"
 
 type Props = {
 	ticketId: number | undefined
+	ticketAssigneeId: number | undefined
 }
 
 type FormValues = {
 	userId: number | string
 }
 
-export const AddTicketWatchersModal = ({ticketId}: Props) => {
+export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 	const [cacheKey, setCacheKey] = useState(uuidv4())
 	const dispatch = useAppDispatch()
+	const { data: ticketWatchers, isLoading: isTicketWatchersLoading } = useGetTicketAssigneesQuery(ticketId ? {ticketId: ticketId, params: {isWatcher: true}} : skipToken)
 	const [ addTicketAssignee, {isLoading: addTicketAssigneeLoading} ] = useAddTicketAssigneeMutation()
 	const [ deleteTicketAssignee, {isLoading: isDeleteTicketAssigneeLoading}] = useDeleteTicketAssigneeMutation()
+	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 
 	const defaultForm = {
 		userId: "",
@@ -66,35 +76,77 @@ export const AddTicketWatchersModal = ({ticketId}: Props) => {
     	else {
     		dispatch(addToast(defaultToast))
     	}
-    	dispatch(toggleShowSecondaryModal(false))
-    	dispatch(setSecondaryModalType(undefined))
-    	dispatch(setSecondaryModalProps({}))
+    	// dispatch(toggleShowSecondaryModal(false))
+    	// dispatch(setSecondaryModalType(undefined))
+    	// dispatch(setSecondaryModalProps({}))
     	// flush cached options after submitting
+    	selectRef.current?.clearValue()
+    	setCacheKey(uuidv4())
+	}
+
+	const deleteWatcher = async (userId: number) => {
+		let defaultToast: Toast = {
+			id: uuidv4(),
+			message: "Something went wrong while linking ticket.",
+			animationType: "animation-in",
+			type: "failure"
+		}
+		if (ticketId){
+			try {
+				await deleteTicketAssignee({ticketId: ticketId, userId: userId, isWatcher: true}).unwrap()
+			 	dispatch(addToast({
+		    		...defaultToast,
+		    		message: "Ticket watcher deleted successfully!",
+		    		type: "success"
+		    	}))
+			}
+			catch (e){
+				dispatch(addToast(defaultToast))
+			}
+		}
+    	// flush cached options after submitting
+    	selectRef.current?.clearValue()
     	setCacheKey(uuidv4())
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-4">
-			<p className = "tw-font-bold">Add Watchers</p>		
-			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
-				<Controller
-					name={"userId"}
-					control={control}
-	                render={({ field: { onChange, value, name, ref } }) => (
-	                	<AsyncSelect 
-		                	endpoint={USER_PROFILE_URL} 
-		                	cacheKey={cacheKey}
-		                	className={"tw-w-64"}
-		                	urlParams={{}} 
-		                	onSelect={(selectedOption: {label: string, value: string} | null) => {
-		                		onChange(selectedOption?.value ?? "") 	
-		                	}}
-		                />
-	                )}
-				/>
-				{/*<AsyncSelect endpoint={TICKET_URL} urlParams={{searchBy: "title", ticketType: epicTicketType?.id}} onSelect={handleSelect}/>*/}
-				<button className = "button">Submit</button>
-			</form>
-		</div>
+		<>
+			<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-p-4">
+				<p className = "tw-font-bold">Add Watchers</p>		
+				{!isTicketWatchersLoading ? (
+					<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
+						<Controller
+							name={"userId"}
+							control={control}
+			                render={({ field: { onChange, value, name, ref } }) => (
+			                	<AsyncSelect 
+				            		ref={selectRef}
+				                	endpoint={USER_PROFILE_URL} 
+				                	cacheKey={cacheKey}
+				                	className={"tw-w-64"}
+				                	urlParams={{excludeUsers: [ticketAssigneeId, ticketWatchers?.map((watcher) => watcher.id)]}} 
+				                	onSelect={(selectedOption: {label: string, value: string} | null) => {
+				                		onChange(selectedOption?.value ?? "") 	
+				                	}}
+				                />
+			                )}
+						/>
+						<button className = "button">Submit</button>
+					</form>
+				) : null} 
+			</div>
+			{isTicketWatchersLoading ? <LoadingSpinner/> : (
+				<div className = "tw-flex tw-flex-row tw-gap-x-2">
+					{ ticketWatchers?.filter(watcher => watcher.id !== ticketAssigneeId).map((watcher) => 
+						<button onClick={(e) => deleteWatcher(watcher.id)}>
+							<Badge className = "tw-flex tw-flex-row tw-items-center tw-justify-between tw-text-white tw-bg-primary">
+								<span>{displayUser(watcher)}</span>
+								<IoMdClose className = "icon"/>
+							</Badge>	
+						</button>
+					)}
+				</div>
+			)}
+		</>
 	)		
 }

@@ -17,7 +17,7 @@ import { useGetUserQuery } from "../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { InlineEdit } from "./InlineEdit" 
 import { Controller, useForm, FormProvider } from "react-hook-form"
-import { Ticket, TicketType, Priority, Status, UserProfile } from "../types/common"
+import { OptionType, Ticket, TicketType, Priority, Status, UserProfile } from "../types/common"
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
@@ -213,15 +213,16 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
             render={({ field: { onChange, value, name, ref } }) => (
             	<AsyncSelect 
                 	endpoint={USER_PROFILE_URL} 
-					className = {`tw-w-full ${editFieldVisibility["assignees"] ? "" : "tw-border-transparent"}`}
+					className = {`tw-w-full ${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
                 	clearable={false}
+                	onBlur={(e) => toggleFieldVisibility("assignees", false)}
                 	defaultValue={{value: ticketAssignees?.[0]?.id.toString() ?? "", label: displayUser(ticketAssignees?.[0]) ?? ""}}
-                	urlParams={{}} 
+                	urlParams={{filterOnUserRole: true}} 
                 	onSelect={async (selectedOption: {label: string, value: string} | null) => {
                 		const val = selectedOption?.value ?? ""
                 		if (!isNaN(Number(val))){
                 			setValue("userId", Number(val))
-                			toggleFieldVisibility("assignee", false)
+                			toggleFieldVisibility("assignees", false)
                 			await handleSubmit(onSubmit)()
                 		}
                 	}}
@@ -381,9 +382,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 													<IconContext.Provider value = {{className: "tw-shrink-0 tw-h-8 tw-w-8"}}>
 														<CgProfile/>
 													</IconContext.Provider>
-													<div className = "tw-ml-3.5">
-														{userProfileSelect}		
-													</div>
+													{userProfileSelect}		
 												</div>
 											) : <LoadingSpinner/>
 										}	
