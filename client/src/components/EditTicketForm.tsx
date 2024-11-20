@@ -486,15 +486,17 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 				<div className = "tw-space-y-2">
 					{!isTicketCommentsLoading && currentTicketId ? (
 						<>
-							<strong>Activity</strong>
+							<div className = "tw-flex tw-flex-row tw-justify-between">
+								<strong>Activity</strong>
+								<PaginationRow
+									showNumResults={false}
+									showPageNums={false}
+									setPage={(page: number) => { setCommentPage(page)} }	
+									paginationData={ticketComments?.pagination}
+									currentPage={commentPage}
+								/>
+							</div>
 							<TicketCommentForm currentTicketId={currentTicketId} ticketComments={ticketComments?.data?.length ? ticketComments.data : []}/>
-						 	<PaginationRow
-								showNumResults={false}
-								showPageNums={false}
-								setPage={(page: number) => { setCommentPage(page)} }	
-								paginationData={ticketComments?.pagination}
-								currentPage={commentPage}
-							/>
 						</>
 					) : <LoadingSpinner/>}
 				</div>

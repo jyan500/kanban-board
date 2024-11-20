@@ -58,7 +58,7 @@ Add new comment on ticket, and displays existing comments for the ticket
 export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketCommentFormProps) => {
 	const dispatch = useAppDispatch()
 	const { showModal } = useAppSelector(state => state.modal)
-	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
+	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
 
 	// const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ?? skipToken)
@@ -203,7 +203,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 							<CgProfile className = "tw-w-8 tw-h-8"/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2">
-									<span>{displayUser(userProfiles.find(userProfile => userProfile.id === comment.userId))}</span>
+									<span className = "tw-font-bold">{displayUser(comment.user)}</span>
 									<span>{comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ""}</span>
 								</div>
 								{showEditCommentId === comment.id ? (

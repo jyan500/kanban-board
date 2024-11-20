@@ -127,7 +127,7 @@ export const parseURLParams = (params: Record<string, any>) => {
  * @param user
  * @return string containing the users' first and last name if the user exists, otherwise returns an empty string
  */
-export const displayUser = (user: UserProfile | null | undefined) => {
+export const displayUser = (user: Pick<UserProfile, "firstName" | "lastName"> | null | undefined) => {
 	return user ? (user.firstName + " " + user.lastName) : ""
 }
 
