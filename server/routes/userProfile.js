@@ -96,7 +96,6 @@ router.get("/organization", async (req, res, next) => {
 			"organizations.id as id",
 			"organizations.name",
 		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		console.log(organizations)
 		res.json(organizations)
 	}	
 	catch (err) {
