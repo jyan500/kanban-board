@@ -9,21 +9,40 @@ router.get("/me", async (req, res, next) => {
 		const {id: userId, organization: organizationId, userRole} = req.user
 		const userProfile = await db("organization_user_roles")
 			.join("users", "users.id", "=", "organization_user_roles.user_id")
-			.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
-			.join("organizations", "organizations.id", "=", "organization_user_roles.organization_id")
 			.where("users.id", userId)
-			.where("organizations.id", organizationId)
 			.select(
 				"users.id as id", 
 				"users.first_name as firstName", 
 				"users.last_name as lastName", 
 				"users.email as email", 
-				"organizations.id as organizationId", 
-				"user_roles.id as userRoleId").first()
+				"organization_user_roles.organization_id as organizationId", 
+				"organization_user_roles.user_role_id as userRoleId").first()
 		res.json(userProfile)
 	}
 	catch (err){
 		console.log(`Error while getting user profile: ${err.message}`)	
+		next(err)
+	}
+})
+
+// get a user
+router.get("/:userId", async (req, res, next) => {
+	try {
+		const userId = req.params.userId
+		const userProfile = await db("organization_user_roles")
+			.join("users", "users.id", "=", "organization_user_roles.user_id")
+			.where("users.id", userId)
+			.select(
+				"users.id as id", 
+				"users.first_name as firstName", 
+				"users.last_name as lastName", 
+				"users.email as email", 
+				"organization_user_roles.organization_id as organizationId", 
+				"organization_user_roles.user_role_id as userRoleId").first()
+		res.json(userProfile)
+	}	
+	catch (err){
+		console.log(`Error while getting user profile: ${err.message}`)
 		next(err)
 	}
 })
@@ -54,9 +73,12 @@ router.get("/", async (req, res, next) => {
 		const {id: userId, organization: organizationId, userRole} = req.user
 		const userProfiles = await db("organization_user_roles")
 			.join("users", "users.id", "=", "organization_user_roles.user_id")
-			.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
-			.join("organizations", "organizations.id", "=", "organization_user_roles.organization_id")
-			.where("organizations.id", organizationId)
+			.where("organization_user_roles.organization_id", organizationId)
+			.modify((queryBuilder) => {
+				if (req.query.query){
+					queryBuilder.whereILike("users.first_name", `%${req.query.query}%`).orWhereILike("users.last_name", `%${req.query.query}%`)
+				}
+			})
 			// .modify((queryBuilder) => {
 			// 	// users can only see other users
 			// 	if (userRole === "USER"){
@@ -71,11 +93,18 @@ router.get("/", async (req, res, next) => {
 			.select(
 				"users.id as id", 
 				"users.first_name as firstName", 
-				"users.last_name as lastName", 
-				"users.email as email", 
-				"organizations.id as organizationId", 
-				"user_roles.id as userRoleId")
-		res.json(userProfiles)
+				"users.last_name as lastName") 
+			.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		const userProfilesParsed = userProfiles.data.map((userProfile) => {
+			return {
+				id: userProfile.id,
+				name: userProfile.firstName + " " + userProfile.lastName
+			}
+		})
+		res.json({
+			...userProfiles,
+			data: userProfilesParsed
+		})
 	}
 	catch (err){
 		console.log(`Error while getting user profile: ${err.message}`)	

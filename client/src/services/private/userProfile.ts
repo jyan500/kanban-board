@@ -14,10 +14,17 @@ export const userProfileApi = privateApi.injectEndpoints({
 				method: "GET",
 			})	
 		}),
-		getUserProfiles: builder.query<Array<UserProfile>, void>({
-			query: () => ({
+		getUser: builder.query<UserProfile, number>({
+			query: (userId) => ({
+				url: `${USER_PROFILE_URL}/${userId}`,
+				method: "GET"
+			})
+		}),
+		getUserProfiles: builder.query<ListResponse<UserProfile>, Record<string, any>>({
+			query: (urlParams) => ({
 				url: USER_PROFILE_URL,	
 				method: "GET",
+				params: urlParams,
 			})
 		}),
 		getUserOrganizations: builder.query<ListResponse<Organization>, Record<string, any>>({
@@ -38,6 +45,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 })
 
 export const { 
+	useGetUserQuery,
 	useGetUserProfileQuery, 
 	useGetUserProfilesQuery, 
 	useGetUserOrganizationsQuery, 

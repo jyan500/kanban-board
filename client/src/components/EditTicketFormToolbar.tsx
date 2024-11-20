@@ -69,7 +69,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 				</IconContext.Provider>
 				{
 					showWatchDropdown ? (
-						<WatchMenuDropdown ticketAssignee={ticketAssignee} ticketWatchers={ticketWatchers} ticket={ticket} ref = {watchMenuDropdownRef}/>
+						<WatchMenuDropdown closeDropdown={onClickWatchOutside} ticketAssignee={ticketAssignee} ticketWatchers={ticketWatchers} ticket={ticket} ref = {watchMenuDropdownRef}/>
 					) : null
 				}
 			</div>
@@ -95,7 +95,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-ml-3 --l-icon"/></button>
 					{
 						showDropdown ? (
-							<EditTicketFormMenuDropdown statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
+							<EditTicketFormMenuDropdown closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
 						) : null
 					}
 				</IconContext.Provider>

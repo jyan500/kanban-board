@@ -6,10 +6,6 @@ import { Toast, Ticket, Status, UserProfile } from "../types/common"
 import { CgProfile } from "react-icons/cg"
 import { IoMdEye as WatchIcon, IoMdEyeOff as WatchOffIcon } from "react-icons/io";
 import { 
-	useGetTicketAssigneesQuery, 
-	useGetTicketRelationshipsQuery, 
-	useGetTicketCommentsQuery,
-	useUpdateTicketMutation, 
 	useAddTicketAssigneeMutation,
 	useDeleteTicketAssigneeMutation, 
 } from "../services/private/ticket"
@@ -19,12 +15,13 @@ import { displayUser } from "../helpers/functions"
 import { FiPlus as PlusIcon } from "react-icons/fi";
 
 type Props = {
+	closeDropdown: () => void
 	ticket: Ticket | null | undefined
 	ticketAssignee: UserProfile | null | undefined
 	ticketWatchers: Array<UserProfile> | null | undefined
 }
 
-export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticket, ticketAssignee, ticketWatchers}: Props, ref) => {
+export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({closeDropdown, ticket, ticketAssignee, ticketWatchers}: Props, ref) => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -57,6 +54,12 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticke
 				message: "Failed to add ticket watcher"
 			}))
 		}
+	}
+
+	const showAddWatchersModal = () => {
+		dispatch(toggleShowSecondaryModal(true))
+		dispatch(setSecondaryModalProps({ticketId: ticket?.id}))
+		dispatch(setSecondaryModalType("ADD_TICKET_WATCHERS_MODAL"))
 	}
 
 	const deleteTicketWatcher = async (ticketId: number | null | undefined, userId: number | null | undefined) => {
@@ -99,7 +102,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticke
 	}
 	return (
 		<Dropdown ref = {ref}>
-			<ul className = "tw-z-1000">
+			<ul>
 				{Object.keys(options).map((option) => {
 					if (option === "Start Watching" || option === "Stop Watching"){
 						return (
@@ -144,9 +147,15 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({ticke
 					onClick={() => options["Add Watchers"]?.()}
 					role = "menuitem"
 				>
-					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-						<PlusIcon className = "tw-h-6 tw-w-6"/><p>Add Watchers</p>
-					</div>
+					<button onClick={() => {
+						showAddWatchersModal()
+						closeDropdown()
+					}}>
+						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+							<PlusIcon className = "tw-h-6 tw-w-6"/>
+							<p>Add Watchers</p>
+						</div>
+					</button>
 				</li>
 			</ul>
 		</Dropdown>

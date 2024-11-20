@@ -23,10 +23,10 @@ router.get("/", async (req, res, next) => {
 		const boards = await db("boards").where("organization_id", req.user.organization)
 		.modify((queryBuilder) => {
 			if (req.query.query){
-				queryBuilder.whereILike("name", req.query.query)
+				queryBuilder.whereILike("boards.name", `%${req.query.query}%`)
 			}
 			if (req.query.ignoreBoard){
-				queryBuilder.whereNot("id", req.query.ignoreBoard)
+				queryBuilder.whereNot("boards.id", req.query.ignoreBoard)
 			}
 			if (req.query.lastModified === "true"){
 				queryBuilder.leftJoin("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
