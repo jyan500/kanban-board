@@ -13,9 +13,10 @@ import {
 	useUpdateTicketMutation, 
 	useBulkEditTicketAssigneesMutation 
 } from "../services/private/ticket"
+import { useGetUserQuery } from "../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { InlineEdit } from "./InlineEdit" 
-import { useForm, FormProvider } from "react-hook-form"
+import { Controller, useForm, FormProvider } from "react-hook-form"
 import { Ticket, TicketType, Priority, Status, UserProfile } from "../types/common"
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
@@ -31,8 +32,10 @@ import { Badge } from "./page-elements/Badge"
 import { PaginationRow } from "./page-elements/PaginationRow"
 import { Link } from "react-router-dom"
 import { TICKETS } from "../helpers/routes"
+import { USER_PROFILE_URL } from "../helpers/urls"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
+import { AsyncSelect } from "./AsyncSelect"
 
 
 type EditFieldVisibility = {
@@ -50,13 +53,14 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const dispatch = useAppDispatch()
 	const currentTicketId = ticket?.id
 	const { statuses } = useAppSelector((state) => state.status)
-	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
+	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
 	const { priorities } = useAppSelector((state) => state.priority) 
 	const { ticketTypes } = useAppSelector((state) => state.ticketType) 
 	const [ epicTicketPage, setEpicTicketPage ] = useState(1)
 	const [ linkedTicketPage, setLinkedTicketPage ] = useState(1)
 	const [ commentPage, setCommentPage ] = useState(1)
+	const { data: reporter, isLoading: isUserLoading } = useGetUserQuery(ticket?.userId ?? skipToken)
 	const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: false}} : skipToken)
 	const { data: ticketWatchers, isLoading: isTicketWatchersLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: true}} : skipToken)
 	const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: commentPage}} : skipToken)
@@ -73,7 +77,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	} = useAppSelector((state) => state.modal)
 	const isCompletedStatusIds = statuses.filter((status) => status.isCompleted).map((status) => status.id)
 	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
-	const reporter = userProfiles?.find((user) => user.id === ticket?.userId)
+	// const reporter = userProfiles?.find((user) => user.id === ticket?.userId)
+
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
 		"name": false,
 		"description": false,
@@ -96,7 +101,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const methods = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
-	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = methods
+	const { register , control, handleSubmit, reset, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
 	    name: { required: "Name is required" },
 	    description: { required: "Description is required"},
@@ -187,21 +192,55 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 
 
 	const userProfileSelect = ( 
-		<select {...userIdRegisterMethods}
-		className = {`tw-w-full ${editFieldVisibility.assignees ? "" : "tw-border-transparent"}`}
-		onChange={async (e) => {
-			setValue("userId", parseInt(e.target.value))
-			toggleFieldVisibility("assignee", false)
-		    await handleSubmit(onSubmit)()
-		}}
-		onBlur = {(e) => toggleFieldVisibility("assignee", false)}
-		>
-			{userProfiles.map((profile: UserProfile) => {
-				return <option disabled={
-					(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
-					(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{displayUser(profile)}</option>
-			})}
-		</select>
+		// <select {...userIdRegisterMethods}
+		// className = {`tw-w-full ${editFieldVisibility.assignees ? "" : "tw-border-transparent"}`}
+		// onChange={async (e) => {
+		// 	setValue("userId", parseInt(e.target.value))
+		// 	toggleFieldVisibility("assignee", false)
+		//     await handleSubmit(onSubmit)()
+		// }}
+		// onBlur = {(e) => toggleFieldVisibility("assignee", false)}
+		// >
+		// 	{userProfiles.map((profile: UserProfile) => {
+		// 		return <option disabled={
+		// 			(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
+		// 			(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{displayUser(profile)}</option>
+		// 	})}
+		// </select>
+		<Controller
+			name={"userId"}
+			control={control}
+            render={({ field: { onChange, value, name, ref } }) => (
+            	<AsyncSelect 
+                	endpoint={USER_PROFILE_URL} 
+					className = {`tw-w-full ${editFieldVisibility["assignees"] ? "" : "tw-border-transparent"}`}
+                	clearable={false}
+                	defaultValue={{value: ticketAssignees?.[0]?.id.toString() ?? "", label: displayUser(ticketAssignees?.[0]) ?? ""}}
+                	urlParams={{}} 
+                	onSelect={async (selectedOption: {label: string, value: string} | null) => {
+                		const val = selectedOption?.value ?? ""
+                		if (!isNaN(Number(val))){
+                			setValue("userId", Number(val))
+                			toggleFieldVisibility("assignee", false)
+                			await handleSubmit(onSubmit)()
+                		}
+                	}}
+                />
+            )}
+		/>
+    	// <AsyncSelect 
+        // 	endpoint={USER_PROFILE_URL} 
+        // 	urlParams={{}} 
+        // 	className={"tw-w-full"}
+        // 	onSelect={async (selectedOption: {label: string, value: string} | null) => {
+        // 		const val = selectedOption?.value ?? ""
+        // 		if (!isNaN(Number(val))){
+        // 			setValue("userId", Number(val))
+        // 			toggleFieldVisibility("assignee", false)
+        // 			await handleSubmit(onSubmit)()
+        // 		}
+        // 	}}
+        // />
 	)
 
 	const ticketTypeSelect = (
@@ -342,7 +381,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 													<IconContext.Provider value = {{className: "tw-shrink-0 tw-h-8 tw-w-8"}}>
 														<CgProfile/>
 													</IconContext.Provider>
-													{userProfileSelect}		
+													<div className = "tw-ml-3.5">
+														{userProfileSelect}		
+													</div>
 												</div>
 											) : <LoadingSpinner/>
 										}	

@@ -6,7 +6,7 @@ import { Modal } from "../components/Modal"
 import { SecondaryModal } from "../components/SecondaryModal" 
 import { TopNav } from "../components/page-elements/TopNav" 
 import { Footer } from "../components/page-elements/Footer"
-import { useGetUserProfileQuery, useGetUserProfilesQuery } from "../services/private/userProfile" 
+import { useGetUserProfileQuery } from "../services/private/userProfile" 
 import { useGetStatusesQuery } from "../services/private/status" 
 import { useGetTicketTypesQuery } from "../services/private/ticketType" 
 import { useGetTicketRelationshipTypesQuery } from "../services/private/ticketRelationshipType"
@@ -26,7 +26,6 @@ const ProtectedLayout = () => {
 	const token = useAppSelector((state) => state.auth.token)	
 	const dispatch = useAppDispatch()
     const {data: userProfileData, isFetching: isUserProfileFetching, isError: isUserProfileError } = useGetUserProfileQuery() 
-    const {data: userProfilesData, isFetching: isUserProfilesFetching, isError: isUserProfilesError } = useGetUserProfilesQuery() 
     const {data: statusData} = useGetStatusesQuery()
     const {data: ticketTypesData} = useGetTicketTypesQuery()
     const {data: ticketRelationshipTypeData} = useGetTicketRelationshipTypesQuery()
@@ -40,10 +39,6 @@ const ProtectedLayout = () => {
         if (token){
         	if (userProfileData){
 	        	dispatch(setUserProfile({userProfile: userProfileData}))
-	        }
-	        // get all user profiles
-        	if (userProfilesData){
-	        	dispatch(setUserProfiles({userProfiles: userProfilesData}))
 	        }
 	        if (ticketTypesData){
 	        	dispatch(setTicketTypes({ticketTypes: ticketTypesData}))	

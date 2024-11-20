@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import type { UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
@@ -16,10 +16,12 @@ import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps
 import { addToast } from "../slices/toastSlice" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSpinner } from "./LoadingSpinner"
+import { USER_PROFILE_URL } from "../helpers/urls"
 import { MdOutlineArrowBackIosNew as ArrowBackward } from "react-icons/md"
 import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
+import { AsyncSelect } from "./AsyncSelect"
 
 export type FormValues = {
 	id?: number
@@ -42,7 +44,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
-	const { userProfile, userProfiles } = useAppSelector((state) => state.userProfile)
+	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
 	// only run query if currentTicketId is not null, otherwise it will pass in the skipToken,
 	// which notifies RTK query to skip this 
@@ -61,7 +63,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		userId: 0 
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { register , handleSubmit, reset , setValue, getValues, watch, formState: {errors} } = useForm<FormValues>({
+	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
 
@@ -147,6 +149,31 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 						<textarea className = "tw-w-full" rows={8} id = "ticket-description" {...register("description", registerOptions.description)}></textarea>
 				        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 				    </div>
+				    <div>
+						<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
+						{/*<select className = "tw-w-full" id = "ticket-assignee" {...register("userId", registerOptions.userId)}>
+							{userProfiles.map((profile: UserProfile) => {
+								return <option disabled={
+									(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
+									(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{profile.firstName + " " + profile.lastName}</option>
+							})}
+						</select>*/}
+						<Controller
+							name={"userId"}
+							control={control}
+			                render={({ field: { onChange, value, name, ref } }) => (
+		                	<AsyncSelect 
+			                	endpoint={USER_PROFILE_URL} 
+			                	urlParams={{}} 
+			                	className={"tw-w-full"}
+			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
+			                		onChange(selectedOption?.value ?? "") 	
+			                	}}
+			                />
+		                )}
+						/>
+				        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
+					</div>
 					<div>
 						<label className = "label" htmlFor = "ticket-priority">Priority</label>
 						<select className = "tw-w-full" id = "ticket-priority" {...register("priorityId", registerOptions.priorityId)}>
@@ -177,17 +204,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 				        	) : null
 				        }
 					</div>
-					<div>
-						<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
-						<select className = "tw-w-full" id = "ticket-assignee" {...register("userId", registerOptions.userId)}>
-							{userProfiles.map((profile: UserProfile) => {
-								return <option disabled={
-									(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
-									(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{profile.firstName + " " + profile.lastName}</option>
-							})}
-						</select>
-				        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
-					</div>
+					
 					<div>
 						<LoadingButton onClick={handleSubmit(onSubmit)} className = "button" text={"Submit"}></LoadingButton>
 					</div>

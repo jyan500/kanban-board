@@ -9,6 +9,7 @@ import { DeleteTicketWarning } from "./secondary-modals/DeleteTicketWarning"
 import { AddToEpicFormModal } from "./secondary-modals/AddToEpicFormModal"
 import { AddTicketFormModal } from "./primary-modals/AddTicketFormModal"
 import { MoveTicketFormModal } from "./secondary-modals/MoveTicketFormModal"
+import { AddTicketWatchersModal } from "./secondary-modals/AddTicketWatchersModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SECONDARY_MODAL_Z_INDEX } from "../helpers/constants"
 
@@ -20,13 +21,15 @@ export const secondaryModalTypes = {
 	"DELETE_TICKET_WARNING": DeleteTicketWarning,
 	"ADD_TO_EPIC_FORM_MODAL": AddToEpicFormModal,
 	"MOVE_TICKET_FORM_MODAL": MoveTicketFormModal,
-	"CLONE_TICKET_FORM_MODAL": AddTicketFormModal
+	"CLONE_TICKET_FORM_MODAL": AddTicketFormModal,
+	"ADD_TICKET_WATCHERS_MODAL": AddTicketWatchersModal,
 }
 
 export const secondaryModalClassNames = {
 	"ADD_TO_EPIC_FORM_MODAL": avoidAsyncSelectMenuOverflow,
 	"MOVE_TICKET_FORM_MODAL": avoidAsyncSelectMenuOverflow,
 	"CLONE_TICKET_FORM_MODAL": avoidAsyncSelectMenuOverflow,
+	"ADD_TICKET_WATCHERS_MODAL": avoidAsyncSelectMenuOverflow,
 }
 
 export const SecondaryModal = () => {
