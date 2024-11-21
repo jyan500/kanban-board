@@ -9,7 +9,6 @@ export const OrganizationDisplay = () => {
 
 	return (
 		<div>
-			<Outlet/>
 		</div>
 	)
 }
