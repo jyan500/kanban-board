@@ -36,7 +36,7 @@ export const SideBar = ({isFetching}: Props) => {
 			pathname: "/users", text: "Users",
 		},
 		{
-			pathname: "/organizations", text: "Organizations",
+			pathname: "/organization", text: "Organization",
 		},
 	] : []),
 	{

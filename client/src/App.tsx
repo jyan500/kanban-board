@@ -10,12 +10,16 @@ import { TicketDisplay } from "./pages/tickets/TicketDisplay"
 import { Ticket as TicketPage } from "./pages/tickets/Ticket"
 import { Boards } from "./pages/boards/Boards"
 import { Board } from "./pages/boards/Board" 
+import { OrganizationDisplay } from "./pages/organization/OrganizationDisplay"
+import { UsersDisplay } from "./pages/users/UsersDisplay"
+import { AccountDisplay } from "./pages/account/AccountDisplay"
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
+import UserRoleProtectedLayout from "./layouts/UserRoleProtectedLayout"
 import { useAppSelector, useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
 import { ToastList } from "./components/ToastList" 
-import { HOME, LOGIN, REGISTER, BOARDS, BOARD_ID, TICKETS, TICKET_ID } from "./helpers/routes"
+import { ACCOUNT, HOME, LOGIN, REGISTER, BOARDS, BOARD_ID, TICKETS, TICKET_ID, USERS, ORGANIZATION } from "./helpers/routes"
 
 // Define routes using createBrowserRouter
 const router = createBrowserRouter([
@@ -80,6 +84,29 @@ const router = createBrowserRouter([
 				{
 					path: TICKET_ID,
 					element: <TicketPage/>
+				}
+				]
+			},
+			{
+				path: ACCOUNT,
+				element: <AccountDisplay/>
+			},
+			{
+				element: <><UserRoleProtectedLayout/></>,
+				children: [
+				{
+					path: USERS,
+					element: <>
+						<ScrollRestoration/>
+						<UsersDisplay/>
+					</>,
+				},
+				{
+					path: ORGANIZATION,
+					element: <>
+						<ScrollRestoration/>
+						<OrganizationDisplay/>
+					</>
 				}
 				]
 			},
