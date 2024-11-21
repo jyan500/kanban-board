@@ -11,15 +11,16 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ArrowButton } from "../../components/page-elements/ArrowButton"
 import { LoadingSpinner } from "../../components/LoadingSpinner"
+import { Banner } from "../../components/page-elements/Banner"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
 	const navigate = useNavigate()
 	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
-	const {data: boardData, isLoading: isGetBoardLoading } = useGetBoardQuery(boardId ? {id: boardId, urlParams: {assignees: true}} : skipToken)
-	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading } = useGetBoardTicketsQuery(boardId ? {id: boardId, urlParams: {"includeRelationshipInfo": true}} : skipToken)
-	const {data: statusData, isLoading: isGetBoardStatusesLoading } = useGetBoardStatusesQuery(boardId ?? skipToken)
+	const {data: boardData, isLoading: isGetBoardLoading, isError: isGetBoardError } = useGetBoardQuery(boardId ? {id: boardId, urlParams: {assignees: true}} : skipToken)
+	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError } = useGetBoardTicketsQuery(boardId ? {id: boardId, urlParams: {"includeRelationshipInfo": true}} : skipToken)
+	const {data: statusData, isLoading: isGetBoardStatusesLoading, isError: isGetBoardStatusesError } = useGetBoardStatusesQuery(boardId ?? skipToken)
 	const board = useAppSelector((state) => state.board)
 
 	useEffect(() => {
@@ -40,9 +41,15 @@ export const Board = () => {
 		}
 	}, [boardData, statusData, boardTicketData])
 
+
 	return (
 		<div className = "tw-space-y-2">
 			<ArrowButton text="Back" onClick={() => navigate(-1)}/>
+			{(!isGetBoardLoading && isGetBoardError) || (!isGetBoardTicketsLoading && isGetBoardTicketsError) || (!isGetBoardStatusesLoading && isGetBoardStatusesError) ? 
+				(
+					<Banner message = {"Something went wrong!"} type = "failure"/>
+				) : null
+			}
 			{ !isGetBoardLoading && !isGetBoardTicketsLoading && !isGetBoardStatusesLoading ? 
 				<>
 					<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>

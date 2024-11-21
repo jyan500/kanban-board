@@ -16,7 +16,9 @@ interface Props {
 export const SideBar = ({isFetching}: Props) => {
 	const sideBar = useAppSelector((state) => state.nav)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
+	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { organizations } = useAppSelector((state) => state.org)
+	const isAdminOrBoardAdmin = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const dispatch = useAppDispatch()
 	const { pathname } = useLocation()
 	const links = [
@@ -24,17 +26,19 @@ export const SideBar = ({isFetching}: Props) => {
 		pathname: "/", text: "Dashboard",
 	},
 	{
-		pathname: "/organizations", text: "Organizations",
-	},
-	{
 		pathname: "/boards", text: "Boards",
 	},
 	{
 		pathname: "/tickets", text: "Tickets",
 	},
-	{
-		pathname: "/users", text: "Users",
-	},
+	...(isAdminOrBoardAdmin ? [
+		{
+			pathname: "/users", text: "Users",
+		},
+		{
+			pathname: "/organization", text: "Organization",
+		},
+	] : []),
 	{
 		pathname: "/account", text: "Account",
 	},
