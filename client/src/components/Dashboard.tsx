@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect} from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import "../styles/dashboard.css"
-import { useNavigate, Link } from "react-router-dom" 
+import { useNavigate, useLocation, Link } from "react-router-dom" 
 import { useGetUserOrganizationsQuery, useSwitchUserOrganizationMutation } from "../services/private/userProfile"
 import { useGetTicketsQuery } from "../services/private/ticket"
 import { Ticket, Organization, Toast, OptionType } from "../types/common"
@@ -16,10 +16,12 @@ import { USER_PROFILE_ORG_URL } from "../helpers/urls"
 import { PaginationRow } from "./page-elements/PaginationRow"
 import { TicketRow } from "./TicketRow" 
 import { TICKETS } from "../helpers/routes"
+import { Banner } from "./page-elements/Banner"
 
 export const Dashboard = () => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
+	const location = useLocation()
 	const [assignedToPage, setAssignedToPage] = useState(1)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const [switchOrgId, setSwitchOrgId] = useState<number | null>(null)
@@ -55,45 +57,48 @@ export const Dashboard = () => {
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-row tw-justify-between tw-h-full tw-gap-x-4">
-			<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
-				<h1>Organizations</h1>
-				<div>
-					<AsyncSelect 
-						ref={selectRef}
-						cacheKey={cacheKey} 
-						urlParams={{}} 
-						onSelect={(selectedOption: OptionType | null) => {
-							if (selectedOption){
-								setSwitchOrgId(Number(selectedOption.value))
-							}
-						}} 
-						endpoint={USER_PROFILE_ORG_URL} 
-						className = "tw-w-full"
-					/>
+		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
+			{location?.state?.alert ? <Banner message = {location.state.alert} type = "failure"/> : null}
+			<div className = "tw-w-full tw-flex tw-flex-row tw-h-full tw-gap-x-4">
+				<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
+					<h1>Organizations</h1>
+					<div>
+						<AsyncSelect 
+							ref={selectRef}
+							cacheKey={cacheKey} 
+							urlParams={{}} 
+							onSelect={(selectedOption: OptionType | null) => {
+								if (selectedOption){
+									setSwitchOrgId(Number(selectedOption.value))
+								}
+							}} 
+							endpoint={USER_PROFILE_ORG_URL} 
+							className = "tw-w-full"
+						/>
+					</div>
+					<button onClick={switchOrganization} className = "button">Switch Organization</button>
 				</div>
-				<button onClick={switchOrganization} className = "button">Switch Organization</button>
-			</div>
-			<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
-				<div className = "tw-flex tw-flex-row tw-justify-between">
-					<h1>Assigned To Me</h1>
-					<PaginationRow setPage={setAssignedToPage} showPageNums={false} paginationData={tickets?.pagination}/>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
+					<div className = "tw-flex tw-flex-row tw-justify-between">
+						<h1>Assigned To Me</h1>
+						<PaginationRow setPage={setAssignedToPage} showPageNums={false} paginationData={tickets?.pagination}/>
+					</div>
+					<div>
+						{tickets?.data?.map((ticket: Ticket) => {
+							return (
+								<Link key={`assigned_to_${ticket.id}`} to={`${TICKETS}/${ticket.id}`}>
+									<TicketRow 
+										key={`assigned_to_ticket_${ticket.id}`} 
+										ticket={ticket}
+									/>
+								</Link>
+							)
+						})}
+					</div>
 				</div>
-				<div>
-					{tickets?.data?.map((ticket: Ticket) => {
-						return (
-							<Link key={`assigned_to_${ticket.id}`} to={`${TICKETS}/${ticket.id}`}>
-								<TicketRow 
-									key={`assigned_to_ticket_${ticket.id}`} 
-									ticket={ticket}
-								/>
-							</Link>
-						)
-					})}
+				<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
+					<h1>Watched Tickets</h1>
 				</div>
-			</div>
-			<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
-				<h1>Watched Tickets</h1>
 			</div>
 		</div>
 	)	

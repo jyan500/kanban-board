@@ -9,7 +9,7 @@ const UserRoleProtectedLayout = () => {
 	const isAdminOrBoardAdmin = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 
 	if (!isAdminOrBoardAdmin){
-		return <Navigate replace to = {"/"} state={{alert: "You don't permission to access this page"}}/>
+		return <Navigate replace to = {"/"} state={{alert: "You don't have permission to access this page"}}/>
 	}
 
 	return (

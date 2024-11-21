@@ -6,6 +6,18 @@ import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { FaCircleXmark as FailureIcon } from "react-icons/fa6"
 import { IconContext } from "react-icons"
 
+export const iconMap: {[key: string]: ReactNode} = {
+	success: <SuccessIcon/>,
+	failure: <FailureIcon/>,
+	warning: <WarningIcon/>	
+}
+
+export const colorMap: {[key: string]: string} = {
+	success: "var(--bs-success)",	
+	failure: "var(--bs-danger)",
+	warning: "var(--bs-warning)",
+}
+	
 type Props = {
 	id: string
 	message: string
@@ -16,16 +28,6 @@ type Props = {
 }
 
 export const Toast = ({id, message, type, onClose, animationStyle, animationHandler}: Props) => {
-	const iconMap: {[key: string]: ReactNode} = {
-		success: <SuccessIcon/>,
-		failure: <FailureIcon/>,
-		warning: <WarningIcon/>	
-	}
-	const colorMap: {[key: string]: string} = {
-		success: "var(--bs-success)",	
-		failure: "var(--bs-danger)",
-		warning: "var(--bs-warning)",
-	}
 	const toastIcon = iconMap[type] as ReactNode || null
 	const color = colorMap[type] as string
 	return (
