@@ -39,7 +39,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 			id: uuidv4(),
 			type: "success",
 			animationType: "animation-in",
-			message: "Ticket watcher added successfully!"
+			message: "You are now watching this ticket!"
 		}
 		try {
 			if (ticketId && userId){
