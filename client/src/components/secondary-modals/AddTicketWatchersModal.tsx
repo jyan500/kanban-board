@@ -65,7 +65,7 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 			    	}).unwrap()
 			    	dispatch(addToast({
 			    		...defaultToast,
-			    		message: "Ticket watcher added successfully!",
+			    		message: "You are now watching this ticket!",
 			    		type: "success"
 			    	}))
 		    	}
@@ -87,7 +87,7 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 	const deleteWatcher = async (userId: number) => {
 		let defaultToast: Toast = {
 			id: uuidv4(),
-			message: "Something went wrong while linking ticket.",
+			message: "Something went wrong when un-watching ticket.",
 			animationType: "animation-in",
 			type: "failure"
 		}

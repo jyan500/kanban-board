@@ -23,11 +23,13 @@ export const Dashboard = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
 	const [assignedToPage, setAssignedToPage] = useState(1)
+	const [watchingPage, setWatchingPage] = useState(1)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const [switchOrgId, setSwitchOrgId] = useState<number | null>(null)
 	const [cacheKey, setCacheKey] = useState(uuidv4())
 	const [switchUserOrganization, {isLoading, error}] = useSwitchUserOrganizationMutation()
-	const {data: tickets, isFetching: isTicketsFetching} = useGetTicketsQuery({sortBy: "createdAt", order: "desc", page: assignedToPage, assignedToUser: userProfile?.id}) 
+	const {data: assignedTickets, isFetching: isAssignedTicketsFetching} = useGetTicketsQuery({sortBy: "createdAt", order: "desc", page: assignedToPage, assignedToUser: userProfile?.id}) 
+	const {data: watchedTickets, isFetching: isWatchedTicketsFetching} = useGetTicketsQuery({sortBy: "createdAt", order: "desc", page: assignedToPage, assignedToUser: userProfile?.id, isWatching: true}) 
 	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 
 	const switchOrganization = async () => {
@@ -81,10 +83,10 @@ export const Dashboard = () => {
 				<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
 					<div className = "tw-flex tw-flex-row tw-justify-between">
 						<h1>Assigned To Me</h1>
-						<PaginationRow setPage={setAssignedToPage} showPageNums={false} paginationData={tickets?.pagination}/>
+						<PaginationRow setPage={setAssignedToPage} showPageNums={false} paginationData={assignedTickets?.pagination}/>
 					</div>
 					<div>
-						{tickets?.data?.map((ticket: Ticket) => {
+						{assignedTickets?.data?.map((ticket: Ticket) => {
 							return (
 								<Link key={`assigned_to_${ticket.id}`} to={`${TICKETS}/${ticket.id}`}>
 									<TicketRow 
@@ -97,7 +99,22 @@ export const Dashboard = () => {
 					</div>
 				</div>
 				<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
-					<h1>Watched Tickets</h1>
+					<div className = "tw-flex tw-flex-row tw-justify-between">
+						<h1>Watched Tickets</h1>
+						<PaginationRow setPage={setWatchingPage} showPageNums={false} paginationData={watchedTickets?.pagination}/>
+					</div>
+					<div>
+						{watchedTickets?.data?.map((ticket: Ticket) => {
+							return (
+								<Link key={`watching_${ticket.id}`} to={`${TICKETS}/${ticket.id}`}>
+									<TicketRow 
+										key={`watching_ticket_${ticket.id}`} 
+										ticket={ticket}
+									/>
+								</Link>
+							)
+						})}
+					</div>
 				</div>
 			</div>
 		</div>
