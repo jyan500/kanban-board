@@ -4,6 +4,7 @@ export const LOGIN_URL = `/${API_VERSION}/user/login`
 export const ORG_LOGIN_URL = `/${API_VERSION}/user/org-login`
 export const REGISTER_URL = `/${API_VERSION}/user/register`
 export const ORGANIZATION_URL = `/${API_VERSION}/organization`
+export const USER_REGISTRATION_REQUEST_URL = `/${API_VERSION}/organization/registration-request`
 export const USER_PROFILE_URL = `/${API_VERSION}/user-profile`
 export const USER_PROFILE_ORG_URL = `${USER_PROFILE_URL}/organization`
 export const USER_ROLE_URL = `/${API_VERSION}/user-role/`

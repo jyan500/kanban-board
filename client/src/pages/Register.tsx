@@ -6,6 +6,7 @@ import { useUserRegisterMutation } from "../services/public/register"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { v4 as uuidv4 } from "uuid" 
 import { LOGIN } from "../helpers/routes"
+import { useGetOrganizationQuery } from "../services/public/organization" 
 import "../styles/register.css" 
 
 type FormValues = {
@@ -13,6 +14,7 @@ type FormValues = {
 	lastName: string
 	email: string
 	password: string
+	organizationId: number
 	confirmPassword: string
 }
 
@@ -21,19 +23,21 @@ export const Register = () => {
 	const navigate = useNavigate()
 	const { register: formRegister, handleSubmit, formState: {errors} } = useForm<FormValues>()
 	const [ userRegister, { isLoading, error }] = useUserRegisterMutation()
+	const {data: orgData} = useGetOrganizationQuery()
 	const [showPassword, setShowPassword] = useState(false)
 	const registerOptions = {
 		firstName: { required: "First Name is required"},
 		lastName: { required: "Last Name is required"},
 	    email: { required: "Email is required" },
 	    password: { required: "Password is required"},
-	    confirmPassword: { required: "Confirm Password is required"}
+	    confirmPassword: { required: "Confirm Password is required"},
+	    organizationId: { required: "Organization is required"},
     }
 
 	const onSubmit = async (values: FormValues) => {
 		try {
 			const data = await userRegister(values).unwrap()
-    		navigate(LOGIN, {state: {"alert": "User registered successfully!"}, replace: true})
+    		navigate(LOGIN, {state: {"alert": "User registered successfully! Check your email to see when your selected organization has approved your account."}, replace: true})
 		}
 		catch (err) {
 			console.log(err)
@@ -86,6 +90,22 @@ export const Register = () => {
 						/>
 				        {errors?.email && <small className = "--text-alert">{errors.email.message}</small>}
 				 	</div>
+			    </div>
+		        <div>
+				    <label className = "label" htmlFor = "register-organization">
+				    	Organization: <span className = "tw-font-bold tw-text-red-500">*</span>
+				    </label>
+					<select 
+						className = "tw-w-full"
+						id = "register-organization"
+						{...formRegister("organizationId", registerOptions.organizationId)}
+					>
+						<option value = "">---</option>
+						{ 
+							orgData?.map((org) => <option key = {org.id} value = {org.id}>{org.name}</option>)
+						}
+					</select>
+			        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
 			    </div>
 			    <div>
 			    	<div>
