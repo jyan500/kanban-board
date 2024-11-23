@@ -30,7 +30,7 @@ describe("routes: user", function() {
       done();
     });
   });
-	describe("GET /api/user", () => {
+	describe("POST /api/user", () => {
 		it("should register user", (done) => {
 			chai.request(app).post("/api/user/register").send({
 				first_name: "Jansen",
@@ -38,11 +38,15 @@ describe("routes: user", function() {
 				email: "jansen@jansen-test-company.com",
 				password: "Fakepassword123!",
 				confirm_password: "Fakepassword123!",
+				organization_id: 1
 			}).end(async (err, res) => {
 				res.status.should.equal(200)
 				res.type.should.equal("application/json")
 				const user = await db("users").where("email", "jansen@jansen-test-company.com").first()
 				assert.isNotNull(user)
+				// should've also created a registration request
+				const regRequest = await db("user_registration_requests").where("user_id", user?.id).first()
+				assert.isNotNull(regRequest)
 				done()
 			})	
 		})	
@@ -54,6 +58,7 @@ describe("routes: user", function() {
 				email: "jansen@jansen-test-company.com",
 				password: "Fakepassword123!",
 				confirm_password: "notthesamepassword",
+				organization_id: 1,
 			}).end((err, res) => {
 				res.status.should.equal(422)
 				res.type.should.equal("application/json")
@@ -67,6 +72,7 @@ describe("routes: user", function() {
 				email: "jansen",
 				password: "Fakepassword123!",
 				confirm_password: "Fakepassword123!",
+				organization_id: 1,
 			}).end((err, res) => {
 				res.status.should.equal(422)
 				res.type.should.equal("application/json")
@@ -80,6 +86,7 @@ describe("routes: user", function() {
 				email: "jansen",
 				password: "123abc",
 				confirm_password: "123abc",
+				organization_id: 1,
 			}).end((err, res) => {
 				res.status.should.equal(422)
 				res.type.should.equal("application/json")
@@ -96,6 +103,7 @@ describe("routes: user", function() {
 				email: "jansen@jansen-test-company.com",
 				password: "Fakepassword123!",
 				confirm_password: "Fakepassword123!",
+				organization_id: 1,
 			})
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")
@@ -123,6 +131,7 @@ describe("routes: user", function() {
 				email: "jansen@jansen-test-company.com",
 				password: "Fakepassword123!",
 				confirm_password: "Fakepassword123!",
+				organization_id: 1
 			})
 			res.status.should.equal(200)
 			res.type.should.equal("application/json")

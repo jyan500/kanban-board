@@ -46,11 +46,15 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 	try {
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(req.body.password, salt)
-		await db("users").insert({
+		const user = await db("users").insert({
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
 			email: req.body.email,
 			password: hash
+		}, ["id"])
+		await db("user_registration_requests").insert({
+			user_id: user[0],
+			organization_id: req.body.organization_id
 		})
 		res.json({message: "User registered successfully!"})
 	}

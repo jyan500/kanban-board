@@ -18,6 +18,8 @@ const registerValidator = [
 			})	
 		})
 	}),
+	body("organization_id").notEmpty().withMessage("Organization is required")
+	.custom(async (value, {req}) => await checkEntityExistsIn("priority", value, [{"col": "id", "value": value}], "organizations")),
 	body("password").notEmpty().withMessage("Password is required")
 		.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
 			"Password must be at least 6 characters long, " + 

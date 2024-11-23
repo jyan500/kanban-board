@@ -12,6 +12,13 @@ export interface UserRole {
 	name: string
 }
 
+export interface UserRegistrationRequest {
+	id: number	
+	userId: number
+	organizationId: number
+	user?: Omit<UserProfile, "organizationId" | "userRoleId">
+}
+
 export interface Organization {
 	id: number
 	name: string
