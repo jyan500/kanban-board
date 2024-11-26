@@ -23,7 +23,7 @@ export const useBoardConfig = () => {
 		linkCol: "name",
 		link: (id: string) => `/boards/${id}`,
 		modifiers: {
-			"assignees": { modifier: userProfileModifier, object: userProfiles },
+			"assignees": { modifier: userProfileModifier, object: [] },
 			"lastModified": { modifier: dateModifier, object: [] },
 		},
 		...(isAdminOrBoardAdmin ? {editCol: {col: "edit", text: "Edit", onClick: (id: number) => {
