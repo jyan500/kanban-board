@@ -9,7 +9,7 @@ export const organizationApi = privateApi.injectEndpoints({
 	endpoints: (builder) => ({
 		getRegistrationRequests: builder.query<ListResponse<UserRegistrationRequest>, void>({
 			query: () => ({
-				url: `${USER_REGISTRATION_REQUEST_URL}/me`,
+				url: `${USER_REGISTRATION_REQUEST_URL}/`,
 				method: "GET",
 			})	
 		}),

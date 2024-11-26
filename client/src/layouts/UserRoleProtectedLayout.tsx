@@ -8,9 +8,9 @@ const UserRoleProtectedLayout = () => {
 	const { organizations } = useAppSelector((state) => state.org)
 	const isAdminOrBoardAdmin = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 
-	if (!isAdminOrBoardAdmin){
-		return <Navigate replace to = {"/"} state={{alert: "You don't have permission to access this page"}}/>
-	}
+	// if (!isAdminOrBoardAdmin){
+	// 	return <Navigate replace to = {"/"} state={{alert: "You don't have permission to access this page"}}/>
+	// }
 
 	return (
 		<>

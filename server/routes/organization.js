@@ -18,29 +18,17 @@ router.get("/", async (req, res, next) => {
 
 router.get("/registration-request", authenticateToken, authenticateUserRole(["ADMIN", "BOARD_ADMIN"]), async (req, res, next) => {
 	try {
-		const registrationRequest = await db("user_registration_requests").where("organization_id", req.user.organization).where("approved_at", null)
+		const registrationRequest = await db("user_registration_requests").where("organization_id", req.user.organization).join("users", "user_registration_requests.user_id", "=", "users.id").where("approved_at", null)
 		.select(
 			"user_registration_requests.id as id",
 			"user_registration_requests.user_id as userId",
+			"users.first_name as firstName",
+			"users.last_name as lastName",
+			"users.email as email",
+			"user_registration_requests.created_at as createdAt"
 		)
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})		
-		Promise.all(registrationRequest.data.map(async (regRequest) => {
-			const user = await db("users").where("id", regRequest.userId).select(
-				"users.id as id", 
-				"users.first_name as firstName", 
-				"users.last_name as lastName", 
-				"users.email as email"
-			).first()
-			return {
-				...regRequest,
-				user: user
-			}
-		})).then((resData) => {
-			res.json({
-				data: resData,
-				pagination: registrationRequest.pagination,
-			})
-		})
+		res.json(registrationRequest)
 	}	
 	catch (err) {
 		console.log(`Error while getting registration requests: ${err.message}`)	
