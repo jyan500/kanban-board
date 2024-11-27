@@ -8,6 +8,17 @@ export const userProfileModifier = (row: Array<Pick<UserProfile, "firstName" | "
 	}, []).join(", ") : ""
 }
 
+export const userRoleModifier = (row: number, userRoles: {[id: number]: string}) => {
+	console.log("userRoles: ", userRoles)
+	console.log("row: ", row)
+	if (userRoles && Object.keys(userRoles).length > 0 && row in userRoles){
+		return userRoles[row]	
+	}
+	else {
+		return ""
+	}
+}
+
 // convert UTC timestamp from backend to date format for display
 export const dateModifier = (date: string) => {
 	return new Date(date).toLocaleDateString()	

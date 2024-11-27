@@ -217,7 +217,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
                 	clearable={false}
                 	onBlur={(e) => toggleFieldVisibility("assignees", false)}
                 	defaultValue={{value: ticketAssignees?.[0]?.id.toString() ?? "", label: displayUser(ticketAssignees?.[0]) ?? ""}}
-                	urlParams={{filterOnUserRole: true}} 
+                	urlParams={{forSelect: true, filterOnUserRole: true}} 
                 	onSelect={async (selectedOption: {label: string, value: string} | null) => {
                 		const val = selectedOption?.value ?? ""
                 		if (!isNaN(Number(val))){

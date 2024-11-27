@@ -9,14 +9,14 @@ router.get("/", async (req, res, next) => {
 		const userProfiles = await db("organization_user_roles")
 			.join("users", "users.id", "=", "organization_user_roles.user_id")
 			.where("organization_user_roles.organization_id", organizationId)
+			.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
 			.modify((queryBuilder) => {
 				if (req.query.query){
 					queryBuilder.whereILike("users.first_name", `%${req.query.query}%`).orWhereILike("users.last_name", `%${req.query.query}%`)
 				}
 				if (req.query.filterOnUserRole){
 					if (userRole === "USER"){
-						queryBuilder.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
-						.where("user_roles.name", "USER")	
+						queryBuilder.where("user_roles.name", "USER")	
 					}
 				}
 				if (req.query.excludeUsers){
@@ -37,14 +37,16 @@ router.get("/", async (req, res, next) => {
 			.select(
 				"users.id as id", 
 				"users.first_name as firstName", 
-				"users.last_name as lastName") 
+				"users.last_name as lastName",
+				"user_roles.id as userRoleId",
+				"users.email as email") 
 			.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		const userProfilesParsed = userProfiles.data.map((userProfile) => {
+		const userProfilesParsed = req.query.forSelect ? userProfiles.data.map((userProfile) => {
 			return {
 				id: userProfile.id,
 				name: userProfile.firstName + " " + userProfile.lastName
 			}
-		})
+		}) : userProfiles.data
 		res.json({
 			...userProfiles,
 			data: userProfilesParsed
