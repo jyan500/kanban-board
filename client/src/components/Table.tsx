@@ -19,7 +19,7 @@ export const Table = ({config, data}: Props) => {
 			<thead>
 				<tr>
 					{config.bulkEdit?.isEnabled ? (
-						<th><input type = "checkbox" checked={itemIds.length === allIds?.length} onChange={(e) => {
+						<th><input type = "checkbox" checked={itemIds.length === allIds?.length && itemIds.length !== 0} onChange={(e) => {
 							config.bulkEdit?.onClickAll(allIds)
 						}}/></th>
 					) : null}
