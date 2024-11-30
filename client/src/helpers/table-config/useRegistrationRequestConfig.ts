@@ -1,3 +1,4 @@
+import React, {useState} from "react"
 import { userProfileModifier, dateModifier } from "../table-modifiers/display-modifiers"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks" 
 import { setModalType, toggleShowModal } from "../../slices/modalSlice" 
@@ -15,14 +16,15 @@ export type RegistrationRequestConfigType = {
 	editCol: Record<string, any>
 }
 
-export const useRegistrationRequestConfig = () => {
+export const useRegistrationRequestConfig = (itemIds: Array<number>) => {
 	const { userProfiles, userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
-	const { ids: itemIds, selectAll } = useAppSelector((state) => state.bulkEdit) 
+	// const { ids: itemIds, selectAll } = useAppSelector((state) => state.bulkEdit) 
 	const dispatch = useAppDispatch()
 	const isAdminOrBoardAdmin = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const [ updateRegistrationRequest, {isLoading: isUpdateRegLoading, error: updateRegError} ] = useUpdateRegistrationRequestMutation()
 	const [ bulkEditRegistrationRequests, {isLoading: isBulkEditRegLoading, error: bulkEditRegError} ] = useBulkEditRegistrationRequestsMutation()
+	const [ ids, setIds ] = useState<Array<number>>(itemIds)
 	return {
 		headers: {
 			"firstName": "First Name", 
@@ -36,15 +38,18 @@ export const useRegistrationRequestConfig = () => {
 		},
 		bulkEdit: {
 			isEnabled: true,
-			onClickAll: (ids: Array<number>) => {
-				dispatch(updateIds(ids))
+			getIds: () => {
+				return ids
+			},
+			updateIds: (ids: Array<number>) => {
+				setIds(ids)
 			},
 			onClick: (id: number) => {
-				if (itemIds.includes(id)){
-					dispatch(updateIds(itemIds.filter((itemId) => id !== itemId)))
+				if (ids.includes(id)){
+					setIds(ids.filter((itemId) => id !== itemId))
 				}
 				else {
-					dispatch(updateIds([...itemIds, id]))
+					setIds([...ids, id])
 				}
 			},
 			approveAll: async () => {
@@ -55,7 +60,7 @@ export const useRegistrationRequestConfig = () => {
 					message: "User registrations have been approved!"
 				}
 				try {
-					await bulkEditRegistrationRequests(itemIds).unwrap()
+					await bulkEditRegistrationRequests(ids).unwrap()
 					dispatch(addToast(defaultToast))
 				}
 				catch (e) {
@@ -66,7 +71,7 @@ export const useRegistrationRequestConfig = () => {
 					}))
 				}
 				// un-select all ids
-				dispatch(updateIds([]))
+				setIds([])
 			}
 		},
 		editCol: {

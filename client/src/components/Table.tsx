@@ -7,11 +7,12 @@ import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks"
 type Props = {
 	config: Record<string, any>
 	data: Array<Record<string, any>> | undefined 
+	itemIds?: Array<number>
 }
 
-export const Table = ({config, data}: Props) => {
+export const Table = ({config, data, itemIds}: Props) => {
 	const [tableKey, setTableKey] = useState(uuidv4())
-	const { selectAll, ids: itemIds } = useAppSelector((state) => state.bulkEdit)
+	// const { selectAll, ids: itemIds } = useAppSelector((state) => state.bulkEdit)
 	const allIds = data?.map((row) => row.id)
 
 	return (
@@ -19,8 +20,8 @@ export const Table = ({config, data}: Props) => {
 			<thead>
 				<tr>
 					{config.bulkEdit?.isEnabled ? (
-						<th><input type = "checkbox" checked={itemIds.length === allIds?.length && itemIds.length !== 0} onChange={(e) => {
-							config.bulkEdit?.onClickAll(allIds)
+						<th><input type = "checkbox" checked={itemIds?.length === allIds?.length && itemIds?.length !== 0} onChange={(e) => {
+							config.bulkEdit?.updateIds(allIds)
 						}}/></th>
 					) : null}
 					{(Object.values(config.headers) as Array<string>).map((header) => (
@@ -34,7 +35,7 @@ export const Table = ({config, data}: Props) => {
 					return (
 						<tr key = {`${tableKey}-${row.id}`}>
 							{config.bulkEdit?.isEnabled ? 
-								(<td><input type = "checkbox" checked = {itemIds.includes(row.id)} onChange={(e) => config.bulkEdit?.onClick(row.id)}/></td>) 
+								(<td><input type = "checkbox" checked = {itemIds?.includes(row.id)} onChange={(e) => config.bulkEdit?.onClick(row.id)}/></td>) 
 							: null}
 							{
 								Object.keys(config.headers).map((headerKey) => {

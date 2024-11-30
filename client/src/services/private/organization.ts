@@ -7,10 +7,11 @@ import { privateApi } from "../private"
 export const organizationApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
-		getRegistrationRequests: builder.query<ListResponse<UserRegistrationRequest>, void>({
-			query: () => ({
+		getRegistrationRequests: builder.query<ListResponse<UserRegistrationRequest>, Record<string,any>>({
+			query: (urlParams) => ({
 				url: `${USER_REGISTRATION_REQUEST_URL}/`,
 				method: "GET",
+				params: urlParams
 			}),
 			providesTags: ["RegistrationRequests"]
 
