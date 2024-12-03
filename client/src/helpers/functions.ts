@@ -131,6 +131,20 @@ export const displayUser = (user: Pick<UserProfile, "firstName" | "lastName"> | 
 	return user ? (user.firstName + " " + user.lastName) : ""
 }
 
+/**
+ * @param word consisting of delimiter
+ * @param delimiter used to delimit the word
+ * @return string where the delimiter is replaced with white space, and then first character of each string is capitalized
+ * and the remaining characters are lowercase
+ * for example: BOARD_ADMIN becomes Board Admin
+ */
+export const parseDelimitedWord = (word: string, delimiter: string) => {
+	const parts = word.split(delimiter)
+	// capitalize the first character of each word, and the rest of the word is lowercase
+	const edited = parts.map((part) => part[0].toUpperCase() + part.slice(1, part.length).toLowerCase())
+	return edited.join(" ")
+}
+
 
 
 

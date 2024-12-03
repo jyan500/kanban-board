@@ -5,6 +5,7 @@ import { selectCurrentTicketId } from "../slices/boardSlice"
 import { setModalType, setModalProps, toggleShowModal } from "../slices/modalSlice" 
 import { AddTicketFormModal } from "./primary-modals/AddTicketFormModal" 
 import { EditTicketFormModal } from "./primary-modals/EditTicketFormModal" 
+import { EditUserFormModal } from "./primary-modals/EditUserFormModal"
 import { StatusForm } from "./StatusForm" 
 import { BoardForm } from "./BoardForm" 
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
@@ -15,6 +16,7 @@ export const modalTypes = {
 	"EDIT_TICKET_FORM": EditTicketFormModal,
 	"STATUS_FORM": StatusForm,
 	"BOARD_FORM": BoardForm,
+	"USER_FORM": EditUserFormModal,
 }
 
 export const modalClassNames = {

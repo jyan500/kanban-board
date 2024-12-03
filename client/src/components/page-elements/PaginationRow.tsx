@@ -15,9 +15,10 @@ interface Props {
 	urlParams?: Record<string, any>
 	currentPage?: number
 	showNumResults?: boolean
+	customPageParam?: string
 }
 
-export const PaginationRow = ({showPageNums, showNumResults, paginationData, setPage, url, urlParams, currentPage}: Props) => {
+export const PaginationRow = ({showPageNums, showNumResults, paginationData, setPage, url, urlParams, currentPage, customPageParam}: Props) => {
 
 	return (
 		<div className = {`tw-flex tw-flex-row tw-items-center tw-gap-x-4`}>
@@ -43,7 +44,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
 										{
 											Array.from(Array(paginationData.lastPage), (_, i) => {
 												const urlParamsWithPage = {
-													page: i+1,
+													[customPageParam ?? "page"]: i+1,
 													...urlParams
 												}
 											return (

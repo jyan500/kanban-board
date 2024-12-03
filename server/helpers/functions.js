@@ -44,6 +44,22 @@ const mapIdToRowAggregateArray = (dbObjArray, specificColumn) => {
 	return obj
 } 
 
+/*  similar to mapIdToRowAggregateArray, but append object instead of a singular column*/
+const mapIdToRowAggregateObjArray = (dbObjArray, additionalColumns) => {
+	let obj = {}
+	dbObjArray.map((row) => {
+		if (!(row.id in obj)){
+			obj[row.id] = []
+		}
+		let res = {}
+		for (key of additionalColumns){
+			res[key] = row[key]
+		}
+		obj[row.id].push(res)
+	})
+	return obj
+} 
+
 /* maps an id to its row */
 const mapIdToRowObject = (dbObjArray) => {
 	let obj = {}	
@@ -55,5 +71,6 @@ const mapIdToRowObject = (dbObjArray) => {
 
 module.exports = {
 	mapIdToRowObject,
-	mapIdToRowAggregateArray
+	mapIdToRowAggregateArray,
+	mapIdToRowAggregateObjArray
 }

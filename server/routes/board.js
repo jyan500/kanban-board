@@ -15,7 +15,7 @@ const {
 }  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
-const { mapIdToRowAggregateArray, mapIdToRowObject } = require("../helpers/functions") 
+const { mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -51,10 +51,11 @@ router.get("/", async (req, res, next) => {
 			.whereIn("boards.id", boards.data.map((b) => b.id))
 			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
 			.join("tickets_to_users", "tickets_to_boards.ticket_id", "=", "tickets_to_users.ticket_id")
+			.join("users", "tickets_to_users.user_id", "=", "users.id")
 			.groupBy("boards.id")
 			.groupBy("tickets_to_users.user_id")
-			.select("boards.id as id", "tickets_to_users.user_id")
-			boardAssigneesRes = mapIdToRowAggregateArray(boardAssignees, "user_id")
+			.select("boards.id as id", "tickets_to_users.user_id as userId", "users.first_name as firstName", "users.last_name as lastName")
+			boardAssigneesRes = mapIdToRowAggregateObjArray(boardAssignees, ["userId", "firstName", "lastName"])
 		}
 
 		let numTickets;

@@ -164,7 +164,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 			                render={({ field: { onChange, value, name, ref } }) => (
 		                	<AsyncSelect 
 			                	endpoint={USER_PROFILE_URL} 
-			                	urlParams={{}} 
+			                	urlParams={{forSelect: true}} 
 			                	className={"tw-w-full"}
 			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 			                		onChange(selectedOption?.value ?? "") 	

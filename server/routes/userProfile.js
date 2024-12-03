@@ -1,6 +1,8 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
+const { getUserValidator, editUserValidator } = require("../validation/user")
+const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -9,14 +11,14 @@ router.get("/", async (req, res, next) => {
 		const userProfiles = await db("organization_user_roles")
 			.join("users", "users.id", "=", "organization_user_roles.user_id")
 			.where("organization_user_roles.organization_id", organizationId)
+			.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
 			.modify((queryBuilder) => {
 				if (req.query.query){
 					queryBuilder.whereILike("users.first_name", `%${req.query.query}%`).orWhereILike("users.last_name", `%${req.query.query}%`)
 				}
 				if (req.query.filterOnUserRole){
 					if (userRole === "USER"){
-						queryBuilder.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
-						.where("user_roles.name", "USER")	
+						queryBuilder.where("user_roles.name", "USER")	
 					}
 				}
 				if (req.query.excludeUsers){
@@ -34,17 +36,20 @@ router.get("/", async (req, res, next) => {
 			// 	}
 			// 	// admins can see all users, no condition needed
 			// })
+			.orderBy("first_name", "asc")
 			.select(
 				"users.id as id", 
 				"users.first_name as firstName", 
-				"users.last_name as lastName") 
+				"users.last_name as lastName",
+				"user_roles.id as userRoleId",
+				"users.email as email") 
 			.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		const userProfilesParsed = userProfiles.data.map((userProfile) => {
+		const userProfilesParsed = req.query.forSelect ? userProfiles.data.map((userProfile) => {
 			return {
 				id: userProfile.id,
 				name: userProfile.firstName + " " + userProfile.lastName
 			}
-		})
+		}) : userProfiles.data
 		res.json({
 			...userProfiles,
 			data: userProfilesParsed
@@ -106,8 +111,7 @@ router.get("/organization", async (req, res, next) => {
 
 
 // get a user
-// TODO: make sure the user is a part of the logged in user's organization
-router.get("/:userId", async (req, res, next) => {
+router.get("/:userId", getUserValidator, async (req, res, next) => {
 	try {
 		const userId = req.params.userId
 		const userProfile = await db("organization_user_roles")
@@ -124,6 +128,25 @@ router.get("/:userId", async (req, res, next) => {
 	}	
 	catch (err){
 		console.log(`Error while getting user profile: ${err.message}`)
+		next(err)
+	}
+})
+
+router.put("/:userId", authenticateUserRole(["ADMIN"]), editUserValidator, async (req, res, next) => {
+	try {
+		const userId = req.params.userId
+		await db("users").update({
+			first_name: req.body.first_name,
+			last_name: req.body.last_name,
+			email: req.body.email,
+		}).where("id", userId)
+		await db("organization_user_roles").update({
+			user_role_id: req.body.user_role_id
+		}).where("user_id", userId).where("organization_id", req.user.organization)
+		res.json({message: "User profile updated successfully!"})
+	}	
+	catch (err){
+		console.log(`Error while updating user profile: ${err.message}`)
 		next(err)
 	}
 })

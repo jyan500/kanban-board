@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { SideBar } from "../components/SideBar"
 import { Modal } from "../components/Modal" 
 import { SecondaryModal } from "../components/SecondaryModal" 
+import { LoadingSpinner } from "../components/LoadingSpinner"
 import { TopNav } from "../components/page-elements/TopNav" 
 import { Footer } from "../components/page-elements/Footer"
 import { useGetUserProfileQuery } from "../services/private/userProfile" 
@@ -26,13 +27,23 @@ const ProtectedLayout = () => {
 	const token = useAppSelector((state) => state.auth.token)	
 	const dispatch = useAppDispatch()
     const {data: userProfileData, isFetching: isUserProfileFetching, isError: isUserProfileError } = useGetUserProfileQuery() 
-    const {data: statusData} = useGetStatusesQuery()
-    const {data: ticketTypesData} = useGetTicketTypesQuery()
-    const {data: ticketRelationshipTypeData} = useGetTicketRelationshipTypesQuery()
-    const {data: organizationsData } = useGetOrganizationQuery()
-    const {data: priorityData} = useGetPrioritiesQuery()
-    const {data: userRoleData } = useGetUserRolesQuery()
+    const {data: statusData, isLoading: isStatusDataLoading} = useGetStatusesQuery()
+    const {data: ticketTypesData, isLoading: isTicketTypesDataLoading} = useGetTicketTypesQuery()
+    const {data: ticketRelationshipTypeData, isLoading: isTicketRelationshipTypeLoading} = useGetTicketRelationshipTypesQuery()
+    const {data: organizationsData, isLoading: isOrganizationsDataLoading } = useGetOrganizationQuery()
+    const {data: priorityData, isLoading: isPriorityDataLoading} = useGetPrioritiesQuery()
+    const {data: userRoleData, isLoading: isUserRoleDataLoading } = useGetUserRolesQuery()
     const gutter = {margin: "var(--s-spacing)"}
+
+    const isDataLoaded = !(
+    	isUserProfileFetching && 
+    	isStatusDataLoading && 
+    	isTicketTypesDataLoading && 
+    	isTicketRelationshipTypeLoading && 
+    	isOrganizationsDataLoading && 
+    	isPriorityDataLoading && 
+    	isUserRoleDataLoading
+    )
 
     useEffect(() => {
         // Retrieve user on startup
@@ -76,7 +87,9 @@ const ProtectedLayout = () => {
 			<div className = "tw-flex tw-flex-col tw-gap-y-4">
 				<div className = "tw-px-16 tw-w-full tw-min-h-screen">
 					<TopNav isFetching={isUserProfileFetching}/>
-					<Outlet/>
+					{isDataLoaded ? (
+						<Outlet/>
+					): <LoadingSpinner/>}
 				</div>
 				<Footer/>
 			</div>

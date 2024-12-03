@@ -124,7 +124,7 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 				                	endpoint={USER_PROFILE_URL} 
 				                	cacheKey={cacheKey}
 				                	className={"tw-w-64"}
-				                	urlParams={{excludeUsers: [ticketAssigneeId, ticketWatchers?.map((watcher) => watcher.id)]}} 
+				                	urlParams={{forSelect: true, excludeUsers: [ticketAssigneeId, ticketWatchers?.map((watcher) => watcher.id)]}} 
 				                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 				                		onChange(selectedOption?.value ?? "") 	
 				                	}}
