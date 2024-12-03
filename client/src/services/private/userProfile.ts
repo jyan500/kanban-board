@@ -49,7 +49,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 					user_role_id: userRoleId
 				}
 			}),
-			invalidateTags: ["userProfiles"]
+			invalidatesTags: ["userProfiles"]
 		}),
 		getUserOrganizations: builder.query<ListResponse<Organization>, Record<string, any>>({
 			query: (urlParams) => ({
