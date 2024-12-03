@@ -1,4 +1,4 @@
-const { body } = require("express-validator")
+const { body, param } = require("express-validator")
 const { checkEntityExistsIn } = require("./helper")
 const db = require("../db/db")
 
@@ -44,14 +44,18 @@ const editUserValidator = [
 		.normalizeEmail().custom((value, {req}) => {
 		return new Promise((resolve, reject) => {
 			db("users").where("email", req.body.email).then((res) => {
-				if (res?.length === 0){
-					reject(new Error(`User with email ${req.body.email} could not be found`))
+				if (res?.length > 0){
+					reject(new Error("Email already in use"))
 				}
 				resolve(true)
 			})	
 		})
 	}),
 	body("user_role_id").notEmpty().withMessage("user_role_id is required").custom(async (value, {req}) => await checkEntityExistsIn("userRole", value, [{col: "id", value: value}], "user_roles")),
+]
+
+const getUserValidator = [
+	param("userId").custom(async (value, {req}) => await checkEntityExistsIn("organizationUserRole", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
 ]
 
 const loginValidator = [
@@ -75,5 +79,7 @@ const loginValidator = [
 module.exports = {
 	registerValidator,
 	editUserValidator,
-	loginValidator
+	loginValidator,
+	getUserValidator,
 }
+

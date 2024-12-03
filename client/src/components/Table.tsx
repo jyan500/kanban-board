@@ -8,12 +8,12 @@ type Props = {
 	config: Record<string, any>
 	data: Array<Record<string, any>> | undefined 
 	itemIds?: Array<number>
+	tableKey?: string
 }
 
-export const Table = ({config, data, itemIds}: Props) => {
-	const [tableKey, setTableKey] = useState(uuidv4())
+export const Table = ({config, data, itemIds, tableKey: tKey}: Props) => {
+	const [tableKey, setTableKey] = useState(tKey ?? uuidv4())
 	const allIds = data?.map((row) => row.id)
-
 	return (
 		<table>
 			<thead>

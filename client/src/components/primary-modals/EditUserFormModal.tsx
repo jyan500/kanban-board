@@ -136,7 +136,7 @@ export const EditUserFormModal = ({userId}: Props) => {
 						{
 							userRoles.map((userRole) => {
 								return (
-									<option value = {userRole.id}>{parseDelimitedWord(userRole.name, "_")}</option>
+									<option key={`user-role-${userRole.id}`} value = {userRole.id}>{parseDelimitedWord(userRole.name, "_")}</option>
 								)
 							})
 						}

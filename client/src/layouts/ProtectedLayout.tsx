@@ -88,7 +88,7 @@ const ProtectedLayout = () => {
 				<div className = "tw-px-16 tw-w-full tw-min-h-screen">
 					<TopNav isFetching={isUserProfileFetching}/>
 					{isDataLoaded ? (
-					<Outlet/>
+						<Outlet/>
 					): <LoadingSpinner/>}
 				</div>
 				<Footer/>

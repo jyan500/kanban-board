@@ -47,7 +47,7 @@ export const UsersDisplay = () => {
 						<h1>Registration Requests</h1>
 					</div>
 					<BulkEditToolbar updateIds={regRequestConfig.bulkEdit.updateIds} itemIds={regRequestConfig.bulkEdit.getIds()} applyActionToAll={() => regRequestConfig.bulkEdit.approveAll()} text = {"Approve All"}/>
-					<Table itemIds={regRequestConfig.bulkEdit.getIds()} data={registrationRequests?.data} config={regRequestConfig}/>
+					<Table tableKey={"reg-request"} itemIds={regRequestConfig.bulkEdit.getIds()} data={registrationRequests?.data} config={regRequestConfig}/>
 					<div className = "tw-p-4 tw-border tw-border-gray-300">
 						<PaginationRow
 							showNumResults={true}
@@ -68,7 +68,7 @@ export const UsersDisplay = () => {
 						<div>
 							<h1>Users</h1>
 						</div>
-						<Table data={userProfiles?.data} config={userProfileConfig}/>
+						<Table tableKey={"display-user"} data={userProfiles?.data} config={userProfileConfig}/>
 						<div className = "tw-p-4 tw-border tw-border-gray-300">
 							<PaginationRow
 								showNumResults={true}

@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
-const { editUserValidator } = require("../validation/user")
+const { getUserValidator, editUserValidator } = require("../validation/user")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 
 router.get("/", async (req, res, next) => {
@@ -111,8 +111,7 @@ router.get("/organization", async (req, res, next) => {
 
 
 // get a user
-// TODO: make sure the user is a part of the logged in user's organization
-router.get("/:userId", async (req, res, next) => {
+router.get("/:userId", getUserValidator, async (req, res, next) => {
 	try {
 		const userId = req.params.userId
 		const userProfile = await db("organization_user_roles")
