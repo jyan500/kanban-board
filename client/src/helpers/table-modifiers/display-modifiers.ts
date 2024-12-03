@@ -1,5 +1,5 @@
 import { UserProfile } from "../../types/common"
-import { displayUser } from "../../helpers/functions"
+import { displayUser, parseDelimitedWord } from "../../helpers/functions"
 // replace list of user ids with a string of all users' first and last names
 export const userProfileModifier = (row: Array<Pick<UserProfile, "firstName" | "lastName">>) => {
 	return row?.length ? row?.reduce((acc: Array<string>, r: Pick<UserProfile, "firstName" | "lastName">) => {
@@ -9,10 +9,8 @@ export const userProfileModifier = (row: Array<Pick<UserProfile, "firstName" | "
 }
 
 export const userRoleModifier = (row: number, userRoles: {[id: number]: string}) => {
-	console.log("userRoles: ", userRoles)
-	console.log("row: ", row)
 	if (userRoles && Object.keys(userRoles).length > 0 && row in userRoles){
-		return userRoles[row]	
+		return parseDelimitedWord(userRoles[row], "_")
 	}
 	else {
 		return ""

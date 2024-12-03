@@ -12,7 +12,6 @@ type Props = {
 
 export const Table = ({config, data, itemIds}: Props) => {
 	const [tableKey, setTableKey] = useState(uuidv4())
-	// const { selectAll, ids: itemIds } = useAppSelector((state) => state.bulkEdit)
 	const allIds = data?.map((row) => row.id)
 
 	return (
@@ -41,23 +40,23 @@ export const Table = ({config, data, itemIds}: Props) => {
 								Object.keys(config.headers).map((headerKey) => {
 									if (headerKey === config.linkCol){
 										return (
-											<td key = {`${tableKey}-${headerKey}`}><Link to = {config.link(row.id)}>{row[headerKey]}</Link></td>
+											<td key = {`${tableKey}-${row.id}-${headerKey}`}><Link to = {config.link(row.id)}>{row[headerKey]}</Link></td>
 										)
 									}
 									else if (headerKey === config.editCol?.col){
 										return (
-											<td key = {`${tableKey}-${headerKey}`}><button className = "button" onClick={() => config.editCol?.onClick(row.id)}>{config.editCol?.text}</button></td>
+											<td key = {`${tableKey}-${row.id}-${headerKey}`}><button className = "button" onClick={() => config.editCol?.onClick(row.id)}>{config.editCol?.text}</button></td>
 										)
 									}
 									else if (headerKey in config.modifiers){
 										const {modifier, lookup} = config.modifiers[headerKey]
 										return (
-											<td key = {`${tableKey}-${headerKey}`}>{lookup ? modifier(row[headerKey], lookup) : modifier(row[headerKey])}</td>
+											<td key = {`${tableKey}-${row.id}-${headerKey}`}>{lookup ? modifier(row[headerKey], lookup) : modifier(row[headerKey])}</td>
 										)
 									}
 									else {
 										return (
-											<td key = {`${tableKey}-${headerKey}`}>{row[headerKey]}</td>
+											<td key = {`${tableKey}-${row.id}-${headerKey}`}>{row[headerKey]}</td>
 										)
 									}
 								})

@@ -41,5 +41,6 @@ export const TAG_TYPES = [
 	"Priorities",
 	"TicketRelationshipTypes",
 	"TicketRelationships",
-	"RegistrationRequests"
+	"RegistrationRequests",
+	"userProfiles"
 ]

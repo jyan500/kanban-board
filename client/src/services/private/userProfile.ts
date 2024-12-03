@@ -5,6 +5,14 @@ import { CustomError, ListResponse, Organization, UserProfile } from "../../type
 import { privateApi } from "../private"
 import { UserResponse } from "../public/auth"
 
+type UserProfileRequest = {
+	id?: number
+	firstName: string
+	lastName: string
+	email: string
+	userRoleId: number
+}
+
 export const userProfileApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
@@ -12,20 +20,36 @@ export const userProfileApi = privateApi.injectEndpoints({
 			query: () => ({
 				url: `${USER_PROFILE_URL}/me`,
 				method: "GET",
-			})	
+			}),
+			providesTags: ["userProfiles"]
 		}),
 		getUser: builder.query<UserProfile, number>({
 			query: (userId) => ({
 				url: `${USER_PROFILE_URL}/${userId}`,
 				method: "GET"
-			})
+			}),
+			providesTags: ["userProfiles"]
 		}),
 		getUserProfiles: builder.query<ListResponse<UserProfile>, Record<string, any>>({
 			query: (urlParams) => ({
 				url: USER_PROFILE_URL,	
 				method: "GET",
 				params: urlParams,
-			})
+			}),
+			providesTags: ["userProfiles"]
+		}),
+		editUserProfile: builder.mutation<string, UserProfileRequest>({
+			query: ({id, firstName, lastName, email, userRoleId}) => ({
+				url: `${USER_PROFILE_URL}/${id}`,	
+				method: "PUT",
+				body: {
+					first_name: firstName,
+					last_name: lastName,
+					email: email,
+					user_role_id: userRoleId
+				}
+			}),
+			invalidateTags: ["userProfiles"]
 		}),
 		getUserOrganizations: builder.query<ListResponse<Organization>, Record<string, any>>({
 			query: (urlParams) => ({
@@ -49,5 +73,6 @@ export const {
 	useGetUserProfileQuery, 
 	useGetUserProfilesQuery, 
 	useGetUserOrganizationsQuery, 
+	useEditUserProfileMutation,
 	useSwitchUserOrganizationMutation 
 } = userProfileApi 

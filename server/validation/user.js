@@ -36,6 +36,24 @@ const registerValidator = [
 	}),
 ]
 
+const editUserValidator = [
+	body("first_name").notEmpty().withMessage("First Name is required"),
+	body("last_name").notEmpty().withMessage("Last Name is required"),
+	body("email")
+		.isEmail().withMessage("Invalid email")
+		.normalizeEmail().custom((value, {req}) => {
+		return new Promise((resolve, reject) => {
+			db("users").where("email", req.body.email).then((res) => {
+				if (res?.length === 0){
+					reject(new Error(`User with email ${req.body.email} could not be found`))
+				}
+				resolve(true)
+			})	
+		})
+	}),
+	body("user_role_id").notEmpty().withMessage("user_role_id is required").custom(async (value, {req}) => await checkEntityExistsIn("userRole", value, [{col: "id", value: value}], "user_roles")),
+]
+
 const loginValidator = [
 	body("email")
 		.isEmail().withMessage("Invalid email")
@@ -56,5 +74,6 @@ const loginValidator = [
 
 module.exports = {
 	registerValidator,
+	editUserValidator,
 	loginValidator
 }

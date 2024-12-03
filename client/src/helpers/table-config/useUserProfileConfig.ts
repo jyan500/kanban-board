@@ -1,6 +1,6 @@
 import { userRoleModifier } from "../table-modifiers/display-modifiers"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks" 
-import { setModalType, toggleShowModal } from "../../slices/modalSlice" 
+import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice" 
 import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
 import { Toast, UserRegistrationRequest } from "../../types/common"
 import { toggleToolbar, updateIds, toggleSelectAll } from "../../slices/bulkEditSlice"
@@ -27,51 +27,18 @@ export const useUserProfileConfig = () => {
 			"lastName": "Last Name", 
 			"email": "Email", 
 			"userRoleId": "User Role",
-			"editRole": "",
+			"edit": "",
 		},
 		modifiers: {
-			"userRoleId": { modifier: userRoleModifier, object: userRoleLookup },
-		},
-		bulkEdit: {
-			isEnabled: true,
-			// onClickAll: (ids: Array<number>) => {
-			// 	dispatch(updateIds(ids))
-			// },
-			// onClick: (id: number) => {
-			// 	if (itemIds.includes(id)){
-			// 		dispatch(updateIds(itemIds.filter((itemId) => id !== itemId)))
-			// 	}
-			// 	else {
-			// 		dispatch(updateIds([...itemIds, id]))
-			// 	}
-			// },
-			// approveAll: async () => {
-			// 	const defaultToast: Toast = {
-			// 		id: uuidv4(),
-			// 		type: "success",
-			// 		animationType: "animation-in",
-			// 		message: "User registrations have been approved!"
-			// 	}
-			// 	try {
-			// 		await bulkEditRegistrationRequests(itemIds).unwrap()
-			// 		dispatch(addToast(defaultToast))
-			// 	}
-			// 	catch (e) {
-			// 		dispatch(addToast({
-			// 			...defaultToast,
-			// 			type: "failure",
-			// 			message: "Something went wrong when approving the user registration requests."
-			// 		}))
-			// 	}
-			// 	// un-select all ids
-			// 	dispatch(updateIds([]))
-			// }
+			"userRoleId": { modifier: userRoleModifier, lookup: userRoleLookup },
 		},
 		editCol: {
-			col: "editRole", 
-			text: "Edit Role", 
+			col: "edit", 
+			text: "Edit", 
 			onClick: async (id: number) => {
-				console.log("editing role")
+				dispatch(setModalType("USER_FORM"))
+				dispatch(setModalProps({userId: id}))
+				dispatch(toggleShowModal(true))
 			}
 		},
 	}
