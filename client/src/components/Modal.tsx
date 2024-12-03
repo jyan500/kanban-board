@@ -22,7 +22,6 @@ export const modalTypes = {
 export const modalClassNames = {
 	"ADD_TICKET_FORM": "--l-modal tw-top-[50%]",
 	"EDIT_TICKET_FORM": "--l-modal tw-top-[50%]",
-	"USER_FORM": "--l-modal tw-top-[50%]",
 }
 
 // type for partial subset of keys

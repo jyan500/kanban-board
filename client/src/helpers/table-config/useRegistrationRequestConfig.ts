@@ -4,7 +4,6 @@ import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { setModalType, toggleShowModal } from "../../slices/modalSlice" 
 import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
 import { Toast, UserRegistrationRequest } from "../../types/common"
-import { toggleToolbar, updateIds, toggleSelectAll } from "../../slices/bulkEditSlice"
 import { useBulkEditRegistrationRequestsMutation, useUpdateRegistrationRequestMutation } from "../../services/private/organization"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
@@ -16,15 +15,14 @@ export type RegistrationRequestConfigType = {
 	editCol: Record<string, any>
 }
 
-export const useRegistrationRequestConfig = (itemIds: Array<number>) => {
+export const useRegistrationRequestConfig = () => {
 	const { userProfiles, userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
-	// const { ids: itemIds, selectAll } = useAppSelector((state) => state.bulkEdit) 
 	const dispatch = useAppDispatch()
 	const isAdminOrBoardAdmin = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const [ updateRegistrationRequest, {isLoading: isUpdateRegLoading, error: updateRegError} ] = useUpdateRegistrationRequestMutation()
 	const [ bulkEditRegistrationRequests, {isLoading: isBulkEditRegLoading, error: bulkEditRegError} ] = useBulkEditRegistrationRequestsMutation()
-	const [ ids, setIds ] = useState<Array<number>>(itemIds)
+	const [ ids, setIds ] = useState<Array<number>>([])
 	return {
 		headers: {
 			"firstName": "First Name", 

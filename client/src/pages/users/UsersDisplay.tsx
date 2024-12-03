@@ -23,7 +23,7 @@ export const UsersDisplay = () => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { data: registrationRequests, isFetching: isRegistrationRequestsFetching } = useGetRegistrationRequestsQuery({page: regCurrentPage})
 	const { data: userProfiles, isFetching: isUserProfilesFetching } = useGetUserProfilesQuery({page: userCurrentPage})
-	const regRequestConfig = useRegistrationRequestConfig(registrationRequests?.data?.map((reg) => reg.id) ?? [])
+	const regRequestConfig = useRegistrationRequestConfig()
 	const userProfileConfig = useUserProfileConfig()
 
 	const setRegRequestPage = (page: number) => {

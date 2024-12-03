@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { IoMdClose } from "react-icons/io";
-import { toggleToolbar, toggleSelectAll, updateIds } from "../../slices/bulkEditSlice"
 
 type Props = {
 	applyActionToAll: (ids: Array<number>) => void
