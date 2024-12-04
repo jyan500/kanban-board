@@ -15,7 +15,7 @@ export const TopNav = () => {
 	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
-		if (userProfile){
+		if (userProfile && Object.keys(userProfile).length){
 			setIsLoading(false)
 		}
 	}, [userProfile])
