@@ -97,7 +97,6 @@ const router = createBrowserRouter([
 				{
 					path: USERS,
 					element: <>
-						<ScrollRestoration/>
 						<UsersDisplay/>
 					</>,
 				},
