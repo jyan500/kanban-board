@@ -20,7 +20,7 @@ export const BulkEditToolbar = ({itemIds, applyActionToAll, text, updateIds}: Pr
 				<IoMdClose className = "icon close-button"/>
 			</button>
 			<div><p className = "tw-font-bold tw-text-lg">{itemIds.length} Selected</p></div>
-			<div>
+			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<button onClick={(e) => updateIds([])} className = "button !tw-bg-secondary">Unselect All</button>
 				<button onClick={(e) => applyActionToAll(itemIds)} className = "button">{text}</button>
 			</div>
