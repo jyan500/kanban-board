@@ -8,6 +8,7 @@ const { validateBulkEdit } = require("../validation/organization")
 router.get("/", async (req, res, next) => {
 	try {
 		const organizations = await db("organizations")
+		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})		
 		res.json(organizations)
 	}
 	catch (err){
@@ -128,8 +129,8 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 
 router.get("/:id", async (req, res, next) => {
 	try {
-		const organizations = await db("organizations").where("id", req.params.id)
-		res.json(organizations)
+		const organization = await db("organizations").where("id", req.params.id).first()
+		res.json(organization)
 	}	
 	catch (err){
 		console.log(`Error while getting organizations: ${err.message}`)	

@@ -4,10 +4,13 @@ import { setCredentials } from "../slices/authSlice"
 import { useLoginMutation } from "../services/public/auth" 
 import {v4 as uuidv4} from "uuid"
 import { useLocation, useNavigate, Link } from "react-router-dom" 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { parseErrorResponse } from "../helpers/functions"
 import { useGetOrganizationQuery } from "../services/public/organization" 
 import { REGISTER } from "../helpers/routes"
+import { ORGANIZATION_URL } from "../helpers/urls"
+import { AsyncSelect } from "../components/AsyncSelect"
+import { OptionType } from "../types/common"
 
 type FormValues = {
 	email: string
@@ -20,9 +23,8 @@ export const Login = () => {
 	const location = useLocation()
 	const navigate = useNavigate()
 	const [login, { isLoading, error }] = useLoginMutation()
-	const {data: orgData} = useGetOrganizationQuery()
 	const { token } = useAppSelector((state) => state.auth)
-	const { register , handleSubmit, formState: {errors} } = useForm<FormValues>()
+	const { control, register , handleSubmit, setValue, formState: {errors} } = useForm<FormValues>()
 	const registerOptions = {
 	    email: { required: "Email is required" },
 	    password: { required: "Password is required"},
@@ -89,15 +91,22 @@ export const Login = () => {
 					    <label className = "label" htmlFor = "login-organization">
 					    	Organization:
 					    </label>
-						<select 
-							className = "tw-w-full"
-							id = "login-organization"
-							{...register("organizationId", registerOptions.organizationId)}
-						>
-							<option value = "">---</option>
-							{ orgData?.map((org) => <option key = {org.id} value = {org.id}>{org.name}</option>)
-							}
-						</select>
+						<Controller
+							name={"organizationId"}
+							control={control}
+							rules={registerOptions.organizationId}
+							render={({field: {onChange, value, name, ref}}) => (
+								<AsyncSelect 
+									urlParams={{}} 
+									onSelect={(selectedOption: OptionType | null) => {
+				                		const val = selectedOption?.value ?? ""
+										setValue("organizationId", Number(val))
+									}} 
+									endpoint={ORGANIZATION_URL} 
+									className = "tw-w-full"
+								/>
+							)}
+						/>
 				        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
 				    </div>
 				</div>

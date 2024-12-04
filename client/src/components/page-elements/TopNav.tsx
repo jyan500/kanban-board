@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useState, useEffect} from "react"
 import { HamburgerButton } from "../HamburgerButton"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { logout } from "../../slices/authSlice" 
@@ -7,15 +7,19 @@ import { LoadingSpinner } from "../LoadingSpinner"
 import { privateApi } from "../../services/private" 
 import { displayUser } from "../../helpers/functions"
 
-interface Props {
-	isFetching: boolean
-}
-
-export const TopNav = ({isFetching}: Props) => {
+export const TopNav = () => {
 	const dispatch = useAppDispatch()
 	const { organizations } = useAppSelector((state) => state.org)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { token } = useAppSelector((state) => state.auth)
+	const [isLoading, setIsLoading] = useState(true)
+
+	useEffect(() => {
+		if (userProfile){
+			setIsLoading(false)
+		}
+	}, [userProfile])
+
 	const onLogout = () => {
 		dispatch(logout())
 		dispatch(privateApi.util.resetApiState())
@@ -24,7 +28,7 @@ export const TopNav = ({isFetching}: Props) => {
 		<div className = "tw-my-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
 			<HamburgerButton/>	
 			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
-				{!isFetching ? (
+				{!isLoading ? (
 					<>
 						<div>
 							<CgProfile className = "--l-icon"/>

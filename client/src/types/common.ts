@@ -5,6 +5,7 @@ export interface UserProfile {
 	email: string
 	organizationId: number
 	userRoleId: number
+	organizationName?: string
 }
 
 export interface UserRole {

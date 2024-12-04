@@ -68,12 +68,14 @@ router.get("/me", async (req, res, next) => {
 		const {id: userId, organization: organizationId, userRole} = req.user
 		const userProfile = await db("organization_user_roles")
 			.join("users", "users.id", "=", "organization_user_roles.user_id")
+			.join("organizations", "organization_user_roles.organization_id", "=", "organizations.id")
 			.where("users.id", userId)
 			.select(
 				"users.id as id", 
 				"users.first_name as firstName", 
 				"users.last_name as lastName", 
 				"users.email as email", 
+				"organizations.name as organizationName",
 				"organization_user_roles.organization_id as organizationId", 
 				"organization_user_roles.user_role_id as userRoleId").first()
 		res.json(userProfile)

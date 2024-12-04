@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { useNavigate, Link } from "react-router-dom" 
-import { useForm, Resolver } from "react-hook-form"
+import { useForm, Resolver, Controller } from "react-hook-form"
 import { useUserRegisterMutation } from "../services/public/register" 
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { v4 as uuidv4 } from "uuid" 
 import { LOGIN } from "../helpers/routes"
 import { useGetOrganizationQuery } from "../services/public/organization" 
 import "../styles/register.css" 
+import { AsyncSelect } from "../components/AsyncSelect"
+import { OptionType } from "../types/common"
+import { ORGANIZATION_URL } from "../helpers/urls"
 
 type FormValues = {
 	firstName: string
@@ -21,9 +24,8 @@ type FormValues = {
 export const Register = () => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
-	const { register: formRegister, handleSubmit, formState: {errors} } = useForm<FormValues>()
+	const { control, register: formRegister, handleSubmit, setValue, formState: {errors} } = useForm<FormValues>()
 	const [ userRegister, { isLoading, error }] = useUserRegisterMutation()
-	const {data: orgData} = useGetOrganizationQuery()
 	const [showPassword, setShowPassword] = useState(false)
 	const registerOptions = {
 		firstName: { required: "First Name is required"},
@@ -95,16 +97,22 @@ export const Register = () => {
 				    <label className = "label" htmlFor = "register-organization">
 				    	Organization: <span className = "tw-font-bold tw-text-red-500">*</span>
 				    </label>
-					<select 
-						className = "tw-w-full"
-						id = "register-organization"
-						{...formRegister("organizationId", registerOptions.organizationId)}
-					>
-						<option value = "">---</option>
-						{ 
-							orgData?.map((org) => <option key = {org.id} value = {org.id}>{org.name}</option>)
-						}
-					</select>
+					<Controller
+						name={"organizationId"}
+						control={control}
+						rules={registerOptions.organizationId}
+						render={({field: {onChange, value, name, ref}}) => (
+							<AsyncSelect 
+								urlParams={{}} 
+								onSelect={(selectedOption: OptionType | null) => {
+			                		const val = selectedOption?.value ?? ""
+									setValue("organizationId", Number(val))
+								}} 
+								endpoint={ORGANIZATION_URL} 
+								className = "tw-w-full"
+							/>
+						)}
+					/>
 			        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
 			    </div>
 			    <div>
