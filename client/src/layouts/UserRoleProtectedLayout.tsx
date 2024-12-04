@@ -4,28 +4,26 @@ import { Link, Outlet, Navigate, useParams } from "react-router-dom"
 import { LoadingSpinner } from "../components/LoadingSpinner"
 import { useGetUserRolesQuery } from "../services/private/userRole"
 import { useGetUserProfileQuery } from "../services/private/userProfile"
+import { UserRole } from "../types/common"
 
 const UserRoleProtectedLayout = () => {
-	const { userRoleLookup } = useAppSelector((state) => state.userRole)
-	const { userProfile } = useAppSelector((state) => state.userProfile)
+	const { data: userRoles, isLoading: isUserRolesLoading } = useGetUserRolesQuery()
+	const { data: userProfile, isLoading: isUserProfileLoading } = useGetUserProfileQuery()
 	const [isLoading, setIsLoading] = useState(true)
 	const [isAdmin, setIsAdmin] = useState(false)
 
 	useEffect(() => {
-		if (userRoleLookup && userProfile){
-			const isAdmin = userRoleLookup[userProfile.userRoleId] === "ADMIN"
-			setIsAdmin(isAdmin)
+		if (!isUserProfileLoading && !isUserRolesLoading){
+			const admin = userRoles?.find((role) => role.name === "ADMIN")
+			const isAdmin = userProfile && admin?.id === userProfile.userRoleId
+			setIsAdmin(isAdmin ?? false)
 			setIsLoading(false)
 		}
-	}, [userRoleLookup, userProfile])
-
-	if (!isLoading && !isAdmin){
-		return <Navigate replace to = {"/"} state={{alert: "You don't have permission to access this page"}}/>
+	}, [isUserProfileLoading, isUserRolesLoading])
+	if (isLoading){
+		return <></>
 	}
-	else if (!isLoading && isAdmin){
-		return <><Outlet/></>
-	}
-	return <></>
+	return !isAdmin ? <Navigate replace to = {"/"} state={{alert: "You don't have permission to access this page"}}/> : (<><Outlet/></>)
 }
 
 export default UserRoleProtectedLayout
