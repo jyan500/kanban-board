@@ -102,7 +102,7 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 	try {
 		const regIds = req.body.user_registration_request_ids
 		const userRole = await db("user_roles").where("name", "USER").first()
-		const orgUser = await db("organization_user_roles").where("user_id", organizationsData, req.user.id).first()
+		const orgUser = await db("organization_user_roles").where("user_id", req.user.id).first()
 		await db("user_registration_requests").whereIn("id", regIds).update({
 			"approved_at": new Date(),
 			"org_user_id": orgUser?.id
