@@ -89,7 +89,6 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 		    		dispatch(setModalProps({}))
 				}
 				else {
-					console.log(values)
 					await editOwnUserProfile(values).unwrap()
 				}
 	    		dispatch(addToast({
