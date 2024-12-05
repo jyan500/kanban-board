@@ -121,12 +121,13 @@ const editUserValidator = (action) => {
 		.normalizeEmail().custom((value, {req}) => {
 			return new Promise((resolve, reject) => {
 				db("users").modify((queryBuilder) => {
-					// exclude the current user if editing own user
-					if (action === "editOwnUser"){
+					// exclude the current user if editing own user,
+					// or exclude the selected user's email if editing the selected user
+					if (action === "editOwnUser" || action === "adminEditUser"){
 						queryBuilder
 						.join("organization_user_roles", "organization_user_roles.user_id", "=", "users.id")
 						.where("organization_user_roles.organization_id", req.user.organization)
-						.whereNot("users.id", req.user.id)
+						.whereNot("users.id", action === "adminEditUser" ? req.params.userId : req.user.id)
 					}
 				}).where("email", req.body.email).then((res) => {
 					if (res?.length > 0){
