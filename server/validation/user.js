@@ -53,7 +53,9 @@ const editUserValidator = (action) => {
 		validationRules = [
 			...validationRules,
 			// only validate if the user is choosing to edit their password
-			body("confirm_existing_password").if(body('change_password').exists()).notEmpty().withMessage("Confirm Existing Password is required").custom(async (value, {req}) => {
+			body("confirm_existing_password").if((value, { req }) => {
+		        return req.body.check_password;
+	        }).notEmpty().withMessage("Confirm Existing Password is required").custom(async (value, {req}) => {
 				const user = await db("users").where("id", req.user.id).first()
 				const storedHash = user?.password
 				const result = await bcrypt.compare(value, storedHash)
@@ -68,13 +70,17 @@ const editUserValidator = (action) => {
 			validationRules = [
 				...validationRules,
 				// only validate if the user is choosing to edit their password on the accounts page
-				body("password").if(body('change_password').exists()).notEmpty().withMessage("Password is required")
+				body("password").if((value, { req }) => {
+			        return req.body.check_password;
+		        }).notEmpty().withMessage("Password is required")
 					.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
 						"Password must be at least 6 characters long, " + 
 						"including one lowercase, one uppercase, " + 
 						"one number and one symbol."
 					),
-				body("confirm_password").if(body('change_password').exists()).notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
+				body("confirm_password").if((value, { req }) => {
+			        return req.body.check_password;
+		        }).notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
 					if (value !== req.body.password)	{
 						throw new Error("Passwords don't match")
 					}
