@@ -64,30 +64,47 @@ const editUserValidator = (action) => {
 		]	
 	}
 	if (action === "editOwnUser" || action === "register"){
-		// only validate if the user is choosing to edit their password
-		validationRules = [
-			...validationRules,
-			body("password").if(body('change_password').exists()).notEmpty().withMessage("Password is required")
-				.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
-					"Password must be at least 6 characters long, " + 
-					"including one lowercase, one uppercase, " + 
-					"one number and one symbol."
-				),
-			body("confirm_password").if(body('change_password').exists()).notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
-				if (value !== req.body.password)	{
-					throw new Error("Passwords don't match")
-				}
-				else {
-					return value
-				}
-			}),
-		]
-		// only user can add the organization id when registering
+		if (action === "editOwnUser"){
+			validationRules = [
+				...validationRules,
+				// only validate if the user is choosing to edit their password on the accounts page
+				body("password").if(body('change_password').exists()).notEmpty().withMessage("Password is required")
+					.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
+						"Password must be at least 6 characters long, " + 
+						"including one lowercase, one uppercase, " + 
+						"one number and one symbol."
+					),
+				body("confirm_password").if(body('change_password').exists()).notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
+					if (value !== req.body.password)	{
+						throw new Error("Passwords don't match")
+					}
+					else {
+						return value
+					}
+				}),
+			]
+		}
+		// only user can add the organization id when registering.
+		// password and confirm password always required when registering
 		if (action === "register"){
 			validationRules = [
 				...validationRules,
-					body("organization_id").notEmpty().withMessage("Organization is required")
-					.custom(async (value, {req}) => await checkEntityExistsIn("organization", value, [{"col": "id", "value": value}], "organizations")),
+				body("password").notEmpty().withMessage("Password is required")
+					.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
+						"Password must be at least 6 characters long, " + 
+						"including one lowercase, one uppercase, " + 
+						"one number and one symbol."
+					),
+				body("confirm_password").notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
+					if (value !== req.body.password)	{
+						throw new Error("Passwords don't match")
+					}
+					else {
+						return value
+					}
+				}),
+				body("organization_id").notEmpty().withMessage("Organization is required")
+				.custom(async (value, {req}) => await checkEntityExistsIn("organization", value, [{"col": "id", "value": value}], "organizations")),
 			]
 		}
 	}
