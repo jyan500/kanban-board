@@ -13,6 +13,14 @@ type UserProfileRequest = {
 	userRoleId: number
 }
 
+type OwnUserProfileRequest = {
+	firstName: string	
+	lastName: string
+	email: string
+	password?: string
+	confirmPassword?: string
+}
+
 export const userProfileApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
@@ -51,6 +59,20 @@ export const userProfileApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["userProfiles"]
 		}),
+		editOwnUserProfile: builder.mutation<string, OwnUserProfileRequest>({
+			query: ({firstName, lastName, email, password, confirmPassword}) => ({
+				url: `${USER_PROFILE_URL}/me`,
+				method: "POST",
+				body: {
+					first_name: firstName,
+					last_name: lastName,
+					email: email,
+					password: password,
+					confirm_password: confirmPassword,
+				}
+			}),
+			invalidatesTags: ["userProfiles"]
+		}),
 		getUserOrganizations: builder.query<ListResponse<Organization>, Record<string, any>>({
 			query: (urlParams) => ({
 				url: `${USER_PROFILE_ORG_URL}`,
@@ -74,5 +96,6 @@ export const {
 	useGetUserProfilesQuery, 
 	useGetUserOrganizationsQuery, 
 	useEditUserProfileMutation,
+	useEditOwnUserProfileMutation,
 	useSwitchUserOrganizationMutation 
 } = userProfileApi 

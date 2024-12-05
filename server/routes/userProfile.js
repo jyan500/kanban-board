@@ -1,8 +1,9 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
-const { getUserValidator, editUserValidator } = require("../validation/user")
+const { getUserValidator, editUserValidator, editOwnUserValidator } = require("../validation/user")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
+const { handleValidationResult }  = require("../middleware/validationMiddleware")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -86,6 +87,23 @@ router.get("/me", async (req, res, next) => {
 	}
 })
 
+router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res, next) => {
+	try {
+		const {id: userId, organization: organizationId } = req.user
+		await db("users").update({
+			first_name: req.body.first_name,
+			last_name: req.body.last_name,
+			email: req.body.email,
+			password: req.body.password,
+		})
+		res.json({message: "Account updated successfully!"})
+	}	
+	catch (err){
+		console.log(`Error while getting user profile: ${err.message}`)	
+		next(err)
+	}
+})
+
 router.get("/organization", async (req, res, next) => {
 	try {
 		const {id: userId, organization: organizationId} = req.user
@@ -113,7 +131,7 @@ router.get("/organization", async (req, res, next) => {
 
 
 // get a user
-router.get("/:userId", getUserValidator, async (req, res, next) => {
+router.get("/:userId", getUserValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const userId = req.params.userId
 		const userProfile = await db("organization_user_roles")
@@ -134,7 +152,7 @@ router.get("/:userId", getUserValidator, async (req, res, next) => {
 	}
 })
 
-router.put("/:userId", authenticateUserRole(["ADMIN"]), editUserValidator, async (req, res, next) => {
+router.put("/:userId", authenticateUserRole(["ADMIN"]), editUserValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const userId = req.params.userId
 		await db("users").update({
@@ -142,9 +160,11 @@ router.put("/:userId", authenticateUserRole(["ADMIN"]), editUserValidator, async
 			last_name: req.body.last_name,
 			email: req.body.email,
 		}).where("id", userId)
-		await db("organization_user_roles").update({
-			user_role_id: req.body.user_role_id
-		}).where("user_id", userId).where("organization_id", req.user.organization)
+		if (req.body.user_role_id){
+			await db("organization_user_roles").update({
+				user_role_id: req.body.user_role_id
+			}).where("user_id", userId).where("organization_id", req.user.organization)
+		}
 		res.json({message: "User profile updated successfully!"})
 	}	
 	catch (err){
