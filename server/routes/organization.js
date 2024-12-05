@@ -4,6 +4,7 @@ const db = require("../db/db")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { authenticateToken } = require("../middleware/authMiddleware")
 const { validateBulkEdit } = require("../validation/organization")
+const { handleValidationResult }  = require("../middleware/validationMiddleware")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -98,7 +99,7 @@ router.put("/registration-request/:regId", authenticateToken, authenticateUserRo
 	}
 })
 
-router.post("/registration-request/bulk-edit", authenticateToken, authenticateUserRole(["ADMIN", "BOARD_ADMIN"]), validateBulkEdit, async (req, res, next) => {
+router.post("/registration-request/bulk-edit", authenticateToken, authenticateUserRole(["ADMIN", "BOARD_ADMIN"]), validateBulkEdit, handleValidationResult, async (req, res, next) => {
 	try {
 		const regIds = req.body.user_registration_request_ids
 		const userRole = await db("user_roles").where("name", "USER").first()
