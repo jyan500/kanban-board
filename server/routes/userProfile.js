@@ -4,6 +4,8 @@ const db = require("../db/db")
 const { getUserValidator, editUserValidator, editOwnUserValidator } = require("../validation/user")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
+const bcrypt = require("bcrypt")
+const config = require("../config")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -90,12 +92,20 @@ router.get("/me", async (req, res, next) => {
 router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const {id: userId, organization: organizationId } = req.user
+		let salt;
+		let hash;
+		if (req.body.change_password){
+			salt = await bcrypt.genSalt(config.saltRounds)
+			hash = await bcrypt.hash(req.body.password, salt)
+		}
 		await db("users").update({
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
 			email: req.body.email,
-			password: req.body.password,
-		})
+			...(req.body.change_password ? {
+				password: hash	
+			} : {})
+		}).where("id", userId)
 		res.json({message: "Account updated successfully!"})
 	}	
 	catch (err){

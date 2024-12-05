@@ -18,6 +18,7 @@ type FormValues = {
 	email: string
 	userRoleId?: number | string
 	password?: string
+	changePassword?: boolean
 	confirmPassword?: string
 	confirmExistingPassword?: string
 }
@@ -42,9 +43,12 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 		lastName: "",
 		email: "",
 		userRoleId: "",
-		password: "",
-		confirmPassword: "",
-		confirmExistingPassword: "",
+		...isChangePassword ? {
+			changePassword: isChangePassword,
+			password: "",
+			confirmPassword: "",
+			confirmExistingPassword: "",
+		} : {}
 	}
 	const [ editUserProfile, {isLoading: isEditUserLoading, error: userError} ] = useEditUserProfileMutation() 
 	const [ editOwnUserProfile, {isLoading: isEditOwnUserLoading, error: ownUserError} ] = useEditOwnUserProfileMutation()
@@ -58,21 +62,23 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 	    lastName: { required: "Last Name is required" },
 	    email: { required: "Email is required"},
     	userRoleId: { required: "User Role is required" },
-    	password: { required: "Password is required"},	
-    	confirmExistingPassword: {required: "Confirm Existing Password is required"},
-    	confirmPassword: {required: "Confirm Password is required"},
+    	...isChangePassword ? {
+	    	password: { required: "Password is required"},	
+	    	confirmExistingPassword: {required: "Confirm Existing Password is required"},
+	    	confirmPassword: {required: "Confirm Password is required"},
+    	} : {}
     }
 	useEffect(() => {
 		// initialize with current values if the user exists
 		if (userId && userInfo){
 			// everything except organization
 			const {organizationId, ...userWithoutOrganization} = userInfo
-			reset(userWithoutOrganization)
+			reset({...userWithoutOrganization, changePassword: isAccountsPage && isChangePassword})
 		}
 		else {
 			reset(defaultForm)
 		}
-	}, [showModal, userInfo, userId])
+	}, [showModal, userInfo, userId, isChangePassword])
 
     const onSubmit = async (values: FormValues) => {
     	try {
@@ -83,6 +89,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 		    		dispatch(setModalProps({}))
 				}
 				else {
+					console.log(values)
 					await editOwnUserProfile(values).unwrap()
 				}
 	    		dispatch(addToast({
@@ -180,7 +187,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 								id = "register-password"
 								type="password"
 								className = "tw-w-full"
-								{...register("password", registerOptions.confirmExistingPassword)}
+								{...register("confirmExistingPassword", registerOptions.confirmExistingPassword)}
 								/>
 						        {errors?.confirmExistingPassword && <small className = "--text-alert">{errors.confirmExistingPassword.message}</small>}
 					        </div>

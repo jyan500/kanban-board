@@ -18,7 +18,9 @@ type OwnUserProfileRequest = {
 	lastName: string
 	email: string
 	password?: string
+	changePassword?: boolean
 	confirmPassword?: string
+	confirmExistingPassword?: string
 }
 
 export const userProfileApi = privateApi.injectEndpoints({
@@ -60,7 +62,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 			invalidatesTags: ["userProfiles"]
 		}),
 		editOwnUserProfile: builder.mutation<string, OwnUserProfileRequest>({
-			query: ({firstName, lastName, email, password, confirmPassword}) => ({
+			query: ({firstName, lastName, email, changePassword, password, confirmPassword, confirmExistingPassword}) => ({
 				url: `${USER_PROFILE_URL}/me`,
 				method: "POST",
 				body: {
@@ -68,7 +70,9 @@ export const userProfileApi = privateApi.injectEndpoints({
 					last_name: lastName,
 					email: email,
 					password: password,
+					change_password: changePassword,
 					confirm_password: confirmPassword,
+					confirm_existing_password: confirmExistingPassword,
 				}
 			}),
 			invalidatesTags: ["userProfiles"]

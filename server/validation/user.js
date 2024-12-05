@@ -1,6 +1,8 @@
 const { body, param } = require("express-validator")
 const { checkEntityExistsIn } = require("./helper")
 const db = require("../db/db")
+const config = require("../config")
+const bcrypt = require("bcrypt")
 
 // const registerValidator = [
 // 	body("first_name").notEmpty().withMessage("First Name is required"),
@@ -47,16 +49,31 @@ const editUserValidator = (action) => {
 			body("user_role_id").notEmpty().withMessage("user_role_id is required").custom(async (value, {req}) => await checkEntityExistsIn("userRole", value, [{col: "id", value: value}], "user_roles")),
 		]
 	}
-	if (action === "editOwnUser" || action === "register"){
+	if (action === "editOwnUser"){
 		validationRules = [
 			...validationRules,
-			body("password").notEmpty().withMessage("Password is required")
+			// only validate if the user is choosing to edit their password
+			body("confirm_existing_password").if(body('change_password').exists()).notEmpty().withMessage("Confirm Existing Password is required").custom(async (value, {req}) => {
+				const user = await db("users").where("id", req.user.id).first()
+				const storedHash = user?.password
+				const result = await bcrypt.compare(value, storedHash)
+				if (!result){
+					throw new Error("Existing password was incorrect.")
+				}
+			})
+		]	
+	}
+	if (action === "editOwnUser" || action === "register"){
+		// only validate if the user is choosing to edit their password
+		validationRules = [
+			...validationRules,
+			body("password").if(body('change_password').exists()).notEmpty().withMessage("Password is required")
 				.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
 					"Password must be at least 6 characters long, " + 
 					"including one lowercase, one uppercase, " + 
 					"one number and one symbol."
 				),
-			body("confirm_password").notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
+			body("confirm_password").if(body('change_password').exists()).notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
 				if (value !== req.body.password)	{
 					throw new Error("Passwords don't match")
 				}
@@ -83,7 +100,10 @@ const editUserValidator = (action) => {
 				db("users").modify((queryBuilder) => {
 					// exclude the current user if editing own user
 					if (action === "editOwnUser"){
-						queryBuilder.whereNot("id", req.user.id)
+						queryBuilder
+						.join("organization_user_roles", "organization_user_roles.user_id", "=", "users.id")
+						.where("organization_user_roles.organization_id", req.user.organization)
+						.whereNot("users.id", req.user.id)
 					}
 				}).where("email", req.body.email).then((res) => {
 					if (res?.length > 0){
