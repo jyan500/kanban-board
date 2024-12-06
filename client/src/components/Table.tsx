@@ -13,14 +13,17 @@ type Props = {
 
 export const Table = ({config, data, itemIds, tableKey: tKey}: Props) => {
 	const [tableKey, setTableKey] = useState(tKey ?? uuidv4())
-	const allIds = data?.map((row) => row.id)
+	const allIds = config.bulkEdit?.isEnabled && config.bulkEdit?.filter ? config.bulkEdit?.filter(data).map((row: Record<string, any>) => row.id) : data?.map((row) => row.id)
+	// if there any actions we can take on each row, but the row is not selectable due to a specific condition from the config,
+	// we cannot show the checkboxes and the action buttons
+	const showCheckboxes = config.bulkEdit?.isEnabled && config.bulkEdit?.filter && allIds.length > 0
 	return (
 		<table>
 			<thead>
 				<tr>
-					{config.bulkEdit?.isEnabled ? (
+					{showCheckboxes ? (
 						<th><input type = "checkbox" checked={itemIds?.length === allIds?.length && itemIds?.length !== 0} onChange={(e) => {
-							config.bulkEdit?.updateIds(allIds)
+							config.bulkEdit?.updateIds(itemIds?.length === allIds?.length ? [] : allIds)
 						}}/></th>
 					) : null}
 					{(Object.values(config.headers) as Array<string>).map((header) => (
@@ -33,8 +36,13 @@ export const Table = ({config, data, itemIds, tableKey: tKey}: Props) => {
 				{data?.map((row) => {
 					return (
 						<tr key = {`${tableKey}-${row.id}`}>
-							{config.bulkEdit?.isEnabled ? 
-								(<td><input type = "checkbox" checked = {itemIds?.includes(row.id)} onChange={(e) => config.bulkEdit?.onClick(row.id)}/></td>) 
+							{showCheckboxes ? 
+								(<td>
+									{config.bulkEdit?.canSelect(row) ? 
+										<input type = "checkbox" checked = {itemIds?.includes(row.id)} onChange={(e) => config.bulkEdit?.onClick(row.id)}/>
+									: null
+									}
+								</td>) 
 							: null}
 							{
 								Object.keys(config.headers).map((headerKey) => {
@@ -45,7 +53,26 @@ export const Table = ({config, data, itemIds, tableKey: tKey}: Props) => {
 									}
 									else if (headerKey === config.editCol?.col){
 										return (
-											<td key = {`${tableKey}-${row.id}-${headerKey}`}><button className = "button" onClick={() => config.editCol?.onClick(row.id)}>{config.editCol?.text}</button></td>
+											<td key = {`${tableKey}-${row.id}-${headerKey}`}>
+												{
+													!config.editCol.shouldShow || (config.editCol.shouldShow && config.editCol.shouldShow(row)) ? (
+														<button className = "button" onClick={() => config.editCol?.onClick(row.id)}>{config.editCol?.text}
+														</button>
+													) : null	
+												}
+											</td>
+										)
+									}
+									else if (headerKey === config.deleteCol?.col){
+										return (
+											<td key = {`${tableKey}-${row.id}-${headerKey}`}>
+												{
+													!config.deleteCol.shouldShow || (config.deleteCol.shouldShow && config.deleteCol.shouldShow(row)) ? (
+														<button className = "button --alert" onClick={() => config.deleteCol?.onClick(row.id)}>{config.deleteCol?.text}
+														</button>
+													) : null
+												}
+											</td>
 										)
 									}
 									else if (headerKey in config.modifiers){

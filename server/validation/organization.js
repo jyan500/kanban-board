@@ -4,8 +4,16 @@ const { BULK_INSERT_LIMIT } = require("../constants")
 const { body, param } = require("express-validator")
 
 const organizationValidator = (actionType) => {
-	let validationRules = []
-	if ( actionType === "bulk-edit") {
+	let validationRules = [
+		body("approve").notEmpty().isBoolean().withMessage("please specify whether to approve or deny."),
+	]
+	if (actionType === "update"){
+		validationRules = [
+			...validationRules,
+			param("regId").custom(async (value, {req}) => checkEntityExistsIn("user_registration_request", value, [{"col": "id", "value": value}], "user_registration_requests"))
+		]
+	}
+	if (actionType === "bulk-edit") {
 		validationRules = [
 			...validationRules,
 			body("user_registration_request_ids")
@@ -19,5 +27,6 @@ const organizationValidator = (actionType) => {
 }
 
 module.exports = {
+	validateUpdate: organizationValidator("update"),
 	validateBulkEdit: organizationValidator("bulk-edit"),
 }

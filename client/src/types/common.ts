@@ -17,6 +17,9 @@ export interface UserRegistrationRequest {
 	id: number	
 	userId: number
 	organizationId: number
+	approvedAt?: Date
+	deniedAt?: Date
+	createdAt: Date
 	user?: Omit<UserProfile, "organizationId" | "userRoleId">
 }
 

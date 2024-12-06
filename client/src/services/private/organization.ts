@@ -16,22 +16,26 @@ export const organizationApi = privateApi.injectEndpoints({
 			providesTags: ["RegistrationRequests"]
 
 		}),
-		updateRegistrationRequest: builder.mutation<{message: string}, number>({
-			query: (id) => ({
+		updateRegistrationRequest: builder.mutation<{message: string}, {id: number, approve: boolean}>({
+			query: ({id, approve}) => ({
 				url: `${USER_REGISTRATION_REQUEST_URL}/${id}`,
-				method: "PUT"
+				method: "PUT",
+				body: {
+					approve: approve
+				}
 			}),
-			invalidatesTags: ["RegistrationRequests"]
+			invalidatesTags: ["RegistrationRequests", "UserProfiles"]
 		}),
-		bulkEditRegistrationRequests: builder.mutation<{message: string}, Array<number>>({
-			query: (ids) => ({
+		bulkEditRegistrationRequests: builder.mutation<{message: string}, {ids: Array<number>, approve: boolean}>({
+			query: ({ids, approve}) => ({
 				url: `${USER_REGISTRATION_REQUEST_URL}/bulk-edit`,
 				method: "POST",
 				body: {
-					user_registration_request_ids: ids
+					user_registration_request_ids: ids,
+					approve: approve
 				}
 			}),
-			invalidatesTags: ["RegistrationRequests"]
+			invalidatesTags: ["RegistrationRequests", "UserProfiles"]
 		})
 	}),
 })

@@ -31,14 +31,14 @@ export const userProfileApi = privateApi.injectEndpoints({
 				url: `${USER_PROFILE_URL}/me`,
 				method: "GET",
 			}),
-			providesTags: ["userProfiles"]
+			providesTags: ["UserProfiles"]
 		}),
 		getUser: builder.query<UserProfile, number>({
 			query: (userId) => ({
 				url: `${USER_PROFILE_URL}/${userId}`,
 				method: "GET"
 			}),
-			providesTags: ["userProfiles"]
+			providesTags: ["UserProfiles"]
 		}),
 		getUserProfiles: builder.query<ListResponse<UserProfile>, Record<string, any>>({
 			query: (urlParams) => ({
@@ -46,7 +46,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 				method: "GET",
 				params: urlParams,
 			}),
-			providesTags: ["userProfiles"]
+			providesTags: ["UserProfiles"]
 		}),
 		editUserProfile: builder.mutation<string, UserProfileRequest>({
 			query: ({id, firstName, lastName, email, userRoleId}) => ({
@@ -59,7 +59,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 					user_role_id: userRoleId
 				}
 			}),
-			invalidatesTags: ["userProfiles"]
+			invalidatesTags: ["UserProfiles"]
 		}),
 		editOwnUserProfile: builder.mutation<string, OwnUserProfileRequest>({
 			query: ({firstName, lastName, email, changePassword, password, confirmPassword, confirmExistingPassword}) => ({
@@ -75,7 +75,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 					confirm_existing_password: confirmExistingPassword,
 				}
 			}),
-			invalidatesTags: ["userProfiles"]
+			invalidatesTags: ["UserProfiles"]
 		}),
 		getUserOrganizations: builder.query<ListResponse<Organization>, Record<string, any>>({
 			query: (urlParams) => ({
