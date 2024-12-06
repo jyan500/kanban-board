@@ -21,9 +21,10 @@ export const UsersDisplay = () => {
 	const userPageParam = (searchParams.get("userPage") != null && searchParams.get("userPage") !== "" ? searchParams.get("userPage") : "") as string
 	const userCurrentPage = userPageParam !== "" ? parseInt(userPageParam) : 1
 	const { userProfile } = useAppSelector((state) => state.userProfile)
+	const [ regSelectedIds, setRegSelectedIds ] = useState<Array<number>>([])
 	const { data: registrationRequests, isFetching: isRegistrationRequestsFetching } = useGetRegistrationRequestsQuery({page: regCurrentPage})
 	const { data: userProfiles, isFetching: isUserProfilesFetching } = useGetUserProfilesQuery({page: userCurrentPage})
-	const regRequestConfig = useRegistrationRequestConfig()
+	const regRequestConfig = useRegistrationRequestConfig(regSelectedIds, setRegSelectedIds, true)
 	const userProfileConfig = useUserProfileConfig()
 
 	const setRegRequestPage = (page: number) => {
@@ -46,8 +47,20 @@ export const UsersDisplay = () => {
 					<div>
 						<h1>Registration Requests</h1>
 					</div>
-					<BulkEditToolbar updateIds={regRequestConfig.bulkEdit.updateIds} itemIds={regRequestConfig.bulkEdit.getIds()} applyActionToAll={() => regRequestConfig.bulkEdit.approveAll()} text = {"Approve All"}/>
-					<Table tableKey={"reg-request"} itemIds={regRequestConfig.bulkEdit.getIds()} data={registrationRequests?.data} config={regRequestConfig}/>
+					<BulkEditToolbar 
+						updateIds={(ids: Array<number>) => setRegSelectedIds(ids)} 
+						itemIds={regSelectedIds} 
+						applyActionToAll={() => regRequestConfig.bulkEdit.approveAll()} 
+						applyRemoveToAll={() => regRequestConfig.bulkEdit.denyAll()}
+						removeText={"Deny All"}
+						actionText = {"Approve All"}
+					/>
+					<Table 
+						tableKey={"reg-request"} 
+						itemIds={regSelectedIds} 
+						data={registrationRequests?.data} 
+						config={regRequestConfig}
+					/>
 					<div className = "tw-p-4 tw-border tw-border-gray-300">
 						<PaginationRow
 							showNumResults={true}

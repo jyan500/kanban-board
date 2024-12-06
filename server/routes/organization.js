@@ -3,7 +3,7 @@ const router = express.Router()
 const db = require("../db/db")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { authenticateToken } = require("../middleware/authMiddleware")
-const { validateBulkEdit } = require("../validation/organization")
+const { validateUpdate, validateBulkEdit } = require("../validation/organization")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 
 router.get("/", async (req, res, next) => {
@@ -18,15 +18,17 @@ router.get("/", async (req, res, next) => {
 	}
 })
 
-router.get("/registration-request", authenticateToken, authenticateUserRole(["ADMIN", "BOARD_ADMIN"]), async (req, res, next) => {
+router.get("/registration-request", authenticateToken, authenticateUserRole(["ADMIN"]), async (req, res, next) => {
 	try {
-		const registrationRequest = await db("user_registration_requests").where("organization_id", req.user.organization).join("users", "user_registration_requests.user_id", "=", "users.id").where("approved_at", null)
+		const registrationRequest = await db("user_registration_requests").where("organization_id", req.user.organization).join("users", "user_registration_requests.user_id", "=", "users.id")
 		.select(
 			"user_registration_requests.id as id",
 			"user_registration_requests.user_id as userId",
 			"users.first_name as firstName",
 			"users.last_name as lastName",
 			"users.email as email",
+			"user_registration_requests.approved_at as approvedAt",
+			"user_registration_requests.denied_at as deniedAt",
 			"user_registration_requests.created_at as createdAt"
 		)
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})		
@@ -38,7 +40,7 @@ router.get("/registration-request", authenticateToken, authenticateUserRole(["AD
 	}
 })
 
-router.get("/registration-request/:regId", authenticateToken, authenticateUserRole(["ADMIN", "BOARD_ADMIN"]), async (req, res, next) => {
+router.get("/registration-request/:regId", authenticateToken, authenticateUserRole(["ADMIN"]), async (req, res, next) => {
 	try {
 		const registrationRequest = await db("user_registration_requests").where("id", req.params.regId)
 		.select(
@@ -74,24 +76,35 @@ router.get("/registration-request/:regId", authenticateToken, authenticateUserRo
 	}	
 })
 
-router.put("/registration-request/:regId", authenticateToken, authenticateUserRole(["ADMIN", "BOARD_ADMIN"]), async (req, res, next) => {
+router.put("/registration-request/:regId", authenticateToken, authenticateUserRole(["ADMIN"]), validateUpdate, handleValidationResult, async (req, res, next) => {
 	try {
+		const isApprove = req.body.approve
 		const orgUser = await db("organization_user_roles").where("user_id", req.user.id).first()
-		const userRole = await db("user_roles").where("name", "USER").first()
-		await db("user_registration_requests").where("id", req.params.regId).update({
-			"approved_at": new Date(),
-			"org_user_id": orgUser?.id
-		})
-		const regRequest = await db("user_registration_requests").where("id", req.params.regId).first()
-		await db("organization_user_roles").insert({
-			user_id: regRequest?.user_id,
-			organization_id: regRequest?.organization_id,
-			user_role_id: userRole?.id
-		})
-		// TODO: email the user
-		res.json({
-			message: "User's registration process is complete"
-		})
+		if (isApprove){
+			const userRole = await db("user_roles").where("name", "USER").first()
+			await db("user_registration_requests").where("id", req.params.regId).update({
+				"approved_at": new Date(),
+				"org_user_id": orgUser?.id
+			})
+			const regRequest = await db("user_registration_requests").where("id", req.params.regId).first()
+			await db("organization_user_roles").insert({
+				user_id: regRequest?.user_id,
+				organization_id: regRequest?.organization_id,
+				user_role_id: userRole?.id
+			})
+			res.json({
+				message: "User's registration process is complete"
+			})
+		}
+		else {
+			await db("user_registration_requests").where("id", req.params.regId).update({
+				"denied_at": new Date(),
+				"org_user_id": orgUser?.id
+			})
+			res.json({
+				message: "User's registration process was denied."
+			})
+		}
 	}	
 	catch (err) {
 		console.log(`Error while updating registration requests: ${err.message}`)	
@@ -99,28 +112,40 @@ router.put("/registration-request/:regId", authenticateToken, authenticateUserRo
 	}
 })
 
-router.post("/registration-request/bulk-edit", authenticateToken, authenticateUserRole(["ADMIN", "BOARD_ADMIN"]), validateBulkEdit, handleValidationResult, async (req, res, next) => {
+router.post("/registration-request/bulk-edit", authenticateToken, authenticateUserRole(["ADMIN"]), validateBulkEdit, handleValidationResult, async (req, res, next) => {
 	try {
+		const isApprove = req.body.approve
 		const regIds = req.body.user_registration_request_ids
-		const userRole = await db("user_roles").where("name", "USER").first()
 		const orgUser = await db("organization_user_roles").where("user_id", req.user.id).first()
-		await db("user_registration_requests").whereIn("id", regIds).update({
-			"approved_at": new Date(),
-			"org_user_id": orgUser?.id
-		})
-		const regRequests = await db("user_registration_requests").whereIn("id", regIds)
-		const toInsert = regRequests.map((regRequest) => {
-			return {
-				user_id: regRequest?.user_id,
-				organization_id: regRequest?.organization_id,
-				user_role_id: userRole?.id
-			}
-		})
-		await db("organization_user_roles").insert(toInsert)
-		// TODO: email the user
-		res.json({
-			message: "Users registration process is complete"
-		})
+		if (isApprove){
+			const userRole = await db("user_roles").where("name", "USER").first()
+			await db("user_registration_requests").whereIn("id", regIds).update({
+				"approved_at": new Date(),
+				"org_user_id": orgUser?.id
+			})
+			const regRequests = await db("user_registration_requests").whereIn("id", regIds)
+			const toInsert = regRequests.map((regRequest) => {
+				return {
+					user_id: regRequest?.user_id,
+					organization_id: regRequest?.organization_id,
+					user_role_id: userRole?.id
+				}
+			})
+			await db("organization_user_roles").insert(toInsert)
+			// TODO: email the user
+			res.json({
+				message: "Users registration process is complete"
+			})
+		}
+		else {
+			await db("user_registration_requests").whereIn("id", regIds).update({
+				"denied_at": new Date(),
+				"org_user_id": orgUser?.id
+			})
+			res.json({
+				message: "Users registration requests were denied"
+			})
+		}
 	}	
 	catch (err){
 		console.log(`Error while updating registration requests: ${err.message}`)	

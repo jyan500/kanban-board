@@ -18,6 +18,9 @@ export const userRoleModifier = (row: number, userRoles: {[id: number]: string})
 }
 
 // convert UTC timestamp from backend to date format for display
-export const dateModifier = (date: string) => {
-	return new Date(date).toLocaleDateString()	
+export const dateModifier = (date: string | undefined) => {
+	if (date && date !== ""){
+		return new Date(date).toLocaleDateString()	
+	}
+	return ""
 }
