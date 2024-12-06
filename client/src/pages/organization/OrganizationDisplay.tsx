@@ -1,14 +1,40 @@
-import React, { useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
-import { Link, Outlet, Navigate, useParams } from "react-router-dom" 
+import { Link, Outlet, useParams } from "react-router-dom" 
 import { Table } from "../../components/Table" 
+import { EditUserForm } from "../../components/EditUserForm"
+import { displayUser } from "../../helpers/functions"
+import { CgProfile } from "react-icons/cg"
+import { FaUser } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
+import { FaRegBuilding } from "react-icons/fa";
+import { useGetOrganizationQuery } from "../../services/public/organization" 
+import { skipToken } from '@reduxjs/toolkit/query/react'
 
 export const OrganizationDisplay = () => {
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
-
+	const { data: organization, isLoading} = useGetOrganizationQuery(userProfile?.organizationId ?? skipToken)
 	return (
 		<div>
+			<div className = "tw-flex tw-flex-row tw-gap-x-6">
+				{organization ? 
+					<>
+						<div className = "tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center">
+							<FaRegBuilding className = "tw-w-32 tw-h-32"/>
+							<div className = "tw-flex tw-flex-col tw-gap-y-2">
+								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
+									<div>{organization?.name}</div>	
+								</div>
+							</div>
+						</div>
+						<div className = "tw-w-full">
+							<h1>Organization</h1>
+						</div>
+					</>
+				: null
+				}
+			</div>
 		</div>
 	)
 }
