@@ -1,8 +1,20 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../../store" 
-import { BACKEND_BASE_URL, USER_REGISTRATION_REQUEST_URL } from "../../helpers/urls" 
+import { BACKEND_BASE_URL, ORGANIZATION_URL, USER_REGISTRATION_REQUEST_URL } from "../../helpers/urls" 
 import { CustomError, ListResponse, Organization, UserProfile, UserRegistrationRequest } from "../../types/common" 
 import { privateApi } from "../private"
+
+interface UpdateOrgRequest {
+	id: number
+	name: string
+	email: string
+	address: string
+	city: string
+	state: string
+	phoneNumber: string
+	zipcode: string
+	industry: string
+}
 
 export const organizationApi = privateApi.injectEndpoints({
 	overrideExisting: false,
@@ -36,6 +48,23 @@ export const organizationApi = privateApi.injectEndpoints({
 				}
 			}),
 			invalidatesTags: ["RegistrationRequests", "UserProfiles"]
+		}),
+		getOrganization: builder.query<Organization, number>({
+			query: (id) => ({
+				url: `${ORGANIZATION_URL}/${id}`,
+				method: "GET"
+			}),
+			providesTags: ["Organizations"]
+		}),
+		updateOrganization: builder.mutation<{message: string}, UpdateOrgRequest>({
+			query: ({id, name, email, address, city, state, zipcode, industry, phoneNumber}) => ({
+				url : `${ORGANIZATION_URL}/${id}`, 
+				method: "PUT",
+				body: {
+					name, email, address, city, state, zipcode, industry, phone_number: phoneNumber
+				}
+			}),
+			invalidatesTags: ["Organizations"]
 		})
 	}),
 })
@@ -44,4 +73,6 @@ export const {
 	useGetRegistrationRequestsQuery,
 	useUpdateRegistrationRequestMutation,
 	useBulkEditRegistrationRequestsMutation,
+	useUpdateOrganizationMutation,
+	useGetOrganizationQuery,
 } = organizationApi 

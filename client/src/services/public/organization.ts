@@ -10,15 +10,9 @@ export const organizationApi = publicApi.injectEndpoints({
 			query: () => ({
 				url: ORGANIZATION_URL,
 				method: "GET",
-			})
+			}),
 		}),
-		getOrganization: builder.query<Organization, number>({
-			query: (id) => ({
-				url: `${ORGANIZATION_URL}/${id}`,
-				method: "GET"
-			})
-		})
 	}),
 })
 
-export const { useGetOrganizationsQuery, useGetOrganizationQuery } = organizationApi 
+export const { useGetOrganizationsQuery } = organizationApi 

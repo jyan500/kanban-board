@@ -3,12 +3,23 @@ const router = express.Router()
 const db = require("../db/db")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { authenticateToken } = require("../middleware/authMiddleware")
-const { validateUpdate, validateBulkEdit } = require("../validation/organization")
+const { validateUpdate, validateBulkEdit, validateUpdateOrganization } = require("../validation/organization")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 
 router.get("/", async (req, res, next) => {
 	try {
 		const organizations = await db("organizations")
+		.select(
+			"organizations.id as id",
+			"organizations.name as name",
+			"organizations.email as email",
+			"organizations.phone_number as phoneNumber",
+			"organizations.address as address",
+			"organizations.city as city",
+			"organizations.state as state",
+			"organizations.zipcode as zipcode",
+			"organizations.industry as industry",
+		)
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})		
 		res.json(organizations)
 	}
@@ -155,11 +166,35 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 
 router.get("/:id", async (req, res, next) => {
 	try {
-		const organization = await db("organizations").where("id", req.params.id).first()
+		const organization = await db("organizations").where("id", req.params.id).select(
+			"organizations.id as id",
+			"organizations.name as name",
+			"organizations.email as email",
+			"organizations.phone_number as phoneNumber",
+			"organizations.address as address",
+			"organizations.city as city",
+			"organizations.state as state",
+			"organizations.zipcode as zipcode",
+			"organizations.industry as industry",
+		).first()
 		res.json(organization)
 	}	
 	catch (err){
 		console.log(`Error while getting organizations: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.put("/:id", authenticateToken, authenticateUserRole(["ADMIN"]), validateUpdateOrganization, handleValidationResult, async (req, res, next) => {
+	try {
+		const { name, email, phoneNumber: phone_number, address, city, state, zipcode, industry } = req.body
+		await db("organizations").where("id", req.params.id).update({
+			name, email, phone_number, address, city, state, zipcode, industry	
+		})
+		res.json({"message": "Organization updated successfully!"})
+	}	
+	catch (err){
+		console.log(`Error while updating organization: ${err.message}`)	
 		next(err)
 	}
 })

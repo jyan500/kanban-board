@@ -26,6 +26,13 @@ export interface UserRegistrationRequest {
 export interface Organization {
 	id: number
 	name: string
+	phoneNumber?: string
+	email?: string
+	address?: string
+	state?: string
+	city?: string
+	industry?: string
+	zipcode?: string
 }
 
 export interface Priority {
