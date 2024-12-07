@@ -36,7 +36,7 @@ export const AccountDisplay = () => {
 								<button className = "button" onClick={() => setChangePassword(!changePassword)}>{changePassword ? "Hide Change" : "Change "} Password</button>
 							</div>
 						</div>
-						<div className = "tw-w-full">
+						<div className = "tw-w-1/2">
 							<h1>Account</h1>
 							<EditUserForm isAccountsPage={true} isChangePassword={changePassword} userId={userProfile.id}/>
 						</div>

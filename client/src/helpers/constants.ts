@@ -30,6 +30,7 @@ export const DROPDOWN_Z_INDEX = "tw-z-30"
 export const SECONDARY_MODAL_Z_INDEX = "tw-z-40" 
 
 export const TAG_TYPES = [
+	"Organizations",
 	"Tickets",
 	"TicketComments",
 	"TicketAssignees",
@@ -44,3 +45,25 @@ export const TAG_TYPES = [
 	"RegistrationRequests",
 	"UserProfiles"
 ]
+
+export const EMAIL_PATTERN = /\S+@\S+\.\S+/
+
+/*
+Matches the standard 10 digit phone:
+18005551234
+1 800 555 1234
++1 800 555-1234
++86 800 555 1234
+1-800-555-1234
+1 (800) 555-1234
+(800)555-1234
+(800) 555-1234
+(800)5551234
+800-555-1234
+800.555.1234
+800 555 1234x5678
+8005551234 x5678
+1    800    555-1234
+1----800----555-1234
+*/
+export const PHONE_PATTERN = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/

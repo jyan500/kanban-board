@@ -3,7 +3,7 @@ const { checkEntityExistsIn, checkUniqueEntity, entityInOrganization, validateKe
 const { BULK_INSERT_LIMIT } = require("../constants")
 const { body, param } = require("express-validator")
 
-const organizationValidator = (actionType) => {
+const registrationRequestValidator = (actionType) => {
 	let validationRules = [
 		body("approve").notEmpty().isBoolean().withMessage("please specify whether to approve or deny."),
 	]
@@ -26,7 +26,24 @@ const organizationValidator = (actionType) => {
 	return validationRules
 }
 
+const organizationValidator = (actionType) => {
+	let validationRules = [
+		param("id").notEmpty().withMessage("id must be specified").custom(async (value, {req}) => checkEntityExistsIn("organization", value, [{"col": "id", "value": value}], "organizations")),
+	]	
+	if (actionType === "update"){
+		validationRules = [
+			...validationRules,
+			body("name").notEmpty().withMessage("organization name is required"),
+			body("email").isEmail().withMessage("please enter a valid email"),
+			body("phone_number").isMobilePhone().withMessage("please enter valid phone number"),
+		]
+	}
+
+	return validationRules
+}
+
 module.exports = {
-	validateUpdate: organizationValidator("update"),
-	validateBulkEdit: organizationValidator("bulk-edit"),
+	validateUpdate: registrationRequestValidator("update"),
+	validateBulkEdit: registrationRequestValidator("bulk-edit"),
+	validateUpdateOrganization: organizationValidator("update")
 }
