@@ -1,6 +1,7 @@
 const db = require("../db/db")
-const { checkEntityExistsIn } = require("./helper")
+const { checkEntityExistsIn, entityInOrganization } = require("./helper")
 const { body, param } = require("express-validator")
+const { BULK_INSERT_LIMIT } = require("../constants")
 
 const statusValidator = (actionType) => {
 	let validationRules = []
@@ -10,7 +11,7 @@ const statusValidator = (actionType) => {
 			param("id").custom(async (value, {req}) => await checkEntityExistsIn("status", value, [{col: "id", value: value}, {col: "organization_id", value: req.user.organization}], "statuses"))
 		]
 	}
-	if (actionType !== "delete" && actionType !== "get"){
+	if (actionType !== "delete" && actionType !== "get" && actionType !== "bulk-edit"){
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required").custom((value, {req}) => {
@@ -37,6 +38,17 @@ const statusValidator = (actionType) => {
 						})
 					})	
 			}),
+		]
+	}
+
+	if (actionType === "bulk-edit") {
+		validationRules = [
+			...validationRules,
+			body("statuses").isArray({ min: 0, max: BULK_INSERT_LIMIT })
+			.withMessage("statuses must be an array")
+			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			body("statuses.*")
+			.custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value.id, "statuses"))
 		]
 	}
 
@@ -70,5 +82,6 @@ module.exports = {
 	validateGet: statusValidator("get"),
 	validateCreate: statusValidator("create"),
 	validateUpdate: statusValidator("update"),
+	validateBulkEdit: statusValidator("bulk-edit"),
 	validateDelete: statusValidator("delete"),
 }

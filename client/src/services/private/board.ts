@@ -93,10 +93,11 @@ export const boardApi = privateApi.injectEndpoints({
 				return response.sort((a,b) => a.name.localeCompare(b.name))
 			}
 		}),
-		getBoardStatuses: builder.query<Array<Status>, number>({
-			query: (id) => ({
-				url: BOARD_STATUS_URL(id, ""),
+		getBoardStatuses: builder.query<Array<Status>, Record<string, any>>({
+			query: (urlParams) => ({
+				url: BOARD_STATUS_URL(urlParams.id, ""),
 				method: "GET",
+				params: urlParams
 			}),
 			providesTags: ["BoardStatuses"],
 		}),

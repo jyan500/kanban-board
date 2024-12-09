@@ -93,6 +93,7 @@ export interface Status {
 	name: string
 	order: number
 	organizationId: number
+	isActive: boolean
 	isCompleted: boolean
 }
 

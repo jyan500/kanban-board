@@ -35,7 +35,7 @@ export const BoardForm = () => {
 	const [ addBoard ] = useAddBoardMutation() 
 	const [ updateBoard ] = useUpdateBoardMutation()
 	const { data: boardInfo, isLoading: isGetBoardDataLoading  } = useGetBoardQuery(currentBoardId ? {id: currentBoardId, urlParams: {}} : skipToken)
-	const { data: statusData, isLoading: isStatusDataLoading } = useGetBoardStatusesQuery(currentBoardId ?? skipToken)
+	const { data: statusData, isLoading: isStatusDataLoading } = useGetBoardStatusesQuery(currentBoardId ? {id: currentBoardId, isActive: true } : skipToken)
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const [formStatuses, setFormStatuses] = useState<Array<Status>>([])
 	const [ bulkEditBoardStatuses, {isLoading: isLoading, error: isError} ] =  useBulkEditBoardStatusesMutation() 
@@ -103,31 +103,6 @@ export const BoardForm = () => {
 		}
 	}
 
-    const onDelete = async () => {
-    	// if (currentTicketId && boardInfo?.id){
-	    // 	try {
-		//     	await deleteBoardTicket({boardId: boardInfo.id, ticketId: currentTicketId}).unwrap()
-		//     	await deleteTicket(currentTicketId).unwrap()
-		// 		dispatch(toggleShowModal(false))
-		// 		dispatch(selectCurrentTicketId(null))
-	    // 		dispatch(addToast({
-	    // 			id: uuidv4(),
-	    // 			type: "success",
-	    // 			animationType: "animation-in",
-	    // 			message: "Ticket deleted successfully!",
-	    // 		}))
-	    // 	}
-	    // 	catch (e) {
-	    // 		dispatch(addToast({
-	    // 			id: uuidv4(),
-	    // 			type: "failure",
-	    // 			animationType: "animation-in",
-	    // 			message: "Failed to delete ticket",
-	    // 		}))
-	    // 	}
-    	// }
-    }
-
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<form>
@@ -139,7 +114,7 @@ export const BoardForm = () => {
 			        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 				</div>
 				<div className = "tw-flex tw-flex-col">
-				{ !isStatusDataLoading ? (statuses.map((status) => (
+				{ !isStatusDataLoading ? (statuses.filter((status) => status.isActive).map((status) => (
 					<div key = {status.id} className="tw-flex tw-flex-row tw-gap-x-2 tw-py-2">
 						<input id = {`board-status-${status.id}`} checked = {formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
 						<label htmlFor = {`board-status-${status.id}`}>{status.name}</label>

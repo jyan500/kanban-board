@@ -271,11 +271,18 @@ router.get("/:boardId/status", validateGet, handleValidationResult, async (req, 
 		const statuses = await db("boards_to_statuses")
 		.join("statuses", "statuses.id", "=", "boards_to_statuses.status_id")
 		.where("board_id", req.params.boardId)
+		.modify((queryBuilder) => {
+			if (req.query.isActive) {
+				queryBuilder.where("statuses.is_active", req.query.isActive === "true" ? true : false)
+			}
+		})
 		.orderBy("statuses.order")
 		.select(
 			"statuses.id as id",
 			"statuses.name as name",
 			"statuses.order as order",
+			"statuses.is_active as isActive",
+			"statuses.is_completed as isCompleted",
 			"statuses.organization_id as organizationId")
 		res.json(statuses)
 	}
@@ -295,6 +302,8 @@ router.get("/:boardId/status/:statusId", validateBoardStatusGet, handleValidatio
 			"statuses.id as id",
 			"statuses.name as name",
 			"statuses.order as order",
+			"statuses.is_active as isActive",
+			"statuses.is_completed as isCompleted",
 			"statuses.organization_id as organizationId")
 		res.json(status)
 

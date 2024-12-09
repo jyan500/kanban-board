@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { validateCreate, validateGet, validateUpdate, validateDelete } = require("../validation/status")
+const { validateCreate, validateGet, validateUpdate, validateDelete, validateBulkEdit } = require("../validation/status")
 const { handleValidationResult } = require("../middleware/validationMiddleware")
 const db = require("../db/db")
 
@@ -11,6 +11,7 @@ router.get("/", async (req, res, next) => {
 			"statuses.name as name",
 			"statuses.order as order",
 			"statuses.organization_id as organizationId",
+			"statuses.is_active as isActive",
 			"statuses.is_completed as isCompleted"
 		)
 		res.json(statuses)
@@ -28,6 +29,7 @@ router.get("/:id", validateGet, handleValidationResult, async (req, res, next) =
 			"statuses.name as name",
 			"statuses.order as order",
 			"statuses.organization_id as organizationId",
+			"statuses.is_active as isActive",
 			"statuses.is_completed as isCompleted"
 		)
 		res.json(statuses)
@@ -58,9 +60,27 @@ router.put("/:id", validateUpdate, handleValidationResult, async (req, res, next
 	try {
 		await db("statuses").where("id", req.params.id).update({
 			name: req.body.name,
-			order: req.body.order
+			order: req.body.order,
 		})
 		res.json({message: "Status updated successfully!"})	
+	}	
+	catch (err) {
+		console.error(`Error while updating status: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, res, next) => {
+	try {
+		const isActiveStatusIds = req.body.statuses.filter((status) => status.is_active).map((status) => status.id)
+		const isNotActiveStatusIds = req.body.statuses.filter((status) => !status.is_active).map((status) => status.id)
+		await db("statuses").whereIn("id", isActiveStatusIds).update({
+			is_active: true
+		})
+		await db("statuses").whereIn("id", isNotActiveStatusIds).update({
+			is_active: false
+		})
+		res.json({message: "Statuses updated successfully!"})
 	}	
 	catch (err) {
 		console.error(`Error while updating status: ${err.message}`)
