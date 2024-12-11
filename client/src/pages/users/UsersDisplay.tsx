@@ -11,92 +11,274 @@ import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { USERS } from "../../helpers/routes"
 import { PaginationRow } from "../../components/page-elements/PaginationRow"
 import { BulkEditToolbar } from "../../components/page-elements/BulkEditToolbar"
+import { useForm, FormProvider } from "react-hook-form"
+import { withUrlParams } from "../../helpers/functions"
+import { SearchBar } from "../../components/SearchBar"
 
-export const UsersDisplay = () => {
-	const dispatch = useAppDispatch()
+type RegFormValues = {
+	regQuery: string
+}
+
+type UserFormValues = {
+	userQuery: string
+}
+
+type Filters = RegFormValues & UserFormValues
+
+type UserFormProps = {
+	filters: Filters
+}
+
+const UserForm = ({filters}: UserFormProps) => {
+	const navigate = useNavigate()
+	const [searchParams, setSearchParams] = useSearchParams()
+	const userPageParam = (searchParams.get("userPage") != null && searchParams.get("userPage") !== "" ? searchParams.get("userPage") : "") as string
+	const userCurrentPage = userPageParam !== "" ? parseInt(userPageParam) : 1
+	const regPageParam = (searchParams.get("regPage") != null && searchParams.get("regPage") !== "" ? searchParams.get("regPage") : "") as string
+	const regCurrentPage = regPageParam !== "" ? parseInt(regPageParam) : 1
+	const userDefaultForm: UserFormValues = {
+		userQuery: searchParams.get("userQuery") ?? "",
+	}
+	const { data: userProfiles, isFetching: isUserProfilesFetching } = useGetUserProfilesQuery({userQuery: searchParams.get("userQuery") ?? "", page: userCurrentPage})
+	const [preloadedValues, setPreloadedValues] = useState(userDefaultForm)
+	const methods = useForm<UserFormValues>({defaultValues: preloadedValues})
+	const { register, handleSubmit, reset, watch, setValue, formState: {errors} } = methods
+	const userProfileConfig = useUserProfileConfig()
+
+	const registerOptions = {
+		userQuery: {"required": "Search query is required."},
+	}
+
+	const setUserProfPage = (page: number) => {
+		let pageUrl = `${USERS}?regPage=${regCurrentPage}&userPage=${page}`
+		pageUrl = withUrlParams(filters, searchParams, pageUrl)
+	    navigate(pageUrl, {replace:true});
+	}
+
+	const onSubmit = (values: UserFormValues) => {
+		setSearchParams({
+			userPage: "1",
+			regPage: regPageParam,
+			...filters,
+			...values,
+		})
+	}
+
+	return (
+		isUserProfilesFetching ? <LoadingSpinner/> : (
+			<div className = "tw-flex tw-flex-col tw-gap-y-4">
+				<div>
+					<h1>Users</h1>
+				</div>
+				<div className = "tw-flex tw-flex-row tw-gap-x-2">
+					<FormProvider {...methods}>
+						<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
+							<SearchBar placeholder={"Search..."} registerField={"userQuery"} registerOptions={registerOptions.userQuery}/>
+							<button type = "submit" className = "button">Search</button>
+						</form>
+					</FormProvider>
+				</div>
+				{errors?.userQuery ? <small className = "--text-alert">{errors?.userQuery?.message}</small> : null}
+				<Table tableKey={"display-user"} data={userProfiles?.data} config={userProfileConfig}/>
+				<div className = "tw-p-4 tw-border tw-border-gray-300">
+					<PaginationRow
+						showNumResults={true}
+						showPageNums={true}
+						setPage={setUserProfPage}	
+						paginationData={userProfiles?.pagination}
+						customPageParam={"userPage"}
+						currentPage={userCurrentPage}
+						urlParams={{...filters, regPage: regCurrentPage}}
+						url={USERS}	
+					/>
+				</div>							
+			</div>	
+		)
+	)
+}
+
+type RegFormProps = {
+	filters: Filters
+}
+
+const RegForm = ({filters}: RegFormProps) => {
 	const navigate = useNavigate()
 	const [searchParams, setSearchParams] = useSearchParams()
 	const regPageParam = (searchParams.get("regPage") != null && searchParams.get("regPage") !== "" ? searchParams.get("regPage") : "") as string
 	const regCurrentPage = regPageParam !== "" ? parseInt(regPageParam) : 1
 	const userPageParam = (searchParams.get("userPage") != null && searchParams.get("userPage") !== "" ? searchParams.get("userPage") : "") as string
 	const userCurrentPage = userPageParam !== "" ? parseInt(userPageParam) : 1
-	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const [ regSelectedIds, setRegSelectedIds ] = useState<Array<number>>([])
-	const { data: registrationRequests, isFetching: isRegistrationRequestsFetching } = useGetRegistrationRequestsQuery({page: regCurrentPage})
-	const { data: userProfiles, isFetching: isUserProfilesFetching } = useGetUserProfilesQuery({page: userCurrentPage})
+	const { data: registrationRequests, isFetching: isRegistrationRequestsFetching } = useGetRegistrationRequestsQuery({regQuery: searchParams.get("regQuery") ?? "", page: regCurrentPage})
+	const regDefaultForm: RegFormValues = {
+		regQuery: searchParams.get("regQuery") ?? "",
+	}
+	const [preloadedValues, setPreloadedValues] = useState(regDefaultForm)
+	const methods = useForm<RegFormValues>({defaultValues: preloadedValues})
+	const { register, handleSubmit, reset, watch, setValue, formState: {errors} } = methods
 	const regRequestConfig = useRegistrationRequestConfig(regSelectedIds, setRegSelectedIds, true)
-	const userProfileConfig = useUserProfileConfig()
+
+	const registerOptions = {
+		regQuery: {"required": "Search query is required."},
+	}
 
 	const setRegRequestPage = (page: number) => {
 		let pageUrl = `${USERS}?regPage=${page}&userPage=${userCurrentPage}`
-		// pageUrl = withUrlParams(pageUrl)
+		pageUrl = withUrlParams(filters, searchParams, pageUrl)
 	    navigate(pageUrl, {replace:true});	
 	}
 
-	const setUserProfPage = (page: number) => {
-		let pageUrl = `${USERS}?regPage=${regCurrentPage}&userPage=${page}`
-		// pageUrl = withUrlParams(pageUrl)
-	    navigate(pageUrl, {replace:true});
+	const onSubmit = (values: RegFormValues) => {
+		setSearchParams({
+			regPage: "1",
+			userPage: userPageParam,
+			...filters,
+			...values,
+		})
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-4">
-
-			{isRegistrationRequestsFetching ? <LoadingSpinner/> : (
-				<>
-					<div>
-						<h1>Registration Requests</h1>
-					</div>
-					<BulkEditToolbar 
-						updateIds={(ids: Array<number>) => setRegSelectedIds(ids)} 
-						itemIds={regSelectedIds} 
-						applyActionToAll={() => regRequestConfig.bulkEdit.approveAll()} 
-						applyRemoveToAll={() => regRequestConfig.bulkEdit.denyAll()}
-						removeText={"Deny All"}
-						actionText = {"Approve All"}
+		isRegistrationRequestsFetching ? <LoadingSpinner/> : (
+			<div className = "tw-flex tw-flex-col tw-gap-y-4">
+				<div>
+					<h1>Registration Requests</h1>
+				</div>
+				<div className = "tw-flex tw-flex-row tw-gap-x-2">
+					<FormProvider {...methods}>
+						<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
+							<SearchBar placeholder={"Search..."} registerField={"regQuery"} registerOptions={registerOptions.regQuery}/>
+							<button type = "submit" className = "button">Search</button>
+						</form>
+					</FormProvider>
+				</div>
+				{errors?.regQuery ? <small className = "--text-alert">{errors?.regQuery?.message}</small> : null}
+				<BulkEditToolbar 
+					updateIds={(ids: Array<number>) => setRegSelectedIds(ids)} 
+					itemIds={regSelectedIds} 
+					applyActionToAll={() => regRequestConfig.bulkEdit.approveAll()} 
+					applyRemoveToAll={() => regRequestConfig.bulkEdit.denyAll()}
+					removeText={"Deny All"}
+					actionText = {"Approve All"}
+				/>
+				<Table 
+					tableKey={"reg-request"} 
+					itemIds={regSelectedIds} 
+					data={registrationRequests?.data} 
+					config={regRequestConfig}
+				/>
+				<div className = "tw-p-4 tw-border tw-border-gray-300">
+					<PaginationRow
+						showNumResults={true}
+						showPageNums={true}
+						setPage={setRegRequestPage}	
+						paginationData={registrationRequests?.pagination}
+						customPageParam={"regPage"}
+						currentPage={regCurrentPage}
+						urlParams={{...filters, userPage: userCurrentPage}}
+						url={USERS}	
 					/>
-					<Table 
-						tableKey={"reg-request"} 
-						itemIds={regSelectedIds} 
-						data={registrationRequests?.data} 
-						config={regRequestConfig}
-					/>
-					<div className = "tw-p-4 tw-border tw-border-gray-300">
-						<PaginationRow
-							showNumResults={true}
-							showPageNums={true}
-							setPage={setRegRequestPage}	
-							paginationData={registrationRequests?.pagination}
-							customPageParam={"regPage"}
-							currentPage={regCurrentPage}
-							urlParams={{userPage: userCurrentPage}}
-							url={USERS}	
-						/>
-					</div>
-				</>
-			)}
-			{
-				isUserProfilesFetching ? <LoadingSpinner/> : (
-					<>
-						<div>
-							<h1>Users</h1>
-						</div>
-						<Table tableKey={"display-user"} data={userProfiles?.data} config={userProfileConfig}/>
-						<div className = "tw-p-4 tw-border tw-border-gray-300">
-							<PaginationRow
-								showNumResults={true}
-								showPageNums={true}
-								setPage={setUserProfPage}	
-								paginationData={userProfiles?.pagination}
-								customPageParam={"userPage"}
-								currentPage={userCurrentPage}
-								urlParams={{regPage: regCurrentPage}}
-								url={USERS}	
-							/>
-						</div>							
-					</>	
-				)
-			}
-		</div>
+				</div>
+			</div>
+		)
 	)
+}
+
+export const UsersDisplay = () => {
+	const [searchParams, setSearchParams] = useSearchParams()
+	const filters = {
+		regQuery: searchParams.get("regQuery") ?? "",
+		userQuery: searchParams.get("userQuery") ?? "",
+	}
+	return (
+		<>
+			<RegForm filters={filters}/>	
+			<UserForm filters={filters}/>	
+		</>
+	)
+	// const dispatch = useAppDispatch()
+	// const navigate = useNavigate()
+	// const [searchParams, setSearchParams] = useSearchParams()
+	// const regPageParam = (searchParams.get("regPage") != null && searchParams.get("regPage") !== "" ? searchParams.get("regPage") : "") as string
+	// const regCurrentPage = regPageParam !== "" ? parseInt(regPageParam) : 1
+	// const userPageParam = (searchParams.get("userPage") != null && searchParams.get("userPage") !== "" ? searchParams.get("userPage") : "") as string
+	// const userCurrentPage = userPageParam !== "" ? parseInt(userPageParam) : 1
+	// const { userProfile } = useAppSelector((state) => state.userProfile)
+	// const [ regSelectedIds, setRegSelectedIds ] = useState<Array<number>>([])
+	// const { data: registrationRequests, isFetching: isRegistrationRequestsFetching } = useGetRegistrationRequestsQuery({page: regCurrentPage})
+	// const { data: userProfiles, isFetching: isUserProfilesFetching } = useGetUserProfilesQuery({page: userCurrentPage})
+	// const regRequestConfig = useRegistrationRequestConfig(regSelectedIds, setRegSelectedIds, true)
+	// const userProfileConfig = useUserProfileConfig()
+
+	// const setRegRequestPage = (page: number) => {
+	// 	let pageUrl = `${USERS}?regPage=${page}&userPage=${userCurrentPage}`
+	// 	// pageUrl = withUrlParams(pageUrl)
+	//     navigate(pageUrl, {replace:true});	
+	// }
+
+	// const setUserProfPage = (page: number) => {
+	// 	let pageUrl = `${USERS}?regPage=${regCurrentPage}&userPage=${page}`
+	// 	// pageUrl = withUrlParams(pageUrl)
+	//     navigate(pageUrl, {replace:true});
+	// }
+
+	// return (
+	// 	<div className = "tw-flex tw-flex-col tw-gap-y-4">
+
+	// 		{isRegistrationRequestsFetching ? <LoadingSpinner/> : (
+	// 			<>
+	// 				<div>
+	// 					<h1>Registration Requests</h1>
+	// 				</div>
+	// 				<BulkEditToolbar 
+	// 					updateIds={(ids: Array<number>) => setRegSelectedIds(ids)} 
+	// 					itemIds={regSelectedIds} 
+	// 					applyActionToAll={() => regRequestConfig.bulkEdit.approveAll()} 
+	// 					applyRemoveToAll={() => regRequestConfig.bulkEdit.denyAll()}
+	// 					removeText={"Deny All"}
+	// 					actionText = {"Approve All"}
+	// 				/>
+	// 				<Table 
+	// 					tableKey={"reg-request"} 
+	// 					itemIds={regSelectedIds} 
+	// 					data={registrationRequests?.data} 
+	// 					config={regRequestConfig}
+	// 				/>
+	// 				<div className = "tw-p-4 tw-border tw-border-gray-300">
+	// 					<PaginationRow
+	// 						showNumResults={true}
+	// 						showPageNums={true}
+	// 						setPage={setRegRequestPage}	
+	// 						paginationData={registrationRequests?.pagination}
+	// 						customPageParam={"regPage"}
+	// 						currentPage={regCurrentPage}
+	// 						urlParams={{userPage: userCurrentPage}}
+	// 						url={USERS}	
+	// 					/>
+	// 				</div>
+	// 			</>
+	// 		)}
+	// 		{
+	// 			isUserProfilesFetching ? <LoadingSpinner/> : (
+	// 				<>
+	// 					<div>
+	// 						<h1>Users</h1>
+	// 					</div>
+	// 					<Table tableKey={"display-user"} data={userProfiles?.data} config={userProfileConfig}/>
+	// 					<div className = "tw-p-4 tw-border tw-border-gray-300">
+	// 						<PaginationRow
+	// 							showNumResults={true}
+	// 							showPageNums={true}
+	// 							setPage={setUserProfPage}	
+	// 							paginationData={userProfiles?.pagination}
+	// 							customPageParam={"userPage"}
+	// 							currentPage={userCurrentPage}
+	// 							urlParams={{regPage: regCurrentPage}}
+	// 							url={USERS}	
+	// 						/>
+	// 					</div>							
+	// 				</>	
+	// 			)
+	// 		}
+	// 	</div>
+	// )
 }

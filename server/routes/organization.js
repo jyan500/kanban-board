@@ -31,7 +31,15 @@ router.get("/", async (req, res, next) => {
 
 router.get("/registration-request", authenticateToken, authenticateUserRole(["ADMIN"]), async (req, res, next) => {
 	try {
-		const registrationRequest = await db("user_registration_requests").where("organization_id", req.user.organization).join("users", "user_registration_requests.user_id", "=", "users.id")
+		const registrationRequest = await db("user_registration_requests")
+		.where("organization_id", req.user.organization)
+		.join("users", "user_registration_requests.user_id", "=", "users.id")
+		.modify((queryBuilder) => {
+			if (req.query.query || req.query.regQuery){
+				const query = req.query.query ?? req.query.regQuery
+				queryBuilder.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`)
+			}
+		})
 		.select(
 			"user_registration_requests.id as id",
 			"user_registration_requests.user_id as userId",

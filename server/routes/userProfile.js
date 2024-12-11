@@ -16,8 +16,9 @@ router.get("/", async (req, res, next) => {
 			.where("organization_user_roles.organization_id", organizationId)
 			.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
 			.modify((queryBuilder) => {
-				if (req.query.query){
-					queryBuilder.whereILike("users.first_name", `%${req.query.query}%`).orWhereILike("users.last_name", `%${req.query.query}%`)
+				if (req.query.query || req.query.userQuery){
+					const query = req.query.query ?? req.query.userQuery
+					queryBuilder.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`)
 				}
 				if (req.query.filterOnUserRole){
 					if (userRole === "USER"){
