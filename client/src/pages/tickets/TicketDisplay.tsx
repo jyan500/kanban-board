@@ -63,13 +63,6 @@ export const TicketDisplay = () => {
 		}},
 	}
 
-	// const withUrlParams = (pageUrl: string) => {
-	// 	Object.keys(defaultForm).forEach((key) => {
-	// 		pageUrl += `&${key}=${searchParams.get(key) ?? ""}`
-	// 	})
-	// 	return pageUrl
-	// }
-
 	const onSubmit = (values: FormValues) => {
 		// reset back to page 1 if modifying search results
 		// setting the search params 
