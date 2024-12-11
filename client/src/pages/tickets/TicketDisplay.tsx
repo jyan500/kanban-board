@@ -8,6 +8,7 @@ import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { TicketRow } from "../../components/TicketRow"
 import { SearchToolBar } from "../../components/tickets/SearchToolBar"
 import { useForm, FormProvider } from "react-hook-form"
+import { withUrlParams } from "../../helpers/functions"
 
 export type Filters = {
 	ticketType: string
@@ -62,13 +63,6 @@ export const TicketDisplay = () => {
 		}},
 	}
 
-	const withUrlParams = (pageUrl: string) => {
-		Object.keys(defaultForm).forEach((key) => {
-			pageUrl += `&${key}=${searchParams.get(key) ?? ""}`
-		})
-		return pageUrl
-	}
-
 	const onSubmit = (values: FormValues) => {
 		// reset back to page 1 if modifying search results
 		// setting the search params 
@@ -81,13 +75,13 @@ export const TicketDisplay = () => {
 
 	const setPage = (pageNum: number) => {
 		let pageUrl = `${TICKETS}${ticketId ? `/${ticketId}` : ""}?page=${pageNum}`
-		pageUrl = withUrlParams(pageUrl)
+		pageUrl = withUrlParams(defaultForm, searchParams, pageUrl)
 	    navigate(pageUrl, {replace:true});
 	}
 
 	const showTicket = (id: number) => {
 		let pageUrl = `${TICKETS}/${id}?page=${currentPage}`
-		pageUrl = withUrlParams(pageUrl)
+		pageUrl = withUrlParams(defaultForm, searchParams, pageUrl)
 		navigate(pageUrl)
 	}
 

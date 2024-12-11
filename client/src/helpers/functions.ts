@@ -124,6 +124,19 @@ export const parseURLParams = (params: Record<string, any>) => {
 }
 
 /**
+ * @param search parameters from useSearchParam() react router object 
+ * @param defaultForm is the form fields 
+ * @param pageUrl
+ * @return url string with params included
+ */
+export const withUrlParams = (defaultForm: Record<string, any>, searchParams: Record<string, any>, pageUrl: string) => {
+	Object.keys(defaultForm).forEach((key) => {
+		pageUrl += `&${key}=${searchParams.get(key) ?? ""}`
+	})
+	return pageUrl
+}
+
+/**
  * @param user
  * @return string containing the users' first and last name if the user exists, otherwise returns an empty string
  */
