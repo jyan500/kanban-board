@@ -3,6 +3,8 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { Controller, useForm } from "react-hook-form"
+import { EditorState } from "draft-js";
+import { Editor } from "react-draft-wysiwyg"
 import { v4 as uuidv4 } from "uuid" 
 import type { UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
@@ -22,6 +24,7 @@ import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
+import '../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 export type FormValues = {
 	id?: number
@@ -31,6 +34,16 @@ export type FormValues = {
 	statusId: number
 	ticketTypeId: number
 	userId: number
+}
+
+type TempFormValues = {
+	id?: number
+	name: string
+	description: EditorState
+	priorityId: number
+	statusId: number
+	ticketTypeId: number
+	userId: number	
 }
 
 type Props = {
@@ -53,17 +66,17 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	const [ deleteTicket, {isLoading: isDeleteTicketLoading, error: isDeleteTicketError} ] = useDeleteTicketMutation()
 	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
 	const [ deleteBoardTicket, {isLoading: isDeleteBoardTicketLoading, error: isDeleteBoardTicketError}] = useDeleteBoardTicketMutation()
-	const defaultForm: FormValues = {
+	const defaultForm: TempFormValues = {
 		id: undefined,
 		name: "",
-		description: "",
+		description: EditorState.createEmpty(),
 		priorityId: 0,
 		statusId: 0,
 		ticketTypeId: 0,
 		userId: 0 
 	}
-	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = useForm<FormValues>({
+	const [preloadedValues, setPreloadedValues] = useState<TempFormValues>(defaultForm)
+	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = useForm<TempFormValues>({
 		defaultValues: preloadedValues
 	})
 
@@ -79,6 +92,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	    ticketTypeId: { required: "Ticket Type is required"},
 	    userId: {}
     }
+
 	useEffect(() => {
 		// initialize with current values if the ticket exists
 		if (ticket){
@@ -93,35 +107,35 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		}
 	}, [ticket])
 
-    const onSubmit = async (values: FormValues) => {
-    	try {
-	    	const data = await addTicket(values).unwrap()
-	    	if (boardId){
-		    	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()
-	    	}
-	    	// update ticket assignees
-	    	if (values.userId){
-	    		await bulkEditTicketAssignees({ticketId: data.id, isWatcher: false, userIds: [values.userId]}).unwrap()
-	    	}
-			dispatch(toggleShowModal(false))
-			dispatch(toggleShowSecondaryModal(false))
-			dispatch(setSecondaryModalProps({}))
-			dispatch(setSecondaryModalType(undefined))
-    		dispatch(addToast({
-    			id: uuidv4(),
-    			type: "success",
-    			animationType: "animation-in",
-    			message: `Ticket added successfully!`,
-    		}))
-    	}
-    	catch (e) { 
-    		dispatch(addToast({
-    			id: uuidv4(),
-    			type: "failure",
-    			animationType: "animation-in",
-    			message: "Failed to submit ticket",
-    		}))
-    	}
+    const onSubmit = async (values: TempFormValues) => {
+    	// try {
+	    // 	const data = await addTicket(values).unwrap()
+	    // 	if (boardId){
+		//     	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()
+	    // 	}
+	    // 	// update ticket assignees
+	    // 	if (values.userId){
+	    // 		await bulkEditTicketAssignees({ticketId: data.id, isWatcher: false, userIds: [values.userId]}).unwrap()
+	    // 	}
+		// 	dispatch(toggleShowModal(false))
+		// 	dispatch(toggleShowSecondaryModal(false))
+		// 	dispatch(setSecondaryModalProps({}))
+		// 	dispatch(setSecondaryModalType(undefined))
+    	// 	dispatch(addToast({
+    	// 		id: uuidv4(),
+    	// 		type: "success",
+    	// 		animationType: "animation-in",
+    	// 		message: `Ticket added successfully!`,
+    	// 	}))
+    	// }
+    	// catch (e) { 
+    	// 	dispatch(addToast({
+    	// 		id: uuidv4(),
+    	// 		type: "failure",
+    	// 		animationType: "animation-in",
+    	// 		message: "Failed to submit ticket",
+    	// 	}))
+    	// }
     }
 
 	return (
@@ -146,8 +160,20 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 					</div>
 					<div>
 						<label className = "label" htmlFor = "ticket-description">Description</label>
-						<textarea className = "tw-w-full" rows={8} id = "ticket-description" {...register("description", registerOptions.description)}></textarea>
-				        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
+						{/*<textarea className = "tw-w-full" rows={8} id = "ticket-description" {...register("description", registerOptions.description)}></textarea>*/}
+						<Controller 
+							name={"description"} 	
+							control={control}
+							render={({field: {value, onChange}}) => (
+								<Editor 
+									editorState={value} 
+									onEditorStateChange={onChange}
+									wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
+								    editorClassName="tw-p-1"
+								/>
+							)}
+						/>
+				        {/*{errors?.description && <small className = "--text-alert">{errors.description.message}</small>}*/}
 				    </div>
 				    <div>
 						<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
