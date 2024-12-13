@@ -21,7 +21,7 @@ import { OptionType, Ticket, TicketType, Priority, Status, UserProfile } from ".
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
-import { displayUser } from "../helpers/functions"
+import { displayUser, stateToHTMLOptions } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
 import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
@@ -350,7 +350,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									{
 										!editFieldVisibility.description ? (
 											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
-												<div dangerouslySetInnerHTML={{ __html: stateToHTML(watch("description").getCurrentContent())}}></div>
+												<div className = "textarea-ignore-global" dangerouslySetInnerHTML={{ __html: stateToHTML(watch("description").getCurrentContent(), stateToHTMLOptions())}}></div>
 											</div>
 										) : (
 											<div className = "tw-flex tw-flex-col tw-gap-y-2">
@@ -363,6 +363,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 															onEditorStateChange={onChange}
 															wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
 														    editorClassName="tw-p-1"
+														    toolbar={{ link: {defaultTargetOption: "_blank"} }}
 														/>
 													)}
 												/>

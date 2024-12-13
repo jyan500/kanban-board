@@ -158,6 +158,28 @@ export const parseDelimitedWord = (word: string, delimiter: string) => {
 	return edited.join(" ")
 }
 
+/**
+ * @return options for converting Draft.js content state to HTML
+ */
+export const stateToHTMLOptions = () => {
+	let options = {
+		// TODO: find the right type for entity
+		entityStyleFn: (entity: Record<string, any>) => {
+			const entityType = entity.get('type').toLowerCase();
+			if (entityType === 'link') {
+				const data = entity.getData();
+				return {
+					element: 'a',
+					attributes: {
+						href: data.url,
+						target:'_blank'
+					},
+				}
+			} 
+		}
+	}
+	return options
+}
 
 
 
