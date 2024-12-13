@@ -32,4 +32,12 @@
 		text-decoration: underline;
 		color: blue;
 	}
+	code {
+		font-family: monospace; 
+		font-size: 14px; 
+		overflow-wrap: break-word; 
+		background: rgb(241, 241, 241); 
+		border-radius: 3px; 
+		padding: 1px 3px;
+	}
 }
