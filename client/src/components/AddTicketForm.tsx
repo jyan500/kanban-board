@@ -36,16 +36,6 @@ export type FormValues = {
 	userId: number
 }
 
-type TempFormValues = {
-	id?: number
-	name: string
-	description: EditorState
-	priorityId: number
-	statusId: number
-	ticketTypeId: number
-	userId: number	
-}
-
 type Props = {
 	boardId?: number | null | undefined
 	ticket?: Ticket | null | undefined
@@ -66,7 +56,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	const [ deleteTicket, {isLoading: isDeleteTicketLoading, error: isDeleteTicketError} ] = useDeleteTicketMutation()
 	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
 	const [ deleteBoardTicket, {isLoading: isDeleteBoardTicketLoading, error: isDeleteBoardTicketError}] = useDeleteBoardTicketMutation()
-	const defaultForm: TempFormValues = {
+	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
 		description: EditorState.createEmpty(),
@@ -75,8 +65,8 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		ticketTypeId: 0,
 		userId: 0 
 	}
-	const [preloadedValues, setPreloadedValues] = useState<TempFormValues>(defaultForm)
-	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = useForm<TempFormValues>({
+	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
+	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
 
@@ -108,7 +98,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		}
 	}, [ticket])
 
-    const onSubmit = async (values: TempFormValues) => {
+    const onSubmit = async (values: FormValues) => {
     	try {
 	    	const data = await addTicket({
 	    		...values, 
@@ -164,7 +154,6 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 					</div>
 					<div>
 						<label className = "label" htmlFor = "ticket-description">Description</label>
-						{/*<textarea className = "tw-w-full" rows={8} id = "ticket-description" {...register("description", registerOptions.description)}></textarea>*/}
 						<Controller 
 							name={"description"} 	
 							control={control}
