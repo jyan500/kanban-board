@@ -111,6 +111,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     	description: {
 			validate: {
 		        required: (value: EditorState) => {
+		        	// check if the rich text editor contains any text excluding whitespaces
 			        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
 			        	return "Description is required"
 			        } 	
@@ -384,7 +385,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 													}} className = "button">Submit</button>
 													<button onClick={(e) => {
 														e.preventDefault()
-														resetField("description")
+														if (ticket){
+															setValue("description", EditorState.createWithContent(convertFromRaw(JSON.parse(ticket.description))))
+														}
 														toggleFieldVisibility("description", false)
 													}} className = "button --secondary">Cancel</button>
 												</div>
