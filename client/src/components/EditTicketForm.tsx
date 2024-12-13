@@ -81,7 +81,21 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	} = useAppSelector((state) => state.modal)
 	const isCompletedStatusIds = statuses.filter((status) => status.isCompleted).map((status) => status.id)
 	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
-	// const reporter = userProfiles?.find((user) => user.id === ticket?.userId)
+	const toolbarOptions = {
+	    options: ['inline', 'blockType', 'list', 'link', 'emoji', 'image', 'remove', 'history'],
+	    inline: {
+	      inDropdown: false,
+	      options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
+	    },
+	    list: {
+	      inDropdown: true,
+	      options: ['unordered', 'ordered', 'indent', 'outdent'],
+	    },
+	    textAlign: {
+	      inDropdown: true,
+	      options: ['left', 'center', 'right', 'justify'],
+	    },
+    }
 
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
 		"name": false,
@@ -215,21 +229,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 
 
 	const userProfileSelect = ( 
-		// <select {...userIdRegisterMethods}
-		// className = {`tw-w-full ${editFieldVisibility.assignees ? "" : "tw-border-transparent"}`}
-		// onChange={async (e) => {
-		// 	setValue("userId", parseInt(e.target.value))
-		// 	toggleFieldVisibility("assignee", false)
-		//     await handleSubmit(onSubmit)()
-		// }}
-		// onBlur = {(e) => toggleFieldVisibility("assignee", false)}
-		// >
-		// 	{userProfiles.map((profile: UserProfile) => {
-		// 		return <option disabled={
-		// 			(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
-		// 			(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{displayUser(profile)}</option>
-		// 	})}
-		// </select>
 		<Controller
 			name={"userId"}
 			control={control}
@@ -252,19 +251,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
                 />
             )}
 		/>
-    	// <AsyncSelect 
-        // 	endpoint={USER_PROFILE_URL} 
-        // 	urlParams={{}} 
-        // 	className={"tw-w-full"}
-        // 	onSelect={async (selectedOption: {label: string, value: string} | null) => {
-        // 		const val = selectedOption?.value ?? ""
-        // 		if (!isNaN(Number(val))){
-        // 			setValue("userId", Number(val))
-        // 			toggleFieldVisibility("assignee", false)
-        // 			await handleSubmit(onSubmit)()
-        // 		}
-        // 	}}
-        // />
 	)
 
 	const ticketTypeSelect = (
@@ -317,7 +303,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									<>
 										<InlineEdit onSubmit = {async () => {
 											await handleSubmit(onSubmit)()
-											toggleFieldVisibility("name", false)
+											if (!errors?.name){
+												toggleFieldVisibility("name", false)
+											}
 										}} registerField = {"name"} registerOptions = {registerOptions.name} type = "text" value={watch("name")} onCancel={() => {toggleFieldVisibility("name", false)}}/>
 								        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 							        </>
@@ -363,40 +351,22 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 											</div>
 										) : (
 											<div className = "tw-flex tw-flex-col tw-gap-y-2">
-												<Controller 
-													name={"description"} 	
-													control={control}
-													rules={registerOptions.description}
-													render={({field: {value, onChange}}) => (
-														<Editor 
-															editorState={value} 
-															onEditorStateChange={onChange}
-															wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
-														    editorClassName="tw-p-1"
-														    toolbar={{ link: {defaultTargetOption: "_blank"} }}
-														/>
-													)}
-												/>
-												<div className = "tw-flex tw-flex-row tw-gap-x-2">
-													<button onClick={async (e) => {
+												<InlineEdit 
+													onSubmit={async () => {
 														await handleSubmit(onSubmit)()
-														toggleFieldVisibility("description", false)
-														e.preventDefault()
-													}} className = "button">Submit</button>
-													<button onClick={(e) => {
-														e.preventDefault()
+														if (!errors?.description){
+															toggleFieldVisibility("description", false)
+														}
+													}} 
+													registerField = {"description"} 
+													registerOptions = {registerOptions.description} 
+													type = "textarea" 
+													customReset={() => {
 														if (ticket){
 															setValue("description", EditorState.createWithContent(convertFromRaw(JSON.parse(ticket.description))))
 														}
-														toggleFieldVisibility("description", false)
-													}} className = "button --secondary">Cancel</button>
-												</div>
-												{/*<InlineEdit onSubmit={async () => {
-													await handleSubmit(onSubmit)()
-													toggleFieldVisibility("description", false)
-												}} registerField = {"description"} registerOptions = {registerOptions.description} type = "textarea" value={watch("description")} onCancel={() => toggleFieldVisibility("description", false)}/>
-										        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
-									       */}
+													}}
+													onCancel={() => toggleFieldVisibility("description", false)}/>
 										        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 											</div>
 										)
