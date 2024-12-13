@@ -10,7 +10,9 @@ type Props = {
 	registerField: string
 	registerOptions?: Record<string, any> 
 	toolbarOptions?: Record<string, any>
-	control: Control<FieldValues, any> | undefined
+	// TODO: find the proper type for this, there's a conflict between the generic "FieldValues" type, and the "FormValues"
+	// type that gets passed in when initializing useForm() for react hook form.
+	control: Control<any, object> 
 }
 
 export const TextArea = ({registerField, registerOptions, toolbarOptions, control}: Props) => {

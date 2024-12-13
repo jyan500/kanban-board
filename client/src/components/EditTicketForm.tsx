@@ -38,7 +38,6 @@ import { toggleShowModal } from "../slices/modalSlice"
 import { AsyncSelect } from "./AsyncSelect"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg"
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { stateToHTML } from 'draft-js-export-html'; 
 
 

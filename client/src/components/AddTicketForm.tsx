@@ -3,8 +3,6 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { Controller, useForm } from "react-hook-form"
-import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
-import { Editor } from "react-draft-wysiwyg"
 import { v4 as uuidv4 } from "uuid" 
 import type { UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
@@ -24,6 +22,9 @@ import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
+import { TextArea } from "./page-elements/TextArea"
+import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
+import { Editor } from "react-draft-wysiwyg"
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
 export type FormValues = {
@@ -66,9 +67,10 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		userId: 0 
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = useForm<FormValues>({
+	const methods = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
+	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = methods
 
 	const adminRole = userRoles?.find((role) => role.name === "ADMIN")
 	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
@@ -163,7 +165,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 					</div>
 					<div>
 						<label className = "label" htmlFor = "ticket-description">Description</label>
-						<Controller 
+			{/*			<Controller 
 							name={"description"} 	
 							rules={registerOptions.description}
 							control={control}
@@ -175,6 +177,11 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 								    editorClassName="tw-p-1"
 								/>
 							)}
+						/>*/}
+						<TextArea
+							registerField={"description"}
+							registerOptions={registerOptions.description}
+							control={control}
 						/>
 				        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 				    </div>
