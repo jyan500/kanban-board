@@ -11,6 +11,8 @@ module.exports = {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_unicode_ci',
     },
     seeds: {
     	directory: "./db/seeds"
@@ -36,6 +38,8 @@ module.exports = {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME_TEST,
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_unicode_ci',
     },
     seeds: {
     	directory: "./db/seeds"
