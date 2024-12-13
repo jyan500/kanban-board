@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { Controller, useForm } from "react-hook-form"
-import { EditorState } from "draft-js";
+import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg"
 import { v4 as uuidv4 } from "uuid" 
 import type { UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
@@ -24,12 +24,12 @@ import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
-import '../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
 export type FormValues = {
 	id?: number
 	name: string
-	description: string
+	description: EditorState
 	priorityId: number
 	statusId: number
 	ticketTypeId: number
@@ -98,6 +98,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		if (ticket){
 			reset({
 				...ticket, 
+				description: EditorState.createWithContent(convertFromRaw(JSON.parse(ticket.description))),
 				id: undefined,
 				userId: 0
 			})
@@ -108,34 +109,37 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	}, [ticket])
 
     const onSubmit = async (values: TempFormValues) => {
-    	// try {
-	    // 	const data = await addTicket(values).unwrap()
-	    // 	if (boardId){
-		//     	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()
-	    // 	}
-	    // 	// update ticket assignees
-	    // 	if (values.userId){
-	    // 		await bulkEditTicketAssignees({ticketId: data.id, isWatcher: false, userIds: [values.userId]}).unwrap()
-	    // 	}
-		// 	dispatch(toggleShowModal(false))
-		// 	dispatch(toggleShowSecondaryModal(false))
-		// 	dispatch(setSecondaryModalProps({}))
-		// 	dispatch(setSecondaryModalType(undefined))
-    	// 	dispatch(addToast({
-    	// 		id: uuidv4(),
-    	// 		type: "success",
-    	// 		animationType: "animation-in",
-    	// 		message: `Ticket added successfully!`,
-    	// 	}))
-    	// }
-    	// catch (e) { 
-    	// 	dispatch(addToast({
-    	// 		id: uuidv4(),
-    	// 		type: "failure",
-    	// 		animationType: "animation-in",
-    	// 		message: "Failed to submit ticket",
-    	// 	}))
-    	// }
+    	try {
+	    	const data = await addTicket({
+	    		...values, 
+	    		description: JSON.stringify(convertToRaw(values.description.getCurrentContent()))
+	    	}).unwrap()
+	    	if (boardId){
+		    	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()
+	    	}
+	    	// update ticket assignees
+	    	if (values.userId){
+	    		await bulkEditTicketAssignees({ticketId: data.id, isWatcher: false, userIds: [values.userId]}).unwrap()
+	    	}
+			dispatch(toggleShowModal(false))
+			dispatch(toggleShowSecondaryModal(false))
+			dispatch(setSecondaryModalProps({}))
+			dispatch(setSecondaryModalType(undefined))
+    		dispatch(addToast({
+    			id: uuidv4(),
+    			type: "success",
+    			animationType: "animation-in",
+    			message: `Ticket added successfully!`,
+    		}))
+    	}
+    	catch (e) { 
+    		dispatch(addToast({
+    			id: uuidv4(),
+    			type: "failure",
+    			animationType: "animation-in",
+    			message: "Failed to submit ticket",
+    		}))
+    	}
     }
 
 	return (
