@@ -3,6 +3,8 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { Controller, useForm } from "react-hook-form"
+import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
+import { Editor } from "react-draft-wysiwyg"
 import { v4 as uuidv4 } from "uuid" 
 import type { UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
@@ -22,11 +24,12 @@ import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
 export type FormValues = {
 	id?: number
 	name: string
-	description: string
+	description: EditorState
 	priorityId: number
 	statusId: number
 	ticketTypeId: number
@@ -56,7 +59,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
-		description: "",
+		description: EditorState.createEmpty(),
 		priorityId: 0,
 		statusId: 0,
 		ticketTypeId: 0,
@@ -73,17 +76,28 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 
 	const registerOptions = {
 	    name: { required: "Name is required" },
-	    description: { required: "Description is required"},
+		description: {
+			validate: {
+	        	// check if the rich text editor contains any text excluding whitespaces
+		        required: (value: EditorState) => {
+			        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
+			        	return "Description is required"
+			        } 	
+		        }
+		    }
+		},
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
 	    userId: {}
     }
+
 	useEffect(() => {
 		// initialize with current values if the ticket exists
 		if (ticket){
 			reset({
 				...ticket, 
+				description: EditorState.createWithContent(convertFromRaw(JSON.parse(ticket.description))),
 				id: undefined,
 				userId: 0
 			})
@@ -95,7 +109,10 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 
     const onSubmit = async (values: FormValues) => {
     	try {
-	    	const data = await addTicket(values).unwrap()
+	    	const data = await addTicket({
+	    		...values, 
+	    		description: JSON.stringify(convertToRaw(values.description.getCurrentContent()))
+	    	}).unwrap()
 	    	if (boardId){
 		    	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()
 	    	}
@@ -146,18 +163,23 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 					</div>
 					<div>
 						<label className = "label" htmlFor = "ticket-description">Description</label>
-						<textarea className = "tw-w-full" rows={8} id = "ticket-description" {...register("description", registerOptions.description)}></textarea>
+						<Controller 
+							name={"description"} 	
+							rules={registerOptions.description}
+							control={control}
+							render={({field: {value, onChange}}) => (
+								<Editor 
+									editorState={value} 
+									onEditorStateChange={onChange}
+									wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
+								    editorClassName="tw-p-1"
+								/>
+							)}
+						/>
 				        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 				    </div>
 				    <div>
 						<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
-						{/*<select className = "tw-w-full" id = "ticket-assignee" {...register("userId", registerOptions.userId)}>
-							{userProfiles.map((profile: UserProfile) => {
-								return <option disabled={
-									(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
-									(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{profile.firstName + " " + profile.lastName}</option>
-							})}
-						</select>*/}
 						<Controller
 							name={"userId"}
 							control={control}

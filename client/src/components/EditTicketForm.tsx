@@ -21,7 +21,7 @@ import { OptionType, Ticket, TicketType, Priority, Status, UserProfile } from ".
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
-import { displayUser } from "../helpers/functions"
+import { displayUser, stateToHTMLOptions } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
 import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
@@ -36,6 +36,10 @@ import { USER_PROFILE_URL } from "../helpers/urls"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { AsyncSelect } from "./AsyncSelect"
+import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
+import { Editor } from "react-draft-wysiwyg"
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import { stateToHTML } from 'draft-js-export-html'; 
 
 
 type EditFieldVisibility = {
@@ -91,7 +95,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const defaultForm: FormValues = {
 		id: 0,
 		name: "",
-		description: "",
+		description: EditorState.createEmpty(),
 		priorityId: 0,
 		statusId: 0,
 		ticketTypeId: 0,
@@ -101,10 +105,18 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const methods = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
-	const { register , control, handleSubmit, reset, setValue, watch, formState: {errors} } = methods
+	const { register , control, handleSubmit, reset, resetField, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
 	    name: { required: "Name is required" },
-	    description: { required: "Description is required"},
+    	description: {
+			validate: {
+		        required: (value: EditorState) => {
+			        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
+			        	return "Description is required"
+			        } 	
+		        }
+		    }
+		},
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
@@ -148,7 +160,13 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		}
 		// initialize with current values if the ticket exists
 		if (currentTicketId){
-			reset({...ticket, userId: ticketAssignees?.length ? ticketAssignees[0].id : 0} ?? defaultForm)
+			reset({
+				...ticket, 
+				// convert description from JSON representation of content state to editor state
+				description: EditorState.createWithContent(convertFromRaw(JSON.parse(ticket.description))),
+				userId: ticketAssignees?.length ? ticketAssignees[0].id : 0
+			} ?? defaultForm
+			)
 		}
 		else {
 			reset(defaultForm)
@@ -165,7 +183,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     	try {
     		// update existing ticket
     		if (values.id != null){
-    			await updateTicket({...values, id: values.id}).unwrap()
+    			await updateTicket({
+    				...values, 
+    				description: JSON.stringify(convertToRaw(values.description.getCurrentContent())),
+    				id: values.id
+    			}).unwrap()
     			// update ticket assignees
     			// TODO: need to update this line to include all userIds if allowing multiple 
     			// assignees per ticket
@@ -336,16 +358,44 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									{
 										!editFieldVisibility.description ? (
 											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
-												<span>{watch("description")}</span>
+												<div className = "textarea-ignore-global" dangerouslySetInnerHTML={{ __html: stateToHTML(watch("description").getCurrentContent(), stateToHTMLOptions())}}></div>
 											</div>
 										) : (
-											<>
-												<InlineEdit onSubmit={async () => {
+											<div className = "tw-flex tw-flex-col tw-gap-y-2">
+												<Controller 
+													name={"description"} 	
+													control={control}
+													rules={registerOptions.description}
+													render={({field: {value, onChange}}) => (
+														<Editor 
+															editorState={value} 
+															onEditorStateChange={onChange}
+															wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
+														    editorClassName="tw-p-1"
+														    toolbar={{ link: {defaultTargetOption: "_blank"} }}
+														/>
+													)}
+												/>
+												<div className = "tw-flex tw-flex-row tw-gap-x-2">
+													<button onClick={async (e) => {
+														await handleSubmit(onSubmit)()
+														toggleFieldVisibility("description", false)
+														e.preventDefault()
+													}} className = "button">Submit</button>
+													<button onClick={(e) => {
+														e.preventDefault()
+														resetField("description")
+														toggleFieldVisibility("description", false)
+													}} className = "button --secondary">Cancel</button>
+												</div>
+												{/*<InlineEdit onSubmit={async () => {
 													await handleSubmit(onSubmit)()
 													toggleFieldVisibility("description", false)
 												}} registerField = {"description"} registerOptions = {registerOptions.description} type = "textarea" value={watch("description")} onCancel={() => toggleFieldVisibility("description", false)}/>
 										        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
-											</>
+									       */}
+										        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
+											</div>
 										)
 									}
 								</>
