@@ -108,7 +108,15 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { register , control, handleSubmit, reset, resetField, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
 	    name: { required: "Name is required" },
-	    description: { required: "Description is required"},
+    	description: {
+			validate: {
+		        required: (value: EditorState) => {
+			        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
+			        	return "Description is required"
+			        } 	
+		        }
+		    }
+		},
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
@@ -357,6 +365,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 												<Controller 
 													name={"description"} 	
 													control={control}
+													rules={registerOptions.description}
 													render={({field: {value, onChange}}) => (
 														<Editor 
 															editorState={value} 
@@ -385,6 +394,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 												}} registerField = {"description"} registerOptions = {registerOptions.description} type = "textarea" value={watch("description")} onCancel={() => toggleFieldVisibility("description", false)}/>
 										        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 									       */}
+										        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 											</div>
 										)
 									}

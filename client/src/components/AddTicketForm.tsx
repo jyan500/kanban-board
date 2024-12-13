@@ -76,7 +76,16 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 
 	const registerOptions = {
 	    name: { required: "Name is required" },
-	    description: { required: "Description is required"},
+		description: {
+			validate: {
+	        	// check if the rich text editor contains any text excluding whitespaces
+		        required: (value: EditorState) => {
+			        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
+			        	return "Description is required"
+			        } 	
+		        }
+		    }
+		},
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
@@ -156,6 +165,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 						<label className = "label" htmlFor = "ticket-description">Description</label>
 						<Controller 
 							name={"description"} 	
+							rules={registerOptions.description}
 							control={control}
 							render={({field: {value, onChange}}) => (
 								<Editor 
@@ -166,17 +176,10 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 								/>
 							)}
 						/>
-				        {/*{errors?.description && <small className = "--text-alert">{errors.description.message}</small>}*/}
+				        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 				    </div>
 				    <div>
 						<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
-						{/*<select className = "tw-w-full" id = "ticket-assignee" {...register("userId", registerOptions.userId)}>
-							{userProfiles.map((profile: UserProfile) => {
-								return <option disabled={
-									(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
-									(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{profile.firstName + " " + profile.lastName}</option>
-							})}
-						</select>*/}
 						<Controller
 							name={"userId"}
 							control={control}
