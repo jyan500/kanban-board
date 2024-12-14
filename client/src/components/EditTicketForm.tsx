@@ -21,7 +21,7 @@ import { OptionType, Ticket, TicketType, Priority, Status, UserProfile } from ".
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
-import { displayUser, stateToHTMLOptions } from "../helpers/functions"
+import { displayUser } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
 import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
@@ -38,8 +38,13 @@ import { toggleShowModal } from "../slices/modalSlice"
 import { AsyncSelect } from "./AsyncSelect"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg"
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { stateToHTML } from 'draft-js-export-html'; 
+import { 
+	textAreaValidation, 
+	convertEditorStateToJSON, 
+	convertEditorStateToHTML, 
+	convertJSONToEditorState 
+} from "./page-elements/TextArea"
 
 
 type EditFieldVisibility = {
@@ -81,7 +86,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	} = useAppSelector((state) => state.modal)
 	const isCompletedStatusIds = statuses.filter((status) => status.isCompleted).map((status) => status.id)
 	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
-	// const reporter = userProfiles?.find((user) => user.id === ticket?.userId)
 
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
 		"name": false,
@@ -108,15 +112,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { register , control, handleSubmit, reset, resetField, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
 	    name: { required: "Name is required" },
-    	description: {
-			validate: {
-		        required: (value: EditorState) => {
-			        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
-			        	return "Description is required"
-			        } 	
-		        }
-		    }
-		},
+    	description: textAreaValidation(),
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
@@ -163,7 +159,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 			reset({
 				...ticket, 
 				// convert description from JSON representation of content state to editor state
-				description: EditorState.createWithContent(convertFromRaw(JSON.parse(ticket.description))),
+				description: convertJSONToEditorState(ticket.description),
 				userId: ticketAssignees?.length ? ticketAssignees[0].id : 0
 			} ?? defaultForm
 			)
@@ -185,7 +181,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     		if (values.id != null){
     			await updateTicket({
     				...values, 
-    				description: JSON.stringify(convertToRaw(values.description.getCurrentContent())),
+    				description: convertEditorStateToJSON(values.description),
     				id: values.id
     			}).unwrap()
     			// update ticket assignees
@@ -214,21 +210,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 
 
 	const userProfileSelect = ( 
-		// <select {...userIdRegisterMethods}
-		// className = {`tw-w-full ${editFieldVisibility.assignees ? "" : "tw-border-transparent"}`}
-		// onChange={async (e) => {
-		// 	setValue("userId", parseInt(e.target.value))
-		// 	toggleFieldVisibility("assignee", false)
-		//     await handleSubmit(onSubmit)()
-		// }}
-		// onBlur = {(e) => toggleFieldVisibility("assignee", false)}
-		// >
-		// 	{userProfiles.map((profile: UserProfile) => {
-		// 		return <option disabled={
-		// 			(profile.userRoleId === adminRole?.id || profile.userRoleId === boardAdminRole?.id) && 
-		// 			(userProfile?.userRoleId !== adminRole?.id && userProfile?.userRoleId !== boardAdminRole?.id)} key = {profile.id} value = {profile.id}>{displayUser(profile)}</option>
-		// 	})}
-		// </select>
 		<Controller
 			name={"userId"}
 			control={control}
@@ -251,19 +232,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
                 />
             )}
 		/>
-    	// <AsyncSelect 
-        // 	endpoint={USER_PROFILE_URL} 
-        // 	urlParams={{}} 
-        // 	className={"tw-w-full"}
-        // 	onSelect={async (selectedOption: {label: string, value: string} | null) => {
-        // 		const val = selectedOption?.value ?? ""
-        // 		if (!isNaN(Number(val))){
-        // 			setValue("userId", Number(val))
-        // 			toggleFieldVisibility("assignee", false)
-        // 			await handleSubmit(onSubmit)()
-        // 		}
-        // 	}}
-        // />
 	)
 
 	const ticketTypeSelect = (
@@ -316,7 +284,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									<>
 										<InlineEdit onSubmit = {async () => {
 											await handleSubmit(onSubmit)()
-											toggleFieldVisibility("name", false)
+											if (!errors?.name){
+												toggleFieldVisibility("name", false)
+											}
 										}} registerField = {"name"} registerOptions = {registerOptions.name} type = "text" value={watch("name")} onCancel={() => {toggleFieldVisibility("name", false)}}/>
 								        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 							        </>
@@ -358,42 +328,26 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									{
 										!editFieldVisibility.description ? (
 											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
-												<div className = "textarea-ignore-global" dangerouslySetInnerHTML={{ __html: stateToHTML(watch("description").getCurrentContent(), stateToHTMLOptions())}}></div>
+												<div className = "textarea-ignore-global" dangerouslySetInnerHTML={{ __html: convertEditorStateToHTML(watch("description")) }}></div>
 											</div>
 										) : (
 											<div className = "tw-flex tw-flex-col tw-gap-y-2">
-												<Controller 
-													name={"description"} 	
-													control={control}
-													rules={registerOptions.description}
-													render={({field: {value, onChange}}) => (
-														<Editor 
-															editorState={value} 
-															onEditorStateChange={onChange}
-															wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
-														    editorClassName="tw-p-1"
-														    toolbar={{ link: {defaultTargetOption: "_blank"} }}
-														/>
-													)}
-												/>
-												<div className = "tw-flex tw-flex-row tw-gap-x-2">
-													<button onClick={async (e) => {
+												<InlineEdit 
+													onSubmit={async () => {
 														await handleSubmit(onSubmit)()
-														toggleFieldVisibility("description", false)
-														e.preventDefault()
-													}} className = "button">Submit</button>
-													<button onClick={(e) => {
-														e.preventDefault()
-														resetField("description")
-														toggleFieldVisibility("description", false)
-													}} className = "button --secondary">Cancel</button>
-												</div>
-												{/*<InlineEdit onSubmit={async () => {
-													await handleSubmit(onSubmit)()
-													toggleFieldVisibility("description", false)
-												}} registerField = {"description"} registerOptions = {registerOptions.description} type = "textarea" value={watch("description")} onCancel={() => toggleFieldVisibility("description", false)}/>
-										        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
-									       */}
+														if (!errors?.description){
+															toggleFieldVisibility("description", false)
+														}
+													}} 
+													registerField = {"description"} 
+													registerOptions = {registerOptions.description} 
+													type = "textarea" 
+													customReset={() => {
+														if (ticket){
+															setValue("description", convertJSONToEditorState(ticket.description))
+														}
+													}}
+													onCancel={() => toggleFieldVisibility("description", false)}/>
 										        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 											</div>
 										)

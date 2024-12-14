@@ -18,12 +18,20 @@ import { displayUser } from "../helpers/functions"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { DeleteCommentWarningProps } from "./secondary-modals/DeleteCommentWarning"
 import { LoadingButton } from "./page-elements/LoadingButton"
+import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
+import { 
+	TextArea,
+	textAreaValidation, 
+	convertEditorStateToJSON, 
+	convertEditorStateToHTML, 
+	convertJSONToEditorState 
+} from "./page-elements/TextArea"
 
 type CommentFormValues = {
 	id: number
 	ticketId: number,
 	userId: number,
-	comment: string
+	comment: EditorState 
 }
 
 type CommentFieldProps = {
@@ -34,10 +42,14 @@ type CommentFieldProps = {
 }
 
 export const CommentField = ({isLoading, registerOptions, onSubmit, onCancel}: CommentFieldProps) => {
-	const { handleSubmit, register, resetField, setValue, formState: {errors} } = useFormContext<CommentFormValues>()
+	const { handleSubmit, control, register, resetField, setValue, formState: {errors} } = useFormContext<CommentFormValues>()
 	return (
 		<form className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
-			<textarea {...register("comment", registerOptions)} className = "tw-w-full" rows={8}></textarea>
+			<TextArea
+				registerField={"comment"}
+				registerOptions={registerOptions}
+				control={control}
+			/>
 	        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<LoadingButton isLoading={isLoading} className = "button" text={"Save"} onClick={onSubmit}></LoadingButton>
@@ -61,7 +73,6 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
 
-	// const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ?? skipToken)
 	const [ addTicketComment, {isLoading: isAddTicketCommentLoading, error: isAddTicketCommentError }] = useAddTicketCommentMutation()
 	const [ updateTicketComment, {isLoading: isUpdateTicketCommentLoading, error: isUpdateTicketCommentError }] = useUpdateTicketCommentMutation()
 	const [ deleteTicketComment, {isLoading: isDeleteTicketCommentLoading, error: isDeleteTicketCommentError }] = useDeleteTicketCommentMutation()
@@ -70,7 +81,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 		id: 0,
 		ticketId: 0,
 		userId: 0,
-		comment: ""
+		comment: EditorState.createEmpty()
 	}
 	const [preloadedValues, setPreloadedValues] = useState<CommentFormValues>(defaultForm)
 	const methods = useForm<CommentFormValues>({
@@ -78,7 +89,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 	})
 	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
-	    comment: { required: "Comment is required" },
+	    comment: textAreaValidation(),
     }
 	/* 
 	Because only one comment can exist on the form at once, the 
@@ -103,7 +114,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 				{
 					ticketId: currentTicketId,
 					comment: {
-						comment: values.comment,
+						comment: convertEditorStateToJSON(values.comment),
 						ticketId: currentTicketId,
 						userId: userProfile.id
 					}
@@ -113,7 +124,10 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 				await updateTicketComment(
 				{
 					ticketId: values.ticketId,
-					comment: values
+					comment: {
+						...values,
+						comment: convertEditorStateToJSON(values.comment)
+					} 
 				}
 				).unwrap()
 			}
@@ -228,7 +242,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 										/>
 									</FormProvider>
 								) : (
-									<p>{comment.comment}</p>
+									<div className = "textarea-ignore-global" dangerouslySetInnerHTML={{ __html: convertEditorStateToHTML(convertJSONToEditorState(comment.comment)) }}></div>
 								)}
 								{comment.userId === userProfile?.id && !showAddCommentForm && !showEditCommentId ? (
 									<div className = "tw-flex tw-flex-row tw-gap-x-2">
@@ -237,7 +251,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 												id: comment.id,
 												ticketId: comment.ticketId,
 												userId: comment.userId,
-												comment: comment.comment
+												comment: convertJSONToEditorState(comment.comment)
 											})
 											setShowAddCommentField(false)
 											setShowEditCommentId(comment.id)

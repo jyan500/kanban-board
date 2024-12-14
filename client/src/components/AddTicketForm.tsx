@@ -3,8 +3,6 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { Controller, useForm } from "react-hook-form"
-import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
-import { Editor } from "react-draft-wysiwyg"
 import { v4 as uuidv4 } from "uuid" 
 import type { UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
@@ -24,7 +22,15 @@ import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
+import { Editor } from "react-draft-wysiwyg"
+import { 
+	TextArea,
+	textAreaValidation, 
+	convertEditorStateToJSON, 
+	convertEditorStateToHTML, 
+	convertJSONToEditorState 
+} from "./page-elements/TextArea"
 
 export type FormValues = {
 	id?: number
@@ -66,9 +72,10 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		userId: 0 
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = useForm<FormValues>({
+	const methods = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
+	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = methods
 
 	const adminRole = userRoles?.find((role) => role.name === "ADMIN")
 	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
@@ -76,16 +83,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 
 	const registerOptions = {
 	    name: { required: "Name is required" },
-		description: {
-			validate: {
-	        	// check if the rich text editor contains any text excluding whitespaces
-		        required: (value: EditorState) => {
-			        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
-			        	return "Description is required"
-			        } 	
-		        }
-		    }
-		},
+		description: textAreaValidation(),
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
@@ -97,7 +95,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		if (ticket){
 			reset({
 				...ticket, 
-				description: EditorState.createWithContent(convertFromRaw(JSON.parse(ticket.description))),
+				description: convertJSONToEditorState(ticket.description),
 				id: undefined,
 				userId: 0
 			})
@@ -111,7 +109,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
     	try {
 	    	const data = await addTicket({
 	    		...values, 
-	    		description: JSON.stringify(convertToRaw(values.description.getCurrentContent()))
+	    		description: convertEditorStateToJSON(values.description)
 	    	}).unwrap()
 	    	if (boardId){
 		    	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()
@@ -163,18 +161,10 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 					</div>
 					<div>
 						<label className = "label" htmlFor = "ticket-description">Description</label>
-						<Controller 
-							name={"description"} 	
-							rules={registerOptions.description}
+						<TextArea
+							registerField={"description"}
+							registerOptions={registerOptions.description}
 							control={control}
-							render={({field: {value, onChange}}) => (
-								<Editor 
-									editorState={value} 
-									onEditorStateChange={onChange}
-									wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
-								    editorClassName="tw-p-1"
-								/>
-							)}
 						/>
 				        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 				    </div>

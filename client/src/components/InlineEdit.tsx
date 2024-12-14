@@ -1,22 +1,24 @@
 import React, { useState } from "react"
 import { useFormContext } from "react-hook-form"
+import { TextArea } from "./page-elements/TextArea"
 
 type Props = {
 	type: string
-	value: string
+	value?: string
 	onSubmit: () => void
 	onCancel: () => void
+	customReset?: () => void
 	registerField: string
 	registerOptions: Record<string, any>
 }
 
-export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, registerOptions}: Props) => {
-	const { handleSubmit, register, resetField, setValue } = useFormContext()
+export const InlineEdit = ({type, value, onSubmit, onCancel, customReset, registerField, registerOptions}: Props) => {
+	const { control, handleSubmit, register, resetField, setValue } = useFormContext()
 
 	const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
 		if (e.key === "Escape"){
 			(e.target as HTMLElement).blur()
-			setValue(registerField, value)
+			setValue(registerField, value ?? "")
 		}	
 		if (e.key == "Enter" && type !== "textarea"){
 			e.preventDefault()
@@ -38,16 +40,11 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 			break
 		case "textarea":
 			element = (
-				<textarea 
-					rows={10}
-					cols={30}
-					className = "tw-w-full"
-					{...register(registerField, registerOptions)}
-					aria-label="editable-field-textarea"
-					onKeyDown={onKeyDown}
-				>
-					
-				</textarea>
+				<TextArea
+					control={control}
+					registerField={registerField}
+					registerOptions={registerOptions}
+				/>
 			)
 			break
 		default:
@@ -73,7 +70,7 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, registerField, regi
 				}}>Save</button>
 				<button type = "button" onClick={(e) => {
 					e.preventDefault()
-					resetField(registerField)
+					customReset ? customReset() : resetField(registerField)
 					onCancel()
 				}
 				} className = "button --secondary">Cancel</button>
