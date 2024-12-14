@@ -15,6 +15,19 @@ type Props = {
 	control: Control<any, object> 
 }
 
+export const textAreaValidation = () => {
+	return {
+		validate: {
+	    	// check if the rich text editor contains any text excluding whitespaces
+	        required: (value: EditorState) => {
+		        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
+		        	return "Description is required"
+		        } 	
+	        }
+		}
+    }
+}
+
 export const TextArea = ({registerField, registerOptions, toolbarOptions, control}: Props) => {
 	const defaultToolbarOptions = {
 	    options: ['inline', 'blockType', 'list', 'link', 'emoji', 'image', 'remove', 'history'],

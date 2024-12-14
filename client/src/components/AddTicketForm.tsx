@@ -22,7 +22,7 @@ import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
-import { TextArea } from "./page-elements/TextArea"
+import { TextArea, textAreaValidation } from "./page-elements/TextArea"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg"
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
@@ -78,16 +78,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 
 	const registerOptions = {
 	    name: { required: "Name is required" },
-		description: {
-			validate: {
-	        	// check if the rich text editor contains any text excluding whitespaces
-		        required: (value: EditorState) => {
-			        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
-			        	return "Description is required"
-			        } 	
-		        }
-		    }
-		},
+		description: textAreaValidation(),
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
@@ -165,19 +156,6 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 					</div>
 					<div>
 						<label className = "label" htmlFor = "ticket-description">Description</label>
-			{/*			<Controller 
-							name={"description"} 	
-							rules={registerOptions.description}
-							control={control}
-							render={({field: {value, onChange}}) => (
-								<Editor 
-									editorState={value} 
-									onEditorStateChange={onChange}
-									wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
-								    editorClassName="tw-p-1"
-								/>
-							)}
-						/>*/}
 						<TextArea
 							registerField={"description"}
 							registerOptions={registerOptions.description}

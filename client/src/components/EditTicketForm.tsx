@@ -39,6 +39,7 @@ import { AsyncSelect } from "./AsyncSelect"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg"
 import { stateToHTML } from 'draft-js-export-html'; 
+import { textAreaValidation } from "./page-elements/TextArea"
 
 
 type EditFieldVisibility = {
@@ -80,21 +81,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	} = useAppSelector((state) => state.modal)
 	const isCompletedStatusIds = statuses.filter((status) => status.isCompleted).map((status) => status.id)
 	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
-	const toolbarOptions = {
-	    options: ['inline', 'blockType', 'list', 'link', 'emoji', 'image', 'remove', 'history'],
-	    inline: {
-	      inDropdown: false,
-	      options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
-	    },
-	    list: {
-	      inDropdown: true,
-	      options: ['unordered', 'ordered', 'indent', 'outdent'],
-	    },
-	    textAlign: {
-	      inDropdown: true,
-	      options: ['left', 'center', 'right', 'justify'],
-	    },
-    }
 
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
 		"name": false,
@@ -121,16 +107,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { register , control, handleSubmit, reset, resetField, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
 	    name: { required: "Name is required" },
-    	description: {
-			validate: {
-		        required: (value: EditorState) => {
-		        	// check if the rich text editor contains any text excluding whitespaces
-			        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
-			        	return "Description is required"
-			        } 	
-		        }
-		    }
-		},
+    	description: textAreaValidation(),
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},

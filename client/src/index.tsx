@@ -10,6 +10,8 @@ import { render } from "react-dom";
 // const root = ReactDOM.createRoot(
 //   document.getElementById('root') as HTMLElement
 // );
+
+// the change to render is necessary for the React WYSIWYG toolbar dropdowns to work
 render(
   <React.StrictMode>
     <Provider store={store}>
