@@ -18,6 +18,7 @@ import { displayUser } from "../helpers/functions"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { DeleteCommentWarningProps } from "./secondary-modals/DeleteCommentWarning"
 import { LoadingButton } from "./page-elements/LoadingButton"
+import { TextArea, textAreaValidation } from "./page-elements/TextArea"
 
 type CommentFormValues = {
 	id: number
@@ -34,10 +35,14 @@ type CommentFieldProps = {
 }
 
 export const CommentField = ({isLoading, registerOptions, onSubmit, onCancel}: CommentFieldProps) => {
-	const { handleSubmit, register, resetField, setValue, formState: {errors} } = useFormContext<CommentFormValues>()
+	const { handleSubmit, control, register, resetField, setValue, formState: {errors} } = useFormContext<CommentFormValues>()
 	return (
 		<form className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
-			<textarea {...register("comment", registerOptions)} className = "tw-w-full" rows={8}></textarea>
+			<TextArea
+				registerField={"comment"}
+				registerOptions={registerOptions}
+				control={control}
+			/>
 	        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<LoadingButton isLoading={isLoading} className = "button" text={"Save"} onClick={onSubmit}></LoadingButton>
@@ -78,7 +83,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 	})
 	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
-	    comment: { required: "Comment is required" },
+	    comment: textAreaValidation(),
     }
 	/* 
 	Because only one comment can exist on the form at once, the 

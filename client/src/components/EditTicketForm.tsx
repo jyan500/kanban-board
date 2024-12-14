@@ -21,7 +21,7 @@ import { OptionType, Ticket, TicketType, Priority, Status, UserProfile } from ".
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
-import { displayUser, stateToHTMLOptions } from "../helpers/functions"
+import { displayUser } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
 import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
@@ -39,7 +39,12 @@ import { AsyncSelect } from "./AsyncSelect"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg"
 import { stateToHTML } from 'draft-js-export-html'; 
-import { textAreaValidation } from "./page-elements/TextArea"
+import { 
+	textAreaValidation, 
+	convertEditorStateToJSON, 
+	convertEditorStateToHTML, 
+	convertJSONToEditorState 
+} from "./page-elements/TextArea"
 
 
 type EditFieldVisibility = {
@@ -154,7 +159,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 			reset({
 				...ticket, 
 				// convert description from JSON representation of content state to editor state
-				description: EditorState.createWithContent(convertFromRaw(JSON.parse(ticket.description))),
+				description: convertJSONToEditorState(ticket.description),
 				userId: ticketAssignees?.length ? ticketAssignees[0].id : 0
 			} ?? defaultForm
 			)
@@ -176,7 +181,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     		if (values.id != null){
     			await updateTicket({
     				...values, 
-    				description: JSON.stringify(convertToRaw(values.description.getCurrentContent())),
+    				description: convertEditorStateToJSON(values.description),
     				id: values.id
     			}).unwrap()
     			// update ticket assignees
@@ -323,7 +328,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									{
 										!editFieldVisibility.description ? (
 											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
-												<div className = "textarea-ignore-global" dangerouslySetInnerHTML={{ __html: stateToHTML(watch("description").getCurrentContent(), stateToHTMLOptions())}}></div>
+												<div className = "textarea-ignore-global" dangerouslySetInnerHTML={{ __html: convertEditorStateToHTML(watch("description")) }}></div>
 											</div>
 										) : (
 											<div className = "tw-flex tw-flex-col tw-gap-y-2">
@@ -339,7 +344,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 													type = "textarea" 
 													customReset={() => {
 														if (ticket){
-															setValue("description", EditorState.createWithContent(convertFromRaw(JSON.parse(ticket.description))))
+															setValue("description", convertJSONToEditorState(ticket.description))
 														}
 													}}
 													onCancel={() => toggleFieldVisibility("description", false)}/>

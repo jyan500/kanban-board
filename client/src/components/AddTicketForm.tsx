@@ -22,10 +22,15 @@ import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
-import { TextArea, textAreaValidation } from "./page-elements/TextArea"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg"
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import { 
+	TextArea,
+	textAreaValidation, 
+	convertEditorStateToJSON, 
+	convertEditorStateToHTML, 
+	convertJSONToEditorState 
+} from "./page-elements/TextArea"
 
 export type FormValues = {
 	id?: number
@@ -90,7 +95,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		if (ticket){
 			reset({
 				...ticket, 
-				description: EditorState.createWithContent(convertFromRaw(JSON.parse(ticket.description))),
+				description: convertJSONToEditorState(ticket.description),
 				id: undefined,
 				userId: 0
 			})
@@ -104,7 +109,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
     	try {
 	    	const data = await addTicket({
 	    		...values, 
-	    		description: JSON.stringify(convertToRaw(values.description.getCurrentContent()))
+	    		description: convertEditorStateToJSON(values.description)
 	    	}).unwrap()
 	    	if (boardId){
 		    	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()

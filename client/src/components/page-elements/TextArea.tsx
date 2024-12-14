@@ -28,6 +28,41 @@ export const textAreaValidation = () => {
     }
 }
 
+export const convertEditorStateToJSON = (state: EditorState) => {
+	return JSON.stringify(convertToRaw(state.getCurrentContent()))
+}
+
+export const convertJSONToEditorState = (jsonString: string) => {
+	return EditorState.createWithContent(convertFromRaw(JSON.parse(jsonString)))
+}
+
+/**
+ * @return options for converting Draft.js content state to HTML
+ */
+export const stateToHTMLOptions = () => {
+	let options = {
+		// TODO: find the right type for entity
+		entityStyleFn: (entity: Record<string, any>) => {
+			const entityType = entity.get('type').toLowerCase();
+			if (entityType === 'link') {
+				const data = entity.getData();
+				return {
+					element: 'a',
+					attributes: {
+						href: data.url,
+						target:'_blank'
+					},
+				}
+			} 
+		}
+	}
+	return options
+}
+
+export const convertEditorStateToHTML = (state: EditorState) => {
+	return stateToHTML(state.getCurrentContent(), stateToHTMLOptions())
+}
+
 export const TextArea = ({registerField, registerOptions, toolbarOptions, control}: Props) => {
 	const defaultToolbarOptions = {
 	    options: ['inline', 'blockType', 'list', 'link', 'emoji', 'image', 'remove', 'history'],
