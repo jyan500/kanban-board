@@ -35,7 +35,7 @@ export const OrganizationDisplay = () => {
 								</div>
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 									<FaLocationDot className = "--icon tw-mt-1"/>
-									<div>{`${organization?.address}, ${organization?.city}, ${organization.state} ${organization.zipcode}`}</div>	
+									<div>{`${organization?.address && organization?.city && organization?.state && organization?.zipcode ? `${organization?.address}, ${organization?.city}, ${organization?.state} ${organization?.zipcode}` : ""}`}</div>	
 								</div>
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 									<FaPhone className = "--icon tw-mt-1"/>

@@ -68,7 +68,7 @@ const ProtectedLayout = () => {
 	        	dispatch(setUserRoleLookup(userRoleLookup))
 	        }
         }
-    }, [userProfileData, ticketTypesData, statusData, priorityData]);
+    }, [token, userProfileData, ticketTypesData, statusData, priorityData]);
 
 	if (!token){
 		return <Navigate replace to = {"/login"} state={{alert: "You have been logged out"}}/>
