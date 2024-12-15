@@ -195,7 +195,7 @@ router.get("/:id", async (req, res, next) => {
 
 router.put("/:id", authenticateToken, authenticateUserRole(["ADMIN"]), validateUpdateOrganization, handleValidationResult, async (req, res, next) => {
 	try {
-		const { name, email, phoneNumber: phone_number, address, city, state, zipcode, industry } = req.body
+		const { name, email, phone_number, address, city, state, zipcode, industry } = req.body
 		await db("organizations").where("id", req.params.id).update({
 			name, email, phone_number, address, city, state, zipcode, industry	
 		})
