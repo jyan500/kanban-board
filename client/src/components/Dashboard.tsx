@@ -68,7 +68,7 @@ export const Dashboard = () => {
 						<AsyncSelect 
 							ref={selectRef}
 							cacheKey={cacheKey} 
-							urlParams={{}} 
+							urlParams={{excludeOwn: true}} 
 							onSelect={(selectedOption: OptionType | null) => {
 								if (selectedOption){
 									setSwitchOrgId(Number(selectedOption.value))
