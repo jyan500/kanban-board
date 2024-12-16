@@ -46,6 +46,7 @@ router.get("/", async (req, res, next) => {
 				"users.first_name as firstName", 
 				"users.last_name as lastName",
 				"user_roles.id as userRoleId",
+				"users.image_url as imageUrl",
 				"users.email as email") 
 			.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		const userProfilesParsed = req.query.forSelect ? userProfiles.data.map((userProfile) => {
@@ -79,6 +80,7 @@ router.get("/me", async (req, res, next) => {
 				"users.id as id", 
 				"users.first_name as firstName", 
 				"users.last_name as lastName", 
+				"users.image_url as imageUrl",
 				"users.email as email", 
 				"organizations.name as organizationName",
 				"organization_user_roles.organization_id as organizationId", 
@@ -104,6 +106,7 @@ router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
 			email: req.body.email,
+			image_url: req.body.image_url,
 			...(req.body.change_password ? {
 				password: hash	
 			} : {})

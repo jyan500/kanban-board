@@ -19,6 +19,7 @@ router.get("/", async (req, res, next) => {
 			"organizations.state as state",
 			"organizations.zipcode as zipcode",
 			"organizations.industry as industry",
+			"organizations.image_url as imageUrl",
 		)
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})		
 		res.json(organizations)
@@ -200,6 +201,7 @@ router.get("/:id", async (req, res, next) => {
 			"organizations.state as state",
 			"organizations.zipcode as zipcode",
 			"organizations.industry as industry",
+			"organizations.image_url as imageUrl"
 		).first()
 		res.json(organization)
 	}	
@@ -211,9 +213,9 @@ router.get("/:id", async (req, res, next) => {
 
 router.put("/:id", authenticateToken, authenticateUserRole(["ADMIN"]), validateUpdateOrganization, handleValidationResult, async (req, res, next) => {
 	try {
-		const { name, email, phone_number, address, city, state, zipcode, industry } = req.body
+		const { name, email, phone_number, address, city, state, zipcode, industry, image_url } = req.body
 		await db("organizations").where("id", req.params.id).update({
-			name, email, phone_number, address, city, state, zipcode, industry	
+			name, email, phone_number, address, city, state, zipcode, industry, image_url
 		})
 		res.json({"message": "Organization updated successfully!"})
 	}	
