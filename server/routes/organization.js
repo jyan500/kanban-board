@@ -59,6 +59,22 @@ router.get("/registration-request", authenticateToken, authenticateUserRole(["AD
 	}
 })
 
+router.post("/registration-request", authenticateToken, async (req, res, next) => {
+	try {
+		const joinOrg = req.body.organization_id
+		await db("user_registration_requests").insert({
+			"user_id": req.user.id,
+			"organization_id": joinOrg 
+		})
+		res.json({"message": "Your request has been filed. You will be notified when your request has been accepted."})
+
+	}	
+	catch (err) {
+		console.error(`Error while inserting registration request: ${err.message}`)	
+		next(err)
+	}
+})
+
 router.get("/registration-request/:regId", authenticateToken, authenticateUserRole(["ADMIN"]), async (req, res, next) => {
 	try {
 		const registrationRequest = await db("user_registration_requests").where("id", req.params.regId)

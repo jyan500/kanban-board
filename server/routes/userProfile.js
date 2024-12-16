@@ -119,19 +119,34 @@ router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res
 router.get("/organization", async (req, res, next) => {
 	try {
 		const {id: userId, organization: organizationId} = req.user
-		const organizations = await db("organization_user_roles")
-		.join("organizations", "organizations.id", "=", "organization_user_roles.organization_id")
-		.modify(queryBuilder => {
-			if (req.query.query){
-				queryBuilder.whereILike("organizations.name", `%${req.query.query}%`)
-			}
-		})
-		.where("organization_user_roles.user_id", userId)
-		// exclude the currently logged in organization
-		.whereNot("organizations.id", organizationId)
-		.select(
+		let organizations;
+		if (req.query.getJoinedOrgs === "false"){
+			organizations = db("organizations").whereNotIn("organizations.id", 
+				db("organization_user_roles").where("organization_user_roles.user_id", userId).select("organization_user_roles.organization_id")
+			)
+			.modify((queryBuilder) => {
+				if (req.query.query){
+					queryBuilder.whereILike("organizations.name", `%${req.query.query}%`)
+				}
+			})
+		}
+		else {
+			organizations = db("organization_user_roles")
+			.join("organizations", "organizations.id", "=", "organization_user_roles.organization_id")
+			.modify(queryBuilder => {
+				if (req.query.query){
+					queryBuilder.whereILike("organizations.name", `%${req.query.query}%`)
+				}
+				if (req.query.excludeOwn){
+					// exclude the currently logged in organization
+					queryBuilder.whereNot("organizations.id", organizationId)
+				}
+			})
+			.where("organization_user_roles.user_id", userId)
+		}
+		organizations = await organizations.select(
 			"organizations.id as id",
-			"organizations.name",
+			"organizations.name as name",
 		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(organizations)
 	}	
@@ -149,6 +164,7 @@ router.get("/:userId", getUserValidator, handleValidationResult, async (req, res
 		const userProfile = await db("organization_user_roles")
 			.join("users", "users.id", "=", "organization_user_roles.user_id")
 			.where("users.id", userId)
+			.where("organization_user_roles.organization_id", req.user.organization)
 			.select(
 				"users.id as id", 
 				"users.first_name as firstName", 

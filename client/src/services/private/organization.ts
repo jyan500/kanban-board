@@ -28,6 +28,14 @@ export const organizationApi = privateApi.injectEndpoints({
 			providesTags: ["RegistrationRequests"]
 
 		}),
+		addRegistrationRequest: builder.mutation<{message: string}, {organizationId: number}>({
+			query: ({organizationId}) => ({
+				url: `${USER_REGISTRATION_REQUEST_URL}`,
+				method: "POST",
+				body: {organization_id: organizationId}
+			}),
+			invalidatesTags: ["RegistrationRequests"]
+		}),
 		updateRegistrationRequest: builder.mutation<{message: string}, {id: number, approve: boolean}>({
 			query: ({id, approve}) => ({
 				url: `${USER_REGISTRATION_REQUEST_URL}/${id}`,
@@ -72,6 +80,7 @@ export const organizationApi = privateApi.injectEndpoints({
 export const { 
 	useGetRegistrationRequestsQuery,
 	useUpdateRegistrationRequestMutation,
+	useAddRegistrationRequestMutation,
 	useBulkEditRegistrationRequestsMutation,
 	useUpdateOrganizationMutation,
 	useGetOrganizationQuery,
