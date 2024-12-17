@@ -16,18 +16,23 @@ import { useGetOrganizationQuery } from "../../services/private/organization"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSpinner } from "../../components/LoadingSpinner" 
 import { OrganizationForm } from "../../components/OrganizationForm"
+import { UploadImageForm } from "../../components/UploadImageForm"
+import { ORGANIZATION_URL } from "../../helpers/urls"
+import { Avatar } from "../../components/page-elements/Avatar"
 
 export const OrganizationDisplay = () => {
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { data: organization, isLoading} = useGetOrganizationQuery(userProfile?.organizationId ?? skipToken)
+	const [uploadImage, setUploadImage] = useState(false)
 	return (
 		<div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-6">
 				{organization ? 
 					<>
 						<div className = "tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center tw-gap-y-2">
-							<FaRegBuilding className = "tw-w-32 tw-h-32"/>
+							{/*<FaRegBuilding className = "tw-w-32 tw-h-32"/>*/}
+							<Avatar size = "l" imageUrl={organization.imageUrl}/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 									<FaBuilding className = "--icon tw-mt-1"/>
@@ -49,11 +54,17 @@ export const OrganizationDisplay = () => {
 									<MdFactory className = "--icon tw-mt-1"/>
 									<div>{organization?.industry}</div>	
 								</div>
+								<button className = "button" onClick={() => setUploadImage(!uploadImage)}>{uploadImage ? "Hide " : ""}{organization.imageUrl ? "Change " : "Upload "}Image</button>
+								{uploadImage ? (
+									<UploadImageForm id={organization.id} endpoint={`${ORGANIZATION_URL}/image`} imageUrl={organization.imageUrl} invalidatesTags={["Organizations"]}/> 
+								) : null}
 							</div>
 						</div>
-						<div className = "tw-w-1/2">
-							<h1>Organization</h1>
-							<OrganizationForm organization={organization}/>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<div className = "tw-w-1/2">
+								<h1>Organization</h1>
+								<OrganizationForm organization={organization}/>
+							</div>
 						</div>
 					</>
 				: null
