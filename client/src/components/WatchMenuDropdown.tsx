@@ -4,6 +4,7 @@ import { Dropdown } from "./Dropdown"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../slices/secondaryModalSlice" 
 import { Toast, Ticket, Status, UserProfile } from "../types/common"
 import { CgProfile } from "react-icons/cg"
+import { Avatar } from "./page-elements/Avatar"
 import { IoMdEye as WatchIcon, IoMdEyeOff as WatchOffIcon } from "react-icons/io";
 import { 
 	useAddTicketAssigneeMutation,
@@ -132,7 +133,8 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 								ticketWatchers?.map((watcher) => {
 									return (
 										<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2 tw-py-1">
-											<CgProfile className = "tw-w-6 tw-h-6"/>
+											{/* <CgProfile className = "tw-w-6 tw-h-6"/>*/}
+											<Avatar imageUrl={watcher.imageUrl} className = "tw-rounded-full !tw-w-6 !tw-h-6"/>
 											<p key = {`watcher_${watcher.id}`}>{displayUser(watcher)}
 											</p>
 										</div>

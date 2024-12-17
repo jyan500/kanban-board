@@ -45,6 +45,7 @@ import {
 	convertEditorStateToHTML, 
 	convertJSONToEditorState 
 } from "./page-elements/TextArea"
+import { Avatar } from "./page-elements/Avatar"
 
 
 type EditFieldVisibility = {
@@ -383,9 +384,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 										{
 											!isTicketAssigneesLoading ? (
 												<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
-													<IconContext.Provider value = {{className: "tw-shrink-0 tw-h-8 tw-w-8"}}>
-														<CgProfile/>
-													</IconContext.Provider>
+													<Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 													{userProfileSelect}		
 												</div>
 											) : <LoadingSpinner/>
@@ -394,9 +393,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
 										<span className = "tw-font-semibold tw-w-1/2">Reporter</span>	
 										<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center">
-											<IconContext.Provider value = {{className: "tw-shrink-0 tw-h-8 tw-w-8"}}>
-												<CgProfile/>
-											</IconContext.Provider>
+											<Avatar imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 											<div className = "tw-ml-3.5">{displayUser(reporter)}</div>
 										</div>
 									</div>

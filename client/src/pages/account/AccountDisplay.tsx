@@ -11,10 +11,12 @@ import { FaBuilding } from "react-icons/fa6";
 import { useForm, Controller } from "react-hook-form"
 import { AsyncSelect } from "../../components/AsyncSelect"
 import { OptionType, Toast } from "../../types/common"
-import { USER_PROFILE_ORG_URL } from "../../helpers/urls"
+import { USER_PROFILE_URL, USER_PROFILE_ORG_URL } from "../../helpers/urls"
 import { useAddRegistrationRequestMutation } from "../../services/private/organization"
+import { UploadImageForm } from "../../components/UploadImageForm" 
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4} from "uuid"
+import { Avatar } from "../../components/page-elements/Avatar"
 
 type FormValues = {
 	organizationId: string | number 
@@ -25,6 +27,7 @@ export const AccountDisplay = () => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const [ changePassword, setChangePassword ] = useState(false)
 	const [ joinOrganization, setJoinOrganization ] = useState(false)
+	const [ uploadImage, setUploadImage ] = useState(false)
 
 	const defaultForm = {
 		organizationId: "" 
@@ -64,8 +67,8 @@ export const AccountDisplay = () => {
 			<div className = "tw-flex tw-flex-row tw-gap-x-6">
 				{userProfile ? 
 					<>
-						<div className = "tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center">
-							<CgProfile className = "tw-w-32 tw-h-32"/>
+						<div className = "tw-space-y-4 tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center">
+							<Avatar imageUrl={userProfile.imageUrl} size="l"/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 									<div><FaUser className = "--icon tw-mt-1"/></div>
@@ -81,47 +84,53 @@ export const AccountDisplay = () => {
 								</div>
 								<button className = "button" onClick={() => setChangePassword(!changePassword)}>{changePassword ? "Hide Change" : "Change "} Password</button>
 								<button className = "button" onClick={() => setJoinOrganization(!joinOrganization)}>{joinOrganization ? "Hide Join" : "Join "} Organization</button>
+								<button className = "button" onClick={() => setUploadImage(!uploadImage)}>{uploadImage ? "Hide " : ""}{userProfile.imageUrl ? "Change " : "Upload "}Image</button>
 							</div>
 						</div>
-						<div className = "tw-w-1/2">
-							<h1>Account</h1>
-							<EditUserForm isAccountsPage={true} isChangePassword={changePassword} userId={userProfile.id}/>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
+							<div>
+								<h1>Account</h1>
+								<EditUserForm isAccountsPage={true} isChangePassword={changePassword} userId={userProfile.id}/>
+							</div>
+							{
+								joinOrganization ? 
+								(
+									<div className = "tw-w-1/2">
+										<h1>Join Organization</h1>	
+										<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
+											 <div>
+											    <label className = "label" htmlFor = "join-organization">
+											    	Organization:
+											    </label>
+												<Controller
+													name={"organizationId"}
+													control={control}
+													rules={registerOptions.organizationId}
+													render={({field: {onChange, value, name, ref}}) => (
+														<AsyncSelect 
+															urlParams={{getJoinedOrgs: false}} 
+															onSelect={(selectedOption: OptionType | null) => {
+										                		const val = selectedOption?.value ?? ""
+																setValue("organizationId", Number(val))
+															}} 
+															endpoint={USER_PROFILE_ORG_URL} 
+															className = "tw-w-full"
+														/>
+													)}
+												/>
+										        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
+										    </div>	
+										    <div>
+										    	<button className = "button" type="submit">Send Request</button>
+										    </div>
+										</form>
+									</div>
+								) : null
+							}
+							{
+								uploadImage ? <UploadImageForm id={userProfile.id} imageUrl={userProfile.imageUrl} endpoint={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]}/> : null
+							}
 						</div>
-						{
-							joinOrganization ? 
-							(
-								<div className = "tw-w-1/2">
-									<h1>Join Organization</h1>	
-									<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
-										 <div>
-										    <label className = "label" htmlFor = "join-organization">
-										    	Organization:
-										    </label>
-											<Controller
-												name={"organizationId"}
-												control={control}
-												rules={registerOptions.organizationId}
-												render={({field: {onChange, value, name, ref}}) => (
-													<AsyncSelect 
-														urlParams={{getJoinedOrgs: false}} 
-														onSelect={(selectedOption: OptionType | null) => {
-									                		const val = selectedOption?.value ?? ""
-															setValue("organizationId", Number(val))
-														}} 
-														endpoint={USER_PROFILE_ORG_URL} 
-														className = "tw-w-full"
-													/>
-												)}
-											/>
-									        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
-									    </div>	
-									    <div>
-									    	<button className = "button" type="submit">Send Request</button>
-									    </div>
-									</form>
-								</div>
-							) : null
-						}
 					</>
 				: null
 				}

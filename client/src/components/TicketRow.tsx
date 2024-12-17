@@ -6,6 +6,9 @@ import { IconContext } from "react-icons"
 import { useAppSelector } from "../hooks/redux-hooks"
 import { TfiUnlink as Unlink } from "react-icons/tfi";
 import { IconButton } from "./page-elements/IconButton"
+import { useGetUserQuery } from "../services/private/userProfile"
+import { skipToken } from '@reduxjs/toolkit/query/react'
+import { Avatar } from "./page-elements/Avatar"
 
 type Props = {
 	ticket: Ticket | undefined
@@ -22,6 +25,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 	const ticketType = ticketTypes?.find((ticketType) => ticketType.id === ticket?.ticketTypeId)?.name
 	const priority = priorities?.find((priority) => priority.id === ticket?.priorityId)?.name
 	const [showConfirmUnlink, setShowConfirmUnlink] = useState(false)
+	const { data, isFetching } = useGetUserQuery(ticket?.userId ?? skipToken)
 	return (
 		<div className = "hover:tw-bg-gray-50 tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-border tw-border-gray-200 tw-rounded-md tw-group">
 			<div className = "tw-w-3/5 tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4">
@@ -45,7 +49,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 					)
 					: <></>}	
 				</div>
-				<div><CgProfile className = "--l-icon"/></div>
+				{isFetching ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>}
 				<div className = "tw-text-left tw-break-words">{status?.name}</div>
 			</div>
 			<div className = "tw-w-1/5 tw-flex tw-flex-row tw-justify-end">

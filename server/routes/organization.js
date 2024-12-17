@@ -19,6 +19,7 @@ router.get("/", async (req, res, next) => {
 			"organizations.state as state",
 			"organizations.zipcode as zipcode",
 			"organizations.industry as industry",
+			"organizations.image_url as imageUrl",
 		)
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})		
 		res.json(organizations)
@@ -200,6 +201,7 @@ router.get("/:id", async (req, res, next) => {
 			"organizations.state as state",
 			"organizations.zipcode as zipcode",
 			"organizations.industry as industry",
+			"organizations.image_url as imageUrl"
 		).first()
 		res.json(organization)
 	}	
@@ -219,6 +221,19 @@ router.put("/:id", authenticateToken, authenticateUserRole(["ADMIN"]), validateU
 	}	
 	catch (err){
 		console.log(`Error while updating organization: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.post("/image", authenticateToken, authenticateUserRole(["ADMIN"]), handleValidationResult, async (req, res, next) => {
+	try {
+		await db("organizations").where("id", req.body.id).update({
+			image_url: req.body.image_url
+		})
+		res.json({message: "Organization image uploaded successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while updating organization: ${err.message}`)
 		next(err)
 	}
 })

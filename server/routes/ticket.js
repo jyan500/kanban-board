@@ -187,6 +187,7 @@ router.get("/:ticketId/user", validateGet, handleValidationResult, async (req, r
 			"users.id",
 			"users.first_name as firstName",
 			"users.last_name as lastName",
+			"users.image_url as imageUrl",
 			"users.email"
 		).modify((queryBuilder) => {
 			if (req.query.isWatcher === "false"){
@@ -211,6 +212,7 @@ router.get("/:ticketId/user/:userId", validateTicketUserGet, handleValidationRes
 			"users.id",
 			"users.first_name as firstName",
 			"users.last_name as lastName",
+			"users.image_url as imageUrl",
 			"users.email",
 		).first()
 		res.json(assignedUser)
@@ -283,6 +285,7 @@ router.get("/:ticketId/comment", validateGet, handleValidationResult, async (req
 				"users.id as id", 
 				"users.first_name as firstName", 
 				"users.last_name as lastName", 
+				"users.image_url as imageUrl",
 				"users.email as email").first()
 			return {
 				...comment,

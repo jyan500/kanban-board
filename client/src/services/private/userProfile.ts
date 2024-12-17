@@ -14,9 +14,9 @@ type UserProfileRequest = {
 }
 
 type OwnUserProfileRequest = {
-	firstName: string	
-	lastName: string
-	email: string
+	firstName?: string	
+	lastName?: string
+	email?: string
 	password?: string
 	changePassword?: boolean
 	confirmPassword?: string

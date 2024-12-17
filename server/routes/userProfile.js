@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
-const { getUserValidator, editUserValidator, editOwnUserValidator } = require("../validation/user")
+const { getUserValidator, editUserValidator, editOwnUserValidator, editUserImageValidator } = require("../validation/user")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const bcrypt = require("bcrypt")
@@ -46,6 +46,7 @@ router.get("/", async (req, res, next) => {
 				"users.first_name as firstName", 
 				"users.last_name as lastName",
 				"user_roles.id as userRoleId",
+				"users.image_url as imageUrl",
 				"users.email as email") 
 			.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		const userProfilesParsed = req.query.forSelect ? userProfiles.data.map((userProfile) => {
@@ -65,6 +66,19 @@ router.get("/", async (req, res, next) => {
 	}
 })
 
+router.post("/image", editUserImageValidator, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("users").where("id", req.body.id).update({
+			image_url: req.body.image_url
+		})
+		res.json({message: "User profile image uploaded successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while updating user profile: ${err.message}`)
+		next(err)
+	}
+})
+
 // see the logged in user's profile
 router.get("/me", async (req, res, next) => {
 	try {
@@ -79,6 +93,7 @@ router.get("/me", async (req, res, next) => {
 				"users.id as id", 
 				"users.first_name as firstName", 
 				"users.last_name as lastName", 
+				"users.image_url as imageUrl",
 				"users.email as email", 
 				"organizations.name as organizationName",
 				"organization_user_roles.organization_id as organizationId", 
@@ -104,6 +119,7 @@ router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
 			email: req.body.email,
+			image_url: req.body.image_url,
 			...(req.body.change_password ? {
 				password: hash	
 			} : {})
@@ -115,6 +131,7 @@ router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res
 		next(err)
 	}
 })
+
 
 router.get("/organization", async (req, res, next) => {
 	try {
@@ -170,6 +187,7 @@ router.get("/:userId", getUserValidator, handleValidationResult, async (req, res
 				"users.first_name as firstName", 
 				"users.last_name as lastName", 
 				"users.email as email", 
+				"users.image_url as imageUrl",
 				"organization_user_roles.organization_id as organizationId", 
 				"organization_user_roles.user_role_id as userRoleId").first()
 		res.json(userProfile)

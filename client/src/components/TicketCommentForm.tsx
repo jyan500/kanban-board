@@ -26,6 +26,7 @@ import {
 	convertEditorStateToHTML, 
 	convertJSONToEditorState 
 } from "./page-elements/TextArea"
+import { Avatar } from "./page-elements/Avatar"
 
 type CommentFormValues = {
 	id: number
@@ -183,7 +184,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 			{
 				showAddCommentField ? (!showAddCommentForm ? (
 					<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
-						<CgProfile className = "tw-w-8 tw-h-8"/>	
+						<CgProfile className = "tw-w-8 tw-h-8"/>
 						<button onClick = {() => setShowAddCommentForm(true)} className = "tw-bg-gray-50 tw-p-1 tw-w-[400px] tw-border tw-border-gray-300"><i>Add a comment...</i></button>
 					</div>
 				) : (
@@ -214,7 +215,8 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 				{
 					ticketComments?.map((comment: TicketComment) => (
 						<div key = { comment.id } className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
-							<CgProfile className = "tw-w-8 tw-h-8"/>
+							{/*<CgProfile className = "tw-w-8 tw-h-8"/>*/}
+							<Avatar className = "tw-rounded-full" imageUrl={comment?.user?.imageUrl}/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2">
 									<span className = "tw-font-bold">{displayUser(comment.user)}</span>
