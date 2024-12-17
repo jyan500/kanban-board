@@ -51,7 +51,7 @@ export const UploadImageForm = ({id, imageUrl, endpoint, invalidatesTags}: Props
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
-			<Avatar imageUrl={imageUrl} size={"l"}/>
+			{/*<Avatar imageUrl={imageUrl} size={"l"}/>*/}
 			<div>
 				<label className = "label">Image Url: </label>
 				<input {...register("imageUrl")} placeholder={"URL"} type="text" className = "tw-w-full"/>

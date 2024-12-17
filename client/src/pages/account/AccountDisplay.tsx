@@ -85,6 +85,9 @@ export const AccountDisplay = () => {
 								<button className = "button" onClick={() => setChangePassword(!changePassword)}>{changePassword ? "Hide Change" : "Change "} Password</button>
 								<button className = "button" onClick={() => setJoinOrganization(!joinOrganization)}>{joinOrganization ? "Hide Join" : "Join "} Organization</button>
 								<button className = "button" onClick={() => setUploadImage(!uploadImage)}>{uploadImage ? "Hide " : ""}{userProfile.imageUrl ? "Change " : "Upload "}Image</button>
+								{
+									uploadImage ? <UploadImageForm id={userProfile.id} imageUrl={userProfile.imageUrl} endpoint={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]}/> : null
+								}
 							</div>
 						</div>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
@@ -127,9 +130,7 @@ export const AccountDisplay = () => {
 									</div>
 								) : null
 							}
-							{
-								uploadImage ? <UploadImageForm id={userProfile.id} imageUrl={userProfile.imageUrl} endpoint={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]}/> : null
-							}
+						
 						</div>
 					</>
 				: null
