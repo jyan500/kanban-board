@@ -9,6 +9,8 @@ const userValidator = require("../validation/user")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { body, validationResult } = require("express-validator")
 const { authenticateToken } = require("../middleware/authMiddleware")
+const registrationRequestTemplate = require("../email/templates/registration-success") 
+const sendEmail = require("../email/email")
 
 router.post("/login", userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
@@ -56,6 +58,12 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 			user_id: user[0],
 			organization_id: req.body.organization_id
 		})
+		const organization = await db("organizations").where("id", req.body.organization_id).first()
+
+		// TODO: send this to an async queue so the request isn't held up by email sending
+		// send email to registered user
+	    await sendEmail(req.body.email, "Registration Request Submitted", () => registrationRequestTemplate(req.body.first_name, req.body.last_name, organization?.name ?? ""));
+
 		res.json({message: "User registered successfully!"})
 	}
 	catch (err){

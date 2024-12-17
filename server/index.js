@@ -15,7 +15,6 @@ const userRouter = require("./routes/user")
 const userRoleRouter = require("./routes/userRole")
 const auth = require("./middleware/authMiddleware")
 
-
 const api = (route, apiVersion = "") => {
 	return `/api${apiVersion}/${route}`
 }
