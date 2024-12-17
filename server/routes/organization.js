@@ -158,7 +158,7 @@ router.put("/registration-request/:regId", authenticateToken, authenticateUserRo
 			// TODO: send this to an async queue so the request isn't held up by email sending
 			// send email to notify about denial
 			if (user && organization){
-				await sendEmail(user.email, "Registration Request Denied", () => registrationDeniedTemplate(user.first_name, user.last_name, organization.name, organization.email ?? "", organization.phone ?? ""))
+				await sendEmail(user.email, "Registration Request Denied", () => registrationDeniedTemplate(user.first_name, user.last_name, organization.name, organization.email ?? "", organization.phone_number ?? ""))
 			}
 			res.json({
 				message: "User's registration process was denied."
