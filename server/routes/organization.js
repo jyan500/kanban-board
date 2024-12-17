@@ -5,6 +5,10 @@ const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { authenticateToken } = require("../middleware/authMiddleware")
 const { validateUpdate, validateBulkEdit, validateUpdateOrganization } = require("../validation/organization")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
+const sendEmail = require("../email/email")
+const registrationSuccessTemplate = require("../email/templates/registration-success") 
+const registrationRequestTemplate = require("../email/templates/registration-request") 
+const registrationDeniedTemplate = require("../email/templates/registration-denied") 
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -67,6 +71,13 @@ router.post("/registration-request", authenticateToken, async (req, res, next) =
 			"user_id": req.user.id,
 			"organization_id": joinOrg 
 		})
+		const organization = await db("organizations").where("id", req.body.organization_id).first()
+		const user = await db("users").where("id", req.user.id).first()
+		// TODO: send this to an async queue so the request isn't held up by email sending
+		// send email to registered user
+		if (user && organization){
+		    await sendEmail(user.email, "Registration Request Submitted", () => registrationRequestTemplate(user.first_name, user.last_name, organization.name))
+		}
 		res.json({"message": "Your request has been filed. You will be notified when your request has been accepted."})
 
 	}	
@@ -115,6 +126,9 @@ router.get("/registration-request/:regId", authenticateToken, authenticateUserRo
 router.put("/registration-request/:regId", authenticateToken, authenticateUserRole(["ADMIN"]), validateUpdate, handleValidationResult, async (req, res, next) => {
 	try {
 		const isApprove = req.body.approve
+		const regRequest = await db("user_registration_requests").where("id", req.params.regId).first()
+		const organization = await db("organizations").where("id", regRequest?.organization_id).first()
+		const user = await db("users").where("id", regRequest?.user_id).first()
 		const orgUser = await db("organization_user_roles").where("user_id", req.user.id).first()
 		if (isApprove){
 			const userRole = await db("user_roles").where("name", "USER").first()
@@ -122,12 +136,16 @@ router.put("/registration-request/:regId", authenticateToken, authenticateUserRo
 				"approved_at": new Date(),
 				"org_user_id": orgUser?.id
 			})
-			const regRequest = await db("user_registration_requests").where("id", req.params.regId).first()
 			await db("organization_user_roles").insert({
 				user_id: regRequest?.user_id,
 				organization_id: regRequest?.organization_id,
 				user_role_id: userRole?.id
 			})
+			// TODO: send this to an async queue so the request isn't held up by email sending
+			// send email to notify about success
+			if (user && organization){
+			    await sendEmail(user.email, "Registration Request Accepted", () => registrationSuccessTemplate(user.first_name, user.last_name, organization.name))
+			}
 			res.json({
 				message: "User's registration process is complete"
 			})
@@ -137,6 +155,11 @@ router.put("/registration-request/:regId", authenticateToken, authenticateUserRo
 				"denied_at": new Date(),
 				"org_user_id": orgUser?.id
 			})
+			// TODO: send this to an async queue so the request isn't held up by email sending
+			// send email to notify about denial
+			if (user && organization){
+				await sendEmail(user.email, "Registration Request Denied", () => registrationDeniedTemplate(user.first_name, user.last_name, organization.name, organization.email ?? "", organization.phone_number ?? ""))
+			}
 			res.json({
 				message: "User's registration process was denied."
 			})

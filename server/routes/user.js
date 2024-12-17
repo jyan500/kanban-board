@@ -9,7 +9,7 @@ const userValidator = require("../validation/user")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { body, validationResult } = require("express-validator")
 const { authenticateToken } = require("../middleware/authMiddleware")
-const registrationRequestTemplate = require("../email/templates/registration-success") 
+const registrationRequestTemplate = require("../email/templates/registration-request") 
 const sendEmail = require("../email/email")
 
 router.post("/login", userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
