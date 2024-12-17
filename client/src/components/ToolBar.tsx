@@ -9,6 +9,8 @@ import { useForm, FormProvider } from "react-hook-form"
 import { useDebouncedValue } from "../hooks/useDebouncedValue" 
 import { OverlappingRow } from "./OverlappingRow" 
 import { Board } from "../types/common"
+import { useGetUserProfilesQuery } from "../services/private/userProfile"
+import { skipToken } from '@reduxjs/toolkit/query/react'
 
 type FormValues = {
 	query: string	
@@ -20,6 +22,7 @@ export const ToolBar = () => {
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
+	const { data, isFetching} = useGetUserProfilesQuery(primaryBoardInfo?.assignees ? {userIds: primaryBoardInfo?.assignees} : skipToken)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 
 	const defaultForm: FormValues = {
@@ -74,8 +77,8 @@ export const ToolBar = () => {
 				</form>
 			</FormProvider>
 			<div>
-				{primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length > 0 ? 
-					<OverlappingRow total={primaryBoardInfo?.assignees?.length}/>
+				{!isFetching && primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length > 0 ? 
+					<OverlappingRow imageUrls={data?.data?.map((data) => data.imageUrl ?? "") ?? []}/>
 					: null
 				}
 			</div>

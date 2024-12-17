@@ -20,6 +20,9 @@ router.get("/", async (req, res, next) => {
 					const query = req.query.query ?? req.query.userQuery
 					queryBuilder.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`)
 				}
+				if (req.query.userIds){
+					queryBuilder.whereIn("users.id", req.query.userIds.split(","))
+				}
 				if (req.query.filterOnUserRole){
 					if (userRole === "USER"){
 						queryBuilder.where("user_roles.name", "USER")	
