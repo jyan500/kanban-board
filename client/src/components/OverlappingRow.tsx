@@ -1,6 +1,7 @@
 import React, {useState} from "react"
 import { CgProfile } from "react-icons/cg";
 import "../styles/overlapping-row.css"
+import { Avatar } from "./page-elements/Avatar"
 
 /* 
 Create a row of overlapping icons 
@@ -8,11 +9,12 @@ If there are more than 4 items in a row, display the last circle
 that shows the count of (total num - 4)
 */
 type Props = {
-	total: number
+	imageUrls: Array<string>
 }
 
-export const OverlappingRow = ({total}: Props) => {
+export const OverlappingRow = ({imageUrls}: Props) => {
 	const overlappingFactor = 22
+	const total = imageUrls.length
 	const createElements = (num: number) => {
 		let elements = []
 		let remainder = 0
@@ -33,9 +35,7 @@ export const OverlappingRow = ({total}: Props) => {
 			} as React.CSSProperties
 			elements.push(
 			<div key={curLeft} style={style} className = "circle">
-				<CgProfile 
-				className = "--l-icon"
-				/>
+				<Avatar imageUrl = {imageUrls[i]} className = "tw-rounded-full"/>
 			</div>
 			)
 		}
