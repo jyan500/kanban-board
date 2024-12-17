@@ -177,7 +177,7 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			"tickets.ticket_type_id as ticketTypeId",
 			"tickets.organization_id as organizationId",
 			"tickets.user_id as userId",
-			"tickets.created_at as createdAt"
+			"tickets.created_at as createdAt",
 		)
 		if (req.query.includeRelationshipInfo){
 			const epicTicketRelationshipType = await db("ticket_relationship_types").where("name" , "Epic").first()

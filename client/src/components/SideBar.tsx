@@ -10,6 +10,7 @@ import { displayUser } from "../helpers/functions"
 import { Logo } from "../components/page-elements/Logo"
 import { useGetUserRolesQuery } from "../services/private/userRole"
 import { useGetUserProfileQuery } from "../services/private/userProfile"
+import { Avatar } from "./page-elements/Avatar"
 
 export const SideBar = () => {
 	const sideBar = useAppSelector((state) => state.nav)
@@ -90,15 +91,13 @@ export const SideBar = () => {
 						</div>
 						<div className = "sidebar__bottom-bar">
 							<div className = "sidebar__bottom-bar__content">
-								<>
-									<div>
-										<CgProfile className = "--l-icon"/>
-									</div>
+								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+									<Avatar imageUrl={userProfile?.imageUrl} className = "tw-rounded-full"/>
 									<div>
 										<span>{displayUser(userProfile)}</span>
 										<small>{userProfile?.organizationName}</small>
 									</div>
-								</>
+								</div>
 							</div>
 						</div>
 					</div>

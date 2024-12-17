@@ -14,6 +14,10 @@ import { CgProfile } from "react-icons/cg";
 import { Badge } from "./page-elements/Badge"
 import { TICKETS } from "../helpers/routes"
 import { Link } from "react-router-dom"
+import { Avatar } from "./page-elements/Avatar"
+import { useGetUserQuery } from "../services/private/userProfile"
+import { skipToken } from '@reduxjs/toolkit/query/react'
+import { LoadingSpinner } from "./LoadingSpinner"
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
 	"Low": <LowPriorityIcon/>,	
@@ -56,6 +60,7 @@ export const Ticket = ({ticket}: PropType) => {
 	const {priorities} = useAppSelector((state) => state.priority)
 	const {statuses} = useAppSelector((state) => state.status)
 	const {ticketTypes} = useAppSelector((state) => state.ticketType)
+	const { data, isFetching } = useGetUserQuery(ticket?.userId ?? skipToken)
 
 	const priority = priorities.find((p) => p.id === ticket.priorityId)?.name
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name
@@ -63,7 +68,8 @@ export const Ticket = ({ticket}: PropType) => {
 		<div className = "tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2">
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1">
 				<span className = "tw-font-bold">{ticket.name}</span>
-				<CgProfile className="tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>
+				{/*<CgProfile className="tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>*/}
+				{isFetching ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				{

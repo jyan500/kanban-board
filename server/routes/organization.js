@@ -213,14 +213,27 @@ router.get("/:id", async (req, res, next) => {
 
 router.put("/:id", authenticateToken, authenticateUserRole(["ADMIN"]), validateUpdateOrganization, handleValidationResult, async (req, res, next) => {
 	try {
-		const { name, email, phone_number, address, city, state, zipcode, industry, image_url } = req.body
+		const { name, email, phone_number, address, city, state, zipcode, industry } = req.body
 		await db("organizations").where("id", req.params.id).update({
-			name, email, phone_number, address, city, state, zipcode, industry, image_url
+			name, email, phone_number, address, city, state, zipcode, industry	
 		})
 		res.json({"message": "Organization updated successfully!"})
 	}	
 	catch (err){
 		console.log(`Error while updating organization: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.post("/image", authenticateToken, authenticateUserRole(["ADMIN"]), handleValidationResult, async (req, res, next) => {
+	try {
+		await db("organizations").where("id", req.body.id).update({
+			image_url: req.body.image_url
+		})
+		res.json({message: "Organization image uploaded successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while updating organization: ${err.message}`)
 		next(err)
 	}
 })

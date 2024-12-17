@@ -2,10 +2,10 @@ import React, {useState, useEffect} from "react"
 import { HamburgerButton } from "../HamburgerButton"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { logout } from "../../slices/authSlice" 
-import { CgProfile } from "react-icons/cg"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { privateApi } from "../../services/private" 
 import { displayUser } from "../../helpers/functions"
+import { Avatar } from "./Avatar"
 
 export const TopNav = () => {
 	const dispatch = useAppDispatch()
@@ -30,9 +30,7 @@ export const TopNav = () => {
 			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 				{!isLoading ? (
 					<>
-						<div>
-							<CgProfile className = "--l-icon"/>
-						</div>
+						<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
 						<div>
 							<span>{displayUser(userProfile)}</span>
 						</div>

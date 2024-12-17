@@ -4,38 +4,12 @@ const db = require("../db/db")
 const config = require("../config")
 const bcrypt = require("bcrypt")
 
-// const registerValidator = [
-// 	body("first_name").notEmpty().withMessage("First Name is required"),
-// 	body("last_name").notEmpty().withMessage("Last Name is required"),
-// 	body("email").notEmpty().withMessage("Email is required")
-// 	.isEmail().withMessage("Invalid email")
-// 	.normalizeEmail().custom((value, {req}) => {
-// 		return new Promise((resolve, reject) => {
-// 			db("users").where("email", req.body.email).then((res) => {
-// 				if (res?.length > 0){
-// 					reject(new Error("Email already in use"))
-// 				}
-// 				resolve(true)
-// 			})	
-// 		})
-// 	}),
-// 	body("organization_id").notEmpty().withMessage("Organization is required")
-// 	.custom(async (value, {req}) => await checkEntityExistsIn("priority", value, [{"col": "id", "value": value}], "organizations")),
-// 	body("password").notEmpty().withMessage("Password is required")
-// 		.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
-// 			"Password must be at least 6 characters long, " + 
-// 			"including one lowercase, one uppercase, " + 
-// 			"one number and one symbol."
-// 		),
-// 	body("confirm_password").notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
-// 		if (value !== req.body.password)	{
-// 			throw new Error("Passwords don't match")
-// 		}
-// 		else {
-// 			return value
-// 		}
-// 	}),
-// ]
+const editUserImageValidator = [
+	body("id").custom(
+		async (value, {req}) => 
+		await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
+	body("image_url").isURL().withMessage("Must be valid URL")
+]
 
 const editUserValidator = (action) => {
 	let validationRules = [
@@ -46,6 +20,7 @@ const editUserValidator = (action) => {
 		// only admin can edit user role id
 		validationRules = [
 			...validationRules, 
+			param("id").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
 			body("user_role_id").notEmpty().withMessage("user_role_id is required").custom(async (value, {req}) => await checkEntityExistsIn("userRole", value, [{col: "id", value: value}], "user_roles")),
 		]
 	}
@@ -168,6 +143,7 @@ module.exports = {
 	registerValidator: editUserValidator("register"),
 	editUserValidator: editUserValidator("adminEditUser"),
 	editOwnUserValidator: editUserValidator("editOwnUser"),
+	editUserImageValidator,
 	loginValidator,
 	getUserValidator,
 }

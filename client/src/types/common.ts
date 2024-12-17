@@ -6,6 +6,7 @@ export interface UserProfile {
 	organizationId: number
 	userRoleId: number
 	organizationName?: string
+	imageUrl?: string
 }
 
 export interface UserRole {
@@ -33,6 +34,7 @@ export interface Organization {
 	city?: string
 	industry?: string
 	zipcode?: string
+	imageUrl?: string
 }
 
 export interface Priority {
