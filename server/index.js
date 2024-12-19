@@ -13,6 +13,7 @@ const ticketRelationshipTypeRouter = require("./routes/ticketRelationshipType")
 const userProfileRouter = require("./routes/userProfile")
 const userRouter = require("./routes/user")
 const userRoleRouter = require("./routes/userRole")
+const notificationRouter = require("./routes/notification")
 const auth = require("./middleware/authMiddleware")
 
 const api = (route, apiVersion = "") => {
@@ -38,6 +39,7 @@ app.use(api("ticket-type"), auth.authenticateToken, ticketTypeRouter)
 app.use(api("ticket-relationship-type"), auth.authenticateToken, ticketRelationshipTypeRouter)
 app.use(api("user-profile"), auth.authenticateToken, userProfileRouter)
 app.use(api("user-role"), auth.authenticateToken, userRoleRouter)
+app.use(api("notification"), auth.authenticateToken, notificationRouter)
 
 /* Public Endpoints */
 app.use(api("user"), userRouter)
