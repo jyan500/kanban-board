@@ -3,7 +3,7 @@ const router = express.Router()
 const db = require("../db/db")
 
 // get all notifications for the logged in user
-router.get("/notification", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
 	try {
 		const userId = req.user.id
 		const timeout = 30000
@@ -44,7 +44,7 @@ router.get("/notification", async (req, res, next) => {
 	}
 })
 
-router.put("/notifications/:notificationId", async (req, res, next) => {
+router.put("/:notificationId", async (req, res, next) => {
 	try {
 		const notificationId = req.params.notificationId	
 		await db("notifications").where("id", notificationId).update({is_read: req.body.is_read})
