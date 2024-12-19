@@ -150,3 +150,12 @@ export interface ProgressBarPercentage {
 	value: number
 	label: string
 }
+
+export interface Notification {
+	id: number	
+	body: string
+	notificationTypeId: number
+	isRead: boolean
+	userId: number
+	createdAt: Date
+}
