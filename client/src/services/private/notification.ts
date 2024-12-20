@@ -12,6 +12,15 @@ export const notificationApi = privateApi.injectEndpoints({
 				method: "GET",	
 				params: urlParams
 			}),
+			providesTags: ["Notifications"]
+		}),
+		pollNotifications: builder.query<Array<Notification>, Record<string, any>>({
+			query: ({urlParams}) => ({
+				url: `${NOTIFICATION_URL}/poll`,	
+				method: "GET",
+				params: urlParams
+			}),
+			providesTags: ["Notifications"]
 		}),
 		updateNotification: builder.mutation<{message: string}, {id: number, isRead: boolean}>({
 			query: ({id, isRead}) => ({
@@ -20,7 +29,8 @@ export const notificationApi = privateApi.injectEndpoints({
 				body: {
 					is_read: isRead
 				}
-			})
+			}),
+			invalidatesTags: ["Notifications"]
 		}),
 		bulkEditNotifications: builder.mutation<{message: string}, {ids: Array<number>, isRead: boolean}>({
 			query: ({ids, isRead}) => ({
@@ -30,13 +40,15 @@ export const notificationApi = privateApi.injectEndpoints({
 					ids: ids,
 					is_read: isRead
 				}
-			})
+			}),
+			invalidatesTags: ["Notifications"]
 		})
 	})
 })
 
 export const {
 	useGetNotificationsQuery,
+	usePollNotificationsQuery,
 	useUpdateNotificationMutation,
 	useBulkEditNotificationsMutation,
 } = notificationApi

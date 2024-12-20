@@ -8,6 +8,27 @@ const { handleValidationResult }  = require("../middleware/validationMiddleware"
 router.get("/", async (req, res, next) => {
 	try {
 		const userId = req.user.id
+		const notifications = await db("notifications")
+		.where("user_id", userId)
+		.select(
+			"id as id", 
+			"body as body", 
+			"notification_type_id as notificationTypeId",
+			"user_id as userId",
+			"is_read as isRead",
+			"created_at as createdAt",
+		).orderBy("created_at", "desc")
+		res.json(notifications)
+	}
+	catch (err){
+		console.error(`There was an error while getting notifications: ${err}`)
+	}
+})
+
+/* poll for new unread notifications */
+router.get("/poll", async (req, res, next) => {
+	try {
+		const userId = req.user.id
 		const timeout = 30000
 		const pollInterval = 1000
 
@@ -22,6 +43,7 @@ router.get("/", async (req, res, next) => {
 				"id as id", 
 				"body as body", 
 				"notification_type_id as notificationTypeId",
+				"is_read as isRead",
 				"user_id as userId",
 				"created_at as createdAt",
 			).orderBy("created_at", "desc")
@@ -43,7 +65,7 @@ router.get("/", async (req, res, next) => {
 	}
 	catch (err){
 		console.error(`There was an error while getting notifications: ${err}`)
-	}
+	}	
 })
 
 router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, res, next) => {

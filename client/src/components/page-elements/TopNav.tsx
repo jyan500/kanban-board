@@ -12,6 +12,7 @@ import { IconContext } from "react-icons"
 import { NotificationDropdown } from "../NotificationDropdown"
 import { 
 	useGetNotificationsQuery, 
+	usePollNotificationsQuery,
 	useBulkEditNotificationsMutation, 
 	useUpdateNotificationMutation 
 } from "../../services/private/notification"
@@ -30,11 +31,14 @@ export const TopNav = () => {
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef(null)
 	const [lastId, setLastId] = useState(0)
+	const [currentNotifications, setCurrentNotifications] = useState<Array<Notification>>([])
 
-	const { data: notifications, isLoading: isGetNotificationsLoading } = useGetNotificationsQuery({}, {
+	const { data: notifications, isLoading: isGetNotificationsLoading } = useGetNotificationsQuery({}) 
+	const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery({}, {
 		pollingInterval: 31000,
 		skipPollingIfUnfocused: true
 	})
+
     const [ updateNotification, { error: updateNotificationError, isLoading: isUpdateNotificationLoading} ] = useUpdateNotificationMutation();
     const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
 
@@ -42,12 +46,25 @@ export const TopNav = () => {
 		if (notifications && notifications?.length > 0){
 			const unreadMessages = notifications.filter(n => !n.isRead)
 			const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
-			if (lastId !== newLastUnreadId){
+			if (lastId < newLastUnreadId){
 				setLastId(Math.max(...notifications.map(n => n.id)))
 			}
 			setShowIndicator(unreadMessages.length > 0)
+			setCurrentNotifications(notifications)
 		}
 	}, [notifications])
+
+	useEffect(() => {
+		if (newNotifications && newNotifications?.length > 0){
+			const unreadMessages = newNotifications.filter(n => !n.isRead)
+			const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
+			if (lastId < newLastUnreadId){
+				setLastId(Math.max(...newNotifications.map(n => n.id)))
+			}
+			setShowIndicator(unreadMessages.length > 0)
+			setCurrentNotifications(newNotifications)
+		}
+	}, [newNotifications])
 
 	useEffect(() => {
 		if (userProfile && Object.keys(userProfile).length){
@@ -65,17 +82,20 @@ export const TopNav = () => {
 	}
 
 	const markMessagesRead = async () => {
-		try {
-			await bulkEditNotifications({isRead: true, ids: notifications?.map((n) => n.id) ?? []}).unwrap()
-		}
-		catch (err){
-			dispatch(addToast({
-				id: uuidv4(),
-				message: "Failed to mark notifications as read.",
-				animationType: "animation-in",
-				type: "failure"
-			}))
-		}
+		const unreadMessages = currentNotifications.filter(n => !n.isRead)
+		if (unreadMessages.length){
+			try {
+				await bulkEditNotifications({isRead: true, ids: currentNotifications.map((n) => n.id) ?? []}).unwrap()
+			}
+			catch (err){
+				dispatch(addToast({
+					id: uuidv4(),
+					message: "Failed to mark notifications as read.",
+					animationType: "animation-in",
+					type: "failure"
+				}))
+			}
+		}		
 	}
 
 	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
@@ -90,7 +110,6 @@ export const TopNav = () => {
 							<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
 								<button ref = {buttonRef} onClick={(e) => {
 									e.preventDefault()
-									markMessagesRead()
 									setShowDropdown(!showDropdown)
 								}} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
 									<FaRegBell className = "--l-icon"/>
@@ -99,7 +118,7 @@ export const TopNav = () => {
 								{
 									showDropdown ? (
 										<NotificationDropdown 
-											notifications={notifications ?? []}
+											notifications={currentNotifications ?? []}
 											closeDropdown={onClickOutside} 
 											ref = {menuDropdownRef}/>
 									) : null
