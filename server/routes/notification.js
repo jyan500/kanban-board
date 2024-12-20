@@ -1,6 +1,8 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
+const { validateBulkEdit } = require("../validation/notification")
+const { handleValidationResult }  = require("../middleware/validationMiddleware")
 
 // get all notifications for the logged in user
 router.get("/", async (req, res, next) => {
@@ -41,6 +43,17 @@ router.get("/", async (req, res, next) => {
 	}
 	catch (err){
 		console.error(`There was an error while getting notifications: ${err}`)
+	}
+})
+
+router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, res, next) => {
+	try {
+		const notificationIds = req.body.ids	
+		await db("notifications").whereIn("id", notificationIds).update({is_read: req.body.is_read})
+		res.json({message: "Notifications have been updated!"})
+	}
+	catch (err){
+		console.error(`There was an error while updating notification: ${err}`)
 	}
 })
 

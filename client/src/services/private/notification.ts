@@ -21,11 +21,22 @@ export const notificationApi = privateApi.injectEndpoints({
 					is_read: isRead
 				}
 			})
+		}),
+		bulkEditNotifications: builder.mutation<{message: string}, {ids: Array<number>, isRead: boolean}>({
+			query: ({ids, isRead}) => ({
+				url: `${NOTIFICATION_URL}/bulk-edit`,
+				method: "POST",
+				body: {
+					ids: ids,
+					is_read: isRead
+				}
+			})
 		})
 	})
 })
 
 export const {
 	useGetNotificationsQuery,
-	useUpdateNotificationMutation
+	useUpdateNotificationMutation,
+	useBulkEditNotificationsMutation,
 } = notificationApi

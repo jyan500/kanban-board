@@ -7,9 +7,17 @@ import { privateApi } from "../../services/private"
 import { displayUser } from "../../helpers/functions"
 import { Avatar } from "./Avatar"
 import { useClickOutside } from "../../hooks/useClickOutside" 
-import { FaBell } from "react-icons/fa";
+import { FaRegBell } from "react-icons/fa";
 import { IconContext } from "react-icons"
 import { NotificationDropdown } from "../NotificationDropdown"
+import { 
+	useGetNotificationsQuery, 
+	useBulkEditNotificationsMutation, 
+	useUpdateNotificationMutation 
+} from "../../services/private/notification"
+import { addToast } from "../../slices/toastSlice"
+import { Toast, Notification } from "../../types/common"
+import { v4 as uuidv4 } from "uuid"
 
 export const TopNav = () => {
 	const dispatch = useAppDispatch()
@@ -18,8 +26,28 @@ export const TopNav = () => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { token } = useAppSelector((state) => state.auth)
 	const [isLoading, setIsLoading] = useState(true)
+	const [showIndicator, setShowIndicator] = useState(false)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef(null)
+	const [lastId, setLastId] = useState(0)
+
+	const { data: notifications, isLoading: isGetNotificationsLoading } = useGetNotificationsQuery({}, {
+		pollingInterval: 31000,
+		skipPollingIfUnfocused: true
+	})
+    const [ updateNotification, { error: updateNotificationError, isLoading: isUpdateNotificationLoading} ] = useUpdateNotificationMutation();
+    const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
+
+	useEffect(() => {
+		if (notifications && notifications?.length > 0){
+			const unreadMessages = notifications.filter(n => !n.isRead)
+			const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
+			if (lastId !== newLastUnreadId){
+				setLastId(Math.max(...notifications.map(n => n.id)))
+			}
+			setShowIndicator(unreadMessages.length > 0)
+		}
+	}, [notifications])
 
 	useEffect(() => {
 		if (userProfile && Object.keys(userProfile).length){
@@ -36,6 +64,20 @@ export const TopNav = () => {
 		dispatch(privateApi.util.resetApiState())
 	}
 
+	const markMessagesRead = async () => {
+		try {
+			await bulkEditNotifications({isRead: true, ids: notifications?.map((n) => n.id) ?? []}).unwrap()
+		}
+		catch (err){
+			dispatch(addToast({
+				id: uuidv4(),
+				message: "Failed to mark notifications as read.",
+				animationType: "animation-in",
+				type: "failure"
+			}))
+		}
+	}
+
 	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
 
 	return (
@@ -44,23 +86,27 @@ export const TopNav = () => {
 			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 				{!isLoading ? (
 					<>
-						<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
-						<div className = "tw-relative tw-inline-block tw-text-left">
+						<div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
 							<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
 								<button ref = {buttonRef} onClick={(e) => {
 									e.preventDefault()
+									markMessagesRead()
 									setShowDropdown(!showDropdown)
-								}} className = "--transparent tw-p-0 hover:tw-opacity-60"><FaBell className = "tw-ml-3 --l-icon"/></button>
+								}} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
+									<FaRegBell className = "--l-icon"/>
+									<div className = {`${showIndicator ? "tw-visible" : "tw-hidden"} tw-absolute tw-top-0 tw-right-0 tw-bg-red-500 tw-w-3 tw-h-3 tw-rounded-full`}></div>
+								</button>
 								{
 									showDropdown ? (
 										<NotificationDropdown 
-											notifications={[]}
+											notifications={notifications ?? []}
 											closeDropdown={onClickOutside} 
 											ref = {menuDropdownRef}/>
 									) : null
 								}
 							</IconContext.Provider>
 						</div>
+						<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
 						<div>
 							<span>{displayUser(userProfile)}</span>
 						</div>
