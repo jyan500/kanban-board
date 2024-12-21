@@ -16,6 +16,7 @@ import {
 	useBulkEditNotificationsMutation, 
 	useUpdateNotificationMutation 
 } from "../../services/private/notification"
+import { skipToken } from '@reduxjs/toolkit/query/react'
 import { addToast } from "../../slices/toastSlice"
 import { Toast, Notification } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
@@ -34,7 +35,7 @@ export const TopNav = () => {
 	const [currentNotifications, setCurrentNotifications] = useState<Array<Notification>>([])
 
 	const { data: notifications, isLoading: isGetNotificationsLoading } = useGetNotificationsQuery({}) 
-	const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery({}, {
+	const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery(lastId !== 0 ? {lastId: lastId} : skipToken, {
 		pollingInterval: 31000,
 		skipPollingIfUnfocused: true
 	})

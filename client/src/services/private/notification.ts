@@ -7,7 +7,7 @@ export const notificationApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
 		getNotifications: builder.query<ListResponse<Notification>, Record<string, any>>({
-			query: ({urlParams}) => ({
+			query: (urlParams) => ({
 				url: `${NOTIFICATION_URL}`,
 				method: "GET",	
 				params: urlParams
@@ -15,7 +15,7 @@ export const notificationApi = privateApi.injectEndpoints({
 			providesTags: ["Notifications"]
 		}),
 		pollNotifications: builder.query<Array<Notification>, Record<string, any>>({
-			query: ({urlParams}) => ({
+			query: (urlParams) => ({
 				url: `${NOTIFICATION_URL}/poll`,	
 				method: "GET",
 				params: urlParams

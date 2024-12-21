@@ -35,13 +35,17 @@ router.get("/poll", async (req, res, next) => {
 		const pollInterval = 1000
 
 		let hasNewNotifications = false
-
 		// poll the database based on the pollInterval  
 		const interval = setInterval(async () => {
 			const notifications = await db("notifications")
 			.where("user_id", userId)
 			.where("organization_id", req.user.organization)
 			.where("is_read", false)
+			.modify((queryBuilder) => {
+				if (!isNaN(Number(req.query.lastId))){
+					queryBuilder.where("id", ">", Number(req.query.lastId))
+				}
+			})
 			.select(
 				"id as id", 
 				"body as body", 
