@@ -54,6 +54,9 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 					</li>
 				))}
 			</ul>
+			<div className = "tw-block tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700">
+				<button className = "button --secondary">See More</button>	
+			</div>
 		</Dropdown>
 	)	
 })
