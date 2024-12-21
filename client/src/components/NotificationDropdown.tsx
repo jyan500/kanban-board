@@ -35,11 +35,11 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 	}
 
 	return (
-		<Dropdown ref = {ref}>
+		<Dropdown className = {"!tw-w-96"} ref = {ref}>
 			<div
-				className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+				className="tw-flex tw-flex-row tw-justify-between tw-items-center tw-gap-x-2 tw-block tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700"
 			>
-					Notifications: 
+					<p className = "tw-font-bold">Notifications: </p>
 					<button onClick={markMessagesRead} className = "button --secondary">Mark as Read</button>
 			</div>
 			<ul>
@@ -47,9 +47,6 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 				{notifications?.map((notification) => (
 					<li
 						key={`notification-${notification.id}`}
-						onClick={() => {
-							console.log()
-						}}
 						className={`${!notification.isRead ? "tw-bg-gray-50" : ""} tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900`}
 						role="menuitem"
 					>

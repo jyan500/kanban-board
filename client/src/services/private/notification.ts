@@ -6,7 +6,7 @@ import { NOTIFICATION_URL } from "../../helpers/urls"
 export const notificationApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
-		getNotifications: builder.query<Array<Notification>, Record<string, any>>({
+		getNotifications: builder.query<ListResponse<Notification>, Record<string, any>>({
 			query: ({urlParams}) => ({
 				url: `${NOTIFICATION_URL}`,
 				method: "GET",	

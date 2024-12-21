@@ -10,6 +10,7 @@ router.get("/", async (req, res, next) => {
 		const userId = req.user.id
 		const notifications = await db("notifications")
 		.where("user_id", userId)
+		.where("organization_id", req.user.organization)
 		.select(
 			"id as id", 
 			"body as body", 
@@ -18,6 +19,7 @@ router.get("/", async (req, res, next) => {
 			"is_read as isRead",
 			"created_at as createdAt",
 		).orderBy("created_at", "desc")
+		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(notifications)
 	}
 	catch (err){
@@ -38,6 +40,7 @@ router.get("/poll", async (req, res, next) => {
 		const interval = setInterval(async () => {
 			const notifications = await db("notifications")
 			.where("user_id", userId)
+			.where("organization_id", req.user.organization)
 			.where("is_read", false)
 			.select(
 				"id as id", 

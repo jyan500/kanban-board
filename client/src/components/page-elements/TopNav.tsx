@@ -43,14 +43,14 @@ export const TopNav = () => {
     const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
 
 	useEffect(() => {
-		if (notifications && notifications?.length > 0){
-			const unreadMessages = notifications.filter(n => !n.isRead)
+		if (notifications?.data && notifications?.data.length > 0){
+			const unreadMessages = notifications.data.filter(n => !n.isRead)
 			const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
 			if (lastId < newLastUnreadId){
-				setLastId(Math.max(...notifications.map(n => n.id)))
+				setLastId(Math.max(...notifications.data.map(n => n.id)))
 			}
 			setShowIndicator(unreadMessages.length > 0)
-			setCurrentNotifications(notifications)
+			setCurrentNotifications(notifications.data)
 		}
 	}, [notifications])
 
@@ -62,7 +62,7 @@ export const TopNav = () => {
 				setLastId(Math.max(...newNotifications.map(n => n.id)))
 			}
 			setShowIndicator(unreadMessages.length > 0)
-			setCurrentNotifications(newNotifications)
+			setCurrentNotifications([...newNotifications, ...currentNotifications])
 		}
 	}, [newNotifications])
 
