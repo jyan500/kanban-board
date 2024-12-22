@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
-const { validateBulkEdit } = require("../validation/notification")
+const { validateCreate, validateBulkEdit } = require("../validation/notification")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 
 // get all notifications for the logged in user
@@ -24,6 +24,21 @@ router.get("/", async (req, res, next) => {
 	}
 	catch (err){
 		console.error(`There was an error while getting notifications: ${err}`)
+	}
+})
+
+router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("notifications").insert({
+			user_id: req.body.user_id,
+			notification_type_id: req.body.notification_type_id,
+			body: req.body.body,
+			is_read: false
+		})
+		res.json({message: "Notification was created successfully!"})
+	}
+	catch (err){
+		console.error(`There was an error while creating notifications: ${err}`)
 	}
 })
 

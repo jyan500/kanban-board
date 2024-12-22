@@ -3,6 +3,12 @@ import { privateApi } from "../private"
 import { ListResponse, Notification } from "../../types/common"
 import { NOTIFICATION_URL } from "../../helpers/urls"
 
+type NotificationRequest = {
+	userId: number
+	body: string
+	notificationTypeId: number
+}
+
 export const notificationApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
@@ -21,6 +27,18 @@ export const notificationApi = privateApi.injectEndpoints({
 				params: urlParams
 			}),
 			providesTags: ["Notifications"]
+		}),
+		addNotification: builder.mutation<{message: string}, NotificationRequest>({
+			query: ({userId, notificationTypeId, body}) => ({
+				url: `${NOTIFICATION_URL}`,
+				method: "POST",
+				body: {
+					user_id: userId,
+					notification_type_id: notificationTypeId,
+					body: body,
+				}
+			}),
+			invalidatesTags: ["Notifications"]
 		}),
 		updateNotification: builder.mutation<{message: string}, {id: number, isRead: boolean}>({
 			query: ({id, isRead}) => ({
@@ -49,6 +67,7 @@ export const notificationApi = privateApi.injectEndpoints({
 export const {
 	useGetNotificationsQuery,
 	usePollNotificationsQuery,
+	useAddNotificationMutation,
 	useUpdateNotificationMutation,
 	useBulkEditNotificationsMutation,
 } = notificationApi

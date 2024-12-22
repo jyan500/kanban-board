@@ -12,6 +12,7 @@ import { useGetStatusesQuery } from "../services/private/status"
 import { useGetTicketTypesQuery } from "../services/private/ticketType" 
 import { useGetTicketRelationshipTypesQuery } from "../services/private/ticketRelationshipType"
 import { useGetPrioritiesQuery } from "../services/private/priority" 
+import { useGetNotificationTypesQuery } from "../services/private/notificationType"
 import { useGetUserRolesQuery } from "../services/private/userRole" 
 import { setUserProfile, setUserProfiles } from "../slices/userProfileSlice" 
 import { setUserRoles, setUserRoleLookup } from "../slices/userRoleSlice" 
@@ -30,6 +31,7 @@ const ProtectedLayout = () => {
     const {data: ticketRelationshipTypeData, isLoading: isTicketRelationshipTypeLoading} = useGetTicketRelationshipTypesQuery()
     const {data: priorityData, isLoading: isPriorityDataLoading} = useGetPrioritiesQuery()
     const {data: userRoleData, isLoading: isUserRoleDataLoading } = useGetUserRolesQuery()
+    const {data: notificationTypeData, isLoading: isNotificationTypeDataLoading } = useGetNotificationTypesQuery()
     const gutter = {margin: "var(--s-spacing)"}
 
     const isDataLoaded = !(

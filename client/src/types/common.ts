@@ -1,3 +1,13 @@
+export interface ObjectType {
+	id: number
+	name: string
+}
+
+export interface OptionType {
+	value: string
+	label: string
+}
+
 export interface UserProfile {
 	id: number
 	firstName: string
@@ -9,10 +19,15 @@ export interface UserProfile {
 	imageUrl?: string
 }
 
-export interface UserRole {
-	id: number
-	name: string
-}
+// export interface UserRole {
+// 	id: number
+// 	name: string
+// }
+
+export type UserRole = ObjectType
+export type NotificationType = ObjectType
+export type TicketType = ObjectType
+export type TicketRelationshipType = ObjectType
 
 export interface UserRegistrationRequest {
 	id: number	
@@ -51,10 +66,10 @@ export interface Board {
 	assignees?: Array<number>
 }
 
-export interface TicketType {
-	id: number
-	name: string
-}
+// export interface TicketType {
+// 	id: number
+// 	name: string
+// }
 
 export interface Ticket {
 	id: number 
@@ -118,10 +133,10 @@ export interface TicketRelationship {
 	ticketRelationshipTypeId: number
 }
 
-export interface TicketRelationshipType {
-	id: number
-	name: string
-}
+// export interface TicketRelationshipType {
+// 	id: number
+// 	name: string
+// }
 
 export interface IPagination {
 	total?: number;
@@ -138,11 +153,6 @@ export interface ListResponse<T> {
 	pagination: IPagination
 	data: Array<T>
 	additional?: Record<string, any>
-}
-
-export interface OptionType {
-	label: string
-	value: string
 }
 
 export interface ProgressBarPercentage {
