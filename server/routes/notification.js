@@ -3,19 +3,22 @@ const router = express.Router()
 const db = require("../db/db")
 const { validateCreate, validateBulkEdit } = require("../validation/notification")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
+const { getNotificationBody } = require("../helpers/functions")
 
 // get all notifications for the logged in user
 router.get("/", async (req, res, next) => {
 	try {
 		const userId = req.user.id
 		const notifications = await db("notifications")
-		.where("user_id", userId)
+		.where("recipient_id", userId)
 		.where("organization_id", req.user.organization)
 		.select(
 			"id as id", 
 			"body as body", 
 			"notification_type_id as notificationTypeId",
-			"user_id as userId",
+			"sender_id as senderId", 
+			"object_link as objectLink",
+			"recipient_id as recipientId",
 			"is_read as isRead",
 			"created_at as createdAt",
 		).orderBy("created_at", "desc")
@@ -28,11 +31,17 @@ router.get("/", async (req, res, next) => {
 })
 
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
+	const notificationType = await db("notification_types").where("id", req.body.notification_type_id).first()
+	const body = await getNotificationBody(notificationType, req)
+	res.json({message: "Notification was created successfully!"})
 	try {
 		await db("notifications").insert({
-			user_id: req.body.user_id,
+			recipient_id: req.body.recipient_id,
+			sender_id: req.body.sender_id,
 			notification_type_id: req.body.notification_type_id,
-			body: req.body.body,
+			organization_id: req.user.organization,
+			body: body,
+			object_link: req.body.object_link,
 			is_read: false
 		})
 		res.json({message: "Notification was created successfully!"})
@@ -53,7 +62,7 @@ router.get("/poll", async (req, res, next) => {
 		// poll the database based on the pollInterval  
 		const interval = setInterval(async () => {
 			const notifications = await db("notifications")
-			.where("user_id", userId)
+			.where("recipient_id", userId)
 			.where("organization_id", req.user.organization)
 			.where("is_read", false)
 			.modify((queryBuilder) => {
@@ -66,7 +75,9 @@ router.get("/poll", async (req, res, next) => {
 				"body as body", 
 				"notification_type_id as notificationTypeId",
 				"is_read as isRead",
-				"user_id as userId",
+				"sender_id as senderId",
+				"object_link as objectLink",
+				"recipient_id as recipientId",
 				"created_at as createdAt",
 			).orderBy("created_at", "desc")
 			if (notifications?.length){

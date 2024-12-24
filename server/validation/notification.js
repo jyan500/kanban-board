@@ -8,7 +8,7 @@ const notificationValidator = (action) => {
 	if (action === "create"){
 		validationRules = [
 			...validationRules,
-			body("user_id").notEmpty().withMessage("user id is required").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [
+			body("sender_id").notEmpty().withMessage("sender_id is required").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [
 				{
 					col: "user_id",
 					value: value	
@@ -17,14 +17,33 @@ const notificationValidator = (action) => {
 					col: "organization_id",
 					value: req.user.organization
 				}
-			])),
-			body("body").notEmpty().withMessage("notification message is required"),
+			], "organization_user_roles")),
+			body("recipient_id").notEmpty().withMessage("recipient_id is required").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [
+				{
+					col: "user_id",
+					value: value	
+				},
+				{
+					col: "organization_id",
+					value: req.user.organization
+				}
+			], "organization_user_roles")),
+			body("ticket_id").optional().custom(async (value, {req}) => await checkEntityExistsIn("tickets", value, [
+				{
+					col: "id",
+					value: value
+				},
+				{
+					col: "organization_id",
+					value: req.user.organization
+				}	
+			], "tickets")),
 			body("notification_type_id").notEmpty().withMessage("notification type is required").custom(async (value, {req}) => await checkEntityExistsIn("notification_types", value, [
 				{
 					col: "id",
 					value: value
 				}	
-			]))
+			], "notification_types"))
 		]
 	}
 	if (action === "bulk-edit"){
@@ -40,7 +59,7 @@ const notificationValidator = (action) => {
 				value: value,
 			},
 			{
-				col: "user_id",
+				col: "recipient_id",
 				value: req.user.id	
 			},
 			], "notifications"))

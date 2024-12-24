@@ -37,7 +37,7 @@ export const TopNav = () => {
 	const { data: notifications, isLoading: isGetNotificationsLoading } = useGetNotificationsQuery({}) 
 	const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery(lastId !== 0 ? {lastId: lastId} : skipToken, {
 		pollingInterval: 31000,
-		skipPollingIfUnfocused: true
+		// skipPollingIfUnfocused: true
 	})
 
     const [ updateNotification, { error: updateNotificationError, isLoading: isUpdateNotificationLoading} ] = useUpdateNotificationMutation();

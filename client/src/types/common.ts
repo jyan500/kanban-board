@@ -25,7 +25,7 @@ export interface UserProfile {
 // }
 
 export type UserRole = ObjectType
-export type NotificationType = ObjectType
+export type NotificationType = ObjectType & { template: string }
 export type TicketType = ObjectType
 export type TicketRelationshipType = ObjectType
 
@@ -165,7 +165,10 @@ export interface Notification {
 	id: number	
 	body: string
 	notificationTypeId: number
+	objectLink: string
 	isRead: boolean
-	userId: number
+	ticketId?: number
+	recipientId: number
+	senderId: number
 	createdAt: Date
 }

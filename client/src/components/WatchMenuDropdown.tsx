@@ -10,10 +10,12 @@ import {
 	useAddTicketAssigneeMutation,
 	useDeleteTicketAssigneeMutation, 
 } from "../services/private/ticket"
+import { useAddNotificationMutation } from "../services/private/notification"
 import { addToast } from "../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../helpers/functions"
 import { FiPlus as PlusIcon } from "react-icons/fi";
+import { TICKETS } from "../helpers/routes"
 
 type Props = {
 	closeDropdown: () => void
@@ -26,14 +28,17 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
+	const { notificationTypes } = useAppSelector((state) => state.notificationType)
 	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null
 	const dispatch = useAppDispatch()
 	const isAdminOrBoardAdmin = userRole && (userRole === "ADMIN" || userRole === "BOARD_ADMIN")
 	const isTicketReporter = userRole && userRole === "USER" && ticket?.userId === userProfile?.id
+	const watchNotificationType = notificationTypes.find((n) => n.name === "Watching Ticket")
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	const watcher: UserProfile | undefined = ticketWatchers?.find((watcher: UserProfile) => watcher.id === userProfile?.id)
 	const [ addTicketAssignee, {isLoading: addTicketAssigneeLoading} ] = useAddTicketAssigneeMutation()
 	const [ deleteTicketAssignee, {isLoading: isDeleteTicketAssigneeLoading}] = useDeleteTicketAssigneeMutation()
+	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
 
 	const addTicketWatcher = async (ticketId: number | null | undefined, userId: number | null | undefined) => {
 		let defaultToast: Toast = {
@@ -43,8 +48,15 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 			message: "You are now watching this ticket!"
 		}
 		try {
-			if (ticketId && userId){
+			if (watchNotificationType && userProfile && ticketId && userId){
 				await addTicketAssignee({ticketId: ticketId, userIds: [userId], isWatcher: true}).unwrap()
+				await addNotification({
+					recipientId: userId,
+					senderId: userProfile.id,
+					ticketId: ticketId,
+					objectLink: `${TICKETS}/${ticketId}`,
+					notificationTypeId: watchNotificationType.id,
+				}).unwrap()
 				dispatch(addToast(defaultToast))
 			}
 		}

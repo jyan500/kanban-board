@@ -20,6 +20,7 @@ import { setStatuses } from "../slices/statusSlice"
 import { setTicketTypes } from "../slices/ticketTypeSlice" 
 import { setTicketRelationshipTypes } from "../slices/ticketRelationshipTypeSlice"
 import { setPriorities } from "../slices/prioritySlice"
+import { setNotificationTypes } from "../slices/notificationTypeSlice"
 import { UserRole } from "../types/common" 
 
 const ProtectedLayout = () => {
@@ -40,7 +41,8 @@ const ProtectedLayout = () => {
     	isTicketTypesDataLoading && 
     	isTicketRelationshipTypeLoading && 
     	isPriorityDataLoading && 
-    	isUserRoleDataLoading
+    	isUserRoleDataLoading && 
+    	isNotificationTypeDataLoading
     )
 
     useEffect(() => {
@@ -69,8 +71,11 @@ const ProtectedLayout = () => {
 	        	}, {})
 	        	dispatch(setUserRoleLookup(userRoleLookup))
 	        }
+	        if (notificationTypeData){
+	        	dispatch(setNotificationTypes({notificationTypes: notificationTypeData}))
+	        }
         }
-    }, [token, userProfileData, ticketTypesData, statusData, priorityData]);
+    }, [token, userProfileData, ticketTypesData, statusData, priorityData, notificationTypeData]);
 
 	if (!token){
 		return <Navigate replace to = {"/login"} state={{alert: "You have been logged out"}}/>

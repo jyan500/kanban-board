@@ -4,8 +4,10 @@ import { ListResponse, Notification } from "../../types/common"
 import { NOTIFICATION_URL } from "../../helpers/urls"
 
 type NotificationRequest = {
-	userId: number
-	body: string
+	recipientId: number
+	senderId: number
+	ticketId?: number
+	objectLink: string
 	notificationTypeId: number
 }
 
@@ -29,13 +31,15 @@ export const notificationApi = privateApi.injectEndpoints({
 			providesTags: ["Notifications"]
 		}),
 		addNotification: builder.mutation<{message: string}, NotificationRequest>({
-			query: ({userId, notificationTypeId, body}) => ({
+			query: ({notificationTypeId, ticketId, objectLink, recipientId, senderId}) => ({
 				url: `${NOTIFICATION_URL}`,
 				method: "POST",
 				body: {
-					user_id: userId,
+					recipient_id: recipientId,
+					sender_id: senderId,
+					ticket_id: ticketId,
+					object_link: objectLink,
 					notification_type_id: notificationTypeId,
-					body: body,
 				}
 			}),
 			invalidatesTags: ["Notifications"]
