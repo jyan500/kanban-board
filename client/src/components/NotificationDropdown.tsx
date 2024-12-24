@@ -32,7 +32,7 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 	const markMessagesRead = async (messages: Array<Notification>) => {
 		if (messages?.length){
 			try {
-				await bulkEditNotifications({isRead: true, ids: notifications?.map((n) => n.id) ?? []}).unwrap()
+				await bulkEditNotifications({isRead: true, ids: messages?.map((n) => n.id) ?? []}).unwrap()
 			}
 			catch (err){
 				dispatch(addToast({
