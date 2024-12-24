@@ -19,11 +19,6 @@ export interface UserProfile {
 	imageUrl?: string
 }
 
-// export interface UserRole {
-// 	id: number
-// 	name: string
-// }
-
 export type UserRole = ObjectType
 export type NotificationType = ObjectType & { template: string }
 export type TicketType = ObjectType
@@ -65,11 +60,6 @@ export interface Board {
 	lastModified?: Date
 	assignees?: Array<number>
 }
-
-// export interface TicketType {
-// 	id: number
-// 	name: string
-// }
 
 export interface Ticket {
 	id: number 
@@ -132,11 +122,6 @@ export interface TicketRelationship {
 	childTicketId: number
 	ticketRelationshipTypeId: number
 }
-
-// export interface TicketRelationshipType {
-// 	id: number
-// 	name: string
-// }
 
 export interface IPagination {
 	total?: number;
