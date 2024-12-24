@@ -53,7 +53,6 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 				<button onClick={() => {
 					const unreadMessages = notifications?.filter(n => !n.isRead)
 					if (unreadMessages?.length){
-						console.log("mark messages read")
 						markMessagesRead(unreadMessages)
 					}
 				}} className = "button --secondary">Mark as Read</button>
@@ -61,12 +60,7 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 			{!notifications?.length ? <ReadOnlyDropdownOption><p>No Notifications Found</p></ReadOnlyDropdownOption> : null}
 			<ul>
 				{notifications?.map((notification) => (
-					<Link onClick={() => {
-						if (!notification.isRead){
-							console.log("mark message read")
-							markMessagesRead([notification])
-						}
-					}} to = {notification.objectLink}>
+					<Link to = {notification.objectLink}>
 						<li
 							key={`notification-${notification.id}`}
 							className={`${!notification.isRead ? "tw-bg-gray-50" : ""} tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900`}

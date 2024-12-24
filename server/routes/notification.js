@@ -33,7 +33,6 @@ router.get("/", async (req, res, next) => {
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	const notificationType = await db("notification_types").where("id", req.body.notification_type_id).first()
 	const body = await getNotificationBody(notificationType, req)
-	res.json({message: "Notification was created successfully!"})
 	try {
 		await db("notifications").insert({
 			recipient_id: req.body.recipient_id,
