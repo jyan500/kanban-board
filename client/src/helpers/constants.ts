@@ -43,7 +43,8 @@ export const TAG_TYPES = [
 	"TicketRelationshipTypes",
 	"TicketRelationships",
 	"RegistrationRequests",
-	"UserProfiles"
+	"UserProfiles",
+	"Notifications",
 ]
 
 export const EMAIL_PATTERN = /\S+@\S+\.\S+/

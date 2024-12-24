@@ -12,6 +12,7 @@ import { useGetStatusesQuery } from "../services/private/status"
 import { useGetTicketTypesQuery } from "../services/private/ticketType" 
 import { useGetTicketRelationshipTypesQuery } from "../services/private/ticketRelationshipType"
 import { useGetPrioritiesQuery } from "../services/private/priority" 
+import { useGetNotificationTypesQuery } from "../services/private/notificationType"
 import { useGetUserRolesQuery } from "../services/private/userRole" 
 import { setUserProfile, setUserProfiles } from "../slices/userProfileSlice" 
 import { setUserRoles, setUserRoleLookup } from "../slices/userRoleSlice" 
@@ -19,6 +20,7 @@ import { setStatuses } from "../slices/statusSlice"
 import { setTicketTypes } from "../slices/ticketTypeSlice" 
 import { setTicketRelationshipTypes } from "../slices/ticketRelationshipTypeSlice"
 import { setPriorities } from "../slices/prioritySlice"
+import { setNotificationTypes } from "../slices/notificationTypeSlice"
 import { UserRole } from "../types/common" 
 
 const ProtectedLayout = () => {
@@ -30,6 +32,7 @@ const ProtectedLayout = () => {
     const {data: ticketRelationshipTypeData, isLoading: isTicketRelationshipTypeLoading} = useGetTicketRelationshipTypesQuery()
     const {data: priorityData, isLoading: isPriorityDataLoading} = useGetPrioritiesQuery()
     const {data: userRoleData, isLoading: isUserRoleDataLoading } = useGetUserRolesQuery()
+    const {data: notificationTypeData, isLoading: isNotificationTypeDataLoading } = useGetNotificationTypesQuery()
     const gutter = {margin: "var(--s-spacing)"}
 
     const isDataLoaded = !(
@@ -38,7 +41,8 @@ const ProtectedLayout = () => {
     	isTicketTypesDataLoading && 
     	isTicketRelationshipTypeLoading && 
     	isPriorityDataLoading && 
-    	isUserRoleDataLoading
+    	isUserRoleDataLoading && 
+    	isNotificationTypeDataLoading
     )
 
     useEffect(() => {
@@ -67,8 +71,11 @@ const ProtectedLayout = () => {
 	        	}, {})
 	        	dispatch(setUserRoleLookup(userRoleLookup))
 	        }
+	        if (notificationTypeData){
+	        	dispatch(setNotificationTypes({notificationTypes: notificationTypeData}))
+	        }
         }
-    }, [token, userProfileData, ticketTypesData, statusData, priorityData]);
+    }, [token, userProfileData, ticketTypesData, statusData, priorityData, notificationTypeData]);
 
 	if (!token){
 		return <Navigate replace to = {"/login"} state={{alert: "You have been logged out"}}/>

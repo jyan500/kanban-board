@@ -12,12 +12,14 @@ import {
 	useAddTicketAssigneeMutation,
 	useDeleteTicketAssigneeMutation, 
 } from "../../services/private/ticket"
+import { useAddNotificationMutation } from "../../services/private/notification"
 import { OptionType, Toast } from "../../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Badge } from "../page-elements/Badge"
 import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../../helpers/functions"
 import { LoadingSpinner } from "../LoadingSpinner"
+import { TICKETS } from "../../helpers/routes"
 
 type Props = {
 	ticketId: number | undefined
@@ -31,9 +33,13 @@ type FormValues = {
 export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 	const [cacheKey, setCacheKey] = useState(uuidv4())
 	const dispatch = useAppDispatch()
+	const { userProfile } = useAppSelector((state) => state.userProfile)
+	const { notificationTypes } = useAppSelector((state) => state.notificationType)
+	const watchNotificationType = notificationTypes.find((n) => n.name === "Watching Ticket")
 	const { data: ticketWatchers, isLoading: isTicketWatchersLoading } = useGetTicketAssigneesQuery(ticketId ? {ticketId: ticketId, params: {isWatcher: true}} : skipToken)
 	const [ addTicketAssignee, {isLoading: addTicketAssigneeLoading} ] = useAddTicketAssigneeMutation()
 	const [ deleteTicketAssignee, {isLoading: isDeleteTicketAssigneeLoading}] = useDeleteTicketAssigneeMutation()
+	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
 	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 
 	const defaultForm = {
@@ -56,23 +62,30 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 			animationType: "animation-in",
 			type: "failure"
 		}
-		if (ticketId){
+		if (watchNotificationType && userProfile && ticketId){
 	    	try {
 		    	await addTicketAssignee({
 		    		ticketId: ticketId,
 		    		userIds: [Number(values.userId) ?? 0],
 		    		isWatcher: true
 			    	}).unwrap()
-			    	dispatch(addToast({
-			    		...defaultToast,
-			    		message: "You are now watching this ticket!",
-			    		type: "success"
-			    	}))
-		    	}
-		    	catch (e){
-		    		dispatch(addToast(defaultToast))
-		    	}
+	    		await addNotification({
+					recipientId: Number(values.userId) ?? 0,
+					senderId: userProfile.id,
+					ticketId: ticketId,
+					objectLink: `${TICKETS}/${ticketId}`,
+					notificationTypeId: watchNotificationType.id,
+				}).unwrap()
+		    	dispatch(addToast({
+		    		...defaultToast,
+		    		message: "You are now watching this ticket!",
+		    		type: "success"
+		    	}))
 	    	}
+	    	catch (e){
+	    		dispatch(addToast(defaultToast))
+	    	}
+    	}
     	else {
     		dispatch(addToast(defaultToast))
     	}

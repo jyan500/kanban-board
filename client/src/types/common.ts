@@ -1,3 +1,13 @@
+export interface ObjectType {
+	id: number
+	name: string
+}
+
+export interface OptionType {
+	value: string
+	label: string
+}
+
 export interface UserProfile {
 	id: number
 	firstName: string
@@ -9,10 +19,10 @@ export interface UserProfile {
 	imageUrl?: string
 }
 
-export interface UserRole {
-	id: number
-	name: string
-}
+export type UserRole = ObjectType
+export type NotificationType = ObjectType & { template: string }
+export type TicketType = ObjectType
+export type TicketRelationshipType = ObjectType
 
 export interface UserRegistrationRequest {
 	id: number	
@@ -49,11 +59,6 @@ export interface Board {
 	organizationId: number
 	lastModified?: Date
 	assignees?: Array<number>
-}
-
-export interface TicketType {
-	id: number
-	name: string
 }
 
 export interface Ticket {
@@ -118,11 +123,6 @@ export interface TicketRelationship {
 	ticketRelationshipTypeId: number
 }
 
-export interface TicketRelationshipType {
-	id: number
-	name: string
-}
-
 export interface IPagination {
 	total?: number;
 	lastPage?: number;
@@ -140,13 +140,20 @@ export interface ListResponse<T> {
 	additional?: Record<string, any>
 }
 
-export interface OptionType {
-	label: string
-	value: string
-}
-
 export interface ProgressBarPercentage {
 	className: string
 	value: number
 	label: string
+}
+
+export interface Notification {
+	id: number	
+	body: string
+	notificationTypeId: number
+	objectLink: string
+	isRead: boolean
+	ticketId?: number
+	recipientId: number
+	senderId: number
+	createdAt: Date
 }

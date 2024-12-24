@@ -14,6 +14,8 @@ export const STATUS_URL = `/${API_VERSION}/status`
 export const TICKET_TYPE_URL = `/${API_VERSION}/ticket-type`
 export const PRIORITY_URL = `/${API_VERSION}/priority`
 export const TICKET_RELATIONSHIP_TYPE_URL = `/${API_VERSION}/ticket-relationship-type`
+export const NOTIFICATION_URL = `/${API_VERSION}/notification`
+export const NOTIFICATION_TYPE_URL = `/${API_VERSION}/notification-type`
 export const BOARD_TICKET_URL = (boardId: number | string, ticketId: number | string) => `/${API_VERSION}/board/${boardId}/ticket` + (ticketId !== "" ? `/${ticketId}` : "")
 export const BOARD_STATUS_URL = (boardId: number | string, statusId: number | string) => `/${API_VERSION}/board/${boardId}/status` + (statusId !== "" ? `/${statusId}` : "")
 export const BOARD_BULK_EDIT_STATUS_URL = (boardId: number | string) => `/${API_VERSION}/board/${boardId}/status/bulk-edit`
