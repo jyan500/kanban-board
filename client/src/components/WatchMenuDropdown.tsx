@@ -109,7 +109,8 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 		}) : {}),
 		...(isAdminOrBoardAdmin || isTicketReporter ? {
 			"Add Watchers": () => {
-			
+				showAddWatchersModal()
+				closeDropdown()	
 			}
 		} : {}),
 	}
@@ -145,7 +146,6 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 								ticketWatchers?.map((watcher) => {
 									return (
 										<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2 tw-py-1">
-											{/* <CgProfile className = "tw-w-6 tw-h-6"/>*/}
 											<Avatar imageUrl={watcher.imageUrl} className = "tw-rounded-full !tw-w-6 !tw-h-6"/>
 											<p key = {`watcher_${watcher.id}`}>{displayUser(watcher)}
 											</p>
@@ -156,21 +156,23 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 						</div>
 					</div>
 				</li>
-				<li
-					className="tw-border-t tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
-					onClick={() => options["Add Watchers"]?.()}
-					role = "menuitem"
-				>
-					<button onClick={() => {
-						showAddWatchersModal()
-						closeDropdown()
-					}}>
-						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-							<PlusIcon className = "tw-h-6 tw-w-6"/>
-							<p>Add Watchers</p>
-						</div>
-					</button>
-				</li>
+				{
+					isAdminOrBoardAdmin || isTicketReporter ? 
+					<li
+						className="tw-border-t tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+						onClick={() => options["Add Watchers"]?.()}
+						role = "menuitem"
+					>
+						<button onClick={() => {
+							options["Add Watchers"]?.()					
+						}}>
+							<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+								<PlusIcon className = "tw-h-6 tw-w-6"/>
+								<p>Add Watchers</p>
+							</div>
+						</button>
+					</li> : null
+				}
 			</ul>
 		</Dropdown>
 	)	
