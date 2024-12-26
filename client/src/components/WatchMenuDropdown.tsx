@@ -32,9 +32,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null
 	const dispatch = useAppDispatch()
 	const isAdminOrBoardAdmin = userRole && (userRole === "ADMIN" || userRole === "BOARD_ADMIN")
-	console.log("isAdminOrBoardAdmin: ", isAdminOrBoardAdmin)
 	const isTicketReporter = userRole && userRole === "USER" && ticket?.userId === userProfile?.id
-	console.log("isTicketReporter: ", isAdminOrBoardAdmin)
 	const watchNotificationType = notificationTypes.find((n) => n.name === "Watching Ticket")
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	const watcher: UserProfile | undefined = ticketWatchers?.find((watcher: UserProfile) => watcher.id === userProfile?.id)
