@@ -1,7 +1,9 @@
 import React from "react"
 import { Controller, Control, FieldValues } from "react-hook-form"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
-import { Editor } from "react-draft-wysiwyg"
+// import { Editor } from "react-draft-wysiwyg"
+import Editor from "@draft-js-plugins/editor"
+import '@draft-js-plugins/static-toolbar/lib/plugin.css'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { stateToHTML } from 'draft-js-export-html'; 
 
@@ -90,10 +92,10 @@ export const TextArea = ({registerField, registerOptions, toolbarOptions, contro
 			render={({field: {value, onChange}}) => (
 				<Editor 
 					editorState={value} 
-					onEditorStateChange={onChange}
-					wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
-				    editorClassName="tw-p-1"
-				    toolbar={toolbarOptions ?? defaultToolbarOptions}
+					onChange={onChange}
+					// wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
+				    // editorClassName="tw-p-1"
+				    // toolbar={toolbarOptions ?? defaultToolbarOptions}
 				/>
 			)}
 		/>
