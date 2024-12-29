@@ -9,7 +9,7 @@
 	}
 }
 
-.textarea-ignore-global {
+.--ignore-global {
 	ul { 
 	    list-style-type: disc; 
 	    list-style-position: inside; 

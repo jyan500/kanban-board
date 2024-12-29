@@ -3,12 +3,22 @@ import { Controller, Control, FieldValues } from "react-hook-form"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 // import { Editor } from "react-draft-wysiwyg"
 import Editor from "@draft-js-plugins/editor"
-import createToolbarPlugin from "@draft-js-plugins/static-toolbar"
+import createToolbarPlugin, { Separator } from "@draft-js-plugins/static-toolbar"
 import '@draft-js-plugins/static-toolbar/lib/plugin.css'
 import 'draft-js/dist/Draft.css';
 // import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { stateToHTML } from 'draft-js-export-html'; 
 import "../../styles/textarea.css"
+import {
+	ItalicButton,
+	BoldButton,
+	UnderlineButton,
+	CodeButton,
+	UnorderedListButton,
+	OrderedListButton,
+	BlockquoteButton,
+	CodeBlockButton,
+} from "@draft-js-plugins/buttons"
 
 
 type Props = {
@@ -98,7 +108,23 @@ export const TextArea = ({registerField, registerOptions, toolbarOptions, contro
 			rules={registerOptions}
 			render={({field: {value, onChange}}) => (
 				<div className = "__editor-block">
-					<Toolbar/>
+					<Toolbar>
+					{
+						(externalProps) => (
+							<>
+								<BoldButton {...externalProps} />
+				                <ItalicButton {...externalProps} />
+				                <UnderlineButton {...externalProps} />
+				                <CodeButton {...externalProps} />
+				                <Separator/>
+				                <UnorderedListButton {...externalProps} />
+				                <OrderedListButton {...externalProps} />
+				                <BlockquoteButton {...externalProps} />
+				                <CodeBlockButton {...externalProps} />		
+							</>
+						)
+					}	
+					</Toolbar>
 					<Editor 
 						editorState={value} 
 						onChange={onChange}

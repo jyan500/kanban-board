@@ -27,6 +27,7 @@ import {
 	convertJSONToEditorState 
 } from "./page-elements/TextArea"
 import { Avatar } from "./page-elements/Avatar"
+import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 
 type CommentFormValues = {
 	id: number
@@ -244,7 +245,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 										/>
 									</FormProvider>
 								) : (
-									<div className = "textarea-ignore-global" dangerouslySetInnerHTML={{ __html: convertEditorStateToHTML(convertJSONToEditorState(comment.comment)) }}></div>
+									<TextAreaDisplay rawHTMLString={convertEditorStateToHTML(convertJSONToEditorState(comment.comment))}/>
 								)}
 								{comment.userId === userProfile?.id && !showAddCommentForm && !showEditCommentId ? (
 									<div className = "tw-flex tw-flex-row tw-gap-x-2">

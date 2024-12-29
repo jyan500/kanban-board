@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { TextArea } from "./page-elements/TextArea"
+import { LoadingButton } from "./page-elements/LoadingButton"
 
 type Props = {
 	type: string
@@ -10,9 +11,10 @@ type Props = {
 	customReset?: () => void
 	registerField: string
 	registerOptions: Record<string, any>
+	isLoading?: boolean
 }
 
-export const InlineEdit = ({type, value, onSubmit, onCancel, customReset, registerField, registerOptions}: Props) => {
+export const InlineEdit = ({isLoading, type, value, onSubmit, onCancel, customReset, registerField, registerOptions}: Props) => {
 	const { control, handleSubmit, register, resetField, setValue } = useFormContext()
 
 	const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
@@ -64,10 +66,10 @@ export const InlineEdit = ({type, value, onSubmit, onCancel, customReset, regist
 				{element}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<button type = "button" className = "button" onClick={(e) => {
+				<LoadingButton isLoading={isLoading} className = "button" text={"Save"} onClick={(e) => {
 					e.preventDefault()
 					onSubmit()
-				}}>Save</button>
+				}}></LoadingButton>
 				<button type = "button" onClick={(e) => {
 					e.preventDefault()
 					customReset ? customReset() : resetField(registerField)
