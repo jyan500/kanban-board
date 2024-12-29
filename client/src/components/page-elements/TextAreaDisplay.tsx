@@ -1,4 +1,5 @@
 import React from "react"
+import "../../styles/textarea.css"
 
 type Props = {
 	rawHTMLString: string	

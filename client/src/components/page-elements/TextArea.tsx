@@ -1,12 +1,10 @@
 import React from "react"
 import { Controller, Control, FieldValues } from "react-hook-form"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
-// import { Editor } from "react-draft-wysiwyg"
 import Editor from "@draft-js-plugins/editor"
 import createToolbarPlugin, { Separator } from "@draft-js-plugins/static-toolbar"
 import '@draft-js-plugins/static-toolbar/lib/plugin.css'
 import 'draft-js/dist/Draft.css';
-// import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { stateToHTML } from 'draft-js-export-html'; 
 import "../../styles/textarea.css"
 import {
@@ -83,24 +81,6 @@ const { Toolbar } = staticToolbarPlugin
 const plugins = [staticToolbarPlugin]
 
 export const TextArea = ({registerField, registerOptions, toolbarOptions, control}: Props) => {
-	const defaultToolbarOptions = {
-	    options: ['inline', 'blockType', 'list', 'link', 'emoji', 'image', 'remove', 'history'],
-	    inline: {
-	      inDropdown: false,
-	      options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
-	    },
-	    list: {
-	      inDropdown: true,
-	      options: ['unordered', 'ordered', 'indent', 'outdent'],
-	    },
-	    textAlign: {
-	      inDropdown: true,
-	      options: ['left', 'center', 'right', 'justify'],
-	    },
-	    link: {
-	    	defaultToolbarOptions: "_blank"
-	    },
-    }
 	return (
 		<Controller 
 			name={registerField} 	
@@ -129,9 +109,6 @@ export const TextArea = ({registerField, registerOptions, toolbarOptions, contro
 						editorState={value} 
 						onChange={onChange}
 						plugins={plugins}
-						// wrapperClassName="tw-border tw-p-1 tw-border-gray-300"
-					    // editorClassName="tw-p-1"
-					    // toolbar={toolbarOptions ?? defaultToolbarOptions}
 					/>
 				</div>
 			)}
