@@ -1,0 +1,24 @@
+.DraftEditor-root {
+    /* Apply Tailwind classes or extend styles */
+    @apply tw-text-gray-800 tw-leading-relaxed;
+}
+
+.public-DraftEditor-content {
+    /* Style the editor content */
+    @apply tw-min-h-64 tw-px-4 tw-py-2 tw-text-base tw-bg-white tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none;
+}
+
+.public-DraftEditorPlaceholder-root {
+    /* Style the placeholder text */
+    @apply tw-text-gray-400 tw-italic;
+}
+
+.public-DraftStyleDefault-block {
+    /* Style individual blocks */
+    @apply tw-mb-2;
+}
+
+/* make sure the SVG for plugins are baseline */
+.__editor-block {
+    @apply tw-align-baseline tw-inline
+}
