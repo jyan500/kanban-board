@@ -14,11 +14,15 @@
     @apply tw-mb-2;
 }
 
-.__editor-block {
+.__editor {
     /* make sure the SVG for plugins are baseline */
     svg {
         @apply tw-align-baseline tw-inline
     }
+}
+
+.__editor-block {
+
     /* remove normalized styling for the following entities */
     blockquote {
         display: block;
@@ -58,5 +62,6 @@
         border-radius: 3px; 
         padding: 1px 3px;
     }
-
 }
+
+

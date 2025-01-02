@@ -48,7 +48,6 @@ import {
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { Avatar } from "./page-elements/Avatar"
 
-
 type EditFieldVisibility = {
 	[key: string]: boolean
 }

@@ -1,9 +1,15 @@
-import React from "react"
-import { Controller, Control, FieldValues } from "react-hook-form"
+import React, {useEffect, useState} from "react"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import Editor from "@draft-js-plugins/editor"
+import { FormProvider, useFormContext } from "react-hook-form"
 import createToolbarPlugin, { Separator } from "@draft-js-plugins/static-toolbar"
+import createLinkPlugin from "@draft-js-plugins/anchor"
+import createLinkifyPlugin from "@draft-js-plugins/linkify"
+import createInlineToolbarPlugin from '@draft-js-plugins/inline-toolbar';
 import '@draft-js-plugins/static-toolbar/lib/plugin.css'
+import "@draft-js-plugins/anchor/lib/plugin.css"
+import '@draft-js-plugins/linkify/lib/plugin.css';
+import '@draft-js-plugins/inline-toolbar/lib/plugin.css'
 import 'draft-js/dist/Draft.css';
 import { stateToHTML } from 'draft-js-export-html'; 
 import "../../styles/textarea.css"
@@ -23,10 +29,21 @@ type Props = {
 	registerField: string
 	registerOptions?: Record<string, any> 
 	toolbarOptions?: Record<string, any>
-	// TODO: find the proper type for this, there's a conflict between the generic "FieldValues" type, and the "FormValues"
-	// type that gets passed in when initializing useForm() for react hook form.
-	control: Control<any, object> 
 }
+
+/* 
+https://github.com/draft-js-plugins/draft-js-plugins/issues/1802#issuecomment-911386164
+typescript hack for inline toolbar link plugin type error
+*/
+interface OverrideContentProps {
+  getEditorState: () => EditorState
+  setEditorState: (editorState: EditorState) => void
+  onOverrideContent: (content: React.ComponentType<unknown> | undefined) => void
+}
+
+type OverrideOnOverrideContent = (
+  content: React.ComponentType<OverrideContentProps> | undefined
+) => void
 
 export const textAreaValidation = () => {
 	return {
@@ -76,42 +93,69 @@ export const convertEditorStateToHTML = (state: EditorState) => {
 	return stateToHTML(state.getCurrentContent(), stateToHTMLOptions())
 }
 
+const linkPlugin = createLinkPlugin()
+const linkifyPlugin = createLinkifyPlugin();
 const staticToolbarPlugin = createToolbarPlugin()
+const inlineToolbarPlugin = createInlineToolbarPlugin();
 const { Toolbar } = staticToolbarPlugin
-const plugins = [staticToolbarPlugin]
+const plugins = [inlineToolbarPlugin, staticToolbarPlugin, linkPlugin, linkifyPlugin]
 
-export const TextArea = ({registerField, registerOptions, toolbarOptions, control}: Props) => {
+export const TextArea = ({registerField, registerOptions, toolbarOptions}: Props) => {
+	const { control, handleSubmit, register, resetField, getValues, setValue } = useFormContext()
+	/* 
+	this is a hack in order to support anchor tags within the editor. For some reason when using the React Hook Form Controller
+	and relying on control,
+	the anchor tags are not added when adding links. Therefore, had to pass the FormContext through, and set a new editor state 
+	each time a change is made. This could have negative effects on efficiency down the road.
+	TODO: would be replacing draft.js with a different library
+	Also whenever the react hotload refreshes, it causes a store.getItem(...) undefined error which has not been addressed yet.
+	*/
+	const [editorState, setEditorState] = useState(EditorState.createWithContent(getValues(registerField).getCurrentContent()));
+
+	const onChangeEditor = (newEditorState: EditorState) => {
+		setEditorState(newEditorState)
+		setValue(registerField, newEditorState)
+	}
+
 	return (
-		<Controller 
-			name={registerField} 	
-			control={control}
-			rules={registerOptions}
-			render={({field: {value, onChange}}) => (
-				<div className = "__editor-block">
-					<Toolbar>
-					{
-						(externalProps) => (
-							<>
-								<BoldButton {...externalProps} />
-				                <ItalicButton {...externalProps} />
-				                <UnderlineButton {...externalProps} />
-				                <CodeButton {...externalProps} />
-				                <Separator/>
-				                <UnorderedListButton {...externalProps} />
-				                <OrderedListButton {...externalProps} />
-				                <BlockquoteButton {...externalProps} />
-				                <CodeBlockButton {...externalProps} />		
-							</>
-						)
-					}	
-					</Toolbar>
-					<Editor 
-						editorState={value} 
-						onChange={onChange}
-						plugins={plugins}
-					/>
-				</div>
-			)}
-		/>
+		<div className = "__editor">
+			<Toolbar>
+			{
+				(externalProps) => (
+					<>
+						<BoldButton {...externalProps} />
+		                <ItalicButton {...externalProps} />
+		                <UnderlineButton {...externalProps} />
+		                <CodeButton {...externalProps} />
+		                <Separator/>
+		                <UnorderedListButton {...externalProps} />
+		                <OrderedListButton {...externalProps} />
+		                <BlockquoteButton {...externalProps} />
+		                <CodeBlockButton {...externalProps} />		
+					</>
+				)
+			}	
+			</Toolbar>
+			<Editor 
+				editorState={editorState} 
+				onChange={onChangeEditor}
+				plugins={plugins}
+			/>
+			<inlineToolbarPlugin.InlineToolbar>
+		    {
+		        (externalProps) => (
+					<>
+						<BoldButton {...externalProps} />
+						<ItalicButton {...externalProps} />
+						<UnderlineButton {...externalProps} />
+						<CodeButton {...externalProps} />
+						<linkPlugin.LinkButton {...externalProps} onOverrideContent={
+							externalProps.onOverrideContent as OverrideOnOverrideContent  
+						}/> 
+					</>
+		        )
+		    }
+		    </inlineToolbarPlugin.InlineToolbar>
+		</div>
 	)
 }
