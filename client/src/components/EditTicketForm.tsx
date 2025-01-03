@@ -45,8 +45,8 @@ import {
 	convertEditorStateToHTML, 
 	convertJSONToEditorState 
 } from "./page-elements/TextArea"
+import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { Avatar } from "./page-elements/Avatar"
-
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -113,7 +113,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { register , control, handleSubmit, reset, resetField, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
 	    name: { required: "Name is required" },
-    	description: textAreaValidation(),
+    	description: textAreaValidation("Description"),
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
@@ -283,7 +283,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									</div>
 								) : (
 									<>
-										<InlineEdit onSubmit = {async () => {
+										<InlineEdit 
+											isLoading={isUpdateTicketLoading}
+											onSubmit = {async () => {
 											await handleSubmit(onSubmit)()
 											if (!errors?.name){
 												toggleFieldVisibility("name", false)
@@ -323,17 +325,18 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									) : null
 								}
 							</div>
-							<div className = "">
+							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<strong>Description</strong>
 								<>
 									{
 										!editFieldVisibility.description ? (
 											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
-												<div className = "textarea-ignore-global" dangerouslySetInnerHTML={{ __html: convertEditorStateToHTML(watch("description")) }}></div>
+												<TextAreaDisplay rawHTMLString={convertEditorStateToHTML(watch("description"))}/>
 											</div>
 										) : (
 											<div className = "tw-flex tw-flex-col tw-gap-y-2">
 												<InlineEdit 
+													isLoading={isUpdateTicketLoading}
 													onSubmit={async () => {
 														await handleSubmit(onSubmit)()
 														if (!errors?.description){

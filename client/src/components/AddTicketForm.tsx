@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, FormProvider } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import type { UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
@@ -83,7 +83,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 
 	const registerOptions = {
 	    name: { required: "Name is required" },
-		description: textAreaValidation(),
+		description: textAreaValidation("Description"),
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
@@ -141,87 +141,88 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-w-[500px]">
-			<form>
-				<div className = "tw-flex tw-flex-col tw-gap-y-2">
-					<div>
-						<label className = "label" htmlFor="ticket-name">Name</label>
-						<input className = "tw-w-full" id = "ticket-name" type = "text"
-						{...register("name", registerOptions.name)}
-						/>
-				        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
-					</div>
-					<div>
-						<label className = "label" htmlFor = "ticket-status">Status</label>
-						<select className = "tw-w-full" id = "ticket-status" {...register("statusId", registerOptions.statusId)}>
-							{statusesToDisplay?.map((status: Status) => {
-								return <option key = {status.id} value = {status.id}>{status.name}</option>
-							})}
-						</select>	
-				        {errors?.statusId && <small className = "--text-alert">{errors.statusId.message}</small>}
-					</div>
-					<div>
-						<label className = "label" htmlFor = "ticket-description">Description</label>
-						<TextArea
-							registerField={"description"}
-							registerOptions={registerOptions.description}
-							control={control}
-						/>
-				        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
-				    </div>
-				    <div>
-						<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
-						<Controller
-							name={"userId"}
-							control={control}
-			                render={({ field: { onChange, value, name, ref } }) => (
-		                	<AsyncSelect 
-			                	endpoint={USER_PROFILE_URL} 
-			                	urlParams={{forSelect: true}} 
-			                	className={"tw-w-full"}
-			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
-			                		onChange(selectedOption?.value ?? "") 	
-			                	}}
-			                />
-		                )}
-						/>
-				        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
-					</div>
-					<div>
-						<label className = "label" htmlFor = "ticket-priority">Priority</label>
-						<select className = "tw-w-full" id = "ticket-priority" {...register("priorityId", registerOptions.priorityId)}>
-							{priorities.map((priority: Priority) => {
-								return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
-							})}
-						</select>
-				        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
-					</div>
-					<div className = "tw-space-y-2">
-						<>
-							<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
-							<select className = "tw-w-full" id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
-								{ticketTypes.map((ticketType: TicketType) => {
-									return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
+			<FormProvider {...methods}>
+				<form>
+					<div className = "tw-flex tw-flex-col tw-gap-y-2">
+						<div>
+							<label className = "label" htmlFor="ticket-name">Name</label>
+							<input className = "tw-w-full" id = "ticket-name" type = "text"
+							{...register("name", registerOptions.name)}
+							/>
+					        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
+						</div>
+						<div>
+							<label className = "label" htmlFor = "ticket-status">Status</label>
+							<select className = "tw-w-full" id = "ticket-status" {...register("statusId", registerOptions.statusId)}>
+								{statusesToDisplay?.map((status: Status) => {
+									return <option key = {status.id} value = {status.id}>{status.name}</option>
+								})}
+							</select>	
+					        {errors?.statusId && <small className = "--text-alert">{errors.statusId.message}</small>}
+						</div>
+						<div>
+							<label className = "label" htmlFor = "ticket-description">Description</label>
+							<TextArea
+								registerField={"description"}
+								registerOptions={registerOptions.description}
+							/>
+					        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
+					    </div>
+					    <div>
+							<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
+							<Controller
+								name={"userId"}
+								control={control}
+				                render={({ field: { onChange, value, name, ref } }) => (
+			                	<AsyncSelect 
+				                	endpoint={USER_PROFILE_URL} 
+				                	urlParams={{forSelect: true}} 
+				                	className={"tw-w-full"}
+				                	onSelect={(selectedOption: {label: string, value: string} | null) => {
+				                		onChange(selectedOption?.value ?? "") 	
+				                	}}
+				                />
+			                )}
+							/>
+					        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
+						</div>
+						<div>
+							<label className = "label" htmlFor = "ticket-priority">Priority</label>
+							<select className = "tw-w-full" id = "ticket-priority" {...register("priorityId", registerOptions.priorityId)}>
+								{priorities.map((priority: Priority) => {
+									return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
 								})}
 							</select>
-						</>
-				        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
-				        {
-				        	watch("ticketTypeId") == epicTicketType?.id ? (
-						        <div className = "tw-flex tw-flex tw-items-center tw-gap-x-2">
-							        <IconContext.Provider value={{color: "var(--bs-warning)"}}>
-										<WarningIcon className = "tw-h-6 tw-w-6"/>
-									</IconContext.Provider>
-									<span className = "tw-font-bold">If the ticket type is "Epic", it cannot changed once saved.</span>
-								</div>
-				        	) : null
-				        }
+					        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
+						</div>
+						<div className = "tw-space-y-2">
+							<>
+								<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
+								<select className = "tw-w-full" id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
+									{ticketTypes.map((ticketType: TicketType) => {
+										return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
+									})}
+								</select>
+							</>
+					        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
+					        {
+					        	watch("ticketTypeId") == epicTicketType?.id ? (
+							        <div className = "tw-flex tw-flex tw-items-center tw-gap-x-2">
+								        <IconContext.Provider value={{color: "var(--bs-warning)"}}>
+											<WarningIcon className = "tw-h-6 tw-w-6"/>
+										</IconContext.Provider>
+										<span className = "tw-font-bold">If the ticket type is "Epic", it cannot changed once saved.</span>
+									</div>
+					        	) : null
+					        }
+						</div>
+						
+						<div>
+							<LoadingButton onClick={handleSubmit(onSubmit)} className = "button" text={"Submit"}></LoadingButton>
+						</div>
 					</div>
-					
-					<div>
-						<LoadingButton onClick={handleSubmit(onSubmit)} className = "button" text={"Submit"}></LoadingButton>
-					</div>
-				</div>
-			</form>
+				</form>
+			</FormProvider>
 		</div>
 	)	
 }

@@ -27,6 +27,7 @@ import {
 	convertJSONToEditorState 
 } from "./page-elements/TextArea"
 import { Avatar } from "./page-elements/Avatar"
+import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 
 type CommentFormValues = {
 	id: number
@@ -43,14 +44,16 @@ type CommentFieldProps = {
 }
 
 export const CommentField = ({isLoading, registerOptions, onSubmit, onCancel}: CommentFieldProps) => {
-	const { handleSubmit, control, register, resetField, setValue, formState: {errors} } = useFormContext<CommentFormValues>()
+	const methods = useFormContext<CommentFormValues>()
+	const { handleSubmit, control, register, resetField, setValue, formState: {errors} } = methods
 	return (
 		<form className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
-			<TextArea
-				registerField={"comment"}
-				registerOptions={registerOptions}
-				control={control}
-			/>
+			<FormProvider {...methods}>
+				<TextArea
+					registerField={"comment"}
+					registerOptions={registerOptions}
+				/>
+			</FormProvider>
 	        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<LoadingButton isLoading={isLoading} className = "button" text={"Save"} onClick={onSubmit}></LoadingButton>
@@ -90,7 +93,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 	})
 	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
-	    comment: textAreaValidation(),
+	    comment: textAreaValidation("Comment"),
     }
 	/* 
 	Because only one comment can exist on the form at once, the 
@@ -244,7 +247,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 										/>
 									</FormProvider>
 								) : (
-									<div className = "textarea-ignore-global" dangerouslySetInnerHTML={{ __html: convertEditorStateToHTML(convertJSONToEditorState(comment.comment)) }}></div>
+									<TextAreaDisplay rawHTMLString={convertEditorStateToHTML(convertJSONToEditorState(comment.comment))}/>
 								)}
 								{comment.userId === userProfile?.id && !showAddCommentForm && !showEditCommentId ? (
 									<div className = "tw-flex tw-flex-row tw-gap-x-2">
