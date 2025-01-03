@@ -113,7 +113,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { register , control, handleSubmit, reset, resetField, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
 	    name: { required: "Name is required" },
-    	description: textAreaValidation(),
+    	description: textAreaValidation("Description"),
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},

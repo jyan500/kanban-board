@@ -93,7 +93,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 	})
 	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
-	    comment: textAreaValidation(),
+	    comment: textAreaValidation("Comment"),
     }
 	/* 
 	Because only one comment can exist on the form at once, the 

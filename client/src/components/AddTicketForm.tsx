@@ -83,7 +83,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 
 	const registerOptions = {
 	    name: { required: "Name is required" },
-		description: textAreaValidation(),
+		description: textAreaValidation("Description"),
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},

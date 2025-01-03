@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import Editor from "@draft-js-plugins/editor"
-import { FormProvider, useFormContext } from "react-hook-form"
+import { Controller, FormProvider, useFormContext } from "react-hook-form"
 import createToolbarPlugin, { Separator } from "@draft-js-plugins/static-toolbar"
 import createLinkPlugin from "@draft-js-plugins/anchor"
 import createLinkifyPlugin from "@draft-js-plugins/linkify"
@@ -45,13 +45,13 @@ type OverrideOnOverrideContent = (
   content: React.ComponentType<OverrideContentProps> | undefined
 ) => void
 
-export const textAreaValidation = () => {
+export const textAreaValidation = (field: string) => {
 	return {
 		validate: {
 	    	// check if the rich text editor contains any text excluding whitespaces
 	        required: (value: EditorState) => {
 		        if (!value.getCurrentContent().hasText() && !(value.getCurrentContent().getPlainText().length > 0)){
-		        	return "Description is required"
+		        	return `${field} is required`
 		        } 	
 	        }
 		}
@@ -119,43 +119,55 @@ export const TextArea = ({registerField, registerOptions, toolbarOptions}: Props
 
 	return (
 		<div className = "__editor">
-			<Toolbar>
-			{
-				(externalProps) => (
-					<>
-						<BoldButton {...externalProps} />
-		                <ItalicButton {...externalProps} />
-		                <UnderlineButton {...externalProps} />
-		                <CodeButton {...externalProps} />
-		                <Separator/>
-		                <UnorderedListButton {...externalProps} />
-		                <OrderedListButton {...externalProps} />
-		                <BlockquoteButton {...externalProps} />
-		                <CodeBlockButton {...externalProps} />		
-					</>
-				)
-			}	
-			</Toolbar>
-			<Editor 
-				editorState={editorState} 
-				onChange={onChangeEditor}
-				plugins={plugins}
+			{/* Controller is still necessary for validation */}
+			<Controller
+				name={registerField} 	
+				control={control}
+				rules={registerOptions}
+				render={() => {
+					return (
+						<>
+							<Toolbar>
+							{
+								(externalProps) => (
+									<>
+										<BoldButton {...externalProps} />
+						                <ItalicButton {...externalProps} />
+						                <UnderlineButton {...externalProps} />
+						                <CodeButton {...externalProps} />
+						                <Separator/>
+						                <UnorderedListButton {...externalProps} />
+						                <OrderedListButton {...externalProps} />
+						                <BlockquoteButton {...externalProps} />
+						                <CodeBlockButton {...externalProps} />		
+									</>
+								)
+							}	
+							</Toolbar>
+							<Editor 
+								editorState={editorState} 
+								onChange={onChangeEditor}
+								plugins={plugins}
+							/>
+							<inlineToolbarPlugin.InlineToolbar>
+						    {
+						        (externalProps) => (
+									<>
+										<BoldButton {...externalProps} />
+										<ItalicButton {...externalProps} />
+										<UnderlineButton {...externalProps} />
+										<CodeButton {...externalProps} />
+										<linkPlugin.LinkButton {...externalProps} onOverrideContent={
+											externalProps.onOverrideContent as OverrideOnOverrideContent  
+										}/> 
+									</>
+						        )
+						    }
+						    </inlineToolbarPlugin.InlineToolbar>
+					    </>
+					)	
+				}}
 			/>
-			<inlineToolbarPlugin.InlineToolbar>
-		    {
-		        (externalProps) => (
-					<>
-						<BoldButton {...externalProps} />
-						<ItalicButton {...externalProps} />
-						<UnderlineButton {...externalProps} />
-						<CodeButton {...externalProps} />
-						<linkPlugin.LinkButton {...externalProps} onOverrideContent={
-							externalProps.onOverrideContent as OverrideOnOverrideContent  
-						}/> 
-					</>
-		        )
-		    }
-		    </inlineToolbarPlugin.InlineToolbar>
 		</div>
 	)
 }
