@@ -4,8 +4,9 @@ import Editor from "@draft-js-plugins/editor"
 import { Controller, FormProvider, useFormContext } from "react-hook-form"
 import createToolbarPlugin, { Separator } from "@draft-js-plugins/static-toolbar"
 import createLinkPlugin from "@draft-js-plugins/anchor"
-import createLinkifyPlugin from "@draft-js-plugins/linkify"
+import createLinkifyPlugin, {extractLinks} from "@draft-js-plugins/linkify"
 import createInlineToolbarPlugin from '@draft-js-plugins/inline-toolbar';
+import linkifyEditorState from "../../helpers/linkifyEditorState"
 import '@draft-js-plugins/static-toolbar/lib/plugin.css'
 import "@draft-js-plugins/anchor/lib/plugin.css"
 import '@draft-js-plugins/linkify/lib/plugin.css';
@@ -84,7 +85,7 @@ export const stateToHTMLOptions = () => {
 					},
 				}
 			} 
-		}
+		},
 	}
 	return options
 }
@@ -93,7 +94,7 @@ export const convertEditorStateToHTML = (state: EditorState) => {
 	return stateToHTML(state.getCurrentContent(), stateToHTMLOptions())
 }
 
-const linkPlugin = createLinkPlugin()
+const linkPlugin = createLinkPlugin({linkTarget: "_blank"})
 const linkifyPlugin = createLinkifyPlugin();
 const staticToolbarPlugin = createToolbarPlugin()
 const inlineToolbarPlugin = createInlineToolbarPlugin();
@@ -113,8 +114,9 @@ export const TextArea = ({registerField, registerOptions, toolbarOptions}: Props
 	const [editorState, setEditorState] = useState(EditorState.createWithContent(getValues(registerField).getCurrentContent()));
 
 	const onChangeEditor = (newEditorState: EditorState) => {
-		setEditorState(newEditorState)
-		setValue(registerField, newEditorState)
+		const linkifiedEditorState = linkifyEditorState(newEditorState)
+		setEditorState(linkifiedEditorState)
+		setValue(registerField, linkifiedEditorState)
 	}
 
 	return (
@@ -171,3 +173,23 @@ export const TextArea = ({registerField, registerOptions, toolbarOptions}: Props
 		</div>
 	)
 }
+
+/*
+'154', 
+'Migration from React Wysiwyg to Draft Js Plugins', 
+'{\"blocks\":[{
+\"key\":\"3ofm3\",
+\"text\":\"Required in order to get mentions support for draft js plugins, 
+since wysiwyg\'s mentions are fixed lists and not dynamic (so no ability to make asynchronous requests to backend)\",
+\"type\":\"unordered-list-item\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"952j0\",
+\"text\":\"https://www.draft-js-plugins.com/plugin/anchor\",
+\"type\":\"unordered-list-item\",\"depth\":0,\"inlineStyleRanges\":[],
+\"entityRanges\":[{\"offset\":0,\"length\":46,\"key\":0}],\"data\":{}},{\"key\":\"cnngp\",
+\"text\":\"https://www.google.com\",\"type\":\"unordered-list-item\",\"depth\":0,\"inlineStyleRanges\":[],
+\"entityRanges\":[],\"data\":{}}],
+\"entityMap\":{\"0\":{\"type\":\"LINK\",\"mutability\":\"MUTABLE\",
+\"data\":{\"href\":\"https://www.draft-js-plugins.com/plugin/anchor\",
+\"rel\":\"noopener noreferrer\",\"target\":\"_blank\",\"title\":\"https://www.draft-js-plugins.com/plugin/anchor\",
+\"url\":\"https://www.draft-js-plugins.com/plugin/anchor\"}}}}', '2', '7', '2', '2', '2025-01-03 15:40:04', '2025-01-03 16:02:58', '6'
+
+*/
