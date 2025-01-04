@@ -4,8 +4,9 @@ import Editor from "@draft-js-plugins/editor"
 import { Controller, FormProvider, useFormContext } from "react-hook-form"
 import createToolbarPlugin, { Separator } from "@draft-js-plugins/static-toolbar"
 import createLinkPlugin from "@draft-js-plugins/anchor"
-import createLinkifyPlugin from "@draft-js-plugins/linkify"
+import createLinkifyPlugin, {extractLinks} from "@draft-js-plugins/linkify"
 import createInlineToolbarPlugin from '@draft-js-plugins/inline-toolbar';
+import linkifyEditorState from "../../helpers/linkifyEditorState"
 import '@draft-js-plugins/static-toolbar/lib/plugin.css'
 import "@draft-js-plugins/anchor/lib/plugin.css"
 import '@draft-js-plugins/linkify/lib/plugin.css';
@@ -84,7 +85,7 @@ export const stateToHTMLOptions = () => {
 					},
 				}
 			} 
-		}
+		},
 	}
 	return options
 }
@@ -93,7 +94,7 @@ export const convertEditorStateToHTML = (state: EditorState) => {
 	return stateToHTML(state.getCurrentContent(), stateToHTMLOptions())
 }
 
-const linkPlugin = createLinkPlugin()
+const linkPlugin = createLinkPlugin({linkTarget: "_blank"})
 const linkifyPlugin = createLinkifyPlugin();
 const staticToolbarPlugin = createToolbarPlugin()
 const inlineToolbarPlugin = createInlineToolbarPlugin();
@@ -113,8 +114,9 @@ export const TextArea = ({registerField, registerOptions, toolbarOptions}: Props
 	const [editorState, setEditorState] = useState(EditorState.createWithContent(getValues(registerField).getCurrentContent()));
 
 	const onChangeEditor = (newEditorState: EditorState) => {
-		setEditorState(newEditorState)
-		setValue(registerField, newEditorState)
+		const linkifiedEditorState = linkifyEditorState(newEditorState)
+		setEditorState(linkifiedEditorState)
+		setValue(registerField, linkifiedEditorState)
 	}
 
 	return (
@@ -171,3 +173,4 @@ export const TextArea = ({registerField, registerOptions, toolbarOptions}: Props
 		</div>
 	)
 }
+
