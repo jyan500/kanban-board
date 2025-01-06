@@ -28,12 +28,13 @@ import {
 } from "./page-elements/TextArea"
 import { Avatar } from "./page-elements/Avatar"
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
+import { SimpleEditor } from "./page-elements/SimpleEditor"
 
 type CommentFormValues = {
 	id: number
 	ticketId: number,
 	userId: number,
-	comment: EditorState 
+	comment: string
 }
 
 type CommentFieldProps = {
@@ -49,7 +50,7 @@ export const CommentField = ({isLoading, registerOptions, onSubmit, onCancel}: C
 	return (
 		<form className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
 			<FormProvider {...methods}>
-				<TextArea
+				<SimpleEditor
 					registerField={"comment"}
 					registerOptions={registerOptions}
 				/>
@@ -85,7 +86,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 		id: 0,
 		ticketId: 0,
 		userId: 0,
-		comment: EditorState.createEmpty()
+		comment: "",
 	}
 	const [preloadedValues, setPreloadedValues] = useState<CommentFormValues>(defaultForm)
 	const methods = useForm<CommentFormValues>({
@@ -93,7 +94,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 	})
 	const { register , handleSubmit, reset, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
-	    comment: textAreaValidation("Comment"),
+	    comment: {required: "Comment is required"},
     }
 	/* 
 	Because only one comment can exist on the form at once, the 
@@ -118,7 +119,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 				{
 					ticketId: currentTicketId,
 					comment: {
-						comment: convertEditorStateToJSON(values.comment),
+						comment: values.comment,
 						ticketId: currentTicketId,
 						userId: userProfile.id
 					}
@@ -130,7 +131,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 					ticketId: values.ticketId,
 					comment: {
 						...values,
-						comment: convertEditorStateToJSON(values.comment)
+						comment: values.comment
 					} 
 				}
 				).unwrap()
@@ -247,7 +248,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 										/>
 									</FormProvider>
 								) : (
-									<TextAreaDisplay rawHTMLString={convertEditorStateToHTML(convertJSONToEditorState(comment.comment))}/>
+									<TextAreaDisplay rawHTMLString={comment.comment}/>
 								)}
 								{comment.userId === userProfile?.id && !showAddCommentForm && !showEditCommentId ? (
 									<div className = "tw-flex tw-flex-row tw-gap-x-2">
@@ -256,7 +257,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 												id: comment.id,
 												ticketId: comment.ticketId,
 												userId: comment.userId,
-												comment: convertJSONToEditorState(comment.comment)
+												comment: comment.comment,
 											})
 											setShowAddCommentField(false)
 											setShowEditCommentId(comment.id)

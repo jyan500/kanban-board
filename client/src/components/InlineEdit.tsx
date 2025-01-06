@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { Controller, useForm, FormProvider, useFormContext } from "react-hook-form"
 import { TextArea } from "./page-elements/TextArea"
 import { LoadingButton } from "./page-elements/LoadingButton"
+import { SimpleEditor } from "./page-elements/SimpleEditor"
 
 type Props = {
 	type: string
@@ -44,7 +45,7 @@ export const InlineEdit = ({isLoading, type, value, onSubmit, onCancel, customRe
 		case "textarea":
 			element = (
 				<FormProvider {...methods}>
-					<TextArea
+					<SimpleEditor
 						registerField={registerField}
 						registerOptions={registerOptions}
 					/>
