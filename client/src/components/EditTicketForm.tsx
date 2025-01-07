@@ -100,7 +100,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const defaultForm: FormValues = {
 		id: 0,
 		name: "",
-		description: EditorState.createEmpty(),
+		description: "",
 		priorityId: 0,
 		statusId: 0,
 		ticketTypeId: 0,
@@ -113,7 +113,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { register , control, handleSubmit, reset, resetField, setValue, watch, formState: {errors} } = methods
 	const registerOptions = {
 	    name: { required: "Name is required" },
-    	description: textAreaValidation("Description"),
+    	description: { required: "Description is required"},
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
@@ -159,8 +159,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		if (currentTicketId){
 			reset({
 				...ticket, 
-				// convert description from JSON representation of content state to editor state
-				description: convertJSONToEditorState(ticket.description),
 				userId: ticketAssignees?.length ? ticketAssignees[0].id : 0
 			} ?? defaultForm
 			)
@@ -182,7 +180,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     		if (values.id != null){
     			await updateTicket({
     				...values, 
-    				description: convertEditorStateToJSON(values.description),
     				id: values.id
     			}).unwrap()
     			// update ticket assignees
@@ -331,7 +328,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									{
 										!editFieldVisibility.description ? (
 											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
-												<TextAreaDisplay rawHTMLString={convertEditorStateToHTML(watch("description"))}/>
+												<TextAreaDisplay rawHTMLString={watch("description")}/>
 											</div>
 										) : (
 											<div className = "tw-flex tw-flex-col tw-gap-y-2">
@@ -346,11 +343,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 													registerField = {"description"} 
 													registerOptions = {registerOptions.description} 
 													type = "textarea" 
-													customReset={() => {
-														if (ticket){
-															setValue("description", convertJSONToEditorState(ticket.description))
-														}
-													}}
 													onCancel={() => toggleFieldVisibility("description", false)}/>
 										        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 											</div>

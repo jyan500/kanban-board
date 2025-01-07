@@ -17,6 +17,7 @@ import { PaginationRow } from "./page-elements/PaginationRow"
 import { TicketRow } from "./TicketRow" 
 import { TICKETS } from "../helpers/routes"
 import { Banner } from "./page-elements/Banner"
+import { SimpleEditor } from "./page-elements/SimpleEditor"
 
 export const Dashboard = () => {
 	const dispatch = useAppDispatch()

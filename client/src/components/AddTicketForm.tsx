@@ -23,7 +23,7 @@ import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
-import { Editor } from "react-draft-wysiwyg"
+import { SimpleEditor } from "./page-elements/SimpleEditor"
 import { 
 	TextArea,
 	textAreaValidation, 
@@ -35,7 +35,7 @@ import {
 export type FormValues = {
 	id?: number
 	name: string
-	description: EditorState
+	description: string 
 	priorityId: number
 	statusId: number
 	ticketTypeId: number
@@ -65,7 +65,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
-		description: EditorState.createEmpty(),
+		description: "",
 		priorityId: 0,
 		statusId: 0,
 		ticketTypeId: 0,
@@ -83,7 +83,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 
 	const registerOptions = {
 	    name: { required: "Name is required" },
-		description: textAreaValidation("Description"),
+		description: { required: "Description is required"},
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
@@ -95,7 +95,6 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		if (ticket){
 			reset({
 				...ticket, 
-				description: convertJSONToEditorState(ticket.description),
 				id: undefined,
 				userId: 0
 			})
@@ -109,7 +108,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
     	try {
 	    	const data = await addTicket({
 	    		...values, 
-	    		description: convertEditorStateToJSON(values.description)
+	    		description: values.description
 	    	}).unwrap()
 	    	if (boardId){
 		    	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()
@@ -162,7 +161,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 						</div>
 						<div>
 							<label className = "label" htmlFor = "ticket-description">Description</label>
-							<TextArea
+							<SimpleEditor
 								registerField={"description"}
 								registerOptions={registerOptions.description}
 							/>

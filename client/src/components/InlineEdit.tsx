@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { Controller, useForm, FormProvider, useFormContext } from "react-hook-form"
 import { TextArea } from "./page-elements/TextArea"
 import { LoadingButton } from "./page-elements/LoadingButton"
+import { SimpleEditor } from "./page-elements/SimpleEditor"
 
 type Props = {
 	type: string
@@ -16,7 +17,7 @@ type Props = {
 
 export const InlineEdit = ({isLoading, type, value, onSubmit, onCancel, customReset, registerField, registerOptions}: Props) => {
 	const methods = useFormContext()
-	const { control, handleSubmit, register, resetField, setValue } = methods
+	const { control, handleSubmit, register, resetField, getValues, setValue } = methods
 
 	const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
 		if (e.key === "Escape"){
@@ -44,7 +45,7 @@ export const InlineEdit = ({isLoading, type, value, onSubmit, onCancel, customRe
 		case "textarea":
 			element = (
 				<FormProvider {...methods}>
-					<TextArea
+					<SimpleEditor
 						registerField={registerField}
 						registerOptions={registerOptions}
 					/>
@@ -74,7 +75,7 @@ export const InlineEdit = ({isLoading, type, value, onSubmit, onCancel, customRe
 				}}></LoadingButton>
 				<button type = "button" onClick={(e) => {
 					e.preventDefault()
-					customReset ? customReset() : resetField(registerField)
+					customReset ? customReset() : resetField(getValues(registerField))
 					onCancel()
 				}
 				} className = "button --secondary">Cancel</button>
