@@ -1,3 +1,26 @@
+.DraftEditor-root {
+    @apply tw-text-gray-800 tw-leading-relaxed;
+}
+
+.public-DraftEditor-content {
+    @apply tw-min-h-64 tw-px-4 tw-py-2 tw-text-base tw-bg-white tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none;
+}
+
+.public-DraftEditorPlaceholder-root {
+    @apply tw-text-gray-400 tw-italic;
+}
+
+.public-DraftStyleDefault-block {
+    @apply tw-mb-2;
+}
+
+.__editor {
+    /* make sure the SVG for plugins are baseline */
+    svg {
+        @apply tw-align-baseline tw-inline
+    }
+}
+
 .__editor-block {
 
     /* remove normalized styling for the following entities */
