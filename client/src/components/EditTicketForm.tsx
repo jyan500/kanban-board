@@ -282,6 +282,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									<>
 										<InlineEdit 
 											isLoading={isUpdateTicketLoading}
+											customReset={() => {
+												if (ticket?.name){
+													setValue("name", ticket.name)
+												}
+											}}
 											onSubmit = {async () => {
 											await handleSubmit(onSubmit)()
 											if (!errors?.name){
@@ -333,6 +338,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 										) : (
 											<div className = "tw-flex tw-flex-col tw-gap-y-2">
 												<InlineEdit 
+													customReset={() => {
+														if (ticket?.description){
+															setValue("description", ticket.description)
+														}
+													}}
 													isLoading={isUpdateTicketLoading}
 													onSubmit={async () => {
 														await handleSubmit(onSubmit)()
