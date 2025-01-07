@@ -17,7 +17,7 @@ type Props = {
 
 export const InlineEdit = ({isLoading, type, value, onSubmit, onCancel, customReset, registerField, registerOptions}: Props) => {
 	const methods = useFormContext()
-	const { control, handleSubmit, register, resetField, setValue } = methods
+	const { control, handleSubmit, register, resetField, getValues, setValue } = methods
 
 	const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
 		if (e.key === "Escape"){
@@ -75,7 +75,7 @@ export const InlineEdit = ({isLoading, type, value, onSubmit, onCancel, customRe
 				}}></LoadingButton>
 				<button type = "button" onClick={(e) => {
 					e.preventDefault()
-					customReset ? customReset() : resetField(registerField)
+					customReset ? customReset() : resetField(getValues(registerField))
 					onCancel()
 				}
 				} className = "button --secondary">Cancel</button>
