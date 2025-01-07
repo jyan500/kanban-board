@@ -75,7 +75,7 @@ export const InlineEdit = ({isLoading, type, value, onSubmit, onCancel, customRe
 				}}></LoadingButton>
 				<button type = "button" onClick={(e) => {
 					e.preventDefault()
-					customReset ? customReset() : resetField(getValues(registerField))
+					customReset ? customReset() : resetField(registerField)
 					onCancel()
 				}
 				} className = "button --secondary">Cancel</button>
