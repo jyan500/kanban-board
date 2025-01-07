@@ -7,18 +7,17 @@ import { Provider } from "react-redux"
 import { store } from "./store"
 import { render } from "react-dom"; 
 
-// const root = ReactDOM.createRoot(
-//   document.getElementById('root') as HTMLElement
-// );
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
 
 // the change to render is necessary for the React WYSIWYG toolbar dropdowns to work
-render(
+root.render(
   <React.StrictMode>
     <Provider store={store}>
    			<App/>
     </Provider>
   </React.StrictMode>,
-  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function

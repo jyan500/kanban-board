@@ -1,5 +1,6 @@
 import React from "react"
 import "../../styles/textarea.css"
+import "react-quill/dist/quill.snow.css"
 
 type Props = {
 	rawHTMLString: string	
@@ -8,7 +9,7 @@ type Props = {
 /* Display the converted content from Draft.js, ignoring normalized styles */
 export const TextAreaDisplay = ({rawHTMLString}: Props) => {
 	return (
-		<div className = "__editor-block" dangerouslySetInnerHTML={{ __html: rawHTMLString }}></div>
+		<div className = "ql-editor" dangerouslySetInnerHTML={{ __html: rawHTMLString }}></div>
 	)
 }
 
