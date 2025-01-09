@@ -1,18 +1,41 @@
-import React, {useEffect, useState} from "react"
+import React, {useEffect, useState, useCallback} from "react"
 import { Controller, FormProvider, useFormContext } from "react-hook-form"
-import ReactQuill from "react-quill"
+import ReactQuill, {Quill} from "react-quill"
+import "quill-mention";
 import "react-quill/dist/quill.snow.css"
-
 
 type Props = {
 	registerField: string
 	registerOptions?: Record<string, any> 
 }
 
-
 export const SimpleEditor = ({registerField, registerOptions}: Props) => {
 	const { control, handleSubmit, register, resetField, getValues, setValue } = useFormContext()
 	const modules = {
+		mention: {
+			allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/, 
+			mentionDenotationChars: ["@"],
+			source: useCallback((searchTerm: string, renderList: Function, mentionChar: string) => {
+				const atValues = [
+					{ id: 1, value: "Fredrik Sundqvist" },
+					{ id: 2, value: "Patrik Sjölin" },
+					{ id: 3, value: "Ludwig Beethoven" },
+				]
+				if (searchTerm.length === 0){
+					renderList(atValues, searchTerm)
+				}
+				else {
+					const matches = []
+					for (let i = 0; i < atValues.length; ++i){
+						// const matched = atValues[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())
+						if (~atValues[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())){
+							matches.push(atValues[i])
+						}
+					}
+					renderList(matches, searchTerm)
+				}
+			}, [])
+		},
 		toolbar: [
 			[{ header: [1, 2, 3, false] }],
 			[{ 'color': [] }],
