@@ -282,6 +282,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									<>
 										<InlineEdit 
 											isLoading={isUpdateTicketLoading}
+											mentionsEnabled={false}
 											customReset={() => {
 												if (ticket?.name){
 													setValue("name", ticket.name)
@@ -338,6 +339,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 										) : (
 											<div className = "tw-flex tw-flex-col tw-gap-y-2">
 												<InlineEdit 
+													mentionsEnabled={true}
 													customReset={() => {
 														if (ticket?.description){
 															setValue("description", ticket.description)

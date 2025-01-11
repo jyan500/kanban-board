@@ -11,7 +11,17 @@ export const genericApi = privateApi.injectEndpoints({
 				method: "GET",	
 				params: urlParams
 			}),
-			transformResponse: (responseData: ListResponse<any>) => {
+			transformResponse: (responseData: ListResponse<any>, meta: unknown, arg: Record<string, any>) => {
+				// for mentions, the list values are different from async select's
+				if (arg.urlParams.isMentions){
+					return {
+						...responseData,
+						data: responseData.data.map((d) => ({
+							id: d.id,
+							value: d.name,
+						}))
+					}
+				}
 				return {
 					...responseData,
 					data: responseData.data.map((d) => ({

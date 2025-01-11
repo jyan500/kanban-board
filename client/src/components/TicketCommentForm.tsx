@@ -53,6 +53,7 @@ export const CommentField = ({isLoading, registerOptions, onSubmit, onCancel}: C
 				<SimpleEditor
 					registerField={"comment"}
 					registerOptions={registerOptions}
+					mentionsEnabled={true}
 				/>
 			</FormProvider>
 	        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
