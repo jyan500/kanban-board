@@ -1,4 +1,5 @@
 const db = require("../db/db")
+const { parse } = require('node-html-parser')
 const Mustache = require("mustache")
 /*
 turns an object of the following from knex into an object where the key is the id of the row, mapped
@@ -114,9 +115,29 @@ const getNotificationBody = async (notificationType, request) => {
 	return Mustache.render(`${notificationType.template}`, fields)
 }
 
+/* Parses the mentions user ID from an HTML body and returns a mapped object to be inserted into the DB */
+const parseMentions = async (body, bodyParams, organizationId) => {
+	const root = parse(body)
+	const mentionNodeInfo = root.querySelectorAll(".mention")
+	let mappedObjArray = []
+	if (mentionNodeInfo){
+		// parse out the user id from the mention HTML entity, and map to an object containing user id and ticket id
+		mappedObjArray = await Promise.all(mentionNodeInfo.map(async (node) => {
+			const userId = node.getAttribute("data-id")
+			const isUser = await db("organization_user_roles").where("user_id", userId).where("organization_id", organizationId).first()
+			if (isUser){
+				return {...bodyParams, user_id: userId}
+			}
+			return null
+		}))
+	}
+	return mappedObjArray.filter((obj) => obj)
+}
+
 module.exports = {
 	getNotificationBody,
 	mapIdToRowObject,
 	mapIdToRowAggregateArray,
-	mapIdToRowAggregateObjArray
+	mapIdToRowAggregateObjArray,
+	parseMentions
 }

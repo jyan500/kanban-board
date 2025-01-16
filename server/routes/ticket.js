@@ -20,6 +20,7 @@ const {
 
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
+const { parseMentions } = require("../helpers/functions")
 const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
@@ -171,6 +172,10 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			organization_id: body.organization_id,
 			user_id: req.user.id
 		}, ["id"])
+		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: id[0], is_mention: true}, req.user.organization)
+		if (ticketsToUsers.length){
+			await db("tickets_to_users").insert(ticketsToUsers)
+		}
 		res.json({id: id[0], message: "Ticket inserted successfully!"})
 	}	
 	catch (err) {
@@ -192,6 +197,15 @@ router.get("/:ticketId/user", validateGet, handleValidationResult, async (req, r
 		).modify((queryBuilder) => {
 			if (req.query.isWatcher === "false"){
 				queryBuilder.where("is_watcher", false)
+			}
+			if (req.query.isWatcher === "true"){
+				queryBuilder.where("is_watcher", true)
+			}
+			if (req.query.isMention === "false"){
+				queryBuilder.where("is_mention", false)
+			}
+			if (req.query.isMention === "true"){
+				queryBuilder.where("is_mention", true)
 			}
 		})
 		res.json(users)
@@ -243,7 +257,7 @@ router.post("/:ticketId/user/bulk-edit", validateTicketUserBulkEdit, handleValid
 		const ticketId = req.params.ticketId
 		// delete all users attached to this ticket and then re-insert
 		const toInsert = userIds.map((id) => ({ticket_id: ticketId, user_id: id}))
-		await db("tickets_to_users").where("ticket_id", ticketId).delete()
+		await db("tickets_to_users").where("ticket_id", ticketId).where("is_mention", false).where("is_watcher", false).delete()
 		await db("tickets_to_users").insert(toInsert)
 		res.json({message: "users assigned to ticket successfully!"})
 	}	
@@ -328,6 +342,10 @@ router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationR
 			ticket_id: req.params.ticketId,
 			user_id: req.user.id
 		}, ["id"])
+		const ticketCommentsToUsers = await parseMentions(req.body.comment, {ticket_comment_id: id[0]}, req.user.organization)
+		if (ticketCommentsToUsers.length){
+			await db("ticket_comments_to_users").insert(ticketCommentsToUsers)
+		}
 		res.json({id: id[0], message: "Comment inserted successfully!"})
 	}
 	catch (err){
@@ -342,6 +360,11 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 		{
 			comment: req.body.comment
 		})	
+		const ticketCommentsToUsers = await parseMentions(req.body.comment, {ticket_comment_id: req.params.commentId}, req.user.organization)
+		if (ticketCommentsToUsers.length){
+			await db("ticket_comments_to_users").where("ticket_comment_id", req.params.commentId).del()
+			await db("ticket_comments_to_users").insert(ticketCommentsToUsers)
+		}
 		res.json({message: "Comment updated successfully!"})
 	}	
 	catch (err) {
@@ -453,7 +476,12 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 			status_id: req.body.status_id,
 			ticket_type_id: req.body.ticket_type_id
 		})
-		res.json({message: "Ticket updated successfully!"})	
+		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: req.params.ticketId, is_mention: true}, req.user.organization)
+		if (ticketsToUsers.length){
+			await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("is_mention", true).del()
+			await db("tickets_to_users").insert(ticketsToUsers)
+		}
+		res.json({message: "Ticket updated successfully!"})
 	}	
 	catch (err) {
 		console.error(`Error while updating ticket: ${err.message}`)

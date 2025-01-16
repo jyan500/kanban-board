@@ -164,6 +164,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 							<SimpleEditor
 								registerField={"description"}
 								registerOptions={registerOptions.description}
+								mentionsEnabled={true}
 							/>
 					        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 					    </div>
