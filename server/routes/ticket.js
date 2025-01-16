@@ -372,11 +372,10 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 			comment: req.body.comment
 		})	
 		const ticketCommentsToUsers = await parseMentions(req.body.comment, {ticket_comment_id: req.params.commentId}, req.user.organization)
-		// check if any of the mentioned users have already been mentioned, if not do not re-insert		
 		let newMentions = []
 		if (ticketCommentsToUsers.length){
 			newMentions = await Promise.all(ticketCommentsToUsers.map(async (obj) => {
-				// if the mention doesn't exist, insert
+				// if the mention doesn't exist, track these to create notifications for them in a separate request
 				const mention = await db("ticket_comments_to_users").where("ticket_comment_id", req.params.commentId).where("user_id", obj.user_id).first()
 				if (!mention){
 					return obj
@@ -507,7 +506,7 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 		if (ticketsToUsers.length){
 			newMentions = await Promise.all(ticketsToUsers.map(async (obj) => {
 				const mention = await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("user_id", obj.user_id).where("is_mention", true).first()
-				// if mention for this user doesn't exist
+				// if the mention doesn't exist, track these to create notifications for them in a separate request
 				if (!mention){
 					return obj
 				}
@@ -515,7 +514,6 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 			await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("is_mention", true).del()
 			await db("tickets_to_users").insert(ticketsToUsers)
 		}
-		console.log("newMentions: ", newMentions)
 		res.json({mentions: newMentions.filter((obj) => obj).map((obj) => {
 			return {
 				userId: obj.user_id,
