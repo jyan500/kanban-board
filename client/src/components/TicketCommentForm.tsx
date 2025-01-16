@@ -11,7 +11,7 @@ import {
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { InlineEdit } from "./InlineEdit" 
 import { useForm, useFormContext, FormProvider } from "react-hook-form"
-import { Ticket, TicketType, TicketComment, UserProfile } from "../types/common"
+import { Mention, Ticket, TicketType, TicketComment, UserProfile } from "../types/common"
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../helpers/functions" 
@@ -29,6 +29,8 @@ import {
 import { Avatar } from "./page-elements/Avatar"
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
+import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
+import { TICKETS } from "../helpers/routes"
 
 type CommentFormValues = {
 	id: number
@@ -78,10 +80,14 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 	const { showModal } = useAppSelector(state => state.modal)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
+	const { notificationTypes } = useAppSelector((state) => state.notificationType) 
 
 	const [ addTicketComment, {isLoading: isAddTicketCommentLoading, error: isAddTicketCommentError }] = useAddTicketCommentMutation()
 	const [ updateTicketComment, {isLoading: isUpdateTicketCommentLoading, error: isUpdateTicketCommentError }] = useUpdateTicketCommentMutation()
 	const [ deleteTicketComment, {isLoading: isDeleteTicketCommentLoading, error: isDeleteTicketCommentError }] = useDeleteTicketCommentMutation()
+	const [ bulkCreateNotifications, {isLoading: isBulkCreateNotificationLoading}] = useBulkCreateNotificationsMutation()
+
+	const mentionNotificationType = notificationTypes?.find((notificationType) => notificationType.name === "Mention")
 
 	const defaultForm = {
 		id: 0,
@@ -115,8 +121,10 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 
 	const onSubmit = async (values: CommentFormValues) => {
 		try {
+			let mentions = []
+			let ticketId = currentTicketId ?? values.ticketId
 			if (values.id === 0 && currentTicketId && userProfile){
-				const data = await addTicketComment(
+				const {mentions: newMentions} = await addTicketComment(
 				{
 					ticketId: currentTicketId,
 					comment: {
@@ -125,9 +133,10 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 						userId: userProfile.id
 					}
 				}).unwrap()
+				mentions = [...newMentions]
 			}
 			else {
-				await updateTicketComment(
+				const {mentions: newMentions} = await updateTicketComment(
 				{
 					ticketId: values.ticketId,
 					comment: {
@@ -136,6 +145,19 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 					} 
 				}
 				).unwrap()
+				mentions = [...newMentions]
+			}
+			if (mentionNotificationType && userProfile && mentions.length){
+    			const notifications = mentions.map((mention: Mention) => {
+    				return {
+						recipientId: mention.userId,
+						senderId: userProfile.id,
+						ticketId: ticketId,
+						objectLink: `${TICKETS}/${ticketId}`,
+						notificationTypeId: mentionNotificationType.id,
+					}
+    			})
+				await bulkCreateNotifications(notifications).unwrap()
 			}
 			dispatch(addToast({
     			id: uuidv4(),
