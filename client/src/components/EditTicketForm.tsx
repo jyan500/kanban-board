@@ -17,7 +17,7 @@ import { useGetUserQuery } from "../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { InlineEdit } from "./InlineEdit" 
 import { Controller, useForm, FormProvider } from "react-hook-form"
-import { OptionType, Ticket, TicketType, Priority, Status, UserProfile } from "../types/common"
+import { OptionType, Mention, Ticket, TicketType, Priority, Status, UserProfile } from "../types/common"
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
@@ -47,6 +47,7 @@ import {
 } from "./page-elements/TextArea"
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { Avatar } from "./page-elements/Avatar"
+import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -66,6 +67,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
 	const { priorities } = useAppSelector((state) => state.priority) 
+	const { notificationTypes } = useAppSelector((state) => state.notificationType) 
 	const { ticketTypes } = useAppSelector((state) => state.ticketType) 
 	const [ epicTicketPage, setEpicTicketPage ] = useState(1)
 	const [ linkedTicketPage, setLinkedTicketPage ] = useState(1)
@@ -82,11 +84,14 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	)
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
+	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
+	const [ bulkCreateNotifications, {isLoading: isBulkCreateNotificationLoading}] = useBulkCreateNotificationsMutation()
 	const {
 		showModal
 	} = useAppSelector((state) => state.modal)
 	const isCompletedStatusIds = statuses.filter((status) => status.isCompleted).map((status) => status.id)
 	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
+	const mentionNotificationType = notificationTypes?.find((notif) => notif.name === "Mention")
 
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
 		"name": false,
@@ -178,10 +183,22 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     	try {
     		// update existing ticket
     		if (values.id != null){
-    			await updateTicket({
+    			const { mentions } = await updateTicket({
     				...values, 
     				id: values.id
     			}).unwrap()
+    			if (mentionNotificationType && userProfile && mentions.length){
+	    			const notifications = mentions.map((mention: Mention) => {
+	    				return {
+							recipientId: mention.userId,
+							senderId: userProfile.id,
+							ticketId: mention.ticketId,
+							objectLink: `${TICKETS}/${mention.ticketId}`,
+							notificationTypeId: mentionNotificationType.id,
+						}
+	    			})
+					await bulkCreateNotifications(notifications).unwrap()
+    			}
     			// update ticket assignees
     			// TODO: need to update this line to include all userIds if allowing multiple 
     			// assignees per ticket

@@ -73,16 +73,16 @@ const mapIdToRowObject = (dbObjArray) => {
 }
 
 /* Parses the notification type template using mustache.js */
-const getNotificationBody = async (notificationType, request) => {
+const getNotificationBody = async (notificationType, obj) => {
 	let fields = {} 
-	const ticket = await db("tickets").where("id", request.body.ticket_id).first()
+	const ticket = await db("tickets").where("id", obj.ticket_id).first()
 	let recipient;
 	let sender
-	if (request.body.recipient_id){
-		recipient = await db("users").where("id", request.body.recipient_id).first()
+	if (obj.recipient_id){
+		recipient = await db("users").where("id", obj.recipient_id).first()
 	}
-	if (request.body.sender_id){
-		sender = await db("users").where("id", request.body.sender_id).first()
+	if (obj.sender_id){
+		sender = await db("users").where("id", obj.sender_id).first()
 	}
 	switch (notificationType.name){
 		case "Watching Ticket":

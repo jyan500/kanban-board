@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
-const { validateCreate, validateBulkEdit } = require("../validation/notification")
+const { validateCreate, validateBulkCreate, validateBulkEdit } = require("../validation/notification")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { getNotificationBody } = require("../helpers/functions")
 
@@ -44,6 +44,29 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			is_read: false
 		})
 		res.json({message: "Notification was created successfully!"})
+	}
+	catch (err){
+		console.error(`There was an error while creating notifications: ${err}`)
+	}
+})
+
+router.post("/bulk-create", validateBulkCreate, handleValidationResult, async (req, res, next) => {
+	try {
+		const notifications = await Promise.all(req.body.notifications.map(async (obj) => {
+			const notificationType = await db("notification_types").where("id", obj.notification_type_id).first()
+			const body = await getNotificationBody(notificationType, obj)
+			return {
+				recipient_id: obj.recipient_id,
+				sender_id: obj.sender_id,
+				notification_type_id: obj.notification_type_id,
+				organization_id: req.user.organization,
+				body: body,
+				object_link: obj.object_link,
+				is_read: false
+			}
+		}))
+		await db("notifications").insert(notifications)
+		res.json({message: "Notification created successfully!"})
 	}
 	catch (err){
 		console.error(`There was an error while creating notifications: ${err}`)

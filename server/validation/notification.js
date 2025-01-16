@@ -65,10 +65,55 @@ const notificationValidator = (action) => {
 			], "notifications"))
 		]
 	}
+	if (action === "bulk-create"){
+		validationRules = [
+			...validationRules,	
+			body("notifications").isArray({min: 0, max: BULK_INSERT_LIMIT})
+			.withMessage("notifications must be an array")
+			.withMessage(`notifications cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			body("notifications.*.sender_id").notEmpty().withMessage("sender_id is required").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [
+				{
+					col: "user_id",
+					value: value	
+				},
+				{
+					col: "organization_id",
+					value: req.user.organization
+				}
+			], "organization_user_roles")),
+			body("notifications.*.recipient_id").notEmpty().withMessage("recipient_id is required").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [
+				{
+					col: "user_id",
+					value: value	
+				},
+				{
+					col: "organization_id",
+					value: req.user.organization
+				}
+			], "organization_user_roles")),
+			body("notifications.*.ticket_id").optional().custom(async (value, {req}) => await checkEntityExistsIn("tickets", value, [
+				{
+					col: "id",
+					value: value
+				},
+				{
+					col: "organization_id",
+					value: req.user.organization
+				}	
+			], "tickets")),
+			body("notifications.*.notification_type_id").notEmpty().withMessage("notification type is required").custom(async (value, {req}) => await checkEntityExistsIn("notification_types", value, [
+				{
+					col: "id",
+					value: value
+				}	
+			], "notification_types"))
+		]
+	}
 	return validationRules
 }
 
 module.exports = {
 	validateBulkEdit: notificationValidator("bulk-edit"),
+	validateBulkCreate: notificationValidator("bulk-create"),
 	validateCreate: notificationValidator("create")
 }

@@ -4,7 +4,7 @@ import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { Controller, useForm, FormProvider } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
-import type { UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
+import type { Mention, UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
 import { 
 	useAddTicketMutation, 
@@ -12,6 +12,8 @@ import {
 	useBulkEditTicketAssigneesMutation,
 } 
 from "../services/private/ticket"
+import { TICKETS } from "../helpers/routes" 
+import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { addToast } from "../slices/toastSlice" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -53,6 +55,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
+	const { notificationTypes } = useAppSelector((state) => state.notificationType)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
 	// only run query if currentTicketId is not null, otherwise it will pass in the skipToken,
@@ -62,6 +65,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	const [ deleteTicket, {isLoading: isDeleteTicketLoading, error: isDeleteTicketError} ] = useDeleteTicketMutation()
 	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
 	const [ deleteBoardTicket, {isLoading: isDeleteBoardTicketLoading, error: isDeleteBoardTicketError}] = useDeleteBoardTicketMutation()
+	const [ bulkCreateNotifications, {isLoading: isBulkCreateNotificationLoading}] = useBulkCreateNotificationsMutation()
 	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
@@ -80,6 +84,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	const adminRole = userRoles?.find((role) => role.name === "ADMIN")
 	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
 	const epicTicketType = ticketTypes?.find((ticketType) => ticketType?.name === "Epic")
+	const mentionNotificationType = notificationTypes?.find((notificationType) => notificationType?.name === "Mention")
 
 	const registerOptions = {
 	    name: { required: "Name is required" },
@@ -106,16 +111,28 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 
     const onSubmit = async (values: FormValues) => {
     	try {
-	    	const data = await addTicket({
+	    	const {id: insertedTicketId, mentions} = await addTicket({
 	    		...values, 
 	    		description: values.description
 	    	}).unwrap()
+			if (mentionNotificationType && userProfile && mentions.length){
+    			const notifications = mentions.map((mention: Mention) => {
+    				return {
+						recipientId: mention.userId,
+						senderId: userProfile.id,
+						ticketId: mention.ticketId,
+						objectLink: `${TICKETS}/${mention.ticketId}`,
+						notificationTypeId: mentionNotificationType.id,
+					}
+    			})
+				await bulkCreateNotifications(notifications).unwrap()
+			}
 	    	if (boardId){
-		    	await addBoardTickets({boardId: boardId, ticketIds: [data.id]}).unwrap()
+		    	await addBoardTickets({boardId: boardId, ticketIds: [insertedTicketId]}).unwrap()
 	    	}
 	    	// update ticket assignees
 	    	if (values.userId){
-	    		await bulkEditTicketAssignees({ticketId: data.id, isWatcher: false, userIds: [values.userId]}).unwrap()
+	    		await bulkEditTicketAssignees({ticketId: insertedTicketId, isWatcher: false, userIds: [values.userId]}).unwrap()
 	    	}
 			dispatch(toggleShowModal(false))
 			dispatch(toggleShowSecondaryModal(false))
