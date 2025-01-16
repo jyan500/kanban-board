@@ -98,7 +98,6 @@ const getNotificationBody = async (notificationType, request) => {
 				fields = {
 					ticket_name: ticket?.name, 	
 					sender_name: `${sender?.first_name} ${sender.last_name}`,
-					recipient_name: `${recipient?.first_name} ${recipient?.last_name}`
 				}
 			}
 			break
@@ -107,7 +106,14 @@ const getNotificationBody = async (notificationType, request) => {
 				fields = {
 					ticket_name: ticket?.name, 	
 					sender_name: `${sender?.first_name} ${sender?.last_name}`,
-					recipient_name: `${recipient?.first_name} ${recipient?.last_name}`
+				}
+			}
+			break
+		case "Ticket Assigned":	
+			if (ticket && sender && recipient){
+				fields = {
+					ticket_name: ticket?.name, 	
+					sender_name: `${sender?.first_name} ${sender?.last_name}`,
 				}
 			}
 			break

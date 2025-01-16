@@ -22,6 +22,7 @@ const {
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { parseMentions } = require("../helpers/functions")
 const db = require("../db/db")
+const { getNotificationBody } = require("../helpers/functions")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -176,7 +177,12 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 		if (ticketsToUsers.length){
 			await db("tickets_to_users").insert(ticketsToUsers)
 		}
-		res.json({id: id[0], message: "Ticket inserted successfully!"})
+		res.json({id: id[0], mentions: ticketsToUsers.map((obj) => {
+			return {
+				userId: obj.user_id,
+				ticketId: obj.ticket_id,
+			}
+		}), message: "Ticket inserted successfully!"})
 	}	
 	catch (err) {
 		console.error(`Error while creating ticket: ${err.message}`)
@@ -346,7 +352,12 @@ router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationR
 		if (ticketCommentsToUsers.length){
 			await db("ticket_comments_to_users").insert(ticketCommentsToUsers)
 		}
-		res.json({id: id[0], message: "Comment inserted successfully!"})
+		res.json({id: id[0], mentions: ticketCommentsToUsers.map((obj) => {
+			return {
+				ticketCommentId: obj.ticket_comment_id,
+				userId: obj.user_id,
+			}
+		}), message: "Comment inserted successfully!"})
 	}
 	catch (err){
 		console.log(`Error while creating comment for ticket: ${err.message}`)
@@ -365,7 +376,12 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 			await db("ticket_comments_to_users").where("ticket_comment_id", req.params.commentId).del()
 			await db("ticket_comments_to_users").insert(ticketCommentsToUsers)
 		}
-		res.json({message: "Comment updated successfully!"})
+		res.json({mentions: ticketCommentsToUsers.map((obj) => {
+			return {
+				ticketCommentId: obj.ticket_comment_id,
+				userId: obj.user_id,
+			}
+		}), message: "Comment updated successfully!"})
 	}	
 	catch (err) {
 		console.log(`Error while updating comment: ${err.message}`)
@@ -481,7 +497,12 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 			await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("is_mention", true).del()
 			await db("tickets_to_users").insert(ticketsToUsers)
 		}
-		res.json({message: "Ticket updated successfully!"})
+		res.json({mentions: ticketsToUsers.map((obj) => {
+			return {
+				userId: obj.user_id,
+				ticketId: obj.ticket_id,
+			}
+		}), message: "Ticket updated successfully!"})
 	}	
 	catch (err) {
 		console.error(`Error while updating ticket: ${err.message}`)

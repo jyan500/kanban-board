@@ -157,3 +157,9 @@ export interface Notification {
 	senderId: number
 	createdAt: Date
 }
+
+export interface Mention {
+    userId: number;
+    [key: string]: any;
+}
+
