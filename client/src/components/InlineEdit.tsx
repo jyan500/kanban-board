@@ -13,9 +13,21 @@ type Props = {
 	registerField: string
 	registerOptions: Record<string, any>
 	isLoading?: boolean
+	mentionsEnabled?: boolean
 }
 
-export const InlineEdit = ({isLoading, type, value, onSubmit, onCancel, customReset, registerField, registerOptions}: Props) => {
+export const InlineEdit = (
+	{
+		isLoading, 
+		type, 
+		value, 
+		onSubmit, 
+		onCancel, 
+		customReset, 
+		registerField, 
+		registerOptions, 
+		mentionsEnabled
+	}: Props) => {
 	const methods = useFormContext()
 	const { control, handleSubmit, register, resetField, getValues, setValue } = methods
 
@@ -48,6 +60,7 @@ export const InlineEdit = ({isLoading, type, value, onSubmit, onCancel, customRe
 					<SimpleEditor
 						registerField={registerField}
 						registerOptions={registerOptions}
+						mentionsEnabled={mentionsEnabled}
 					/>
 				</FormProvider>
 			)

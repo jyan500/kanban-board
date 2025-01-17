@@ -34,11 +34,15 @@ export const TopNav = () => {
 	const [lastId, setLastId] = useState(0)
 	const [currentNotifications, setCurrentNotifications] = useState<Array<Notification>>([])
 
-	const { data: notifications, isLoading: isGetNotificationsLoading } = useGetNotificationsQuery({}) 
-	const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery(lastId !== 0 ? {lastId: lastId} : skipToken, {
-		pollingInterval: 31000,
-		// skipPollingIfUnfocused: true
-	})
+	const { data: notifications, isLoading: isGetNotificationsLoading } = useGetNotificationsQuery({}, {
+		pollingInterval: 30000,
+		skipPollingIfUnfocused: true
+	}) 
+	// TODO: need to figure out why this causes other cache invalidation requests to lag (i.e add/remove ticket watchers)
+	// const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery(lastId !== 0 ? {lastId: lastId} : skipToken, {
+	// 	pollingInterval: 31000,
+	// 	// skipPollingIfUnfocused: true
+	// })
 
     const [ updateNotification, { error: updateNotificationError, isLoading: isUpdateNotificationLoading} ] = useUpdateNotificationMutation();
     const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
@@ -55,17 +59,17 @@ export const TopNav = () => {
 		}
 	}, [notifications])
 
-	useEffect(() => {
-		if (newNotifications && newNotifications?.length > 0){
-			const unreadMessages = newNotifications.filter(n => !n.isRead)
-			const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
-			if (lastId < newLastUnreadId){
-				setLastId(Math.max(...newNotifications.map(n => n.id)))
-			}
-			setShowIndicator(unreadMessages.length > 0)
-			setCurrentNotifications([...newNotifications, ...currentNotifications])
-		}
-	}, [newNotifications])
+	// useEffect(() => {
+	// 	if (newNotifications && newNotifications?.length > 0){
+	// 		const unreadMessages = newNotifications.filter(n => !n.isRead)
+	// 		const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
+	// 		if (lastId < newLastUnreadId){
+	// 			setLastId(Math.max(...newNotifications.map(n => n.id)))
+	// 		}
+	// 		setShowIndicator(unreadMessages.length > 0)
+	// 		setCurrentNotifications([...newNotifications, ...currentNotifications])
+	// 	}
+	// }, [newNotifications])
 
 	useEffect(() => {
 		if (userProfile && Object.keys(userProfile).length){

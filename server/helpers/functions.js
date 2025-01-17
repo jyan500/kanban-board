@@ -1,4 +1,5 @@
 const db = require("../db/db")
+const { parse } = require('node-html-parser')
 const Mustache = require("mustache")
 /*
 turns an object of the following from knex into an object where the key is the id of the row, mapped
@@ -72,16 +73,16 @@ const mapIdToRowObject = (dbObjArray) => {
 }
 
 /* Parses the notification type template using mustache.js */
-const getNotificationBody = async (notificationType, request) => {
+const getNotificationBody = async (notificationType, obj) => {
 	let fields = {} 
-	const ticket = await db("tickets").where("id", request.body.ticket_id).first()
+	const ticket = await db("tickets").where("id", obj.ticket_id).first()
 	let recipient;
 	let sender
-	if (request.body.recipient_id){
-		recipient = await db("users").where("id", request.body.recipient_id).first()
+	if (obj.recipient_id){
+		recipient = await db("users").where("id", obj.recipient_id).first()
 	}
-	if (request.body.sender_id){
-		sender = await db("users").where("id", request.body.sender_id).first()
+	if (obj.sender_id){
+		sender = await db("users").where("id", obj.sender_id).first()
 	}
 	switch (notificationType.name){
 		case "Watching Ticket":
@@ -97,7 +98,6 @@ const getNotificationBody = async (notificationType, request) => {
 				fields = {
 					ticket_name: ticket?.name, 	
 					sender_name: `${sender?.first_name} ${sender.last_name}`,
-					recipient_name: `${recipient?.first_name} ${recipient?.last_name}`
 				}
 			}
 			break
@@ -106,7 +106,14 @@ const getNotificationBody = async (notificationType, request) => {
 				fields = {
 					ticket_name: ticket?.name, 	
 					sender_name: `${sender?.first_name} ${sender?.last_name}`,
-					recipient_name: `${recipient?.first_name} ${recipient?.last_name}`
+				}
+			}
+			break
+		case "Ticket Assigned":	
+			if (ticket && sender && recipient){
+				fields = {
+					ticket_name: ticket?.name, 	
+					sender_name: `${sender?.first_name} ${sender?.last_name}`,
 				}
 			}
 			break
@@ -114,9 +121,29 @@ const getNotificationBody = async (notificationType, request) => {
 	return Mustache.render(`${notificationType.template}`, fields)
 }
 
+/* Parses the mentions user ID from an HTML body and returns a mapped object to be inserted into the DB */
+const parseMentions = async (body, bodyParams, organizationId) => {
+	const root = parse(body)
+	const mentionNodeInfo = root.querySelectorAll(".mention")
+	let mappedObjArray = []
+	if (mentionNodeInfo){
+		// parse out the user id from the mention HTML entity, and map to an object containing user id and ticket id
+		mappedObjArray = await Promise.all(mentionNodeInfo.map(async (node) => {
+			const userId = node.getAttribute("data-id")
+			const isUser = await db("organization_user_roles").where("user_id", userId).where("organization_id", organizationId).first()
+			if (isUser){
+				return {...bodyParams, user_id: userId}
+			}
+			return null
+		}))
+	}
+	return mappedObjArray.filter((obj) => obj)
+}
+
 module.exports = {
 	getNotificationBody,
 	mapIdToRowObject,
 	mapIdToRowAggregateArray,
-	mapIdToRowAggregateObjArray
+	mapIdToRowAggregateObjArray,
+	parseMentions
 }

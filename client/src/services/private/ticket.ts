@@ -11,7 +11,7 @@ import {
 	TICKET_RELATIONSHIP_URL,
 } 
 from "../../helpers/urls" 
-import { CustomError, ListResponse, Ticket, TicketComment, TicketRelationship, UserProfile } from "../../types/common" 
+import { CustomError, Mention, ListResponse, Ticket, TicketComment, TicketRelationship, UserProfile } from "../../types/common" 
 import { privateApi } from "../private"
 
 type TicketAssigneeRequest = {
@@ -91,7 +91,7 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["TicketComments"]
 		}),
-		addTicketComment: builder.mutation<{id: number, message: string}, AddTicketCommentRequest>({
+		addTicketComment: builder.mutation<{id: number, message: string, mentions: Array<Mention>}, AddTicketCommentRequest>({
 			query: ({ticketId, comment}) => ({
 				url: TICKET_COMMENT_URL(ticketId, ""),
 				method: "POST",
@@ -103,7 +103,7 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["TicketComments"]
 		}),
-		updateTicketComment: builder.mutation<{id: number, message: string}, UpdateTicketCommentRequest>({
+		updateTicketComment: builder.mutation<{id: number, message: string, mentions: Array<Mention>}, UpdateTicketCommentRequest>({
 			query: ({ticketId, comment}) => ({
 				url: TICKET_COMMENT_URL(ticketId, comment.id),
 				method: "PUT",
@@ -164,7 +164,7 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["TicketAssignees"],
 		}),
-		addTicket: builder.mutation<{id: number, message: string}, Omit<Ticket, "organizationId" | "id" | "createdAt">>({
+		addTicket: builder.mutation<{id: number, message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "id" | "createdAt">>({
 			query: (ticket) => ({
 				url: `${TICKET_URL}`,
 				method: "POST",
@@ -178,7 +178,7 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Tickets"]
 		}),
-		updateTicket: builder.mutation<{message: string}, Omit<Ticket, "organizationId" | "createdAt">>({
+		updateTicket: builder.mutation<{message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "createdAt">>({
 			query: (ticket) => ({
 				url: `${TICKET_URL}/${ticket.id}`,
 				method: "PUT",

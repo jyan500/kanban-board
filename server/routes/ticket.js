@@ -20,6 +20,7 @@ const {
 
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
+const { parseMentions } = require("../helpers/functions")
 const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
@@ -94,6 +95,7 @@ router.get("/", async (req, res, next) => {
 				.where("users.id", req.query.assignedToUser)
 				// if req.query.isWatching, only get the tickets that the user is watching
 				.where("tickets_to_users.is_watcher", req.query.isWatching == "true" ? true : false)
+				.where("tickets_to_users.is_mention", false)
 			}
 			if (req.query.sortBy && req.query.order){
 				if (req.query.sortBy === "createdAt"){
@@ -171,7 +173,16 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			organization_id: body.organization_id,
 			user_id: req.user.id
 		}, ["id"])
-		res.json({id: id[0], message: "Ticket inserted successfully!"})
+		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: id[0], is_mention: true}, req.user.organization)
+		if (ticketsToUsers.length){
+			await db("tickets_to_users").insert(ticketsToUsers)
+		}
+		res.json({id: id[0], mentions: ticketsToUsers.map((obj) => {
+			return {
+				userId: obj.user_id,
+				ticketId: obj.ticket_id,
+			}
+		}), message: "Ticket inserted successfully!"})
 	}	
 	catch (err) {
 		console.error(`Error while creating ticket: ${err.message}`)
@@ -192,6 +203,15 @@ router.get("/:ticketId/user", validateGet, handleValidationResult, async (req, r
 		).modify((queryBuilder) => {
 			if (req.query.isWatcher === "false"){
 				queryBuilder.where("is_watcher", false)
+			}
+			if (req.query.isWatcher === "true"){
+				queryBuilder.where("is_watcher", true)
+			}
+			if (req.query.isMention === "false"){
+				queryBuilder.where("is_mention", false)
+			}
+			if (req.query.isMention === "true"){
+				queryBuilder.where("is_mention", true)
 			}
 		})
 		res.json(users)
@@ -243,7 +263,7 @@ router.post("/:ticketId/user/bulk-edit", validateTicketUserBulkEdit, handleValid
 		const ticketId = req.params.ticketId
 		// delete all users attached to this ticket and then re-insert
 		const toInsert = userIds.map((id) => ({ticket_id: ticketId, user_id: id}))
-		await db("tickets_to_users").where("ticket_id", ticketId).delete()
+		await db("tickets_to_users").where("ticket_id", ticketId).where("is_mention", false).where("is_watcher", false).delete()
 		await db("tickets_to_users").insert(toInsert)
 		res.json({message: "users assigned to ticket successfully!"})
 	}	
@@ -328,7 +348,16 @@ router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationR
 			ticket_id: req.params.ticketId,
 			user_id: req.user.id
 		}, ["id"])
-		res.json({id: id[0], message: "Comment inserted successfully!"})
+		const ticketCommentsToUsers = await parseMentions(req.body.comment, {ticket_comment_id: id[0]}, req.user.organization)
+		if (ticketCommentsToUsers.length){
+			await db("ticket_comments_to_users").insert(ticketCommentsToUsers)
+		}
+		res.json({id: id[0], mentions: ticketCommentsToUsers.map((obj) => {
+			return {
+				ticketCommentId: obj.ticket_comment_id,
+				userId: obj.user_id,
+			}
+		}), message: "Comment inserted successfully!"})
 	}
 	catch (err){
 		console.log(`Error while creating comment for ticket: ${err.message}`)
@@ -342,7 +371,26 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 		{
 			comment: req.body.comment
 		})	
-		res.json({message: "Comment updated successfully!"})
+		const ticketCommentsToUsers = await parseMentions(req.body.comment, {ticket_comment_id: req.params.commentId}, req.user.organization)
+		let newMentions = []
+		if (ticketCommentsToUsers.length){
+			newMentions = await Promise.all(ticketCommentsToUsers.map(async (obj) => {
+				// if the mention doesn't exist, track these to create notifications for them in a separate request
+				const mention = await db("ticket_comments_to_users").where("ticket_comment_id", req.params.commentId).where("user_id", obj.user_id).first()
+				if (!mention){
+					return obj
+				}
+			}))
+			// delete existing mentions before inserting new ones
+			await db("ticket_comments_to_users").where("ticket_comment_id", req.params.commentId).del()
+			await db("ticket_comments_to_users").insert(ticketCommentsToUsers)
+		}
+		res.json({mentions: newMentions.map((obj) => {
+			return {
+				ticketCommentId: obj.ticket_comment_id,
+				userId: obj.user_id,
+			}
+		}), message: "Comment updated successfully!"})
 	}	
 	catch (err) {
 		console.log(`Error while updating comment: ${err.message}`)
@@ -453,7 +501,25 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 			status_id: req.body.status_id,
 			ticket_type_id: req.body.ticket_type_id
 		})
-		res.json({message: "Ticket updated successfully!"})	
+		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: req.params.ticketId, is_mention: true}, req.user.organization)
+		let newMentions = []
+		if (ticketsToUsers.length){
+			newMentions = await Promise.all(ticketsToUsers.map(async (obj) => {
+				const mention = await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("user_id", obj.user_id).where("is_mention", true).first()
+				// if the mention doesn't exist, track these to create notifications for them in a separate request
+				if (!mention){
+					return obj
+				}
+			}))
+			await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("is_mention", true).del()
+			await db("tickets_to_users").insert(ticketsToUsers)
+		}
+		res.json({mentions: newMentions.filter((obj) => obj).map((obj) => {
+			return {
+				userId: obj.user_id,
+				ticketId: obj.ticket_id,
+			}
+		}), message: "Ticket updated successfully!"})
 	}	
 	catch (err) {
 		console.error(`Error while updating ticket: ${err.message}`)

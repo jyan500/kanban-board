@@ -53,6 +53,22 @@ export const notificationApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Notifications"]
 		}),
+		bulkCreateNotifications: builder.mutation<{message: string}, Array<NotificationRequest>>({
+			query: (notifications) => ({
+				url: `${NOTIFICATION_URL}/bulk-create`,
+				method: "POST",
+				body: {
+					notifications: notifications.map(({recipientId, senderId, ticketId, objectLink, notificationTypeId}) => ({
+						recipient_id: recipientId,
+						sender_id: senderId,
+						ticket_id: ticketId,
+						object_link: objectLink,
+						notification_type_id: notificationTypeId,
+					}))
+				} 
+			}),
+			invalidatesTags: ["Notifications"]
+		}),
 		bulkEditNotifications: builder.mutation<{message: string}, {ids: Array<number>, isRead: boolean}>({
 			query: ({ids, isRead}) => ({
 				url: `${NOTIFICATION_URL}/bulk-edit`,
@@ -73,4 +89,5 @@ export const {
 	useAddNotificationMutation,
 	useUpdateNotificationMutation,
 	useBulkEditNotificationsMutation,
+	useBulkCreateNotificationsMutation,
 } = notificationApi
