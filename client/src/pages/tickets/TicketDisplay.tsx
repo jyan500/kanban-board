@@ -11,6 +11,7 @@ import { SearchToolBar } from "../../components/tickets/SearchToolBar"
 import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
 import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice"
+import { Filters } from "../../components/tickets/Filters"
 
 export type Filters = {
 	ticketType: string
@@ -97,6 +98,23 @@ export const TicketDisplay = () => {
 		}))
 	}
 
+	const additionalButtons = () => {
+		return (
+			<>
+				<button className="button" onClick={(e) => {
+				e.preventDefault()
+				showAddTicketModal()
+				}}>Add Ticket</button>
+			</>
+		)
+	}
+
+	const renderFilter = () => {
+		return (
+			<Filters/>
+		)
+	}
+
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			<h1>Tickets Backlog</h1>
@@ -107,15 +125,14 @@ export const TicketDisplay = () => {
 					currentPage={currentPage ?? 1}
 					registerOptions={registerOptions}
 					searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+					additionalButtons={additionalButtons}
+					renderFilter={renderFilter}
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()
 					}}
 					filters={Object.keys(filters)}
 				>
-               <button className="button" onClick={(e) => {
-			       e.preventDefault()
-			       showAddTicketModal()
-			       }}>Add Ticket</button>
+           
 
 				</SearchToolBar>
 			</FormProvider>

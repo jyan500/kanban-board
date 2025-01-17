@@ -8,6 +8,7 @@ import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { SearchToolBar } from "../../components/tickets/SearchToolBar"
 import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
+import { Filters } from "../../components/notifications/Filters"
 
 export type Filters = {
 	notificationType: string
@@ -74,6 +75,12 @@ export const NotificationDisplay = () => {
 	    navigate(pageUrl, {replace:true});
 	}
 
+	const renderFilter = () => {
+		return (
+			<Filters/>
+		)
+	}
+
 	// const showTicket = (id: number) => {
 	// 	let pageUrl = `${NOTIFICATIONS}?page=${currentPage}`
 	// 	pageUrl = withUrlParams(defaultForm, searchParams, pageUrl)
@@ -93,7 +100,8 @@ export const NotificationDisplay = () => {
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()
 					}}
-					// filters={Object.keys(filters)}
+					renderFilter={renderFilter}
+					filters={Object.keys(filters)}
 				/>
 			</FormProvider>
 			{isFetching ? <LoadingSpinner/> : (

@@ -16,12 +16,14 @@ type Props = {
 	setPage: (pageNum: number) => void
 	registerOptions: Record<string, any>
 	onFormSubmit: () => void
-	filters?: Array<string>,
+	filters?: Array<string>
 	searchOptions: Record<string, any>
+	additionalButtons?: () => React.ReactNode 
+	renderFilter?: () => React.ReactNode
 	children?: React.ReactNode
 }
 
-export const SearchToolBar = ({children, onFormSubmit, registerOptions, currentPage, paginationData, setPage, filters, searchOptions}: Props) => {
+export const SearchToolBar = ({children, onFormSubmit, registerOptions, currentPage, paginationData, setPage, filters, renderFilter, additionalButtons, searchOptions}: Props) => {
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
@@ -54,7 +56,7 @@ export const SearchToolBar = ({children, onFormSubmit, registerOptions, currentP
 						</div>
 						<button type = "submit" className = "button">Search</button>
 						{
-							filters ? (
+							filters && renderFilter ? (
 								<button onClick={() => setShowFilter(!showFilter)} type = "button" className = "button">
 									<div className = "tw-flex tw-flex-row tw-justify-center tw-items-center tw-gap-x-0.5">
 										<ArrowDown className = "tw-w-6 tw-h-6"/>
@@ -63,7 +65,7 @@ export const SearchToolBar = ({children, onFormSubmit, registerOptions, currentP
 								</button>
 							) : null
 						}
-						{filters && showFilter ? (
+						{filters && renderFilter && showFilter ? (
 							<button onClick={(e) => {
 								e.preventDefault()
 								reset({
@@ -77,7 +79,7 @@ export const SearchToolBar = ({children, onFormSubmit, registerOptions, currentP
 								Clear Filters
 							</button>
 						) : null}
-						{children}
+						{additionalButtons ? additionalButtons() : null}
 					</form>
 				</FormProvider>
 				<div className = "tw-p-4 tw-rounded-md tw-border tw-border-gray-300">
@@ -97,9 +99,9 @@ export const SearchToolBar = ({children, onFormSubmit, registerOptions, currentP
 			{errors?.query ? <small className = "--text-alert">{errors?.query?.message?.toString()}</small> : null}
 			<div>
 			{
-				filters && showFilter ? (
+				filters && renderFilter && showFilter ? (
 					<FormProvider {...methods}>
-						<Filters/>
+						{renderFilter()}
 					</FormProvider>
 				) : null
 			}
