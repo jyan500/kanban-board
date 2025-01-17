@@ -132,8 +132,6 @@ export const TicketDisplay = () => {
 					}}
 					filters={Object.keys(filters)}
 				>
-           
-
 				</SearchToolBar>
 			</FormProvider>
 			{isFetching ? <LoadingSpinner/> : (

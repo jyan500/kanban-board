@@ -17,7 +17,7 @@ type Props = {
 	registerOptions: Record<string, any>
 	onFormSubmit: () => void
 	filters?: Array<string>
-	searchOptions: Record<string, any>
+	searchOptions?: Record<string, any>
 	additionalButtons?: () => React.ReactNode 
 	renderFilter?: () => React.ReactNode
 	children?: React.ReactNode
@@ -30,7 +30,6 @@ export const SearchToolBar = ({children, onFormSubmit, registerOptions, currentP
 	const [showFilter, setShowFilter] = useState(false)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const methods = useFormContext()
-	// const searchOptions = {"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}
 	const {register, reset, getValues, control, formState: {errors}} = methods
 
 	return (
@@ -41,12 +40,16 @@ export const SearchToolBar = ({children, onFormSubmit, registerOptions, currentP
 						e.preventDefault()
 						onFormSubmit()
 					}} className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-						<select {...register("searchBy", registerOptions.searchBy)}>
-							{Object.keys(searchOptions).map((option) => {
-								const value = searchOptions[option as keyof typeof searchOptions]
-								return <option key = {option} value = {option}>{value}</option>
-							})}
-						</select>
+						{searchOptions && Object.keys(searchOptions).length > 0 ? 
+							(
+								<select {...register("searchBy", registerOptions.searchBy)}>
+									{Object.keys(searchOptions).map((option) => {
+										const value = searchOptions[option as keyof typeof searchOptions]
+										return <option key = {option} value = {option}>{value}</option>
+									})}
+								</select>
+							) : null
+						}
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							<SearchBar 
 								registerOptions= { registerOptions.query }

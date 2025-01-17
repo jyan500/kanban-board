@@ -9,9 +9,13 @@ import { SearchToolBar } from "../../components/tickets/SearchToolBar"
 import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
 import { Filters } from "../../components/notifications/Filters"
+import { Avatar } from "../../components/page-elements/Avatar"
+import { NotificationRow } from "../../components/notifications/NotificationRow"
+import { Link } from "react-router-dom"
 
 export type Filters = {
 	notificationType: string
+	user: string
 }
 
 export type FormValues = Filters & {
@@ -29,6 +33,7 @@ export const NotificationDisplay = () => {
 	const navigate = useNavigate()
 	const filters: Filters = {
 		"notificationType": searchParams.get("notificationType") ?? "",
+		"user": searchParams.get("user") ?? "",
 	}
 	const {data: data, isFetching } = useGetNotificationsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
@@ -57,6 +62,21 @@ export const NotificationDisplay = () => {
 			}
 			return true
 		}},
+	}
+
+	const groupedByDate = (notifications: Array<Notification> | undefined) => {
+		const groupedBy: Record<string, Array<Notification>> = {}
+		notifications?.forEach((notification) => {
+			const createdAt = new Date(notification.createdAt)
+			const key = createdAt.toLocaleDateString()
+			if (key in groupedBy){
+				groupedBy[key as keyof typeof groupedBy].push(notification)
+			}
+			else {
+				groupedBy[key as keyof typeof groupedBy] = [notification]
+			}
+		})
+		return groupedBy
 	}
 
 	const onSubmit = (values: FormValues) => {
@@ -96,7 +116,6 @@ export const NotificationDisplay = () => {
 					setPage={setPage} 
 					currentPage={currentPage ?? 1}
 					registerOptions={registerOptions}
-					searchOptions = {{"notificationType": "Notification Type"}}
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()
 					}}
@@ -106,39 +125,35 @@ export const NotificationDisplay = () => {
 			</FormProvider>
 			{isFetching ? <LoadingSpinner/> : (
 				<>
-				<div className = "tw-flex tw-flex-col tw-gap-y-2">
-					{data?.data?.map((notification: Notification) => {
-						return (
-							<div>
-							{notification.body}	
-							</div>
-						)
-					})}
-				{/*	<div className = "tw-w-1/3 tw-flex tw-flex-col tw-gap-y-4">
-						
-						{data?.data?.map((ticket: Ticket) => {
+					<div className = "tw-flex tw-flex-col tw-gap-y-2">
+						{Object.entries(groupedByDate(data?.data)).map(([key, value]) => {
 							return (
-								<button key = {`ticket_display_row_${ticket.id}`} className = "hover:tw-gray-50" onClick={() => showTicket(ticket.id)}>
-									<TicketRow ticket={ticket}/>
-								</button>
+								<div className = "tw-flex tw-flex-col tw-gap-y-2" key = {key}>
+									<p className = "tw-font-bold">{key}</p>
+									<div className = "tw-flex tw-flex-col tw-gap-y-.5">
+										{
+											value.map((notification) => {
+												return (
+													<Link to = {notification.objectLink} key = {`notification_${notification.id}`}><NotificationRow notification={notification}/></Link>
+												)
+											})
+										}
+									</div>
+								</div>
 							)
 						})}
 					</div>
-					<div className = "tw-w-2/3 tw-flex tw-flex-col tw-gap-y-4">
-						<Outlet/>
-					</div>*/}
-				</div>
-				<div className = "tw-p-4 tw-border tw-border-gray-300">
-					<PaginationRow
-						showNumResults={true}
-						showPageNums={true}
-						setPage={setPage}	
-						paginationData={data?.pagination}
-						currentPage={currentPage}
-						urlParams={defaultForm}
-						url={`${NOTIFICATIONS}`}	
-					/>
-				</div>
+					<div className = "tw-p-4 tw-border tw-border-gray-300">
+						<PaginationRow
+							showNumResults={true}
+							showPageNums={true}
+							setPage={setPage}	
+							paginationData={data?.pagination}
+							currentPage={currentPage}
+							urlParams={defaultForm}
+							url={`${NOTIFICATIONS}`}	
+						/>
+					</div>
 				</>
 			)}
 		</div>
