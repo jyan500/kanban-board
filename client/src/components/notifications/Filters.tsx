@@ -5,6 +5,8 @@ import { NotificationType, UserProfile } from "../../types/common"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { USER_PROFILE_URL } from "../../helpers/urls"
 import { AsyncSelect, LoadOptionsType } from "../../components/AsyncSelect"
+import DatePicker from 'react-date-picker';
+
 
 export const Filters = () => {
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
@@ -22,13 +24,12 @@ export const Filters = () => {
 				</select>
 			</div>
 			<div className = "tw-flex tw-flex-col">
-			{/*	<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
-				<select className = "tw-w-full" id = "filters-ticket-priority" {...register("priority")}>
-					<option value="" disabled></option>
-					{priorities.map((priority: Priority) => {
-						return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
-					})}
-				</select>*/}
+				<label className = "label" htmlFor = "filters-noti-date-from">Date From</label>
+				<input {...register("dateFrom")} aria-label="Date" type="date"/>
+			</div>
+			<div className = "tw-flex tw-flex-col">
+				<label className = "label" htmlFor = "filters-noti-date-to">Date To</label>
+				<input {...register("dateTo")} aria-label="Date" type="date"/>
 			</div>
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-noti-user">User</label>

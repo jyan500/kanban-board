@@ -16,6 +16,8 @@ import { Link } from "react-router-dom"
 export type Filters = {
 	notificationType: string
 	user: string
+	dateFrom: string 
+	dateTo: string
 }
 
 export type FormValues = Filters & {
@@ -34,6 +36,8 @@ export const NotificationDisplay = () => {
 	const filters: Filters = {
 		"notificationType": searchParams.get("notificationType") ?? "",
 		"user": searchParams.get("user") ?? "",
+		"dateFrom": searchParams.get("dateFrom") ?? "",
+		"dateTo": searchParams.get("dateTo") ?? "",
 	}
 	const {data: data, isFetching } = useGetNotificationsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
