@@ -1,7 +1,8 @@
 import React, { useState } from "react"
+import { useAppDispatch } from "../../hooks/redux-hooks"
 import { useGetNotificationsQuery } from "../../services/private/notification" 
 import { Outlet, useNavigate, useParams, useSearchParams } from "react-router-dom"
-import { Notification } from "../../types/common"
+import { Notification, Toast } from "../../types/common"
 import { NOTIFICATIONS } from "../../helpers/routes"
 import { PaginationRow } from "../../components/page-elements/PaginationRow"
 import { LoadingSpinner } from "../../components/LoadingSpinner"
@@ -12,6 +13,12 @@ import { Filters } from "../../components/notifications/Filters"
 import { Avatar } from "../../components/page-elements/Avatar"
 import { NotificationRow } from "../../components/notifications/NotificationRow"
 import { Link } from "react-router-dom"
+import { addToast } from "../../slices/toastSlice"
+import { v4 as uuidv4 } from "uuid"
+import { 
+	useUpdateNotificationMutation,
+	useBulkEditNotificationsMutation, 
+} from "../../services/private/notification"
 
 export type Filters = {
 	notificationType: string
@@ -31,8 +38,10 @@ type StateSearchParams = FormValues & {
 
 export const NotificationDisplay = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
-	const params = useParams<{ticketId: string}>()
+	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
+	const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
+    const [ updateNotification, {error: updateNotificationError, isLoading: isUpdateNotificationLoading}] = useUpdateNotificationMutation()
 	const filters: Filters = {
 		"notificationType": searchParams.get("notificationType") ?? "",
 		"user": searchParams.get("user") ?? "",
@@ -45,7 +54,6 @@ export const NotificationDisplay = () => {
 		page: searchParams.get("page") ?? 1,
 		...filters
 	})
-	// const ticketId = params.notificationId ? parseInt(params.notificationId) : undefined 
 	const pageParam = (searchParams.get("page") != null && searchParams.get("page") !== "" ? searchParams.get("page") : "") as string
 	const currentPage = pageParam !== "" ? parseInt(pageParam) : 1
 	const url = NOTIFICATIONS
@@ -66,6 +74,37 @@ export const NotificationDisplay = () => {
 			}
 			return true
 		}},
+	}
+
+	// TODO: unsure if this functionality should be on this page
+	// const markMessagesRead = async (messages: Array<Notification>) => {
+	// 	if (messages?.length){
+	// 		try {
+	// 			await bulkEditNotifications({isRead: true, ids: messages?.map((n) => n.id) ?? []}).unwrap()
+	// 		}
+	// 		catch (err){
+	// 			dispatch(addToast({
+	// 				id: uuidv4(),
+	// 				message: "Failed to mark notifications as read.",
+	// 				animationType: "animation-in",
+	// 				type: "failure"
+	// 			}))
+	// 		}
+	// 	}		
+	// }
+
+	const markMessageRead = async (message: Notification) => {
+		try {
+			await updateNotification({isRead: true, id: message.id}).unwrap()
+		}
+		catch {
+			dispatch(addToast({
+				id: uuidv4(),
+				message: "Failed to mark notification as read.",
+				animationType: "animation-in",
+				type: "failure"
+			}))	
+		}
 	}
 
 	const groupedByDate = (notifications: Array<Notification> | undefined) => {
@@ -105,12 +144,6 @@ export const NotificationDisplay = () => {
 		)
 	}
 
-	// const showTicket = (id: number) => {
-	// 	let pageUrl = `${NOTIFICATIONS}?page=${currentPage}`
-	// 	pageUrl = withUrlParams(defaultForm, searchParams, pageUrl)
-	// 	navigate(pageUrl)
-	// }
-
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			<h1>Notifications</h1>
@@ -138,7 +171,13 @@ export const NotificationDisplay = () => {
 										{
 											value.map((notification) => {
 												return (
-													<Link to = {notification.objectLink} key = {`notification_${notification.id}`}><NotificationRow notification={notification}/></Link>
+													<Link 
+														onClick={async () => {
+															if (!notification.isRead){
+																await markMessageRead(notification)}
+															}
+														}
+														to = {notification.objectLink} key = {`notification_${notification.id}`}><NotificationRow notification={notification}/></Link>
 												)
 											})
 										}

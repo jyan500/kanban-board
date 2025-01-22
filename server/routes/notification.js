@@ -13,12 +13,22 @@ router.get("/", validateGet, handleValidationResult, async (req, res, next) => {
 		.where("recipient_id", userId)
 		.where("organization_id", req.user.organization)
 		.modify((queryBuilder) => {
+			if (req.query.query){
+				console.log(req.query.query)
+				queryBuilder.whereILike("body", `%${req.query.query}%`)
+			}
 			if (req.query.dateFrom){
 				queryBuilder.whereRaw("DATE(created_at) >= ?", [req.query.dateFrom])
 			}
 			if (req.query.dateTo){
 				queryBuilder.whereRaw("DATE(created_at) <= ?", [req.query.dateTo])
 			}	
+			if (req.query.user){
+				queryBuilder.where("sender_id", req.query.user)
+			}
+			if (req.query.notificationType){
+				queryBuilder.where("notification_type_id", req.query.notificationType)
+			}
 		})
 		.select(
 			"id as id", 
@@ -40,7 +50,7 @@ router.get("/", validateGet, handleValidationResult, async (req, res, next) => {
 
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	const notificationType = await db("notification_types").where("id", req.body.notification_type_id).first()
-	const body = await getNotificationBody(notificationType, req)
+	const body = await getNotificationBody(notificationType, req.body)
 	try {
 		await db("notifications").insert({
 			recipient_id: req.body.recipient_id,

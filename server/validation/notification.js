@@ -8,8 +8,12 @@ const notificationValidator = (action) => {
 	if (action === "get"){
 		validationRules = [
 			...validationRules,
-			check("dateFrom").optional().isISO8601().withMessage("dateFrom must be a date"),
-			check("dateTo").optional().isISO8601().withMessage("dateTo must be a date")
+			check("dateFrom").if((value, { req }) => {
+		        return req.body.dateFrom && req.body.dateFrom !== "";
+	        }).isISO8601().withMessage("dateFrom must be a date"),
+			check("dateTo").if((value, { req }) => {
+		        return req.body.dateTo && req.body.dateTo !== "";
+	        }).isISO8601().withMessage("dateTo must be a date")
 		]
 	}
 	if (action === "create"){
