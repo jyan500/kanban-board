@@ -1,10 +1,21 @@
 const { BULK_INSERT_LIMIT } = require("../constants")
 const { checkEntityExistsIn, checkUniqueEntity, entityInOrganization, validateKeyExists } = require("./helper")
 const db = require("../db/db")
-const { body, param } = require("express-validator")
+const { body, query, param, check } = require("express-validator")
 
 const notificationValidator = (action) => {
 	let validationRules = []
+	if (action === "get"){
+		validationRules = [
+			...validationRules,
+			check("dateFrom").if((value, { req }) => {
+		        return req.body.dateFrom && req.body.dateFrom !== "";
+	        }).isISO8601().withMessage("dateFrom must be a date"),
+			check("dateTo").if((value, { req }) => {
+		        return req.body.dateTo && req.body.dateTo !== "";
+	        }).isISO8601().withMessage("dateTo must be a date")
+		]
+	}
 	if (action === "create"){
 		validationRules = [
 			...validationRules,
@@ -113,6 +124,7 @@ const notificationValidator = (action) => {
 }
 
 module.exports = {
+	validateGet: notificationValidator("get"),
 	validateBulkEdit: notificationValidator("bulk-edit"),
 	validateBulkCreate: notificationValidator("bulk-create"),
 	validateCreate: notificationValidator("create")

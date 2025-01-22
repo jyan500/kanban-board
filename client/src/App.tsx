@@ -13,13 +13,14 @@ import { Board } from "./pages/boards/Board"
 import { OrganizationDisplay } from "./pages/organization/OrganizationDisplay"
 import { UsersDisplay } from "./pages/users/UsersDisplay"
 import { AccountDisplay } from "./pages/account/AccountDisplay"
+import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
 import UserRoleProtectedLayout from "./layouts/UserRoleProtectedLayout"
 import { useAppSelector, useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
 import { ToastList } from "./components/ToastList" 
-import { ACCOUNT, HOME, LOGIN, REGISTER, BOARDS, BOARD_ID, TICKETS, TICKET_ID, USERS, ORGANIZATION } from "./helpers/routes"
+import { ACCOUNT, HOME, LOGIN, REGISTER, BOARDS, BOARD_ID, TICKETS, TICKET_ID, USERS, ORGANIZATION, NOTIFICATIONS } from "./helpers/routes"
 
 // Define routes using createBrowserRouter
 const router = createBrowserRouter([
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
 			{
 				path: ACCOUNT,
 				element: <AccountDisplay/>
+			},
+			{
+				path: NOTIFICATIONS,
+				element: <NotificationDisplay/>
 			},
 			{
 				element: <><UserRoleProtectedLayout/></>,

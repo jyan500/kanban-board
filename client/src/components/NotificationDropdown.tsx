@@ -9,6 +9,7 @@ import { addToast } from "../slices/toastSlice"
 import { Toast, Notification } from "../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { Link, useLocation } from 'react-router-dom';
+import { NOTIFICATIONS } from "../helpers/routes"
 
 type Props = {
 	notifications: Array<Notification> | undefined | null
@@ -92,7 +93,7 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 				))}
 			</ul>
 			<div className = "tw-block tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700">
-				<button className = "button --secondary">See More</button>	
+				<Link to = {NOTIFICATIONS}><button className = "button --secondary">See More</button></Link>
 			</div>
 		</Dropdown>
 	)	

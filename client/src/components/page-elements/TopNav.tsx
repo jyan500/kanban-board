@@ -9,6 +9,7 @@ import { Avatar } from "./Avatar"
 import { useClickOutside } from "../../hooks/useClickOutside" 
 import { FaRegBell } from "react-icons/fa";
 import { IconContext } from "react-icons"
+import { Indicator } from "../../components/page-elements/Indicator"
 import { NotificationDropdown } from "../NotificationDropdown"
 import { 
 	useGetNotificationsQuery, 
@@ -118,7 +119,7 @@ export const TopNav = () => {
 									setShowDropdown(!showDropdown)
 								}} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
 									<FaRegBell className = "--l-icon"/>
-									<div className = {`${showIndicator ? "tw-visible" : "tw-hidden"} tw-absolute tw-top-0 tw-right-0 tw-bg-red-500 tw-w-3 tw-h-3 tw-rounded-full`}></div>
+									<Indicator showIndicator={showIndicator}/>
 								</button>
 								{
 									showDropdown ? (

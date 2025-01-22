@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useGetTicketsQuery } from "../../services/private/ticket" 
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { Outlet, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { Ticket } from "../../types/common"
 import { TICKETS } from "../../helpers/routes"
@@ -9,6 +10,8 @@ import { TicketRow } from "../../components/TicketRow"
 import { SearchToolBar } from "../../components/tickets/SearchToolBar"
 import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
+import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice"
+import { Filters } from "../../components/tickets/Filters"
 
 export type Filters = {
 	ticketType: string
@@ -26,6 +29,8 @@ type StateSearchParams = FormValues & {
 }
 
 export const TicketDisplay = () => {
+	const dispatch = useAppDispatch()
+	const { statuses: allStatuses } = useAppSelector((state) => state.status)
 	const [searchParams, setSearchParams] = useSearchParams()
 	const params = useParams<{ticketId: string}>()
 	const navigate = useNavigate()
@@ -85,6 +90,31 @@ export const TicketDisplay = () => {
 		navigate(pageUrl)
 	}
 
+	const showAddTicketModal = () => {
+		dispatch(toggleShowModal(true))
+		dispatch(setModalType("ADD_TICKET_FORM"))
+		dispatch(setModalProps({
+			statusesToDisplay: allStatuses	
+		}))
+	}
+
+	const additionalButtons = () => {
+		return (
+			<>
+				<button className="button" onClick={(e) => {
+				e.preventDefault()
+				showAddTicketModal()
+				}}>Add Ticket</button>
+			</>
+		)
+	}
+
+	const renderFilter = () => {
+		return (
+			<Filters/>
+		)
+	}
+
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			<h1>Tickets Backlog</h1>
@@ -94,11 +124,16 @@ export const TicketDisplay = () => {
 					setPage={setPage} 
 					currentPage={currentPage ?? 1}
 					registerOptions={registerOptions}
+					searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+					additionalButtons={additionalButtons}
+					renderFilter={renderFilter}
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()
 					}}
+					showFilters={!(Object.values(filters).every((val: string) => val === "" || val == null))}
 					filters={Object.keys(filters)}
-				/>
+				>
+				</SearchToolBar>
 			</FormProvider>
 			{isFetching ? <LoadingSpinner/> : (
 				<>

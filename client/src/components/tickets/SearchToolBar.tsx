@@ -9,7 +9,6 @@ import { FormValues } from "../../pages/tickets/TicketDisplay"
 import { MdOutlineKeyboardArrowDown as ArrowDown } from "react-icons/md";
 import { Filters } from "./Filters"
 import { Filters as FiltersType } from "../../pages/tickets/TicketDisplay"
-import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice"
 
 type Props = {
 	currentPage: number
@@ -17,27 +16,23 @@ type Props = {
 	setPage: (pageNum: number) => void
 	registerOptions: Record<string, any>
 	onFormSubmit: () => void
-	filters: Array<string>,
+	filters?: Array<string>
+	showFilters?: boolean
+	searchOptions?: Record<string, any>
+	additionalButtons?: () => React.ReactNode 
+	renderFilter?: () => React.ReactNode
+	children?: React.ReactNode
 }
 
-export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, paginationData, setPage, filters}: Props) => {
+export const SearchToolBar = ({children, onFormSubmit, showFilters, registerOptions, currentPage, paginationData, setPage, filters, renderFilter, additionalButtons, searchOptions}: Props) => {
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
-	const { statuses: allStatuses } = useAppSelector((state) => state.status)
-	const [showFilter, setShowFilter] = useState(false)
+	// if some of the filters are non-empty string values, should show the filters on the page
+	const [showFilter, setShowFilter] = useState(showFilters)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const methods = useFormContext()
-	const searchOptions = {"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}
 	const {register, reset, getValues, control, formState: {errors}} = methods
-
-	const showAddTicketModal = () => {
-		dispatch(toggleShowModal(true))
-		dispatch(setModalType("ADD_TICKET_FORM"))
-		dispatch(setModalProps({
-			statusesToDisplay: allStatuses	
-		}))
-	}
 
 	return (
 		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
@@ -47,12 +42,16 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 						e.preventDefault()
 						onFormSubmit()
 					}} className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-						<select {...register("searchBy", registerOptions.searchBy)}>
-							{Object.keys(searchOptions).map((option) => {
-								const value = searchOptions[option as keyof typeof searchOptions]
-								return <option key = {option} value = {option}>{value}</option>
-							})}
-						</select>
+						{searchOptions && Object.keys(searchOptions).length > 0 ? 
+							(
+								<select {...register("searchBy", registerOptions.searchBy)}>
+									{Object.keys(searchOptions).map((option) => {
+										const value = searchOptions[option as keyof typeof searchOptions]
+										return <option key = {option} value = {option}>{value}</option>
+									})}
+								</select>
+							) : null
+						}
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							<SearchBar 
 								registerOptions= { registerOptions.query }
@@ -61,18 +60,22 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 							/>
 						</div>
 						<button type = "submit" className = "button">Search</button>
-						<button onClick={() => setShowFilter(!showFilter)} type = "button" className = "button">
-							<div className = "tw-flex tw-flex-row tw-justify-center tw-items-center tw-gap-x-0.5">
-								<ArrowDown className = "tw-w-6 tw-h-6"/>
-								<span>Filters</span>	
-							</div>
-						</button>
-						{showFilter ? (
+						{
+							filters && renderFilter ? (
+								<button onClick={() => setShowFilter(!showFilter)} type = "button" className = "button">
+									<div className = "tw-flex tw-flex-row tw-justify-center tw-items-center tw-gap-x-0.5">
+										<ArrowDown className = "tw-w-6 tw-h-6"/>
+										<span>Filters</span>	
+									</div>
+								</button>
+							) : null
+						}
+						{filters && renderFilter && showFilter ? (
 							<button onClick={(e) => {
 								e.preventDefault()
 								reset({
 									...getValues(),
-									...(filters.reduce((acc: Record<string, any>, filterKey: string) => {
+									...(filters?.reduce((acc: Record<string, any>, filterKey: string) => {
 										acc[filterKey] = ""
 										return acc
 									}, {})),
@@ -81,10 +84,7 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 								Clear Filters
 							</button>
 						) : null}
-						<button className="button" onClick={(e) => {
-							e.preventDefault()
-							showAddTicketModal()
-						}}>Add Ticket</button>
+						{additionalButtons ? additionalButtons() : null}
 					</form>
 				</FormProvider>
 				<div className = "tw-p-4 tw-rounded-md tw-border tw-border-gray-300">
@@ -104,9 +104,9 @@ export const SearchToolBar = ({onFormSubmit, registerOptions, currentPage, pagin
 			{errors?.query ? <small className = "--text-alert">{errors?.query?.message?.toString()}</small> : null}
 			<div>
 			{
-				showFilter ? (
+				filters && renderFilter && showFilter ? (
 					<FormProvider {...methods}>
-						<Filters/>
+						{renderFilter()}
 					</FormProvider>
 				) : null
 			}
