@@ -130,6 +130,7 @@ export const TicketDisplay = () => {
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()
 					}}
+					showFilters={!(Object.values(filters).every((val: string) => val === "" || val == null))}
 					filters={Object.keys(filters)}
 				>
 				</SearchToolBar>

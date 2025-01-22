@@ -157,6 +157,7 @@ export const NotificationDisplay = () => {
 						await handleSubmit(onSubmit)()
 					}}
 					renderFilter={renderFilter}
+					showFilters={!(Object.values(filters).every((val: string) => val === "" || val == null))}
 					filters={Object.keys(filters)}
 				/>
 			</FormProvider>

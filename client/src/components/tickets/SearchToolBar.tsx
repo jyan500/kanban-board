@@ -17,18 +17,19 @@ type Props = {
 	registerOptions: Record<string, any>
 	onFormSubmit: () => void
 	filters?: Array<string>
+	showFilters?: boolean
 	searchOptions?: Record<string, any>
 	additionalButtons?: () => React.ReactNode 
 	renderFilter?: () => React.ReactNode
 	children?: React.ReactNode
 }
 
-export const SearchToolBar = ({children, onFormSubmit, registerOptions, currentPage, paginationData, setPage, filters, renderFilter, additionalButtons, searchOptions}: Props) => {
+export const SearchToolBar = ({children, onFormSubmit, showFilters, registerOptions, currentPage, paginationData, setPage, filters, renderFilter, additionalButtons, searchOptions}: Props) => {
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	// if some of the filters are non-empty string values, should show the filters on the page
-	const [showFilter, setShowFilter] = useState(filters && !(Object.values(filters).every((val: string) => val === "")))
+	const [showFilter, setShowFilter] = useState(showFilters)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const methods = useFormContext()
 	const {register, reset, getValues, control, formState: {errors}} = methods
