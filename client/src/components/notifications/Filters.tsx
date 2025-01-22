@@ -5,8 +5,6 @@ import { NotificationType, UserProfile } from "../../types/common"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { USER_PROFILE_URL } from "../../helpers/urls"
 import { AsyncSelect, LoadOptionsType } from "../../components/AsyncSelect"
-import DatePicker from 'react-date-picker';
-
 
 export const Filters = () => {
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
