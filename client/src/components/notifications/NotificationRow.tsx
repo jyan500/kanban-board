@@ -23,18 +23,6 @@ export const NotificationRow = ({notification}: Props) => {
 			{isFetching ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>}
 			<div>
 				<p>{notification?.body}</p>
-			{/*	{
-					showUnlink && onUnlink && ticketRelationshipId ? (
-						<IconButton className = "group-hover:tw-visible tw-invisible" onClick={(e) => {
-							// prevent click on this component from triggering an onclick of the parent component
-							e.stopPropagation()
-							e.preventDefault()
-							onUnlink(ticket?.id, ticketRelationshipId)
-						}}>
-							<Unlink className = "tw-w-6 tw-h-6 tw-shrink-0"/>	
-						</IconButton>
-					) : null
-				}	*/}
 			</div>
 		</div>
 	)
