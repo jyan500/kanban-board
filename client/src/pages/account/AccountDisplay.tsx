@@ -12,6 +12,7 @@ import { useForm, Controller } from "react-hook-form"
 import { AsyncSelect } from "../../components/AsyncSelect"
 import { OptionType, Toast } from "../../types/common"
 import { USER_PROFILE_URL, USER_PROFILE_ORG_URL } from "../../helpers/urls"
+import { NOTIFICATIONS } from "../../helpers/routes"
 import { useAddRegistrationRequestMutation } from "../../services/private/organization"
 import { UploadImageForm } from "../../components/UploadImageForm" 
 import { addToast } from "../../slices/toastSlice"
@@ -88,6 +89,7 @@ export const AccountDisplay = () => {
 								{
 									uploadImage ? <UploadImageForm id={userProfile.id} imageUrl={userProfile.imageUrl} endpoint={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]}/> : null
 								}
+								<Link className = "tw-text-center button" to = {NOTIFICATIONS}>Notifications</Link>
 							</div>
 						</div>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
