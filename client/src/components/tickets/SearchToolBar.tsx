@@ -27,7 +27,8 @@ export const SearchToolBar = ({children, onFormSubmit, registerOptions, currentP
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
-	const [showFilter, setShowFilter] = useState(false)
+	// if some of the filters are non-empty string values, should show the filters on the page
+	const [showFilter, setShowFilter] = useState(filters && !(Object.values(filters).every((val: string) => val === "")))
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const methods = useFormContext()
 	const {register, reset, getValues, control, formState: {errors}} = methods

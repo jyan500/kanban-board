@@ -46,6 +46,8 @@
 	--icon-gap: .5em;
 	--opacity-input-disabled: 0.5;
 	--padding-inputs: .5em;
+	/* native date inputs are slightly larger than normal text inputs, so decrease the padding to account for this */
+	--padding-date: .4em; 
 	--padding-btn: .5em;
 	--radius-inputs: .25em;
 	--height-icon: 20px;
@@ -157,6 +159,10 @@ input[type="text"] {
 			}
 		}
 	}
+}
+
+input[type="date"]{
+	padding: var(--padding-date);
 }
 
 .button {

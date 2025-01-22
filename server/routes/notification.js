@@ -1,17 +1,25 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
-const { validateCreate, validateBulkCreate, validateBulkEdit } = require("../validation/notification")
+const { validateGet, validateCreate, validateBulkCreate, validateBulkEdit } = require("../validation/notification")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { getNotificationBody } = require("../helpers/functions")
 
 // get all notifications for the logged in user
-router.get("/", async (req, res, next) => {
+router.get("/", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const userId = req.user.id
 		const notifications = await db("notifications")
 		.where("recipient_id", userId)
 		.where("organization_id", req.user.organization)
+		.modify((queryBuilder) => {
+			if (req.query.dateFrom){
+				queryBuilder.whereRaw("DATE(created_at) >= ?", [req.query.dateFrom])
+			}
+			if (req.query.dateTo){
+				queryBuilder.whereRaw("DATE(created_at) <= ?", [req.query.dateTo])
+			}	
+		})
 		.select(
 			"id as id", 
 			"body as body", 
