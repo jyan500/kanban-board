@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
-const { getUserValidator, editUserValidator, editOwnUserValidator, editUserImageValidator } = require("../validation/user")
+const { getUserValidator, editUserValidator, editOwnUserValidator, editUserImageValidator, editNotificationTypesValidator } = require("../validation/user")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const bcrypt = require("bcrypt")
@@ -135,6 +135,35 @@ router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res
 	}
 })
 
+router.get("/notification-type", async (req, res, next) => {
+	try {
+		const {id: userId, organization: organizationId } = req.user
+		const userNotificationTypes = await db("users_to_notification_types").where("user_id", userId).select(
+			"id as id",
+			"user_id as userId",
+			"notification_type_id as notificationTypeId"
+		)
+		res.json(userNotificationTypes)
+	}	
+	catch (err){
+		console.log(`Error while getting user notification types: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.post("/notification-type", editNotificationTypesValidator, handleValidationResult, async (req, res, next) => {
+	try {
+		const {id: userId, organization: organizationId } = req.user
+		// delete all notification type ids attached to this user and then re-insert
+		const toInsert = req.body.ids.map((id) => ({user_id: userId, notification_type_id: id}))
+		await db("users_to_notification_types").where("user_id", userId).delete()
+		await db("users_to_notification_types").insert(toInsert)
+		res.json({message: "notification types updated successfully"})
+	}	
+	catch (err){
+		console.log(`Error while updating user notification types: ${err.message}`)
+	}
+})
 
 router.get("/organization", async (req, res, next) => {
 	try {

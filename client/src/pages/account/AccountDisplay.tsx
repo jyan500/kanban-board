@@ -12,6 +12,7 @@ import { useForm, Controller } from "react-hook-form"
 import { AsyncSelect } from "../../components/AsyncSelect"
 import { OptionType, Toast } from "../../types/common"
 import { USER_PROFILE_URL, USER_PROFILE_ORG_URL } from "../../helpers/urls"
+import { UserNotificationTypeForm } from "../../components/forms/UserNotificationTypeForm"
 import { NOTIFICATIONS } from "../../helpers/routes"
 import { useAddRegistrationRequestMutation } from "../../services/private/organization"
 import { UploadImageForm } from "../../components/UploadImageForm" 
@@ -29,6 +30,7 @@ export const AccountDisplay = () => {
 	const [ changePassword, setChangePassword ] = useState(false)
 	const [ joinOrganization, setJoinOrganization ] = useState(false)
 	const [ uploadImage, setUploadImage ] = useState(false)
+	const [ notificationSettings, setNotificationSettings ] = useState(false)
 
 	const defaultForm = {
 		organizationId: "" 
@@ -86,6 +88,7 @@ export const AccountDisplay = () => {
 								<button className = "button" onClick={() => setChangePassword(!changePassword)}>{changePassword ? "Hide Change" : "Change "} Password</button>
 								<button className = "button" onClick={() => setJoinOrganization(!joinOrganization)}>{joinOrganization ? "Hide Join" : "Join "} Organization</button>
 								<button className = "button" onClick={() => setUploadImage(!uploadImage)}>{uploadImage ? "Hide " : ""}{userProfile.imageUrl ? "Change " : "Upload "}Image</button>
+								<button className = "button" onClick={() => setNotificationSettings(!notificationSettings)}>{notificationSettings ? "Hide " : ""} Notification Settings</button>
 								{
 									uploadImage ? <UploadImageForm id={userProfile.id} imageUrl={userProfile.imageUrl} endpoint={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]}/> : null
 								}
@@ -131,6 +134,11 @@ export const AccountDisplay = () => {
 										</form>
 									</div>
 								) : null
+							}
+							{
+								notificationSettings ? (
+									<UserNotificationTypeForm/>
+								) : null	
 							}
 						
 						</div>

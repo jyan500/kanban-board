@@ -1,5 +1,6 @@
 const { body, param } = require("express-validator")
 const { checkEntityExistsIn } = require("./helper")
+const { BULK_INSERT_LIMIT } = require("../constants")
 const db = require("../db/db")
 const config = require("../config")
 const bcrypt = require("bcrypt")
@@ -139,10 +140,24 @@ const loginValidator = [
 	body("organization_id").notEmpty().withMessage("Organization is required").custom(async (value, {req}) => await checkEntityExistsIn("organization", value, [{col: "id", value: value}], "organizations"))
 ]
 
+const editNotificationTypesValidator = [
+	body("ids")
+	.isArray({min: 0, max: BULK_INSERT_LIMIT})
+	.withMessage("ids must be an array")
+	.withMessage(`ids cannot have more than ${BULK_INSERT_LIMIT} ids`),
+	body("ids.*").custom(async (value, {req}) => await checkEntityExistsIn("notification-type", value, [
+	{
+		col: "id",
+		value: value,
+	},
+	], "notification_types"))
+]
+
 module.exports = {
 	registerValidator: editUserValidator("register"),
 	editUserValidator: editUserValidator("adminEditUser"),
 	editOwnUserValidator: editUserValidator("editOwnUser"),
+	editNotificationTypesValidator,
 	editUserImageValidator,
 	loginValidator,
 	getUserValidator,

@@ -45,6 +45,7 @@ export const TAG_TYPES = [
 	"RegistrationRequests",
 	"UserProfiles",
 	"Notifications",
+	"UserNotificationTypes",
 ]
 
 export const EMAIL_PATTERN = /\S+@\S+\.\S+/
