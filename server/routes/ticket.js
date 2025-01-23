@@ -385,6 +385,11 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 			await db("ticket_comments_to_users").where("ticket_comment_id", req.params.commentId).del()
 			await db("ticket_comments_to_users").insert(ticketCommentsToUsers)
 		}
+		else {
+			// assuming the user erased all the mentions from the text body before submitting,
+			// we can delete all ticket comment mentions
+			await db("ticket_comments_to_users").where("ticket_comment_id", req.params.commentId).del()
+		}
 		res.json({mentions: newMentions.map((obj) => {
 			return {
 				ticketCommentId: obj.ticket_comment_id,
@@ -501,6 +506,7 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 			status_id: req.body.status_id,
 			ticket_type_id: req.body.ticket_type_id
 		})
+		// remove existing mentioned users first before adding
 		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: req.params.ticketId, is_mention: true}, req.user.organization)
 		let newMentions = []
 		if (ticketsToUsers.length){
@@ -513,6 +519,11 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 			}))
 			await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("is_mention", true).del()
 			await db("tickets_to_users").insert(ticketsToUsers)
+		}
+		// if there are no mentioned users, it is assumed that the user has cleared these out 
+		// in the text body, so delete existing mentioned users
+		else {
+			await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("is_mention", true).del()
 		}
 		res.json({mentions: newMentions.filter((obj) => obj).map((obj) => {
 			return {

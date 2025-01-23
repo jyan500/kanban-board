@@ -1,7 +1,7 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../../store" 
-import { BACKEND_BASE_URL, USER_PROFILE_URL, USER_PROFILE_ORG_URL, ORG_LOGIN_URL } from "../../helpers/urls" 
-import { CustomError, ListResponse, Organization, UserProfile } from "../../types/common" 
+import { BACKEND_BASE_URL, USER_PROFILE_URL, USER_PROFILE_ORG_URL, ORG_LOGIN_URL, USER_NOTIFICATION_TYPES_URL } from "../../helpers/urls" 
+import { CustomError, ListResponse, Organization, UserProfile, UserNotificationType } from "../../types/common" 
 import { privateApi } from "../private"
 import { UserResponse } from "../public/auth"
 
@@ -90,7 +90,24 @@ export const userProfileApi = privateApi.injectEndpoints({
 				method: "POST",
 				body: {organization_id: organizationId}
 			})	
-		})	
+		}),
+		getUserNotificationTypes: builder.query<Array<UserNotificationType>, void>({
+			query: () => ({
+				url : `${USER_NOTIFICATION_TYPES_URL}`,
+				method: "GET",
+			}),
+			providesTags: ["UserNotificationTypes"]
+		}),
+		updateUserNotificationTypes: builder.mutation<{message: string}, {ids: Array<number>}>({
+			query: ({ids}) => ({
+				url: `${USER_NOTIFICATION_TYPES_URL}`,
+				method: "POST",
+				body: {
+					ids: ids
+				}
+			}),
+			invalidatesTags: ["UserNotificationTypes"]
+		})
 	}),
 })
 
@@ -101,5 +118,7 @@ export const {
 	useGetUserOrganizationsQuery, 
 	useEditUserProfileMutation,
 	useEditOwnUserProfileMutation,
-	useSwitchUserOrganizationMutation 
+	useSwitchUserOrganizationMutation,
+	useGetUserNotificationTypesQuery,
+	useUpdateUserNotificationTypesMutation,
 } = userProfileApi 

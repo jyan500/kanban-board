@@ -19,6 +19,12 @@ export interface UserProfile {
 	imageUrl?: string
 }
 
+export interface UserNotificationType {
+	id: number
+	notificationTypeId: number
+	userId: number
+}
+
 export type UserRole = ObjectType
 export type NotificationType = ObjectType & { template: string }
 export type TicketType = ObjectType

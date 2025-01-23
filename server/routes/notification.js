@@ -14,7 +14,6 @@ router.get("/", validateGet, handleValidationResult, async (req, res, next) => {
 		.where("organization_id", req.user.organization)
 		.modify((queryBuilder) => {
 			if (req.query.query){
-				console.log(req.query.query)
 				queryBuilder.whereILike("body", `%${req.query.query}%`)
 			}
 			if (req.query.dateFrom){
@@ -49,18 +48,22 @@ router.get("/", validateGet, handleValidationResult, async (req, res, next) => {
 })
 
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
-	const notificationType = await db("notification_types").where("id", req.body.notification_type_id).first()
-	const body = await getNotificationBody(notificationType, req.body)
 	try {
-		await db("notifications").insert({
-			recipient_id: req.body.recipient_id,
-			sender_id: req.body.sender_id,
-			notification_type_id: req.body.notification_type_id,
-			organization_id: req.user.organization,
-			body: body,
-			object_link: req.body.object_link,
-			is_read: false
-		})
+		const notificationType = await db("notification_types").where("id", req.body.notification_type_id).first()
+		// check if recipient user has the notification type on their settings
+		const userNotificationType = await db("users_to_notification_types").where("notification_type_id", notificationType?.id).where("user_id", req.body.recipient_id).first()
+		if (userNotificationType){
+			const body = await getNotificationBody(notificationType, req.body)
+			await db("notifications").insert({
+				recipient_id: req.body.recipient_id,
+				sender_id: req.body.sender_id,
+				notification_type_id: req.body.notification_type_id,
+				organization_id: req.user.organization,
+				body: body,
+				object_link: req.body.object_link,
+				is_read: false
+			})
+		}
 		res.json({message: "Notification was created successfully!"})
 	}
 	catch (err){
@@ -72,18 +75,25 @@ router.post("/bulk-create", validateBulkCreate, handleValidationResult, async (r
 	try {
 		const notifications = await Promise.all(req.body.notifications.map(async (obj) => {
 			const notificationType = await db("notification_types").where("id", obj.notification_type_id).first()
-			const body = await getNotificationBody(notificationType, obj)
-			return {
-				recipient_id: obj.recipient_id,
-				sender_id: obj.sender_id,
-				notification_type_id: obj.notification_type_id,
-				organization_id: req.user.organization,
-				body: body,
-				object_link: obj.object_link,
-				is_read: false
+			// check if recipient user has the notification type on their settings
+			const userNotificationType = await db("users_to_notification_types").where("notification_type_id", notificationType?.id).where("user_id", obj.recipient_id).first()
+			if (userNotificationType){
+				const body = await getNotificationBody(notificationType, obj)
+				return {
+					recipient_id: obj.recipient_id,
+					sender_id: obj.sender_id,
+					notification_type_id: obj.notification_type_id,
+					organization_id: req.user.organization,
+					body: body,
+					object_link: obj.object_link,
+					is_read: false
+				}
 			}
 		}))
-		await db("notifications").insert(notifications)
+		const filtered = notifications.filter((notification) => notification != null)
+		if (filtered.length){
+			await db("notifications").insert(notifications)
+		}
 		res.json({message: "Notification created successfully!"})
 	}
 	catch (err){
