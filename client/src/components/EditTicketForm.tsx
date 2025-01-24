@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from "react"
 import { IconContext } from "react-icons"
-import "../styles/edit-ticket-form.css"
 import { CgProfile } from "react-icons/cg"
 import { HiOutlineLink as LinkIcon } from "react-icons/hi";
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
@@ -393,7 +392,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									background: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)",
 									borderColor: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)"
 								}}
-								className = "tw-w-full status-select">
+								className = "tw-w-full __custom-select">
 									{statusesToDisplay.map((status) => {
 											return (
 												<option key = {status.id} value = {status.id}>{status.name}</option>

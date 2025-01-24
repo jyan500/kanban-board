@@ -1,16 +1,17 @@
 import React, {useState, useEffect} from "react"
-import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
-import { SearchBar } from "./SearchBar" 
-import "../styles/toolbar.css"
-import { setBoard, setFilteredTickets } from "../slices/boardSlice" 
-import { toggleShowModal, setModalProps, setModalType } from "../slices/modalSlice" 
-import { prioritySort as sortByPriority } from "../helpers/functions"
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
+import { SearchBar } from "../SearchBar" 
+import "../../styles/toolbar.css"
+import { setBoard, setFilteredTickets } from "../../slices/boardSlice" 
+import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice" 
+import { prioritySort as sortByPriority } from "../../helpers/functions"
 import { useForm, FormProvider } from "react-hook-form"
-import { useDebouncedValue } from "../hooks/useDebouncedValue" 
-import { OverlappingRow } from "./OverlappingRow" 
-import { Board } from "../types/common"
-import { useGetUserProfilesQuery } from "../services/private/userProfile"
+import { useDebouncedValue } from "../../hooks/useDebouncedValue" 
+import { OverlappingRow } from "../OverlappingRow" 
+import { Board } from "../../types/common"
+import { useGetUserProfilesQuery } from "../../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
+import { GROUP_BY_OPTIONS } from "../../helpers/constants"
 
 type FormValues = {
 	query: string	
@@ -64,6 +65,10 @@ export const ToolBar = () => {
 		dispatch(setBoard(sortedBoard))
 	}
 
+	const onGroupBy = (option: string) => {
+
+	}
+
 	return (
 		<div className = "tw-py-4 tw-flex tw-flex-row tw-items-center">
 			<FormProvider {...methods}>
@@ -96,6 +101,21 @@ export const ToolBar = () => {
 					}}>Edit Statuses</button>) : null
 				}
 				<button className = "button" onClick = {(e) => prioritySort(1)}>Sort By Priority</button>
+				<label htmlFor="board-group-by" className = "label">Group By</label>
+				<select 
+					style={{
+						background: "var(--bs-primary)",
+						borderColor: "var(--bs-primary)"
+					}}
+					id = "board-group-by" 
+					className = "__custom-select" 
+					onChange={(e) => onGroupBy(e.target.value)}>
+					{
+						GROUP_BY_OPTIONS.map((groupBy) => (
+							<option key={`group_by_${groupBy.value}`} value = {groupBy.value}>{groupBy.text}</option>
+						))
+					}
+				</select>
 			</div>
 		</div>
 	)

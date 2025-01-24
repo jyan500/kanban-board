@@ -311,6 +311,17 @@ a {
 	z-index: 99;
 }
 
+.__custom-select {
+	text-align: center;
+	border: 1px solid var(--bs-primary);
+	color: white;
+
+	& option { 
+		color: black;
+		background-color: white; 
+	}
+}
+
 /* modifiers */ 
 .--transparent {
 	background-color: transparent;
