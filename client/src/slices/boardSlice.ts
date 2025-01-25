@@ -2,7 +2,7 @@ import { createSlice, current } from "@reduxjs/toolkit"
 import { setupInitialBoard, prioritySort } from "../helpers/functions" 
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type { RootState } from "../store"
-import type { Cell, Board, KanbanBoard, Priority, Status, Ticket } from "../types/common" 
+import type { Cell, Board, GroupByOptionsKey, KanbanBoard, Priority, Status, Ticket } from "../types/common" 
 import { 
 	defaultPriorities, 
 	defaultRows, 
@@ -16,19 +16,23 @@ import { logout } from "./authSlice"
 interface BoardState {
 	boardInfo: Board | null 
 	board: KanbanBoard 
+	groupedBoard: Array<KanbanBoard>
 	statusesToDisplay: Array<Status>
 	currentTicketId: number | null
 	tickets: Array<Ticket>
 	filteredTickets: Array<Ticket>
+	groupBy: GroupByOptionsKey
 }
 
 const initialState: BoardState = {
 	boardInfo: null,
 	board: {},
+	groupedBoard: [],
 	statusesToDisplay: [],
 	tickets: [],
 	filteredTickets: [],
-	currentTicketId: null
+	currentTicketId: null,
+	groupBy: "NONE"
 }
 
 export const boardSlice = createSlice({
@@ -52,6 +56,9 @@ export const boardSlice = createSlice({
 		},
 		setFilteredTickets(state, action: PayloadAction<Array<Ticket>>){
 			state.filteredTickets = action.payload
+		},
+		setGroupBy(state, action: PayloadAction<GroupByOptionsKey>){
+			state.groupBy = action.payload	
 		}
 	},
     extraReducers: (builder) => {
@@ -68,5 +75,6 @@ export const {
 	setStatusesToDisplay,
 	setTickets,
 	setFilteredTickets,
+	setGroupBy,
 } = boardSlice.actions
 export const boardReducer = boardSlice.reducer 

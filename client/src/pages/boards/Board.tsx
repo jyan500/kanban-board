@@ -19,7 +19,7 @@ export const Board = () => {
 	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
 	const {data: boardData, isLoading: isGetBoardLoading, isError: isGetBoardError } = useGetBoardQuery(boardId ? {id: boardId, urlParams: {assignees: true}} : skipToken)
-	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError } = useGetBoardTicketsQuery(boardId ? {id: boardId, urlParams: {"includeRelationshipInfo": true}} : skipToken)
+	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError } = useGetBoardTicketsQuery(boardId ? {id: boardId, urlParams: {"includeAssignees": true, "includeRelationshipInfo": true}} : skipToken)
 	const {data: statusData, isLoading: isGetBoardStatusesLoading, isError: isGetBoardStatusesError } = useGetBoardStatusesQuery(boardId ? {id: boardId, isActive: true} : skipToken)
 	const board = useAppSelector((state) => state.board)
 

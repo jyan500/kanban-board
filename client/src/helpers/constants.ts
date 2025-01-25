@@ -70,10 +70,11 @@ Matches the standard 10 digit phone:
 */
 export const PHONE_PATTERN = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
 
-export const GROUP_BY_OPTIONS = [
-	{value: "NONE", text: "None"},
-	{value: "ASSIGNEE", text: "Assignee"},
-	{value: "TICKET_TYPE", text: "Ticket Type"},
-	{value: "EPIC", text: "Epic"},
-	{value: "PRIORITY", text: "Priority"},
-]
+export const GROUP_BY_OPTIONS = {
+	"NONE": "None",
+	"ASSIGNEE": "Assignee",
+	"TICKET_TYPE": "Ticket Type",
+	"EPIC": "Epic",
+	"PRIORITY": "Priority",
+}
+
