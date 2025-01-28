@@ -97,6 +97,7 @@ export const Board = () => {
 						boardStyle={boardStyle}
 						groupBy={"PRIORITY"}
 						groupByElements={priorities}
+						tickets={filteredTickets}
 						statusesToDisplay={statusesToDisplay}
 						allStatuses={allStatuses}
 					/>
