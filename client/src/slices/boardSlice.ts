@@ -16,7 +16,6 @@ import { logout } from "./authSlice"
 interface BoardState {
 	boardInfo: Board | null 
 	board: KanbanBoard 
-	groupedBoard: Array<KanbanBoard>
 	statusesToDisplay: Array<Status>
 	currentTicketId: number | null
 	tickets: Array<Ticket>
@@ -27,7 +26,6 @@ interface BoardState {
 const initialState: BoardState = {
 	boardInfo: null,
 	board: {},
-	groupedBoard: [],
 	statusesToDisplay: [],
 	tickets: [],
 	filteredTickets: [],

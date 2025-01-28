@@ -1,5 +1,5 @@
 import { GROUP_BY_OPTIONS } from "./constants"
-import { Ticket, Status, GroupByOptionsKey } from "../types/common"
+import { Ticket, Status, GroupByOptionsKey, GroupedTickets } from "../types/common"
 
 type GroupByModifier = {
 	[key in GroupByOptionsKey]: (tickets: Array<Ticket>) => Record<string, Array<Ticket>>
@@ -89,7 +89,7 @@ export const boardGroupBy =
 		option: GroupByOptionsKey, 
 		tickets: Array<Ticket>, 
 		statusesToDisplay: Array<Status>
-	): Record<string, Record<string, Array<number>>> => {
+	): GroupedTickets => {
 		const modifier = groupByModifierMap[option as GroupByOptionsKey]
 		const grouped: Record<string, Array<Ticket>> = modifier(tickets)
 		return Object.keys(grouped).reduce((acc: Record<string, Record<string, Array<number>>>, key: string) => {

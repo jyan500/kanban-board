@@ -174,3 +174,13 @@ export interface Mention {
 
 export type GroupByOptionsKey = keyof typeof GROUP_BY_OPTIONS
 
+export type GroupedTickets = {
+	[groupByIdString: string]: {[statusId: string]: Array<number>}
+}
+
+export type GroupByElement = {
+	id: number
+	name: string
+	[property: string]: any
+}
+
