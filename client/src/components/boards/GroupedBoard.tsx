@@ -1,10 +1,13 @@
 /* 
 Structure board by groups to prevent users from moving a ticket between groups
 */
-import React from "react"
+import React, { useState } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { KanbanBoard, GroupedTickets, GroupByOptionsKey, Status, GroupByElement, Ticket as TicketType } from "../../types/common"
 import { Ticket } from "../Ticket"
+import { IconButton } from "../page-elements/IconButton"
+import { IconContext } from "react-icons"
+import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icons/io";
 
 type Props<T> = {
 	groupedTickets: GroupedTickets
@@ -27,6 +30,12 @@ export const GroupedBoard = <T extends GroupByElement>({
 	groupByElements, 
 	statusesToDisplay
 }: Props<T>) => {
+	/* object mapping the group by ids to boolean to denote whether the collapse arrow for that section is on/off */
+	const [collapseArrows, setCollapseArrows] = useState<Record<string, boolean>>(
+		Object.keys(groupedTickets).reduce((acc: Record<string, boolean>, key: string) => {
+		acc[key] = false
+		return acc
+	}, {}))
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div style={boardStyle}>
@@ -54,39 +63,50 @@ export const GroupedBoard = <T extends GroupByElement>({
 				return (
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						<div style = {boardStyle}>
-							<div className = "tw-flex tw-flex-row tw-gap-x-2">
+							<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-pl-2">
 								<p className = "tw-font-bold">{groupByElement?.name}</p>
 								<p>{`${groupByElement ? Object.values(groupedTickets[groupById]).reduce((acc: number, arr: Array<number>) => 
 									acc + arr.length, 0) : 0} issues`}</p>
+								<IconButton onClick={() => {
+									setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})	
+								}}>
+							    	{
+							    		collapseArrows[groupById] ? 
+										<ArrowUp className = "tw-h-4 tw-w-4"/>
+										: <ArrowDown className = "tw-h-4 tw-w-4"/>
+							    	}
+								</IconButton>
 							</div>
 						</div>
-						<div style = {boardStyle}>
-						{
-							statusesToDisplay.map((status) => {
-								return (
-									<div className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[400px]">
-										<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
-											{
-												groupedTickets[groupById][status.id]?.map((ticketId: number) => {
-													const ticket = tickets.find((t: TicketType) => t.id === ticketId)
-													return (
-														<div 
-															key = {ticketId} 
-															id = {`grouped_ticket_${ticketId}`}
-															>
-															{ticket ? <Ticket 
-																ticket = {ticket}
-															/> : null}
-														</div>
-													)
-												})
-											}
+						{!collapseArrows[groupById] ? (
+							<div style = {boardStyle}>
+							{
+								statusesToDisplay.map((status) => {
+									return (
+										<div className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[400px] tw-pt-2">
+											<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
+												{
+													groupedTickets[groupById][status.id]?.map((ticketId: number) => {
+														const ticket = tickets.find((t: TicketType) => t.id === ticketId)
+														return (
+															<div 
+																key = {ticketId} 
+																id = {`grouped_ticket_${ticketId}`}
+																>
+																{ticket ? <Ticket 
+																	ticket = {ticket}
+																/> : null}
+															</div>
+														)
+													})
+												}
+											</div>
 										</div>
-									</div>
-								)
-							})
-						}
-						</div>
+									)
+								})
+							}
+							</div>
+						) : null}
 					</div>
 				)
 			})}
