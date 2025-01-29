@@ -95,6 +95,8 @@ export const Board = () => {
 						board={board}
 						boardStyle={boardStyle}
 						groupBy={groupBy}
+						dragStart={dragStart}
+						enableDropping={enableDropping}
 						tickets={filteredTickets}
 						statusesToDisplay={statusesToDisplay}
 						allStatuses={allStatuses}
@@ -126,6 +128,11 @@ export const Board = () => {
 												<div 
 													key = {ticketId} 
 													id = {`ticket_${ticketId}`}
+													/* 
+													For semantic HTML purposes, move the ticket component into a button, and then move the 
+													onClick handler into the button. It does mess up the styling of the card within the column
+													so need to fix that too
+													*/
 													onClick = {() => {
 														dispatch(toggleShowModal(true))
 														dispatch(setModalType("EDIT_TICKET_FORM"))
