@@ -4,38 +4,39 @@ Structure board by groups to prevent users from moving a ticket between groups
 import React, { useState } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { KanbanBoard, GroupedTickets, GroupByOptionsKey, Status, GroupByElement, Ticket as TicketType } from "../../types/common"
+import { useGetGroupByElementsQuery } from "../../services/private/groupBy"
 import { Ticket } from "../Ticket"
 import { IconButton } from "../page-elements/IconButton"
 import { IconContext } from "react-icons"
 import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icons/io";
+import { LoadingSpinner } from "../LoadingSpinner"
 
-type Props<T> = {
+type Props = {
 	groupedTickets: GroupedTickets
 	tickets: Array<TicketType>
 	board: KanbanBoard
 	groupBy: GroupByOptionsKey 
-	groupByElements: Array<T> 
 	statusesToDisplay: Array<Status>
 	allStatuses: Array<Status>
 	boardStyle: Record<string, string>
 }
 
-export const GroupedBoard = <T extends GroupByElement>({
+export const GroupedBoard = ({
 	allStatuses, 
 	board, 
 	boardStyle, 
 	tickets,
 	groupedTickets, 
 	groupBy, 
-	groupByElements, 
 	statusesToDisplay
-}: Props<T>) => {
+}: Props) => {
 	/* object mapping the group by ids to boolean to denote whether the collapse arrow for that section is on/off */
 	const [collapseArrows, setCollapseArrows] = useState<Record<string, boolean>>(
 		Object.keys(groupedTickets).reduce((acc: Record<string, boolean>, key: string) => {
 		acc[key] = false
 		return acc
 	}, {}))
+	const {data: groupByElements, isLoading, isError} = useGetGroupByElementsQuery({groupBy: groupBy, ids: Object.keys(groupedTickets)})  
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div style={boardStyle}>
@@ -59,14 +60,14 @@ export const GroupedBoard = <T extends GroupByElement>({
 				})}
 			</div>
 			{Object.keys(groupedTickets).map((groupById: string) => {
-				const groupByElement = groupByElements.find((element: GroupByElement) => element.id === parseInt(groupById))
+				const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
 				return (
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						<div style = {boardStyle}>
 							<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-pl-2">
 								<p className = "tw-font-bold">{groupByElement?.name}</p>
-								<p>{`${groupByElement ? Object.values(groupedTickets[groupById]).reduce((acc: number, arr: Array<number>) => 
-									acc + arr.length, 0) : 0} issues`}</p>
+								<p>{`${Object.values(groupedTickets[groupById]).reduce((acc: number, arr: Array<number>) => 
+									acc + arr.length, 0)} issues`}</p>
 								<IconButton onClick={() => {
 									setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})	
 								}}>

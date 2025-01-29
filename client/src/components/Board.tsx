@@ -22,7 +22,6 @@ import type {
 	Priority
 } from "../types/common"
 import { prioritySort as sortByPriority, sortStatusByOrder } from "../helpers/functions" 
-import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icons/io";
 import { useUpdateTicketStatusMutation } from "../services/private/ticket" 
 import { addToast } from "../slices/toastSlice"
 import { boardGroupBy } from "../helpers/groupBy"
@@ -92,11 +91,10 @@ export const Board = () => {
 			{
 				groupBy !== "NONE" ? (
 					<GroupedBoard
-						groupedTickets={boardGroupBy("PRIORITY", tickets, statusesToDisplay)}
+						groupedTickets={boardGroupBy(groupBy, tickets, statusesToDisplay)}
 						board={board}
 						boardStyle={boardStyle}
-						groupBy={"PRIORITY"}
-						groupByElements={priorities}
+						groupBy={groupBy}
 						tickets={filteredTickets}
 						statusesToDisplay={statusesToDisplay}
 						allStatuses={allStatuses}

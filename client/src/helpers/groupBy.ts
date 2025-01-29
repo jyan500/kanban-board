@@ -5,6 +5,9 @@ type GroupByModifier = {
 	[key in GroupByOptionsKey]: (tickets: Array<Ticket>) => Record<string, Array<Ticket>>
 }
 
+/* 
+	maps each ticket to its group option
+*/
 const groupByModifierMap: GroupByModifier = {
 	"NONE": (tickets: Array<Ticket>) => {
 		return {"None": tickets}

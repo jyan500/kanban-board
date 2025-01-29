@@ -5,6 +5,12 @@ export interface ObjectType {
 	name: string
 }
 
+export interface GenericObject {
+	id: number
+	name: string
+	[property: string]: any
+}
+
 export interface OptionType {
 	value: string
 	label: string
