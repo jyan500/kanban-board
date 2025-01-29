@@ -26,6 +26,7 @@ import { useUpdateTicketStatusMutation } from "../services/private/ticket"
 import { addToast } from "../slices/toastSlice"
 import { boardGroupBy } from "../helpers/groupBy"
 import { GroupedBoard } from "./boards/GroupedBoard"
+import { Board as DefaultBoard } from "./boards/Board"
 
 export const Board = () => {
 	const {board, filteredTickets, tickets, statusesToDisplay, groupBy} = useAppSelector((state) => state.board)
@@ -102,56 +103,15 @@ export const Board = () => {
 						allStatuses={allStatuses}
 					/>
 				) : (
-					<div style = {boardStyle}>
-						{statusesToDisplay.map((status: Status) => {
-							return (
-							<div 
-								id = {`status_${status.id}`} 
-								key = {status.id} 
-								onDrop={handleDrop} 
-								onDragOver={enableDropping} 
-								className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[600px]"
-							>
-								<div>
-									<div className = "tw-ml-2 tw-py-2 tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-										<p className = "tw-font-bold">
-											{allStatuses.find((s: Status) => s.id === status.id)?.name}
-										</p>
-										<span>
-											{board[status.id]?.length}
-										</span>
-									</div>
-									<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
-										{board[status.id]?.map((ticketId: number) => {
-											const ticket = filteredTickets.find((t: TicketType) => t.id === ticketId)
-											return (
-												<div 
-													key = {ticketId} 
-													id = {`ticket_${ticketId}`}
-													/* 
-													For semantic HTML purposes, move the ticket component into a button, and then move the 
-													onClick handler into the button. It does mess up the styling of the card within the column
-													so need to fix that too
-													*/
-													onClick = {() => {
-														dispatch(toggleShowModal(true))
-														dispatch(setModalType("EDIT_TICKET_FORM"))
-														dispatch(selectCurrentTicketId(ticketId))
-													}}
-													draggable
-													onDragStart={dragStart}
-													>
-													{ticket ? <Ticket 
-														ticket = {ticket}
-													/> : null}
-												</div>
-											)
-										})}
-									</div>
-								</div>
-							</div>)
-						})}
-					</div>
+					<DefaultBoard
+						enableDropping={enableDropping}
+						board={board}
+						boardStyle={boardStyle}
+						dragStart={dragStart}
+						tickets={filteredTickets}
+						statusesToDisplay={statusesToDisplay}
+						allStatuses={allStatuses}
+					/>		
 				)
 			}
 		</div>
