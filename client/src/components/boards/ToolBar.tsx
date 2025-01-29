@@ -2,13 +2,13 @@ import React, {useState, useEffect} from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { SearchBar } from "../SearchBar" 
 import "../../styles/toolbar.css"
-import { setBoard, setFilteredTickets } from "../../slices/boardSlice" 
+import { setBoard, setFilteredTickets, setGroupBy } from "../../slices/boardSlice" 
 import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice" 
 import { prioritySort as sortByPriority } from "../../helpers/functions"
 import { useForm, FormProvider } from "react-hook-form"
 import { useDebouncedValue } from "../../hooks/useDebouncedValue" 
 import { OverlappingRow } from "../OverlappingRow" 
-import { Board } from "../../types/common"
+import { Board, GroupByOptionsKey } from "../../types/common"
 import { useGetUserProfilesQuery } from "../../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { GROUP_BY_OPTIONS } from "../../helpers/constants"
@@ -65,8 +65,8 @@ export const ToolBar = () => {
 		dispatch(setBoard(sortedBoard))
 	}
 
-	const onGroupBy = (option: string) => {
-
+	const onGroupBy = (option: GroupByOptionsKey) => {
+		dispatch(setGroupBy(option))
 	}
 
 	return (
@@ -109,10 +109,10 @@ export const ToolBar = () => {
 					}}
 					id = "board-group-by" 
 					className = "__custom-select" 
-					onChange={(e) => onGroupBy(e.target.value)}>
+					onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
 					{
-						GROUP_BY_OPTIONS.map((groupBy) => (
-							<option key={`group_by_${groupBy.value}`} value = {groupBy.value}>{groupBy.text}</option>
+						Object.keys(GROUP_BY_OPTIONS).map((groupByKey) => (
+							<option key={`group_by_${groupByKey}`} value = {groupByKey}>{GROUP_BY_OPTIONS[groupByKey as GroupByOptionsKey]}</option>
 						))
 					}
 				</select>

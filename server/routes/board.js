@@ -179,6 +179,19 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			"tickets.user_id as userId",
 			"tickets.created_at as createdAt",
 		)
+		if (req.query.includeAssignees){
+			tickets = await Promise.all(
+				tickets.map(async (ticket) => {
+					const assignees = await db("tickets_to_users").where("ticket_id", ticket.id).where("is_watcher", false).where("is_mention", false).select(
+						"user_id as userId",
+					)
+					return {
+						...ticket,
+						assignees: assignees.map((assignee) => assignee.userId)
+					}					
+				})
+			)
+		}
 		if (req.query.includeRelationshipInfo){
 			const epicTicketRelationshipType = await db("ticket_relationship_types").where("name" , "Epic").first()
 			const epicTicketType = await db("ticket_types").where("name", "Epic").first()

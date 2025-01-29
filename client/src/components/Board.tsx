@@ -22,12 +22,14 @@ import type {
 	Priority
 } from "../types/common"
 import { prioritySort as sortByPriority, sortStatusByOrder } from "../helpers/functions" 
-import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icons/io";
 import { useUpdateTicketStatusMutation } from "../services/private/ticket" 
 import { addToast } from "../slices/toastSlice"
+import { boardGroupBy } from "../helpers/groupBy"
+import { GroupedBoard } from "./boards/GroupedBoard"
+import { Board as DefaultBoard } from "./boards/Board"
 
 export const Board = () => {
-	const {board, filteredTickets, tickets, statusesToDisplay} = useAppSelector((state) => state.board)
+	const {board, filteredTickets, tickets, statusesToDisplay, groupBy} = useAppSelector((state) => state.board)
 	const { statuses: allStatuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const [updateTicketStatus] = useUpdateTicketStatusMutation() 
@@ -87,51 +89,31 @@ export const Board = () => {
 	return (
 		<div className = "tw-flex tw-flex-col">
 			<ToolBar/>
-			<div style = {boardStyle}>
-				{statusesToDisplay.map((status: Status) => {
-					return (
-					<div 
-						id = {`status_${status.id}`} 
-						key = {status.id} 
-						onDrop={handleDrop} 
-						onDragOver={enableDropping} 
-						className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[600px]"
-					>
-						<div>
-							<div className = "tw-ml-2 tw-py-2 tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-								<p className = "tw-font-bold">
-									{allStatuses.find((s: Status) => s.id === status.id)?.name}
-								</p>
-								<span>
-									{board[status.id]?.length}
-								</span>
-							</div>
-							<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
-								{board[status.id]?.map((ticketId: number) => {
-									const ticket = filteredTickets.find((t: TicketType) => t.id === ticketId)
-									return (
-										<div 
-											key = {ticketId} 
-											id = {`ticket_${ticketId}`}
-											onClick = {() => {
-												dispatch(toggleShowModal(true))
-												dispatch(setModalType("EDIT_TICKET_FORM"))
-												dispatch(selectCurrentTicketId(ticketId))
-											}}
-											draggable
-											onDragStart={dragStart}
-											>
-											{ticket ? <Ticket 
-												ticket = {ticket}
-											/> : null}
-										</div>
-									)
-								})}
-							</div>
-						</div>
-					</div>)
-				})}
-			</div>
+			{
+				groupBy !== "NONE" ? (
+					<GroupedBoard
+						groupedTickets={boardGroupBy(groupBy, tickets, statusesToDisplay)}
+						board={board}
+						boardStyle={boardStyle}
+						groupBy={groupBy}
+						dragStart={dragStart}
+						enableDropping={enableDropping}
+						tickets={filteredTickets}
+						statusesToDisplay={statusesToDisplay}
+						allStatuses={allStatuses}
+					/>
+				) : (
+					<DefaultBoard
+						enableDropping={enableDropping}
+						board={board}
+						boardStyle={boardStyle}
+						dragStart={dragStart}
+						tickets={filteredTickets}
+						statusesToDisplay={statusesToDisplay}
+						allStatuses={allStatuses}
+					/>		
+				)
+			}
 		</div>
 	)	
 }

@@ -1,6 +1,14 @@
+import { GROUP_BY_OPTIONS } from "../helpers/constants"
+
 export interface ObjectType {
 	id: number
 	name: string
+}
+
+export interface GenericObject {
+	id: number
+	name: string
+	[property: string]: any
 }
 
 export interface OptionType {
@@ -79,6 +87,7 @@ export interface Ticket {
 	createdAt: Date
 	hasRelationship?: boolean
 	epicParentTickets?: Array<{id: number, name: string}>
+	assignees?: Array<number>
 }
 
 export interface TicketComment {
@@ -167,5 +176,17 @@ export interface Notification {
 export interface Mention {
     userId: number;
     [key: string]: any;
+}
+
+export type GroupByOptionsKey = keyof typeof GROUP_BY_OPTIONS
+
+export type GroupedTickets = {
+	[groupByIdString: string]: {[statusId: string]: Array<number>}
+}
+
+export type GroupByElement = {
+	id: number
+	name: string
+	[property: string]: any
 }
 
