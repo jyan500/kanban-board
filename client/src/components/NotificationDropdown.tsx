@@ -78,6 +78,7 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 			<ul>
 				{notifications?.map((notification) => (
 					<Link onClick={async () => {
+						closeDropdown()
 						if (!notification.isRead){
 							await markMessageRead(notification)}
 						}
@@ -93,7 +94,7 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 				))}
 			</ul>
 			<div className = "tw-block tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700">
-				<Link to = {NOTIFICATIONS}><button className = "button --secondary">See More</button></Link>
+				<Link to = {NOTIFICATIONS}><button className = "button --secondary" onClick={() => closeDropdown()}>See More</button></Link>
 			</div>
 		</Dropdown>
 	)	
