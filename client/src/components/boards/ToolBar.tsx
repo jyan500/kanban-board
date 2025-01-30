@@ -19,7 +19,7 @@ type FormValues = {
 
 export const ToolBar = () => {
 	const dispatch = useAppDispatch()
-	const { board, boardInfo: primaryBoardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)
+	const { board, boardInfo: primaryBoardInfo, tickets, statusesToDisplay, groupBy } = useAppSelector((state) => state.board)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
@@ -109,6 +109,7 @@ export const ToolBar = () => {
 					}}
 					id = "board-group-by" 
 					className = "__custom-select" 
+					value={groupBy}
 					onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
 					{
 						Object.keys(GROUP_BY_OPTIONS).map((groupByKey) => (
