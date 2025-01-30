@@ -60,7 +60,7 @@ export const Ticket = ({ticket}: PropType) => {
 	const {priorities} = useAppSelector((state) => state.priority)
 	const {statuses} = useAppSelector((state) => state.status)
 	const {ticketTypes} = useAppSelector((state) => state.ticketType)
-	const { data, isFetching } = useGetUserQuery(ticket?.userId ?? skipToken)
+	const { data, isFetching } = useGetUserQuery(ticket?.assignees?.[0] ?? skipToken)
 
 	const priority = priorities.find((p) => p.id === ticket.priorityId)?.name
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name
