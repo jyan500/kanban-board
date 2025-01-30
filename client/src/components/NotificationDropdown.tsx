@@ -78,6 +78,7 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 			<ul>
 				{notifications?.map((notification) => (
 					<Link onClick={async () => {
+						closeDropdown()
 						if (!notification.isRead){
 							await markMessageRead(notification)}
 						}
