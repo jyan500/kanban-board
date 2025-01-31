@@ -27,23 +27,27 @@ const registrationRequestValidator = (actionType) => {
 }
 
 const organizationValidator = (actionType) => {
-	let validationRules = [
-		param("id").notEmpty().withMessage("id must be specified").custom(async (value, {req}) => checkEntityExistsIn("organization", value, [{"col": "id", "value": value}], "organizations")),
-	]	
-	if (actionType === "update"){
+	let validationRules = []
+	if (actionType === "add" || actionType === "update"){
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("organization name is required"),
 			body("email").isEmail().withMessage("please enter a valid email"),
 			body("phone_number").isMobilePhone().withMessage("please enter valid phone number"),
 		]
+		if (actionType === "update"){
+			validationRules = [
+				...validationRules,
+				param("id").notEmpty().withMessage("id must be specified").custom(async (value, {req}) => checkEntityExistsIn("organization", value, [{"col": "id", "value": value}], "organizations")),
+			]	
+		}
 	}
-
 	return validationRules
 }
 
 module.exports = {
 	validateUpdate: registrationRequestValidator("update"),
 	validateBulkEdit: registrationRequestValidator("bulk-edit"),
-	validateUpdateOrganization: organizationValidator("update")
+	validateUpdateOrganization: organizationValidator("update"),
+	validateAddOrganization: organizationValidator("add")
 }

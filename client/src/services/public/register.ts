@@ -1,5 +1,5 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { BACKEND_BASE_URL, REGISTER_URL } from "../../helpers/urls" 
+import { BACKEND_BASE_URL, REGISTER_URL, REGISTER_ORGANIZATION_USER_URL } from "../../helpers/urls" 
 import { CustomError } from "../../types/common" 
 import { publicApi } from "../public" 
 
@@ -33,7 +33,33 @@ export const userRegisterApi = publicApi.injectEndpoints({
 				} 
 			})	
 		}),
+		// TODO: update the request type to be the concatenation of the user register request and the organization request
+		organizationUserRegister: builder.mutation<{message: string}, Record<string, any>>({
+			query: ({form}) => {
+				const {organization: org, user} = form
+				const orgBody = (organization: Record<string, any>) => {
+					const { name, email, address, city, state, zipcode, industry, phoneNumber: phone_number } = organization
+					return {
+						name, email, address, city, state, zipcode, phone_number, industry
+					}
+				}
+				const userBody = (user: Record<string, any>) => {
+					const { firstName: first_name, lastName: last_name, email, password, confirmPassword: confirm_password } = user
+					return {
+						first_name, last_name, email, password, confirm_password
+					}
+				}
+				return {
+					url: `${REGISTER_ORGANIZATION_USER_URL}`,
+					method: "POST",
+					body: {
+						"organization": orgBody(org),
+						"user": userBody(user)
+					}
+				}
+			}
+		})
 	}),
 })
 
-export const { useUserRegisterMutation } = userRegisterApi
+export const { useUserRegisterMutation, useOrganizationUserRegisterMutation } = userRegisterApi

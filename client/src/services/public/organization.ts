@@ -3,6 +3,17 @@ import { BACKEND_BASE_URL, ORGANIZATION_URL } from "../../helpers/urls"
 import { CustomError, Organization, ListResponse } from "../../types/common" 
 import { publicApi } from "../public" 
 
+type OrgRequest = {
+	name: string
+	email: string
+	address: string
+	city: string
+	state: string
+	phoneNumber: string
+	zipcode: string
+	industry: string
+}
+
 export const organizationApi = publicApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
@@ -12,7 +23,13 @@ export const organizationApi = publicApi.injectEndpoints({
 				method: "GET",
 			}),
 		}),
+		addOrganization: builder.mutation<{id: number, message: string}, OrgRequest>({
+			query: () => ({
+				url: ORGANIZATION_URL,
+				method: "POST"	
+			})	
+		})
 	}),
 })
 
-export const { useGetOrganizationsQuery } = organizationApi 
+export const { useGetOrganizationsQuery, useAddOrganizationMutation } = organizationApi 

@@ -27,7 +27,7 @@ const ProtectedLayout = () => {
 	const token = useAppSelector((state) => state.auth.token)	
 	const dispatch = useAppDispatch()
     const {data: userProfileData, isFetching: isUserProfileFetching, isError: isUserProfileError } = useGetUserProfileQuery() 
-    const {data: statusData, isLoading: isStatusDataLoading} = useGetStatusesQuery()
+    const {data: statusData, isLoading: isStatusDataLoading} = useGetStatusesQuery({})
     const {data: ticketTypesData, isLoading: isTicketTypesDataLoading} = useGetTicketTypesQuery()
     const {data: ticketRelationshipTypeData, isLoading: isTicketRelationshipTypeLoading} = useGetTicketRelationshipTypesQuery()
     const {data: priorityData, isLoading: isPriorityDataLoading} = useGetPrioritiesQuery()

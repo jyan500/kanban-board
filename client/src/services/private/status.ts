@@ -7,10 +7,11 @@ import { privateApi } from "../private"
 export const statusApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
-		getStatuses: builder.query<Array<Status>, void>({
-			query: () => ({
+		getStatuses: builder.query<Array<Status>, Record<string, any>>({
+			query: ({params}) => ({
 				url: STATUS_URL,
 				method: "GET",
+				params: params
 			}),
 			providesTags: ["Statuses"]
 

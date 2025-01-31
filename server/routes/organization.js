@@ -3,7 +3,12 @@ const router = express.Router()
 const db = require("../db/db")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { authenticateToken } = require("../middleware/authMiddleware")
-const { validateUpdate, validateBulkEdit, validateUpdateOrganization } = require("../validation/organization")
+const { 
+	validateUpdate, 
+	validateBulkEdit, 
+	validateAddOrganization, 
+	validateUpdateOrganization 
+} = require("../validation/organization")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const sendEmail = require("../email/email")
 const registrationSuccessTemplate = require("../email/templates/registration-success") 
@@ -257,6 +262,20 @@ router.post("/image", authenticateToken, authenticateUserRole(["ADMIN"]), handle
 	}	
 	catch (err){
 		console.error(`Error while updating organization: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/", validateAddOrganization, handleValidationResult, async (req, res, next) => {
+	try {
+		const { name, email, phone_number, address, city, state, zipcode, industry } = req.body
+		const id = await db("organizations").insert({
+			name, email, phone_number, address, city, state, zipcode, industry	
+		}, ["id"])
+		res.json({"id": id[0], "message": "Organization added successfully!"})
+	}	
+	catch (err){
+		console.log(`Error while updating organization: ${err.message}`)	
 		next(err)
 	}
 })
