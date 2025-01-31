@@ -18,17 +18,22 @@ import { FormValues as UserFormValues, RegisterUserForm } from "../../components
 import { addToast } from "../../slices/toastSlice" 
 import { ArrowButton } from "../../components/page-elements/ArrowButton"
 
+export type OrgUserRegistrationForm = {
+	organization: OrganizationFormValues
+	user: UserFormValues
+}
+
 export const OrganizationRegister = () => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const [currentIndex, setCurrentIndex] = useState(0)
-	const [completedSteps, setCompletedSteps] = useState({
-		0: false,
+	const [viewableSteps, setViewableSteps] = useState({
+		0: true,
 		1: false,
 	})
-	const [forms, setForms] = useState({
-		"organization": {},
-		"user": {},
+	const [forms, setForms] = useState<OrgUserRegistrationForm>({
+		"organization": {} as OrganizationFormValues,
+		"user": {} as UserFormValues,
 	})
 
 	const [organizationUserRegister, {isLoading, error}] = useOrganizationUserRegisterMutation()
@@ -39,6 +44,7 @@ export const OrganizationRegister = () => {
 
     const onSubmitStep1 = (values: OrganizationFormValues) => {
     	setForms({...forms, "organization": values})
+    	setViewableSteps({...viewableSteps, 1:true})
     	setPage(1)
     }
 
@@ -56,12 +62,16 @@ export const OrganizationRegister = () => {
 
 	return (
 		<div className = "tw-w-full">
-			<ArrowButton text="Back" onClick={() => navigate(-1)}/>
+			{
+				currentIndex === 0 ? 	
+					(<ArrowButton text="Back" onClick={() => navigate(-1)}/>)
+				: null
+			}
 			{
 				currentIndex === 0 ? (
 					<>
 						<h1>Register Organization</h1>
-						<OrganizationForm/>
+						<OrganizationForm isOrgRegister={true} organization={Object.keys(forms.organization).length > 0 ? forms.organization : undefined} onSubmit={onSubmitStep1}/>
 					</>
 				) : null		
 			}
@@ -69,6 +79,7 @@ export const OrganizationRegister = () => {
 				currentIndex === 1 ? (
 					<>
 						<h1>Register Admin User</h1>
+						<RegisterUserForm isOrgRegister={true} user={Object.keys(forms.user).length > 0 ? forms.user : undefined} onSubmit={onSubmitStep2}/>
 					</>
 				) : null
 			}
@@ -77,10 +88,10 @@ export const OrganizationRegister = () => {
 			</div>	
 		    <div className = "tw-p-4 tw-flex tw-items-center tw-justify-center tw-gap-2">
                 {
-                    Array.from(Array(Object.keys(completedSteps).length), (_, i) => {
+                    Array.from(Array(Object.keys(viewableSteps).length), (_, i) => {
                         return (
                             <button key = {`page_${i}`} onClick={() => {
-                            	if (i !== currentIndex && completedSteps[i as keyof typeof completedSteps]){
+                            	if (i !== currentIndex && viewableSteps[i as keyof typeof viewableSteps]){
 	                            	setPage(i)
                             	}
                             }}><div className = {`tw-transition tw-w-3 tw-h-3 tw-bg-gray-800 tw-rounded-full ${currentIndex === i ? "tw-p-2" : "tw-bg-opacity-50"}`}></div></button>

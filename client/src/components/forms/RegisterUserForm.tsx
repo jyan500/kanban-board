@@ -24,23 +24,44 @@ type UserFormValues = FormValues & {
 }
 
 type Props = {
+	isOrgRegister?: boolean
 	onSubmit?: (values: FormValues) => void
+	user?: FormValues | undefined
 }
 
-export const RegisterUserForm = ({onSubmit: propSubmit}: Props) => {
+export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Props) => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
-	const { control, register: formRegister, handleSubmit, setValue, formState: {errors} } = useForm<UserFormValues>()
+	const { control, register: formRegister, reset, handleSubmit, setValue, formState: {errors} } = useForm<UserFormValues>()
 	const [ userRegister, { isLoading, error }] = useUserRegisterMutation()
 	const [showPassword, setShowPassword] = useState(false)
+
+	const defaultForm: UserFormValues = {
+		firstName: "",
+		lastName: "",
+		email: "",
+		password: "",
+		confirmPassword: "",
+		organizationId: 0
+	}
+
 	const registerOptions = {
 		firstName: { required: "First Name is required"},
 		lastName: { required: "Last Name is required"},
 	    email: { required: "Email is required" },
 	    password: { required: "Password is required"},
 	    confirmPassword: { required: "Confirm Password is required"},
-	    ...(propSubmit ? {organizationId: { required: "Organization is required"}} : {}),
+	    ...(!isOrgRegister ? {organizationId: { required: "Organization is required"}} : {}),
     }
+
+    useEffect(() => {
+    	if (user && Object.keys(user).length > 0){
+    		reset(user)
+    	}
+    	else {
+    		reset(defaultForm)
+    	}
+    }, [user])
 
 	const onSubmit = async (values: UserFormValues) => {
 		try {
@@ -165,7 +186,7 @@ export const RegisterUserForm = ({onSubmit: propSubmit}: Props) => {
 					</div>
 				</div>
 				{
-					!propSubmit ? ( 
+					!isOrgRegister ? ( 
 						<div>
 							<div>
 								<small>Already have an account? Click <Link className = "hover:tw-opacity-1 tw-text-sky-500" to={"/login"}>Here</Link> to login</small>

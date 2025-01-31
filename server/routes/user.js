@@ -71,6 +71,17 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 	}
 })
 
+router.post("/register/organization", async (req, res, next) => {
+	try {
+		console.log(req.body.user)
+		console.log(req.body.organization)
+		res.json({message: "Organization and User registered successfully!"})
+	}	
+	catch (err){
+		console.error(`Something went wrong when registering organization and user: ${err}`)
+	}
+})
+
 router.post("/org-login", authenticateToken, async (req, res, next) => {
 	try {
 		const user = req.user

@@ -266,18 +266,4 @@ router.post("/image", authenticateToken, authenticateUserRole(["ADMIN"]), handle
 	}
 })
 
-router.post("/", validateAddOrganization, handleValidationResult, async (req, res, next) => {
-	try {
-		const { name, email, phone_number, address, city, state, zipcode, industry } = req.body
-		const id = await db("organizations").insert({
-			name, email, phone_number, address, city, state, zipcode, industry	
-		}, ["id"])
-		res.json({"id": id[0], "message": "Organization added successfully!"})
-	}	
-	catch (err){
-		console.log(`Error while updating organization: ${err.message}`)	
-		next(err)
-	}
-})
-
 module.exports = router

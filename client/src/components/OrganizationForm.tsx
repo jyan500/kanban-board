@@ -27,11 +27,12 @@ export type FormValues = {
 }
 
 type Props = {
-	organization?: Organization
+	isOrgRegister?: boolean
+	organization?: Organization | FormValues | undefined
 	onSubmit?: (values: FormValues) => void
 }
 
-export const OrganizationForm = ({organization, onSubmit: propsSubmit}: Props) => {
+export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSubmit}: Props) => {
 	const dispatch = useAppDispatch()
 	const {
 		showModal
@@ -71,7 +72,7 @@ export const OrganizationForm = ({organization, onSubmit: propsSubmit}: Props) =
 	    },
     }
 	useEffect(() => {
-		if (organization){
+		if (organization && Object.keys(organization).length > 0){
 			reset(organization)
 		}
 		else {
@@ -131,7 +132,7 @@ export const OrganizationForm = ({organization, onSubmit: propsSubmit}: Props) =
 			        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 				</div>
 				{
-					organization ? (
+					!isOrgRegister ? (
 						<div className = "tw-flex tw-flex-row tw-gap-x-2">
 							<div className = "tw-flex tw-flex-col">
 								<label className = "label" htmlFor = "organization-name">Address:</label>
@@ -215,7 +216,7 @@ export const OrganizationForm = ({organization, onSubmit: propsSubmit}: Props) =
 					/>
 			        {errors?.industry && <small className = "--text-alert">{errors.industry.message}</small>}
 				</div>
-				{organization ? (
+				{!isOrgRegister ? (
 					<div className = "tw-flex tw-flex-col">
 						<h2>Statuses</h2>
 						{ !isStatusDataLoading ? (statusData?.map((status) => (
