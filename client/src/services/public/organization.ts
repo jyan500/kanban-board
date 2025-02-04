@@ -3,7 +3,7 @@ import { BACKEND_BASE_URL, ORGANIZATION_URL } from "../../helpers/urls"
 import { CustomError, Organization, ListResponse } from "../../types/common" 
 import { publicApi } from "../public" 
 
-type OrgRequest = {
+export type OrgRequest = {
 	name: string
 	email: string
 	address: string

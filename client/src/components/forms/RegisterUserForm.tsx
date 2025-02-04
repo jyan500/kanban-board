@@ -10,6 +10,7 @@ import "../../styles/register.css"
 import { AsyncSelect } from "../../components/AsyncSelect"
 import { OptionType } from "../../types/common"
 import { ORGANIZATION_URL } from "../../helpers/urls"
+import { LoadingButton } from "../../components/page-elements/LoadingButton"
 
 export type FormValues = {
 	firstName: string
@@ -181,9 +182,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 			        </div>
 			    </div>
 			    <div>
-				    <div>
-						<button className = "button" type = "submit">Submit</button>
-					</div>
+			    	<LoadingButton className = "button" type = "submit" text = "Submit"/>
 				</div>
 				{
 					!isOrgRegister ? ( 

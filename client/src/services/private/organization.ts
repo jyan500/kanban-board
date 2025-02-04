@@ -3,17 +3,10 @@ import { RootState } from "../../store"
 import { BACKEND_BASE_URL, ORGANIZATION_URL, USER_REGISTRATION_REQUEST_URL } from "../../helpers/urls" 
 import { CustomError, ListResponse, Organization, UserProfile, UserRegistrationRequest } from "../../types/common" 
 import { privateApi } from "../private"
+import { OrgRequest } from "../public/organization"
 
-interface UpdateOrgRequest {
+type UpdateOrgRequest = OrgRequest & {
 	id: number
-	name: string
-	email: string
-	address: string
-	city: string
-	state: string
-	phoneNumber: string
-	zipcode: string
-	industry: string
 }
 
 export const organizationApi = privateApi.injectEndpoints({

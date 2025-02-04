@@ -68,12 +68,12 @@ const checkUniqueEntity = async (key, colValue, colValues, tableName) => {
 }
 
 /* 
-	Return express validation for email
+	Return express validation for unique user email
 */
-const validateUniqueEmail = (emailField = "email", action = "") => {
+const validateUniqueUserEmail = (emailField = "email", action = "") => {
 	return [
-		body(emailField).notEmpty().withMessage("Email is required")
-		.isEmail().withMessage("Invalid email")
+		body(emailField).notEmpty().withMessage("User email is required")
+		.isEmail().withMessage("Invalid user email")
 		.normalizeEmail().custom((value, {req}) => {
 			return new Promise((resolve, reject) => {
 				db("users").modify((queryBuilder) => {
@@ -87,13 +87,38 @@ const validateUniqueEmail = (emailField = "email", action = "") => {
 					}
 				}).where("email", value).then((res) => {
 					if (res?.length > 0){
-						reject(new Error("Email already in use"))
+						reject(new Error("User email already in use"))
 					}
 					resolve(true)
 				})	
 			})
 		})
 	]
+}
+
+/*
+	Return express validation for unique organization email
+*/
+const validateUniqueOrgEmail = (emailField, action = "") => {
+	return [
+		body(emailField).notEmpty().withMessage("Organization email is required").
+		isEmail().withMessage("Invalid organization email")
+		.normalizeEmail().custom((value, {req}) => {
+			return new Promise((resolve, reject) => {
+				db("organizations").modify((queryBuilder) => {
+					// exclude the organization's own email when updating
+					if (action === "update"){
+						queryBuilder.whereNot("organizations.id", req.params.id)	
+					}
+				}).where("email", value).then((res) => {
+					if (res?.length > 0){
+						reject(new Error("Organization email already in use"))
+					}
+					resolve(true)
+				})
+			})
+		})
+	]	
 }
 
 /* 
@@ -134,5 +159,6 @@ module.exports = {
 	entityInOrganization,
 	validateKeyExists,
 	validatePasswordAndConfirmation,
-	validateUniqueEmail,
+	validateUniqueUserEmail,
+	validateUniqueOrgEmail,
 }
