@@ -140,10 +140,25 @@ const parseMentions = async (body, bodyParams, organizationId) => {
 	return mappedObjArray.filter((obj) => obj)
 }
 
+/* 
+	convert string dot notation into the syntax to retrieve an object 
+	i.e 
+	input: 
+	obj = {
+		a : {
+			b: "hello"
+		}
+	}
+	path = "a.b"
+	the output would be "hello"
+*/
+const getFromNestedObject = (obj, path) => path.split(".").reduce((acc, pathPart) => acc?.[pathPart], obj)
+
 module.exports = {
 	getNotificationBody,
 	mapIdToRowObject,
 	mapIdToRowAggregateArray,
 	mapIdToRowAggregateObjArray,
-	parseMentions
+	parseMentions,
+	getFromNestedObject
 }

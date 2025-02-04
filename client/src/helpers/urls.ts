@@ -3,6 +3,7 @@ export const BACKEND_BASE_URL = "http://localhost:8000"
 export const LOGIN_URL = `/${API_VERSION}/user/login`
 export const ORG_LOGIN_URL = `/${API_VERSION}/user/org-login`
 export const REGISTER_URL = `/${API_VERSION}/user/register`
+export const REGISTER_ORGANIZATION_USER_URL = `/${API_VERSION}/user/register/organization`
 export const ORGANIZATION_URL = `/${API_VERSION}/organization`
 export const USER_REGISTRATION_REQUEST_URL = `/${API_VERSION}/organization/registration-request`
 export const USER_PROFILE_URL = `/${API_VERSION}/user-profile`
