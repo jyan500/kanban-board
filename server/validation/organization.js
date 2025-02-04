@@ -2,6 +2,7 @@ const db = require("../db/db")
 const { checkEntityExistsIn, checkUniqueEntity, entityInOrganization, validateKeyExists } = require("./helper")
 const { BULK_INSERT_LIMIT } = require("../constants")
 const { body, param } = require("express-validator")
+const { validateUniqueOrgEmail } = require("../validation/helper")
 
 const registrationRequestValidator = (actionType) => {
 	let validationRules = [
@@ -32,7 +33,8 @@ const organizationValidator = (actionType) => {
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("organization name is required"),
-			body("email").isEmail().withMessage("please enter a valid email"),
+			// body("email").isEmail().withMessage("please enter a valid email"),
+			...(validateUniqueOrgEmail("email", actionType)),
 			body("phone_number").isMobilePhone().withMessage("please enter valid phone number"),
 		]
 		if (actionType === "update"){

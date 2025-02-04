@@ -1,5 +1,5 @@
 const { body, param } = require("express-validator")
-const { checkEntityExistsIn, validateUniqueEmail, validatePasswordAndConfirmation } = require("./helper")
+const { checkEntityExistsIn, validateUniqueOrgEmail, validateUniqueUserEmail, validatePasswordAndConfirmation } = require("./helper")
 const { BULK_INSERT_LIMIT } = require("../constants")
 const db = require("../db/db")
 const config = require("../config")
@@ -13,13 +13,13 @@ const editUserImageValidator = [
 ]
 
 const organizationUserRegisterValidator = [
-	body("organization.name").notEmpty().withMessage("organization name is required"),
-	body("organization.email").isEmail().withMessage("please enter a valid email for organization"),
-	body("organization.phone_number").isMobilePhone().withMessage("please enter valid phone number"),
+	body("organization.name").notEmpty().withMessage("Organization name is required"),
+	...(validateUniqueOrgEmail("organization.email")),
+	body("organization.phone_number").isMobilePhone().withMessage("Please enter valid phone number"),
 	body("user.first_name").notEmpty().withMessage("First Name is required"),
 	body("user.last_name").notEmpty().withMessage("Last Name is required"),
 	...(validatePasswordAndConfirmation("user.password", "user.confirm_password")),
-	...(validateUniqueEmail("user.email")),
+	...(validateUniqueUserEmail("user.email")),
 ]
 
 const editUserValidator = (action) => {
@@ -72,7 +72,7 @@ const editUserValidator = (action) => {
 	}
 	validationRules = [
 		...validationRules,
-		...(validateUniqueEmail("email", action))
+		...(validateUniqueUserEmail("email", action))
 	]	
 	return validationRules
 }
