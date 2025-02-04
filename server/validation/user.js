@@ -1,5 +1,5 @@
 const { body, param } = require("express-validator")
-const { checkEntityExistsIn } = require("./helper")
+const { checkEntityExistsIn, validateUniqueEmail, validatePasswordAndConfirmation } = require("./helper")
 const { BULK_INSERT_LIMIT } = require("../constants")
 const db = require("../db/db")
 const config = require("../config")
@@ -10,6 +10,16 @@ const editUserImageValidator = [
 		async (value, {req}) => 
 		await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
 	body("image_url").isURL().withMessage("Must be valid URL")
+]
+
+const organizationUserRegisterValidator = [
+	body("organization.name").notEmpty().withMessage("organization name is required"),
+	body("organization.email").isEmail().withMessage("please enter a valid email for organization"),
+	body("organization.phone_number").isMobilePhone().withMessage("please enter valid phone number"),
+	body("user.first_name").notEmpty().withMessage("First Name is required"),
+	body("user.last_name").notEmpty().withMessage("Last Name is required"),
+	...(validatePasswordAndConfirmation("user.password", "user.confirm_password")),
+	...(validateUniqueEmail("user.email")),
 ]
 
 const editUserValidator = (action) => {
@@ -46,24 +56,7 @@ const editUserValidator = (action) => {
 			validationRules = [
 				...validationRules,
 				// only validate if the user is choosing to edit their password on the accounts page
-				body("password").if((value, { req }) => {
-			        return req.body.check_password;
-		        }).notEmpty().withMessage("Password is required")
-					.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
-						"Password must be at least 6 characters long, " + 
-						"including one lowercase, one uppercase, " + 
-						"one number and one symbol."
-					),
-				body("confirm_password").if((value, { req }) => {
-			        return req.body.check_password;
-		        }).notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
-					if (value !== req.body.password)	{
-						throw new Error("Passwords don't match")
-					}
-					else {
-						return value
-					}
-				}),
+				...(validatePasswordAndConfirmation("password", "confirm_password", true))
 			]
 		}
 		// only user can add the organization id when registering.
@@ -71,20 +64,7 @@ const editUserValidator = (action) => {
 		if (action === "register"){
 			validationRules = [
 				...validationRules,
-				body("password").notEmpty().withMessage("Password is required")
-					.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
-						"Password must be at least 6 characters long, " + 
-						"including one lowercase, one uppercase, " + 
-						"one number and one symbol."
-					),
-				body("confirm_password").notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
-					if (value !== req.body.password)	{
-						throw new Error("Passwords don't match")
-					}
-					else {
-						return value
-					}
-				}),
+				...(validatePasswordAndConfirmation("password", "confirm_password")),
 				body("organization_id").notEmpty().withMessage("Organization is required")
 				.custom(async (value, {req}) => await checkEntityExistsIn("organization", value, [{"col": "id", "value": value}], "organizations")),
 			]
@@ -92,27 +72,7 @@ const editUserValidator = (action) => {
 	}
 	validationRules = [
 		...validationRules,
-		body("email").notEmpty().withMessage("Email is required")
-		.isEmail().withMessage("Invalid email")
-		.normalizeEmail().custom((value, {req}) => {
-			return new Promise((resolve, reject) => {
-				db("users").modify((queryBuilder) => {
-					// exclude the current user if editing own user,
-					// or exclude the selected user's email if editing the selected user
-					if (action === "editOwnUser" || action === "adminEditUser"){
-						queryBuilder
-						.join("organization_user_roles", "organization_user_roles.user_id", "=", "users.id")
-						.where("organization_user_roles.organization_id", req.user.organization)
-						.whereNot("users.id", action === "adminEditUser" ? req.params.userId : req.user.id)
-					}
-				}).where("email", req.body.email).then((res) => {
-					if (res?.length > 0){
-						reject(new Error("Email already in use"))
-					}
-					resolve(true)
-				})	
-			})
-		}),
+		...(validateUniqueEmail("email", action))
 	]	
 	return validationRules
 }
@@ -157,6 +117,7 @@ module.exports = {
 	registerValidator: editUserValidator("register"),
 	editUserValidator: editUserValidator("adminEditUser"),
 	editOwnUserValidator: editUserValidator("editOwnUser"),
+	organizationUserRegisterValidator,
 	editNotificationTypesValidator,
 	editUserImageValidator,
 	loginValidator,

@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken")
 const router = express.Router()
 const config = require("../config")
 const db = require("../db/db")
+const { DEFAULT_STATUSES } = require("../constants")
 const userValidator = require("../validation/user")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { body, validationResult } = require("express-validator")
@@ -71,10 +72,31 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 	}
 })
 
-router.post("/register/organization", async (req, res, next) => {
+router.post("/register/organization", userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
 	try {
-		console.log(req.body.user)
-		console.log(req.body.organization)
+		const { first_name, last_name, password, email: user_email } = req.body.user
+		const { name, address, city, state, zipcode, industry, phone_number, email} = req.body.organization
+		const salt = await bcrypt.genSalt(config.saltRounds)
+		const hash = await bcrypt.hash(password, salt)
+		const user = await db("users").insert({
+			first_name: first_name,
+			last_name: last_name,
+			email: user_email,
+			password: hash
+		}, ["id"])
+		const organization = await db("organizations").insert({
+			name, email, phone_number, address, city, state, zipcode, industry	
+		}, ["id"])
+		// create the admin user role for the new user
+		const adminUserRole = await db("user_roles").where("name", "ADMIN").first()
+		await db("organization_user_roles").insert({
+			user_id: user[0],
+			organization_id: organization[0],
+			user_role_id: adminUserRole?.id
+		})
+		// attach default statuses for the new organization
+		await db("statuses").insert(DEFAULT_STATUSES.map((status) => ({...status, organization_id: organization[0]})))
+
 		res.json({message: "Organization and User registered successfully!"})
 	}	
 	catch (err){
