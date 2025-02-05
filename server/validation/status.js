@@ -62,24 +62,11 @@ const statusValidator = (actionType) => {
 	if (actionType === "update-order"){
 		validationRules = [
 			...validationRules,
-			body("statuses").isArray({min: 0, max: BULK_INSERT_LIMIT})
+			body("statuses").isArray({min: 0, max: 2})
 			.withMessage("statuses must be an array")
-			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
-			body("statuses.*.id")
+			.withMessage(`cannot have more than 2 records`),
+			body("statuses.*")
 			.custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value.id, "statuses")),
-			// TODO: refactor order validation into helper function
-			body("statuses.*.order").notEmpty().withMessage("order is required").isNumeric().withMessage("order must be a number").custom((value, {req}) => {
-				return new Promise((resolve, reject) => {
-					checkFieldUniqueToStatuses("order", req.body.order, req.user.organization, req.params.id).then((res) => {
-						if (res){
-							resolve(true)
-						}
-						else {
-							reject(new Error("order field must be unique"))
-						}
-					})
-				})	
-			}),
 		]	
 	}
 

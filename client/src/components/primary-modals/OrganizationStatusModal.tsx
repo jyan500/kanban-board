@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from "uuid"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icons/io";
 import { IconButton } from "../page-elements/IconButton"
+import { IoMdAdd as AddIcon } from "react-icons/io";
 
 type FormValues = {
 	id?: number
@@ -28,12 +29,13 @@ export const OrganizationStatusModal = () => {
 	const { statuses } = useAppSelector((state) => state.status)
 	const { showModal } = useAppSelector((state) => state.modal) 
 	const { data: statusData, isLoading: isStatusDataLoading } = useGetStatusesQuery({})
-	const [formStatuses, setFormStatuses] = useState<Array<Status>>()
+	const [ formStatuses, setFormStatuses ] = useState<Array<Status>>()
 	const [ bulkEditStatuses, {isLoading: isLoading, error: isError} ] =  useBulkEditStatusesMutation() 
 	const [ addStatus, {isLoading: isAddStatusLoading, error: isAddStatusError } ] = useAddStatusMutation()
 	const [ updateStatus, {isLoading: isUpdateStatusLoading, error: isUpdateStatusError }] = useUpdateStatusMutation()
 	const [ updateOrder, {isLoading: isUpdateOrderLoading, error: isUpdateOrderError}] = useUpdateOrderMutation()
-	const [selectedStatusId, setSelectedStatusId] = useState<number | null>(null)
+	const [ selectedStatusId, setSelectedStatusId ] = useState<number | null>(null)
+	const [ showNewStatus, setShowNewStatus ] = useState<boolean>(false)
 
 	const defaultForm: FormValues = {
 		id: undefined,
@@ -107,7 +109,9 @@ export const OrganizationStatusModal = () => {
 					await updateStatus({...values, id: values.id ?? 0, order: order ?? 0}).unwrap()
 				}
 				else {
-					await addStatus(values).unwrap()
+					// by default, set the status with the max order value + 1, so it shows up at the end of the list
+					const order = Math.max(...formStatuses.map((status) => status.order)) + 1
+					await addStatus({...values, order: order}).unwrap()
 				}
 			}
 			dispatch(addToast(toast))
@@ -115,7 +119,7 @@ export const OrganizationStatusModal = () => {
 		catch (e){
 			dispatch(addToast({...toast, type: "failure", message: `Status could not be ${values.id ? "updated" : "added"}`}))
 		}
-		// feset the form and clear out the selected id
+		// reset the form and clear out the selected id
 		reset({
 			id: undefined,	
 			name: "",
@@ -150,11 +154,47 @@ export const OrganizationStatusModal = () => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			<p>Click on the buttons to edit the statuses, and arrows to change the order</p>
-			{ !isStatusDataLoading && statusData?.length ? (statusData.map((status, index) => (
+			<p className = "tw-font-bold">Click on the buttons to edit the statuses, and arrows to change the order</p>
+			<div>
+				<button onClick={(e) => {
+					setShowNewStatus(!showNewStatus)
+					setSelectedStatusId(null)
+					reset({
+						id: undefined,	
+						name: "",
+						isActive: false
+					})
+				}} className = "button --secondary">
+					<div className = "tw-flex tw-items-center tw-gap-x-2">
+						<AddIcon/>
+						<p>Add Status</p>
+					</div>
+				</button>
+			</div>
+			{
+				showNewStatus ? ( 
+				<div className = {`tw-flex tw-flex-col`}>
+					<form onSubmit={handleSubmit(onSubmit)}>
+						<div className = "">
+							<label className = "label">Name</label>
+							<input type = "text" {...register("name")}/>
+					        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
+						</div>
+						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+							<label className = "label">Visible</label>	
+							<input type = "checkbox" {...register("isActive")}/>
+						</div>
+						<div>
+							<button type = "submit" className = "button">Save</button>
+						</div>
+					</form>
+				</div>) : null
+			}
+			{ !isStatusDataLoading && statusData?.length ? ([...statusData].sort(sortStatusByOrder).map((status, index) => (
 				<>
 					<div className = "tw-flex tw-flex-row tw-justify-between">
 						<button onClick = {(e) => {
+							setShowNewStatus(false)
 							setSelectedStatusId(selectedStatusId === status.id ? null : status.id)
 							reset({
 								id: status.id,	

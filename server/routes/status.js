@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const { validateCreate, validateGet, validateUpdate, validateDelete, validateBulkEdit, validateUpdateOrder } = require("../validation/status")
 const { handleValidationResult } = require("../middleware/validationMiddleware")
+const { batchUpdate } = require("../helpers/functions")
 const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
@@ -77,7 +78,7 @@ router.post("/update-order", validateUpdateOrder, handleValidationResult, async 
 		// we get the updated order for the status that was chosen on the frontend,
 		// but we have to find the current status that has this order, and 
 		// "swap" places
-		await db("statuses").update(req.body.statuses)
+		batchUpdate("statuses", req.body.statuses)
 		res.json({message: "Status orders updated successfully!"})
 
 	}	

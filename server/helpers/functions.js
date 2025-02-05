@@ -154,7 +154,23 @@ const parseMentions = async (body, bodyParams, organizationId) => {
 */
 const getFromNestedObject = (obj, path) => path.split(".").reduce((acc, pathPart) => acc?.[pathPart], obj)
 
+// abstract transactional batch update
+const batchUpdate = (table, collection) => {
+  return db.transaction(trx => {
+    const queries = collection.map(tuple =>
+      db(table)
+        .where('id', tuple.id)
+        .update(tuple)
+        .transacting(trx)
+    );
+    return Promise.all(queries)
+      .then(trx.commit)    
+      .catch(trx.rollback);
+  });
+}
+
 module.exports = {
+	batchUpdate,
 	getNotificationBody,
 	mapIdToRowObject,
 	mapIdToRowAggregateArray,

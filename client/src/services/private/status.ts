@@ -4,6 +4,16 @@ import { BACKEND_BASE_URL, STATUS_URL } from "../../helpers/urls"
 import { CustomError, Status } from "../../types/common" 
 import { privateApi } from "../private"
 
+type AddStatusRequest = {
+	name: string
+	isActive: boolean
+	order: number	
+}
+
+type UpdateStatusRequest = AddStatusRequest & {
+	id: number
+}
+
 export const statusApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
@@ -23,18 +33,19 @@ export const statusApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Statuses"]
 		}),
-		addStatus: builder.mutation<{message: string}, {name: string, isActive: boolean}>({
-			query: ({name, isActive}) => ({
+		addStatus: builder.mutation<{message: string}, AddStatusRequest>({
+			query: ({name, order, isActive}) => ({
 				url: STATUS_URL,
 				method: "POST",
 				body: {
 					name,
+					order,
 					is_active: isActive
 				}
 			}),
 			invalidatesTags: ["Statuses"]
 		}),
-		updateStatus: builder.mutation<{message: string}, {id: number, name: string, order: number, isActive: boolean}>({
+		updateStatus: builder.mutation<{message: string}, UpdateStatusRequest>({
 			query: ({id, name, order, isActive}) => ({
 				url: `${STATUS_URL}/${id}`,
 				method: "PUT",
