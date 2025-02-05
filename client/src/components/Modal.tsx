@@ -8,6 +8,8 @@ import { EditTicketFormModal } from "./primary-modals/EditTicketFormModal"
 import { EditUserFormModal } from "./primary-modals/EditUserFormModal"
 import { StatusForm } from "./StatusForm" 
 import { BoardForm } from "./BoardForm" 
+import { BoardStatusModal } from "./primary-modals/BoardStatusModal"
+import { OrganizationStatusModal } from "./primary-modals/OrganizationStatusModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { PRIMARY_MODAL_Z_INDEX } from "../helpers/constants"
 
@@ -15,6 +17,8 @@ export const modalTypes = {
 	"ADD_TICKET_FORM": AddTicketFormModal,
 	"EDIT_TICKET_FORM": EditTicketFormModal,
 	"STATUS_FORM": StatusForm,
+	"BOARD_STATUS_FORM": BoardStatusModal,
+	"ORGANIZATION_STATUS_FORM": OrganizationStatusModal,
 	"BOARD_FORM": BoardForm,
 	"USER_FORM": EditUserFormModal,
 }
@@ -22,6 +26,7 @@ export const modalTypes = {
 export const modalClassNames = {
 	"ADD_TICKET_FORM": "--l-modal tw-top-[50%]",
 	"EDIT_TICKET_FORM": "--l-modal tw-top-[50%]",
+	"ORGANIZATION_STATUS_FORM": "--m-modal tw-top-[40%]"
 }
 
 // type for partial subset of keys

@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { validateCreate, validateGet, validateUpdate, validateDelete, validateBulkEdit } = require("../validation/status")
+const { validateCreate, validateGet, validateUpdate, validateDelete, validateBulkEdit, validateUpdateOrder } = require("../validation/status")
 const { handleValidationResult } = require("../middleware/validationMiddleware")
 const db = require("../db/db")
 
@@ -46,6 +46,7 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 		const id = await db("statuses").insert({
 			name: body.name,
 			order: body.order,
+			is_active: req.body.is_active,
 			organization_id: body.organization_id
 		}, ["id"])
 		res.json({id: id[0], message: `Status inserted successfully!`})
@@ -60,12 +61,28 @@ router.put("/:id", validateUpdate, handleValidationResult, async (req, res, next
 	try {
 		await db("statuses").where("id", req.params.id).update({
 			name: req.body.name,
+			is_active: req.body.is_active,
 			order: req.body.order,
 		})
 		res.json({message: "Status updated successfully!"})	
 	}	
 	catch (err) {
 		console.error(`Error while updating status: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/update-order", validateUpdateOrder, handleValidationResult, async (req, res, next) => {
+	try {
+		// we get the updated order for the status that was chosen on the frontend,
+		// but we have to find the current status that has this order, and 
+		// "swap" places
+		await db("statuses").update(req.body.statuses)
+		res.json({message: "Status orders updated successfully!"})
+
+	}	
+	catch (err){
+		console.error(`Error while updating statuses: ${err.message}`)
 		next(err)
 	}
 })

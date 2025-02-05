@@ -4,14 +4,21 @@ const { body, param } = require("express-validator")
 const { BULK_INSERT_LIMIT } = require("../constants")
 
 const statusValidator = (actionType) => {
-	let validationRules = []
+	let validationRules = [
+	]
+	if (actionType === "update" || actionType === "create"){
+		validationRules = [
+			...validationRules,
+			body("is_active").notEmpty().withMessage("is active is required")
+		]	
+	}
 	// if update or delete route, validate the ID and make sure status exists
 	if (actionType === "get" || actionType === "update" || actionType === "delete"){
 		validationRules = [
 			param("id").custom(async (value, {req}) => await checkEntityExistsIn("status", value, [{col: "id", value: value}, {col: "organization_id", value: req.user.organization}], "statuses"))
 		]
 	}
-	if (actionType !== "delete" && actionType !== "get" && actionType !== "bulk-edit"){
+	if (actionType !== "delete" && actionType !== "get" && actionType !== "bulk-edit" && actionType !== "update-order"){
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required").custom((value, {req}) => {
@@ -52,6 +59,30 @@ const statusValidator = (actionType) => {
 		]
 	}
 
+	if (actionType === "update-order"){
+		validationRules = [
+			...validationRules,
+			body("statuses").isArray({min: 0, max: BULK_INSERT_LIMIT})
+			.withMessage("statuses must be an array")
+			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			body("statuses.*.id")
+			.custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value.id, "statuses")),
+			// TODO: refactor order validation into helper function
+			body("statuses.*.order").notEmpty().withMessage("order is required").isNumeric().withMessage("order must be a number").custom((value, {req}) => {
+				return new Promise((resolve, reject) => {
+					checkFieldUniqueToStatuses("order", req.body.order, req.user.organization, req.params.id).then((res) => {
+						if (res){
+							resolve(true)
+						}
+						else {
+							reject(new Error("order field must be unique"))
+						}
+					})
+				})	
+			}),
+		]	
+	}
+
 	return validationRules
 }
 
@@ -84,4 +115,5 @@ module.exports = {
 	validateUpdate: statusValidator("update"),
 	validateBulkEdit: statusValidator("bulk-edit"),
 	validateDelete: statusValidator("delete"),
+	validateUpdateOrder: statusValidator("update-order")
 }

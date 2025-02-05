@@ -23,6 +23,37 @@ export const statusApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Statuses"]
 		}),
+		addStatus: builder.mutation<{message: string}, {name: string, isActive: boolean}>({
+			query: ({name, isActive}) => ({
+				url: STATUS_URL,
+				method: "POST",
+				body: {
+					name,
+					is_active: isActive
+				}
+			}),
+			invalidatesTags: ["Statuses"]
+		}),
+		updateStatus: builder.mutation<{message: string}, {id: number, name: string, order: number, isActive: boolean}>({
+			query: ({id, name, order, isActive}) => ({
+				url: `${STATUS_URL}/${id}`,
+				method: "PUT",
+				body: {
+					name, order, is_active: isActive
+				}
+			}),
+			invalidatesTags: ["Statuses"]
+		}),
+		updateOrder: builder.mutation<{message: string}, Array<{id: number, order: number}>>({
+			query: (body) => ({
+				url: `${STATUS_URL}/update-order`,
+				method: "POST",
+				body: {
+					statuses: body 
+				},
+			}),
+			invalidatesTags: ["Statuses"]
+		}),
 		bulkEditStatuses: builder.mutation<string, Array<Pick<Status, "id" | "isActive">>>({
 			query: (statuses) => ({
 				url: `${STATUS_URL}/bulk-edit`,
@@ -36,4 +67,11 @@ export const statusApi = privateApi.injectEndpoints({
 	}),
 })
 
-export const { useGetStatusQuery, useGetStatusesQuery, useBulkEditStatusesMutation } = statusApi
+export const { 
+	useGetStatusQuery, 
+	useGetStatusesQuery, 
+	useBulkEditStatusesMutation, 
+	useAddStatusMutation, 
+	useUpdateStatusMutation,
+	useUpdateOrderMutation,
+} = statusApi

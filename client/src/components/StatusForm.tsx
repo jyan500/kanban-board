@@ -18,7 +18,6 @@ export const StatusForm = () => {
 	const { boardInfo, statusesToDisplay, tickets: boardTicketIds } = useAppSelector((state) => state.board)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { showModal } = useAppSelector((state) => state.modal) 
-	const { tickets } = useAppSelector((state) => state.ticket)
 	const [formStatuses, setFormStatuses] = useState<Array<Status>>(statusesToDisplay)
 	const [ bulkEditBoardStatuses, {isLoading: isLoading, error: isError} ] =  useBulkEditBoardStatusesMutation() 
 	// const [selectedStatusId, setSelectedStatusId] = useState<number | null>(null)

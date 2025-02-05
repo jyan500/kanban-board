@@ -97,7 +97,7 @@ export const ToolBar = () => {
 					isAdminOrUserRole ? (
 					<button className = "button" onClick = {() => {
 						dispatch(toggleShowModal(true))
-						dispatch(setModalType("STATUS_FORM"))
+						dispatch(setModalType("BOARD_STATUS_FORM"))
 					}}>Edit Statuses</button>) : null
 				}
 				<button className = "button" onClick = {(e) => prioritySort(1)}>Sort By Priority</button>

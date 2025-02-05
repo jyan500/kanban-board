@@ -216,7 +216,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 					/>
 			        {errors?.industry && <small className = "--text-alert">{errors.industry.message}</small>}
 				</div>
-				{!isOrgRegister ? (
+				{/*{!isOrgRegister ? (
 					<div className = "tw-flex tw-flex-col">
 						<h2>Statuses</h2>
 						{ !isStatusDataLoading ? (statusData?.map((status) => (
@@ -226,8 +226,8 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 							</div>
 						))) : <LoadingSpinner/>}
 					</div>	
-				) : null}
-				<div>
+				) : null}*/}
+				<div className = "tw-flex tw-flex-row tw-gap-x-2">
 					<button type = "submit" className = "button">{!organization ? "Next" : "Submit"}</button>
 				</div>
 			</form>
