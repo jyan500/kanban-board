@@ -29,11 +29,9 @@ export const OrganizationStatusModal = () => {
 	const { statuses } = useAppSelector((state) => state.status)
 	const { showModal } = useAppSelector((state) => state.modal) 
 	const { data: statusData, isLoading: isStatusDataLoading } = useGetStatusesQuery({})
-	const [ formStatuses, setFormStatuses ] = useState<Array<Status>>()
-	const [ bulkEditStatuses, {isLoading: isLoading, error: isError} ] =  useBulkEditStatusesMutation() 
-	const [ addStatus, {isLoading: isAddStatusLoading, error: isAddStatusError } ] = useAddStatusMutation()
-	const [ updateStatus, {isLoading: isUpdateStatusLoading, error: isUpdateStatusError }] = useUpdateStatusMutation()
-	const [ updateOrder, {isLoading: isUpdateOrderLoading, error: isUpdateOrderError}] = useUpdateOrderMutation()
+	const [ addStatus, {isLoading: isAddStatusLoading, error: addStatusError } ] = useAddStatusMutation()
+	const [ updateStatus, {isLoading: isUpdateStatusLoading, error: updateStatusError }] = useUpdateStatusMutation()
+	const [ updateOrder, {isLoading: isUpdateOrderLoading, error: updateOrderError}] = useUpdateOrderMutation()
 	const [ selectedStatusId, setSelectedStatusId ] = useState<number | null>(null)
 	const [ showNewStatus, setShowNewStatus ] = useState<boolean>(false)
 
@@ -51,15 +49,13 @@ export const OrganizationStatusModal = () => {
 		setSelectedStatusId(null)	
 	}, [showModal])
 
-	useEffect(() => {
-		if (!isStatusDataLoading && statusData){
-			setFormStatuses(statusData)
-		}
-	}, [isStatusDataLoading, statusData])
-
-	const addUpdateForm = () => {
+	const addUpdateForm = (option: "add" | "update") => {
+		const error = option === "add" ? addStatusError : updateStatusError
 		return (
 			<form className = "tw-border tw-border-gray-100 tw-p-4" onSubmit={handleSubmit(onSubmit)}>
+				{
+					error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`org_error_${i}`}>{errorMessage}</p>)) : null
+				}
 				<div className = {`tw-flex tw-flex-col tw-gap-y-2`}>
 					<div className = "">
 						<label className = "label">Name</label>
@@ -78,6 +74,37 @@ export const OrganizationStatusModal = () => {
 		)
 	}
 
+	/* 
+	This function is a fail safe in case the orders are not consecutive numbers when saved on the DB (due to deletions or other
+	unforeseen circumstances, since the assumption is that the order attributes are normally in consecutive order 
+	*/
+	const findNextClosestOrder = (statusId: number, currentOrder: number, increase=false) => {
+		// get all orders except the current status that is chosen
+		if (statusData){
+			const orders = statusData.filter((status) => status.id != statusId).map((status) => status.order)
+			const lookup = new Set(orders)
+			const max = Math.max(...orders)
+			const min = Math.min(...orders)
+			// if we're trying to get the next largest order, iterate starting from current order to the max until if we find it
+			if (increase){
+				for (let i = currentOrder; i <= max; ++i){
+					if (lookup.has(i)){
+						return i
+					}
+				}
+			}
+			// if we're trying to get the next largest order, iterate starting from order to the min until if we find it
+			else {
+				for (let i = currentOrder; i >= min; --i){
+					if (lookup.has(i)){
+						return i
+					}
+				}
+			}
+		}
+		return -1
+	}
+
 	const updateStatusOrder = async (statusId: number, newOrder: number) => {
 		const toast: Toast = {
 			id: uuidv4(),
@@ -85,11 +112,12 @@ export const OrganizationStatusModal = () => {
 			animationType: "animation-in",
 			message: `Status could not be updated.`
 		}
-		if (formStatuses?.length){
+		console.log("newOrder: ", newOrder)
+		if (statusData?.length && newOrder !== -1){
 			try  {
-				const status = formStatuses.find((status) => status.id === statusId)
+				const status = statusData.find((status) => status.id === statusId)
 				// we also need to find the status that currently has the order and swap places
-				const statusToSwap = formStatuses.find((status) => status.order === newOrder)
+				const statusToSwap = statusData.find((status) => status.order === newOrder)
 				if (status && statusToSwap){
 					updateOrder([{
 						id: status.id,
@@ -114,6 +142,11 @@ export const OrganizationStatusModal = () => {
 				)
 			}
 		}
+		else {
+			dispatch(
+				addToast(toast)
+			)
+		}
 	}
 
 	const onSubmit = async (values: FormValues) => {
@@ -124,14 +157,14 @@ export const OrganizationStatusModal = () => {
 			message: `Status ${values.id ? "updated" : "added"} successfully!`
 		}
 		try {
-			if (formStatuses?.length){
+			if (statusData?.length){
 				if (values.id){
-					const order = formStatuses.find((status) => status.id === values.id)?.order
+					const order = statusData.find((status) => status.id === values.id)?.order
 					await updateStatus({...values, id: values.id ?? 0, order: order ?? 0}).unwrap()
 				}
 				else {
 					// by default, set the status with the max order value + 1, so it shows up at the end of the list
-					const order = Math.max(...formStatuses.map((status) => status.order)) + 1
+					const order = Math.max(...statusData.map((status) => status.order)) + 1
 					await addStatus({...values, order: order}).unwrap()
 				}
 			}
@@ -171,7 +204,7 @@ export const OrganizationStatusModal = () => {
 				</div>
 				{
 					showNewStatus ?  
-						addUpdateForm() : null
+						addUpdateForm("add") : null
 				}
 			</div>
 			<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-border tw-border-gray-50 tw-shadow-md tw-p-4">
@@ -190,13 +223,13 @@ export const OrganizationStatusModal = () => {
 								{status.name}
 							</button>
 							<div className = "tw-flex tw-flex-col tw-items-center">
-								<IconButton disabled = {index === 0} onClick={() => updateStatusOrder(status.id, status.order - 1)}><ArrowUp className = "tw-w-6 tw-h-6"/></IconButton>
-								<IconButton disabled = {index === statusData.length-1} onClick={() => updateStatusOrder(status.id, status.order + 1)}><ArrowDown className = "tw-w-6 tw-h-6"/></IconButton>
+								<IconButton disabled = {index === 0} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, false))}><ArrowUp className = "tw-w-6 tw-h-6"/></IconButton>
+								<IconButton disabled = {index === statusData.length-1} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, true))}><ArrowDown className = "tw-w-6 tw-h-6"/></IconButton>
 							</div>
 						</div>
 						{
 							selectedStatusId === status.id ? 
-							addUpdateForm() : null
+							addUpdateForm("update") : null
 						}
 					</>
 				))) : <LoadingSpinner/>}

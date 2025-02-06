@@ -28,7 +28,7 @@ const statusValidator = (actionType) => {
 							resolve(true)
 						}
 						else {
-							reject(new Error("name field must be unique"))
+							reject(new Error("Name field must be unique"))
 						}
 					})
 				})
@@ -40,7 +40,7 @@ const statusValidator = (actionType) => {
 								resolve(true)
 							}
 							else {
-								reject(new Error("order field must be unique"))
+								reject(new Error("Order field must be unique"))
 							}
 						})
 					})	
