@@ -39,7 +39,7 @@ export const TicketDisplay = () => {
 		"priority": searchParams.get("priority") ?? "",
 		"board": searchParams.get("board") ?? "",
 	}
-	const {data: data, isFetching } = useGetTicketsQuery({
+	const {data: data, isLoading } = useGetTicketsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
 		query: searchParams.get("query") ?? "",
 		page: searchParams.get("page") ?? 1,
@@ -136,7 +136,7 @@ export const TicketDisplay = () => {
 				>
 				</SearchToolBar>
 			</FormProvider>
-			{isFetching ? <LoadingSpinner/> : (
+			{isLoading ? <LoadingSpinner/> : (
 				<>
 				<div className = "tw-flex tw-flex-row tw-gap-x-6">
 					<div className = "tw-w-1/3 tw-flex tw-flex-col tw-gap-y-4">
