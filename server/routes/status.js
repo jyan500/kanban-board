@@ -78,6 +78,13 @@ router.post("/update-order", validateUpdateOrder, handleValidationResult, async 
 		// we get the updated order for the status that was chosen on the frontend,
 		// but we have to find the current status that has this order, and 
 		// "swap" places
+		order = 0
+		req.body.statuses.forEach((status) => {
+			if (status.order == order){
+				res.json({message: "There was an issue while updating orders."}, 422)
+			}
+			order = status.order
+		})
 		batchUpdate("statuses", req.body.statuses)
 		res.json({message: "Status orders updated successfully!"})
 
