@@ -10,7 +10,7 @@ export const IconButton = ({className, disabled, onClick, children}: React.Props
 	return (
 		<button
 			disabled={disabled}
-            className={`${className ?? "hover:tw-opacity-60 tw-bg-transparent tw-text-gray-800 tw-cursor-pointer"}`}
+            className={`${className ?? "tw-bg-transparent tw-text-gray-800 tw-cursor-pointer"} ${disabled ? "tw-opacity-20" : "hover:tw-opacity-60"}`}
             onClick={onClick}
         >
         {children}

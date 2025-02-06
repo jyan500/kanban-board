@@ -32,10 +32,9 @@ const organizationValidator = (actionType) => {
 	if (actionType === "add" || actionType === "update"){
 		validationRules = [
 			...validationRules,
-			body("name").notEmpty().withMessage("organization name is required"),
-			// body("email").isEmail().withMessage("please enter a valid email"),
+			body("name").notEmpty().withMessage("Organization name is required"),
 			...(validateUniqueOrgEmail("email", actionType)),
-			body("phone_number").isMobilePhone().withMessage("please enter valid phone number"),
+			body("phone_number").isMobilePhone().withMessage("Please enter valid organization phone number"),
 		]
 		if (actionType === "update"){
 			validationRules = [

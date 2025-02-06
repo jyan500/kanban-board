@@ -16,6 +16,8 @@ import { RegisterDisplay } from "./pages/register/RegisterDisplay"
 import { RegisterSelection } from "./pages/register/RegisterSelection"
 import { OrganizationRegister } from "./pages/register/OrganizationRegister"
 import { AccountDisplay } from "./pages/account/AccountDisplay"
+import { Account } from "./pages/account/Account"
+import { AccountOrganization } from "./pages/account/AccountOrganization"
 import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
@@ -23,7 +25,7 @@ import UserRoleProtectedLayout from "./layouts/UserRoleProtectedLayout"
 import { useAppSelector, useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
 import { ToastList } from "./components/ToastList" 
-import { ACCOUNT, HOME, LOGIN, REGISTER, BOARDS, BOARD_ID, TICKETS, TICKET_ID, USER, USERS, ORGANIZATION, NOTIFICATIONS } from "./helpers/routes"
+import { ACCOUNT, REGISTER_USER, REGISTER_ORG, ACCOUNT_CREATE_ORG, HOME, LOGIN, REGISTER, BOARDS, BOARD_ID, TICKETS, TICKET_ID, USER, USERS, ORGANIZATION, NOTIFICATIONS } from "./helpers/routes"
 
 // Define routes using createBrowserRouter
 const router = createBrowserRouter([
@@ -48,11 +50,11 @@ const router = createBrowserRouter([
 						element: <RegisterSelection/>
 					},
 					{
-						path: `${REGISTER}${USER}`,
+						path: REGISTER_USER,
 						element: <Register/>
 					},
 					{
-						path: `${REGISTER}${ORGANIZATION}`,
+						path: REGISTER_ORG,
 						element: <OrganizationRegister/>
 					}
 				]
@@ -107,7 +109,17 @@ const router = createBrowserRouter([
 			},
 			{
 				path: ACCOUNT,
-				element: <AccountDisplay/>
+				element: <AccountDisplay/>,
+				children: [
+					{
+						index: true,	
+						element: <Account/>
+					},
+					{
+						path: ACCOUNT_CREATE_ORG,
+						element: <AccountOrganization/>
+					}
+				]
 			},
 			{
 				path: NOTIFICATIONS,
