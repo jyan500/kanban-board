@@ -93,7 +93,7 @@ export const OrganizationStatusModal = () => {
 					}
 				}
 			}
-			// if we're trying to get the next largest order, iterate starting from order to the min until if we find it
+			// if we're trying to get the next smallest order, iterate starting from order to the min until if we find it
 			else {
 				for (let i = currentOrder; i >= min; --i){
 					if (lookup.has(i)){
