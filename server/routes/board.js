@@ -191,7 +191,6 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 					}					
 				})
 			)
-			console.log("tickets: ", tickets.find((ticket) => ticket.id === 171))
 		}
 		if (req.query.includeRelationshipInfo){
 			const epicTicketRelationshipType = await db("ticket_relationship_types").where("name" , "Epic").first()
