@@ -6,7 +6,6 @@ import { setModalType, setModalProps, toggleShowModal } from "../slices/modalSli
 import { AddTicketFormModal } from "./primary-modals/AddTicketFormModal" 
 import { EditTicketFormModal } from "./primary-modals/EditTicketFormModal" 
 import { EditUserFormModal } from "./primary-modals/EditUserFormModal"
-import { StatusForm } from "./StatusForm" 
 import { BoardForm } from "./BoardForm" 
 import { BoardStatusModal } from "./primary-modals/BoardStatusModal"
 import { OrganizationStatusModal } from "./primary-modals/OrganizationStatusModal"
@@ -16,7 +15,6 @@ import { PRIMARY_MODAL_Z_INDEX } from "../helpers/constants"
 export const modalTypes = {
 	"ADD_TICKET_FORM": AddTicketFormModal,
 	"EDIT_TICKET_FORM": EditTicketFormModal,
-	"STATUS_FORM": StatusForm,
 	"BOARD_STATUS_FORM": BoardStatusModal,
 	"ORGANIZATION_STATUS_FORM": OrganizationStatusModal,
 	"BOARD_FORM": BoardForm,
