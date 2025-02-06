@@ -68,7 +68,7 @@ export const OrganizationStatusModal = () => {
 					</div>
 					<div className = "tw-flex tw-flex-row tw-gap-x-2">
 						<input type = "checkbox" {...register("isActive")}/>
-						<label className = "label">Visible</label>	
+						<label className = "label">Is Active</label>	
 					</div>
 					<div>
 						<button type = "submit" className = "button">Save</button>
