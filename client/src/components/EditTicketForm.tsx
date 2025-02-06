@@ -182,6 +182,12 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     	try {
     		// update existing ticket
     		if (values.id != null){
+    			// update ticket assignees
+    			// TODO: need to update this line to include all userIds if allowing multiple 
+    			// assignees per ticket
+    			if (values.userId){
+	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [values.userId], isWatcher: false}).unwrap()
+    			}
     			const { mentions } = await updateTicket({
     				...values, 
     				id: values.id
@@ -197,12 +203,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						}
 	    			})
 					await bulkCreateNotifications(notifications).unwrap()
-    			}
-    			// update ticket assignees
-    			// TODO: need to update this line to include all userIds if allowing multiple 
-    			// assignees per ticket
-    			if (values.userId){
-	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [values.userId], isWatcher: false}).unwrap()
     			}
     		}
     		dispatch(addToast({

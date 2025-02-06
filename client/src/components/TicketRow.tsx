@@ -25,7 +25,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 	const ticketType = ticketTypes?.find((ticketType) => ticketType.id === ticket?.ticketTypeId)?.name
 	const priority = priorities?.find((priority) => priority.id === ticket?.priorityId)?.name
 	const [showConfirmUnlink, setShowConfirmUnlink] = useState(false)
-	const { data, isFetching } = useGetUserQuery(ticket?.userId ?? skipToken)
+	const { data, isFetching } = useGetUserQuery(ticket?.assignees?.[0] ?? skipToken)
 	return (
 		<div className = "hover:tw-bg-gray-50 tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-border tw-border-gray-200 tw-rounded-md tw-group">
 			<div className = "tw-w-3/5 tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4">

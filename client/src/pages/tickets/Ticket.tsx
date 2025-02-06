@@ -11,15 +11,15 @@ export const Ticket = () => {
 	const params = useParams<{ticketId: string}>()
 	const ticketId = params.ticketId ? parseInt(params.ticketId) : undefined 
 	const dispatch = useAppDispatch()
-	const { data: ticket, isFetching, isError} = useGetTicketQuery(ticketId ?? skipToken)
+	const { data: ticket, isLoading, isError} = useGetTicketQuery(ticketId ?? skipToken)
 	const { statuses } = useAppSelector((state) => state.status)
-	if (!isFetching && isError){
+	if (!isLoading && isError){
 		return (
 			<Banner message = {"Something went wrong!"} type = "failure"/>
 		)
 	}
 	return (
-		isFetching ? <LoadingSpinner/> : 
+		isLoading ? <LoadingSpinner/> : 
 		<EditTicketForm ticket={ticket?.[0]} statusesToDisplay={statuses}/>
 	)	
 }
