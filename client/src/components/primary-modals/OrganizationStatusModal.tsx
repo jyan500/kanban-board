@@ -110,16 +110,15 @@ export const OrganizationStatusModal = () => {
 			id: uuidv4(),
 			type: "failure",
 			animationType: "animation-in",
-			message: `Status could not be updated.`
+			message: "Order could not be updated"
 		}
-		console.log("newOrder: ", newOrder)
 		if (statusData?.length && newOrder !== -1){
 			try  {
 				const status = statusData.find((status) => status.id === statusId)
 				// we also need to find the status that currently has the order and swap places
 				const statusToSwap = statusData.find((status) => status.order === newOrder)
 				if (status && statusToSwap){
-					updateOrder([{
+					await updateOrder([{
 						id: status.id,
 						order: newOrder
 					},
@@ -128,7 +127,12 @@ export const OrganizationStatusModal = () => {
 					{
 						id: statusToSwap.id,
 						order: status.order
-					}])
+					}]).unwrap()
+					dispatch(addToast({
+						...toast,
+						type: "success",
+						message: "Order was updated successfully!"
+					}))
 				}
 				else {
 					dispatch(
