@@ -19,6 +19,7 @@ import { OrganizationForm } from "../../components/OrganizationForm"
 import { UploadImageForm } from "../../components/UploadImageForm"
 import { ORGANIZATION_URL } from "../../helpers/urls"
 import { Avatar } from "../../components/page-elements/Avatar"
+import { toggleShowModal, setModalType } from "../../slices/modalSlice"
 
 export const OrganizationDisplay = () => {
 	const dispatch = useAppDispatch()
@@ -31,7 +32,6 @@ export const OrganizationDisplay = () => {
 				{organization ? 
 					<>
 						<div className = "tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center tw-gap-y-2">
-							{/*<FaRegBuilding className = "tw-w-32 tw-h-32"/>*/}
 							<Avatar size = "l" imageUrl={organization.imageUrl}/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
@@ -58,6 +58,10 @@ export const OrganizationDisplay = () => {
 								{uploadImage ? (
 									<UploadImageForm id={organization.id} endpoint={`${ORGANIZATION_URL}/image`} imageUrl={organization.imageUrl} invalidatesTags={["Organizations"]}/> 
 								) : null}
+								<button onClick={() => {
+									dispatch(toggleShowModal(true))
+									dispatch(setModalType("ORGANIZATION_STATUS_FORM"))
+								}} className = "button --secondary">Add/Edit Statuses</button>
 							</div>
 						</div>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">

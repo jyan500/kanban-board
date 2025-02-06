@@ -4,14 +4,21 @@ const { body, param } = require("express-validator")
 const { BULK_INSERT_LIMIT } = require("../constants")
 
 const statusValidator = (actionType) => {
-	let validationRules = []
+	let validationRules = [
+	]
+	if (actionType === "update" || actionType === "create"){
+		validationRules = [
+			...validationRules,
+			body("is_active").notEmpty().withMessage("is active is required")
+		]	
+	}
 	// if update or delete route, validate the ID and make sure status exists
 	if (actionType === "get" || actionType === "update" || actionType === "delete"){
 		validationRules = [
 			param("id").custom(async (value, {req}) => await checkEntityExistsIn("status", value, [{col: "id", value: value}, {col: "organization_id", value: req.user.organization}], "statuses"))
 		]
 	}
-	if (actionType !== "delete" && actionType !== "get" && actionType !== "bulk-edit"){
+	if (actionType !== "delete" && actionType !== "get" && actionType !== "bulk-edit" && actionType !== "update-order"){
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required").custom((value, {req}) => {
@@ -21,7 +28,7 @@ const statusValidator = (actionType) => {
 							resolve(true)
 						}
 						else {
-							reject(new Error("name field must be unique"))
+							reject(new Error("Name field must be unique"))
 						}
 					})
 				})
@@ -33,7 +40,7 @@ const statusValidator = (actionType) => {
 								resolve(true)
 							}
 							else {
-								reject(new Error("order field must be unique"))
+								reject(new Error("Order field must be unique"))
 							}
 						})
 					})	
@@ -50,6 +57,17 @@ const statusValidator = (actionType) => {
 			body("statuses.*")
 			.custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value.id, "statuses"))
 		]
+	}
+
+	if (actionType === "update-order"){
+		validationRules = [
+			...validationRules,
+			body("statuses").isArray({min: 0, max: 2})
+			.withMessage("statuses must be an array")
+			.withMessage(`cannot have more than 2 records`),
+			body("statuses.*")
+			.custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value.id, "statuses")),
+		]	
 	}
 
 	return validationRules
@@ -84,4 +102,5 @@ module.exports = {
 	validateUpdate: statusValidator("update"),
 	validateBulkEdit: statusValidator("bulk-edit"),
 	validateDelete: statusValidator("delete"),
+	validateUpdateOrder: statusValidator("update-order")
 }

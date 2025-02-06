@@ -14,6 +14,7 @@ import {
 import { Ticket } from "../Ticket"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
+import { sortStatusByOrder } from "../../helpers/functions"
 
 type Props = {
 	tickets: Array<TicketType>

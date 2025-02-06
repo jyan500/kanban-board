@@ -21,6 +21,7 @@ import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icon
 import { LoadingSpinner } from "../LoadingSpinner"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
+import { sortStatusByOrder } from "../../helpers/functions"
 
 type Props = {
 	groupedTickets: GroupedTickets

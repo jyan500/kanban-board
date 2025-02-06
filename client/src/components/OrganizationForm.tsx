@@ -5,12 +5,11 @@ import { toggleShowModal } from "../slices/modalSlice"
 import { 
 	useUpdateOrganizationMutation
 } from "../services/private/organization" 
-import { useGetStatusesQuery, useBulkEditStatusesMutation } from "../services/private/status"
 import { useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import { addToast } from "../slices/toastSlice" 
 import { LoadingSpinner } from "./LoadingSpinner"
-import { Organization, Status } from "../types/common"
+import { Organization } from "../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { EMAIL_PATTERN, PHONE_PATTERN } from "../helpers/constants"
 
@@ -48,11 +47,8 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 		email: "",
 		industry: ""
 	}
-	const [ formStatuses, setFormStatuses ] = useState<Array<Status>>([])
 	const [ updateOrganization, {isLoading: isUpdateOrganizationLoading, error} ] = useUpdateOrganizationMutation()
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { data: statusData, isLoading: isStatusDataLoading } = useGetStatusesQuery(!organization ? skipToken : {})
-	const [ bulkEditStatuses, {isLoading: isBulkEditStatuses, error: bulkEditStatusesError} ] = useBulkEditStatusesMutation()
 	const { register , handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
@@ -80,17 +76,10 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 		}
 	}, [organization])
 
-	useEffect(() => {
-		if (!isStatusDataLoading && statusData){
-			setFormStatuses(statusData)
-		}
-	}, [isStatusDataLoading, statusData])
-
     const onSubmit = async (values: FormValues) => {
     	try {
     		if (values.id != null && organization){
     			await updateOrganization({id: !isNaN(Number(values.id)) ? Number(values.id) : 0, ...values}).unwrap()
-				await bulkEditStatuses(formStatuses.map((status) => ({id: status.id, isActive: status.isActive}))).unwrap()
     		}	
     		dispatch(addToast({
     			id: uuidv4(),
@@ -108,17 +97,6 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
     		}))
     	}
     }
-
-    const onCheck = (id: number) => {
-		const formStatus = formStatuses?.find((status) => status.id === id)
-		// flip the "is active" attribute when checking off 
-		if (formStatus){
-			const index = formStatuses.indexOf(formStatus)
-			const copied = [...formStatuses]
-			copied.splice(index, 1, {...formStatus, isActive: !formStatus.isActive})
-			setFormStatuses(copied)
-		}
-	}
 
 	return (
 		<div className = "tw-flex tw-flex-col">
@@ -216,18 +194,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 					/>
 			        {errors?.industry && <small className = "--text-alert">{errors.industry.message}</small>}
 				</div>
-				{!isOrgRegister ? (
-					<div className = "tw-flex tw-flex-col">
-						<h2>Statuses</h2>
-						{ !isStatusDataLoading ? (statusData?.map((status) => (
-							<div key = {status.id} className="tw-flex tw-flex-row tw-gap-x-2 tw-py-2">
-								<input id = {`org-status-${status.id}`} checked = {formStatuses.find((s)=>s.id === status.id)?.isActive} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
-								<label htmlFor = {`org-status-${status.id}`}>{status.name}</label>
-							</div>
-						))) : <LoadingSpinner/>}
-					</div>	
-				) : null}
-				<div>
+				<div className = "tw-flex tw-flex-row tw-gap-x-2">
 					<button type = "submit" className = "button">{!organization ? "Next" : "Submit"}</button>
 				</div>
 			</form>
