@@ -9,4 +9,7 @@ export const USERS = "/users"
 export const USER = "/user"
 export const ORGANIZATION = "/organization"
 export const ACCOUNT = "/account"
+export const REGISTER_USER = `${REGISTER}${USER}`
+export const REGISTER_ORG = `${REGISTER}/${ORGANIZATION}`
+export const ACCOUNT_CREATE_ORG = `${ACCOUNT}${ORGANIZATION}`
 export const NOTIFICATIONS = "/notifications"

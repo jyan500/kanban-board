@@ -55,12 +55,14 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 	const registerOptions = {
 	    name: { required: "Name is required" },
 	    email: {
+	    	required: "Email is required",
 	    	pattern: {
 	            value: EMAIL_PATTERN,
 	            message: "Please enter a valid email.",
 	        }
 	    },
 	    phoneNumber: {
+	    	required: "Phone Number is required",
 	    	pattern: {
 	    		value: PHONE_PATTERN,
 	    		message: "Please enter a valid phone number."
@@ -174,14 +176,14 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 			        {errors?.zipcode && <small className = "--text-alert">{errors.zipcode.message}</small>}
 				</div>
 				<div>
-					<label className = "label" htmlFor = "organization-phone">Phone:</label>
+					<label className = "label" htmlFor = "organization-phone">Phone:<span className = "tw-font-bold tw-text-red-500">*</span></label>
 					<input id = "organization-phone" type = "text"
 					{...register("phoneNumber", registerOptions.phoneNumber)}
 					/>
 			        {errors?.phoneNumber && <small className = "--text-alert">{errors.phoneNumber.message}</small>}
 				</div>
 				<div>
-					<label className = "label" htmlFor = "organization-email">Email:</label>
+					<label className = "label" htmlFor = "organization-email">Email:<span className = "tw-font-bold tw-text-red-500">*</span></label>
 					<input id = "organization-email" type = "text" className = "tw-w-full"
 					{...register("email", registerOptions.email)}
 					/>
@@ -195,7 +197,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 			        {errors?.industry && <small className = "--text-alert">{errors.industry.message}</small>}
 				</div>
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
-					<button type = "submit" className = "button">{!organization ? "Next" : "Submit"}</button>
+					<button type = "submit" className = "button">{isOrgRegister ? "Next" : "Submit"}</button>
 				</div>
 			</form>
 		</div>

@@ -23,7 +23,7 @@ const UserRoleProtectedLayout = () => {
 	if (isLoading){
 		return <></>
 	}
-	return !isAdmin ? <Navigate replace to = {"/"} state={{alert: "You don't have permission to access this page"}}/> : (<><Outlet/></>)
+	return !isAdmin ? <Navigate replace to = {"/"} state={{type: "failure", alert: "You don't have permission to access this page"}}/> : (<><Outlet/></>)
 }
 
 export default UserRoleProtectedLayout

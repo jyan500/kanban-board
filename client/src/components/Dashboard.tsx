@@ -39,12 +39,7 @@ export const Dashboard = () => {
 				const data = await switchUserOrganization({organizationId: switchOrgId}).unwrap()
 				dispatch(setCredentials(data))
 				dispatch(privateApi.util.resetApiState())
-				dispatch(addToast({
-	    			id: uuidv4(),
-	    			type: "success",
-	    			animationType: "animation-in",
-	    			message: "Switched organization successfully!",
-	    		}))
+	    		navigate("/", {state: {type: "success", alert: "You have switched organizations!"}, replace: true})
 			}
 			catch (e){
 				dispatch(addToast({
@@ -61,7 +56,7 @@ export const Dashboard = () => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
-			{location?.state?.alert ? <Banner message = {location.state.alert} type = "failure"/> : null}
+			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
 			<div className = "tw-w-full tw-flex tw-flex-row tw-h-full tw-gap-x-4">
 				<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
 					<h1>Organizations</h1>

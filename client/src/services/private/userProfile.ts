@@ -4,6 +4,7 @@ import { BACKEND_BASE_URL, USER_PROFILE_URL, USER_PROFILE_ORG_URL, ORG_LOGIN_URL
 import { CustomError, ListResponse, Organization, UserProfile, UserNotificationType } from "../../types/common" 
 import { privateApi } from "../private"
 import { UserResponse } from "../public/auth"
+import { FormValues as OrganizationFormValues } from "../../components/OrganizationForm"
 
 type UserProfileRequest = {
 	id?: number
@@ -79,10 +80,11 @@ export const userProfileApi = privateApi.injectEndpoints({
 		}),
 		getUserOrganizations: builder.query<ListResponse<Organization>, Record<string, any>>({
 			query: (urlParams) => ({
-				url: `${USER_PROFILE_ORG_URL}`,
+				url: USER_PROFILE_ORG_URL,
 				method: "GET",
 				params: urlParams
-			})
+			}),
+			providesTags: ["UserOrganizations"]
 		}),
 		switchUserOrganization: builder.mutation<UserResponse, {organizationId: number}>({
 			query: ({organizationId}) => ({
@@ -107,6 +109,16 @@ export const userProfileApi = privateApi.injectEndpoints({
 				}
 			}),
 			invalidatesTags: ["UserNotificationTypes"]
+		}),
+		registerOrganization: builder.mutation<{message: string}, OrganizationFormValues>({
+			query: ({name, email, address, city, state, zipcode, industry, phoneNumber: phone_number}) => ({
+				url: USER_PROFILE_ORG_URL,
+				method: "POST",
+				body: {
+					name, email, address, city, state, zipcode, industry, phone_number
+				}
+			}),
+			invalidatesTags: ["UserOrganizations"]	
 		})
 	}),
 })
@@ -121,4 +133,5 @@ export const {
 	useSwitchUserOrganizationMutation,
 	useGetUserNotificationTypesQuery,
 	useUpdateUserNotificationTypesMutation,
+	useRegisterOrganizationMutation,
 } = userProfileApi 

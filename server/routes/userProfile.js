@@ -4,6 +4,8 @@ const db = require("../db/db")
 const { getUserValidator, editUserValidator, editOwnUserValidator, editUserImageValidator, editNotificationTypesValidator } = require("../validation/user")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
+const { validateAddOrganization } = require("../validation/organization") 
+const { DEFAULT_STATUSES } = require("../constants")
 const bcrypt = require("bcrypt")
 const config = require("../config")
 
@@ -205,6 +207,29 @@ router.get("/organization", async (req, res, next) => {
 	}
 })
 
+router.post("/organization", validateAddOrganization, handleValidationResult, async (req, res, next) => {
+	try {
+		const { name, email, phone_number, address, city, state, zipcode, industry } = req.body
+		const organization = await db("organizations").insert({
+			name, email, phone_number, address, city, state, zipcode, industry	
+		}, ["id"])
+		// create the admin user role for the new user
+		const adminUserRole = await db("user_roles").where("name", "ADMIN").first()
+		await db("organization_user_roles").insert({
+			user_id: req.user.id,
+			organization_id: organization[0],
+			user_role_id: adminUserRole?.id
+		})
+		// attach default statuses for the new organization
+		await db("statuses").insert(DEFAULT_STATUSES.map((status) => ({...status, organization_id: organization[0]})))
+
+		res.json({message: "Organization registered successfully!"})
+	}
+	catch (err){
+		console.log(`Error while adding organization: ${err.message}`)	
+		next(err)
+	}
+})
 
 // get a user
 router.get("/:userId", getUserValidator, handleValidationResult, async (req, res, next) => {
