@@ -117,7 +117,9 @@ export const OrganizationStatusModal = () => {
 				const status = statusData.find((status) => status.id === statusId)
 				// we also need to find the status that currently has the order and swap places
 				const statusToSwap = statusData.find((status) => status.order === newOrder)
-				if (status && statusToSwap){
+				// TODO: there are rare instances where the cache does not update
+				// prevent two statuses from having the same order
+				if (status && statusToSwap && newOrder !== status.order){
 					await updateOrder([{
 						id: status.id,
 						order: newOrder

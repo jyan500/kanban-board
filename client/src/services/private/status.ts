@@ -43,7 +43,7 @@ export const statusApi = privateApi.injectEndpoints({
 					is_active: isActive
 				}
 			}),
-			invalidatesTags: ["Statuses"]
+			invalidatesTags: ["Statuses", "BoardStatuses"]
 		}),
 		updateStatus: builder.mutation<{message: string}, UpdateStatusRequest>({
 			query: ({id, name, order, isActive}) => ({
@@ -53,7 +53,7 @@ export const statusApi = privateApi.injectEndpoints({
 					name, order, is_active: isActive
 				}
 			}),
-			invalidatesTags: ["Statuses"]
+			invalidatesTags: ["Statuses", "BoardStatuses"]
 		}),
 		updateOrder: builder.mutation<{message: string}, Array<{id: number, order: number}>>({
 			query: (body) => ({
@@ -63,7 +63,7 @@ export const statusApi = privateApi.injectEndpoints({
 					statuses: body 
 				},
 			}),
-			invalidatesTags: ["Statuses"]
+			invalidatesTags: ["Statuses", "BoardStatuses"]
 		}),
 		bulkEditStatuses: builder.mutation<string, Array<Pick<Status, "id" | "isActive">>>({
 			query: (statuses) => ({
