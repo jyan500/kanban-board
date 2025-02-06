@@ -140,7 +140,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					is_watcher: isWatcher
 				}
 			}),
-			invalidatesTags: ["TicketAssignees"]
+			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets"]
 		}),
 		addTicketAssignee: builder.mutation<TicketAssigneeResponse, TicketAssigneeRequest>({
 			query: ({ticketId, userIds, isWatcher}) => ({
@@ -151,7 +151,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					is_watcher: isWatcher
 				}
 			}),
-			invalidatesTags: ["TicketAssignees"],
+			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets"],
 		}),
 		deleteTicketAssignee: builder.mutation<TicketAssigneeResponse, SingleTicketAssigneeRequest>({
 			query: ({ticketId, userId}) => ({
@@ -162,7 +162,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					ticket_id: ticketId
 				}
 			}),
-			invalidatesTags: ["TicketAssignees"],
+			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets"],
 		}),
 		addTicket: builder.mutation<{id: number, message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "id" | "createdAt">>({
 			query: (ticket) => ({
@@ -176,7 +176,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					status_id: ticket.statusId
 				},
 			}),
-			invalidatesTags: ["Tickets"]
+			invalidatesTags: ["Tickets", "BoardTickets"]
 		}),
 		updateTicket: builder.mutation<{message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "createdAt">>({
 			query: (ticket) => ({

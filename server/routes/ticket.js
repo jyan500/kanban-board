@@ -114,6 +114,19 @@ router.get("/", async (req, res, next) => {
 		else {
 			tickets = await tickets.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		}
+		if (req.query.includeAssignees){
+			tickets = {...tickets, data: await Promise.all(
+				tickets.data.map(async (ticket) => {
+					const assignees = await db("tickets_to_users").where("ticket_id", ticket.id).where("is_watcher", false).where("is_mention", false).select(
+						"user_id as userId",
+					)
+					return {
+						...ticket,
+						assignees: assignees.map((assignee) => assignee.userId)
+					}					
+				})
+			)}
+		}
 		res.json(tickets)
 	}
 	catch (err) {

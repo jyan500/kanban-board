@@ -43,6 +43,7 @@ export const TicketDisplay = () => {
 		searchBy: searchParams.get("searchBy") ?? "",
 		query: searchParams.get("query") ?? "",
 		page: searchParams.get("page") ?? 1,
+		includeAssignees: true,
 		...filters
 	})
 	const ticketId = params.ticketId ? parseInt(params.ticketId) : undefined 

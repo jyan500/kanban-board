@@ -37,6 +37,7 @@ export const Board = () => {
 			dispatch(setGroupBy("NONE"))
 			dispatch(setBoardInfo(boardData[0]))
 			dispatch(setBoardTickets(boardTicketData ?? []))
+			console.log("boardTicketData: ", boardTicketData)
 			dispatch(setFilteredTickets(boardTicketData ?? []))
 			dispatch(setStatusesToDisplay(statusData ?? []))
 		}
