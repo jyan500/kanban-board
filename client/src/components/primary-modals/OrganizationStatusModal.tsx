@@ -57,6 +57,27 @@ export const OrganizationStatusModal = () => {
 		}
 	}, [isStatusDataLoading, statusData])
 
+	const addUpdateForm = () => {
+		return (
+			<form className = "tw-border tw-border-gray-100 tw-p-4" onSubmit={handleSubmit(onSubmit)}>
+				<div className = {`tw-flex tw-flex-col tw-gap-y-2`}>
+					<div className = "">
+						<label className = "label">Name</label>
+						<input type = "text" {...register("name")}/>
+				        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
+					</div>
+					<div className = "tw-flex tw-flex-row tw-gap-x-2">
+						<input type = "checkbox" {...register("isActive")}/>
+						<label className = "label">Visible</label>	
+					</div>
+					<div>
+						<button type = "submit" className = "button">Save</button>
+					</div>
+				</div>
+			</form>
+		)
+	}
+
 	const updateStatusOrder = async (statusId: number, newOrder: number) => {
 		const toast: Toast = {
 			id: uuidv4(),
@@ -128,115 +149,60 @@ export const OrganizationStatusModal = () => {
 		setSelectedStatusId(null)
 	}		
 
-	// const setOrder = (statusId: number, isBackwards: boolean) => {
-	// 	const selectedStatusIndex = form.statuses.findIndex((status: Status) => status.id === statusId)	
-	// 	const selectedStatus = form.statuses[selectedStatusIndex]
-	// 	// you cannot move order of 1 any further backwards
-	// 	if (selectedStatus && 
-	// 		(
-	// 			(isBackwards && selectedStatus.order !== 1) || 
-	// 			(!isBackwards && selectedStatus.order !== form.statuses.length)
-	// 		)
-	// 	){
-	// 		// find the element that was previously one behind and swap places with this element
-	// 		const previousIndex = form.statuses.findIndex((status: Status) => (isBackwards ? (selectedStatus.order - 1 === status.order) : selectedStatus.order + 1 === status.order))
-	// 		const previous = form.statuses[previousIndex]
-	// 		if (previous){
-	// 			let temp = form.statuses.map(status => ({...status})) 
-	// 			let tempPrevOrder = previous.order
-	// 			let tempSelectedOrder = selectedStatus.order
-	// 			temp.splice(selectedStatusIndex, 1, {...selectedStatus, order: tempPrevOrder})
-	// 			temp.splice(previousIndex, 1, {...previous, order: tempSelectedOrder})
-	// 			setForm({...form, statuses: temp})
-	// 		}
-	// 	}	
-	// }
-
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			<p className = "tw-font-bold">Click on the buttons to edit the statuses, and arrows to change the order</p>
-			<div>
-				<button onClick={(e) => {
-					setShowNewStatus(!showNewStatus)
-					setSelectedStatusId(null)
-					reset({
-						id: undefined,	
-						name: "",
-						isActive: false
-					})
-				}} className = "button --secondary">
-					<div className = "tw-flex tw-items-center tw-gap-x-2">
-						<AddIcon/>
-						<p>Add Status</p>
-					</div>
-				</button>
+		<div className = "tw-flex tw-flex-col tw-gap-y-6">
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<p className = "tw-font-bold">Click on the buttons to edit the statuses, and arrows to change the order</p>
+				<div>
+					<button onClick={(e) => {
+						setShowNewStatus(!showNewStatus)
+						setSelectedStatusId(null)
+						reset({
+							id: undefined,	
+							name: "",
+							isActive: false
+						})
+					}} className = "button --secondary">
+						<div className = "tw-flex tw-items-center tw-gap-x-2">
+							<AddIcon/>
+							<p>Add Status</p>
+						</div>
+					</button>
+				</div>
+				{
+					showNewStatus ?  
+						addUpdateForm() : null
+				}
 			</div>
-			{
-				showNewStatus ? ( 
-				<div className = {`tw-flex tw-flex-col`}>
-					<form onSubmit={handleSubmit(onSubmit)}>
-						<div className = "">
-							<label className = "label">Name</label>
-							<input type = "text" {...register("name")}/>
-					        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
+			<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-border tw-border-gray-50 tw-shadow-md tw-p-4">
+				{ !isStatusDataLoading && statusData?.length ? ([...statusData].sort(sortStatusByOrder).map((status, index) => (
+					<>
+						<div className = "tw-flex tw-flex-row tw-justify-between">
+							<button onClick = {(e) => {
+								setShowNewStatus(false)
+								setSelectedStatusId(selectedStatusId === status.id ? null : status.id)
+								reset({
+									id: status.id,	
+									name: status.name,
+									isActive: status.isActive,
+								})
+							}} key = {status.id} className = "button">
+								{status.name}
+							</button>
+							<div className = "tw-flex tw-flex-col tw-items-center">
+								<IconButton disabled = {index === 0} onClick={() => updateStatusOrder(status.id, status.order - 1)}><ArrowUp className = "tw-w-6 tw-h-6"/></IconButton>
+								<IconButton disabled = {index === statusData.length-1} onClick={() => updateStatusOrder(status.id, status.order + 1)}><ArrowDown className = "tw-w-6 tw-h-6"/></IconButton>
+							</div>
 						</div>
-						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-							<label className = "label">Visible</label>	
-							<input type = "checkbox" {...register("isActive")}/>
-						</div>
-						<div>
-							<button type = "submit" className = "button">Save</button>
-						</div>
-					</form>
-				</div>) : null
-			}
-			{ !isStatusDataLoading && statusData?.length ? ([...statusData].sort(sortStatusByOrder).map((status, index) => (
-				<>
-					<div className = "tw-flex tw-flex-row tw-justify-between">
-						<button onClick = {(e) => {
-							setShowNewStatus(false)
-							setSelectedStatusId(selectedStatusId === status.id ? null : status.id)
-							reset({
-								id: status.id,	
-								name: status.name,
-								isActive: status.isActive,
-							})
-						}} key = {status.id} className = "button">
-							{status.name}
-						</button>
-						<div className = "tw-flex tw-flex-col tw-items-center">
-							<IconButton disabled = {index === 0} onClick={() => updateStatusOrder(status.id, status.order - 1)}><ArrowUp className = "tw-w-6 tw-h-6"/></IconButton>
-							<IconButton disabled = {index === statusData.length-1} onClick={() => updateStatusOrder(status.id, status.order + 1)}><ArrowDown className = "tw-w-6 tw-h-6"/></IconButton>
-						</div>
-					</div>
-					{
-						selectedStatusId === status.id ? 
-						<div className = {`tw-flex tw-flex-col`}>
-							<form onSubmit={handleSubmit(onSubmit)}>
-								<div className = "">
-									<label className = "label">Name</label>
-									<input type = "text" {...register("name")}/>
-							        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
-								</div>
-								<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-									<label className = "label">Visible</label>	
-									<input type = "checkbox" {...register("isActive")}/>
-								</div>
-								<div>
-									<button type = "submit" className = "button">Save</button>
-								</div>
-							</form>
-						</div> : null
-					}
-				</>
-			))) : <LoadingSpinner/>}
-			{/*<button className = "button">Save Changes</button>	*/}
-			{/*<button onClick={addStatus}>Add Status</button>*/}
-			{
-				// you can only remove statuses that don't have any tickets associated with that status
-				// selectedStatusId != null && !doTicketsContainStatus(selectedStatusId, boardTicketIds) ? (
-				// 	<button onClick = {removeStatus} className = "--alert">Remove Status</button>) : null
-			}
+						{
+							selectedStatusId === status.id ? 
+							addUpdateForm() : null
+						}
+					</>
+				))) : <LoadingSpinner/>}
+			</div>
 		</div>
-	)	}
+	)
+}
+
 

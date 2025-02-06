@@ -402,6 +402,14 @@ a {
 	min-height: var(--l-modal-height);
 }
 
+.--l-modal-height {
+	min-height: var(--l-modal-height);
+}
+
+.--m-modal-height {
+	min-height: var(--m-modal-height);
+}
+
 .--m-modal {
 	min-width: var(--m-modal-width);
 	min-height: var(--m-modal-height);
