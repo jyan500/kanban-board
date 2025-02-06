@@ -22,6 +22,7 @@ export const ToolBar = () => {
 	const { board, boardInfo: primaryBoardInfo, tickets, statusesToDisplay, groupBy } = useAppSelector((state) => state.board)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
+	const { statuses } = useAppSelector((state) => state.status)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { data, isFetching} = useGetUserProfilesQuery(primaryBoardInfo?.assignees ? {userIds: primaryBoardInfo?.assignees} : skipToken)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
@@ -91,7 +92,7 @@ export const ToolBar = () => {
 				<button className = "button" onClick = {() => {
 					dispatch(toggleShowModal(true))
 					dispatch(setModalType("ADD_TICKET_FORM"))
-					dispatch(setModalProps({statusesToDisplay: statusesToDisplay, boardId: primaryBoardInfo?.id}))
+					dispatch(setModalProps({statusesToDisplay: statuses, boardId: primaryBoardInfo?.id}))
 				}}>Add Ticket</button>
 				{
 					isAdminOrUserRole ? (

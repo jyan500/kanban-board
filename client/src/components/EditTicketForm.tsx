@@ -380,7 +380,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							</div>
 						</div>
 						<div className = "tw-w-1/3">
-							<EditTicketFormToolbar ticketAssignee={ticketAssignees?.[0]} ticketWatchers={ticketWatchers} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket}/>
+							<EditTicketFormToolbar ticketAssignee={ticketAssignees?.[0]} ticketWatchers={ticketWatchers} statusesToDisplay={statuses} boardId={boardId} ticket={ticket}/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<select 
 								{...register("statusId", registerOptions.statusId)} 
@@ -393,7 +393,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									borderColor: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)"
 								}}
 								className = "tw-w-full __custom-select">
-									{statusesToDisplay.map((status) => {
+									{statuses.map((status) => {
 											return (
 												<option key = {status.id} value = {status.id}>{status.name}</option>
 											)
