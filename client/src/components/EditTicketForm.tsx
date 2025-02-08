@@ -47,6 +47,8 @@ import {
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { Avatar } from "./page-elements/Avatar"
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
+import { useScreenSize } from "../hooks/useScreenSize"
+import { LG_BREAKPOINT } from "../helpers/constants"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -123,6 +125,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	    ticketTypeId: { required: "Ticket Type is required"},
 	    userId: {}
     }
+    /* Get screen width and height */
+    const { width, height } = useScreenSize()
+
 	const adminRole = userRoles?.find((role) => role.name === "ADMIN")
 	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
 
@@ -282,12 +287,108 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		</select>
 	)
 
+	const rightSection = () => {
+		return (
+			<>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<select 
+					{...register("statusId", registerOptions.statusId)} 
+					onChange={(e) => {
+						setValue("statusId", parseInt(e.target.value))
+					    handleSubmit(onSubmit)()
+					}}
+					style={{
+						background: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)",
+						borderColor: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)"
+					}}
+					className = "tw-w-full __custom-select">
+						{statuses.map((status) => {
+								return (
+									<option key = {status.id} value = {status.id}>{status.name}</option>
+								)
+							})
+						}
+					</select>
+					<div className = "tw-flex tw-flex-col tw-gap-y-2">
+						<span className = "tw-font-bold tw-text-xl">Details</span>
+						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
+							<span className = "tw-font-semibold tw-w-1/2">Assignee</span>
+							{
+								!isTicketAssigneesLoading ? (
+									<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
+										<Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
+										{userProfileSelect}		
+									</div>
+								) : <LoadingSpinner/>
+							}	
+						</div>
+						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
+							<span className = "tw-font-semibold tw-w-1/2">Reporter</span>	
+							<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center">
+								<Avatar imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
+								<div className = "tw-ml-3.5">{displayUser(reporter)}</div>
+							</div>
+						</div>
+						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
+							<span className = "tw-font-semibold tw-w-1/2">Priority</span>
+							<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
+								<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "tw-shrink-0 tw-w-8 tw-h-8"}}>
+									{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
+								</IconContext.Provider>	
+								{prioritySelect}
+							</div>
+						</div>
+						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
+							<span className = "tw-font-semibold tw-w-1/2">Ticket Type</span>	
+							{
+								<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
+									{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-1.5 tw-w-6 tw-h-6 tw-shrink-0"/> : null}
+									{
+										epicTicketType?.id !== ticket?.ticketTypeId ?
+											<div className = "tw-w-full tw-ml-0.5">
+											{ticketTypeSelect}
+											</div>
+										: (
+										<div className = "tw-ml-3.5">
+											{ticketTypeName}	
+										</div>
+										)
+									}
+								</div>
+						}
+						</div>
+					</div>
+				</div>
+				<div className = "tw-flex tw-flex-row tw-gap-x-2">
+				{
+					ticket?.epicParentTickets?.map((parentTicket) => {
+						return (
+							<Link key={`edit_ticket_parent_epic_link_${parentTicket.id}`} onClick = {() => {
+								// if we're in a modal, close the modal first
+								if (isModal){
+									dispatch(toggleShowModal(false))
+									dispatch(selectCurrentTicketId(null))
+								}
+							}} to = {`${TICKETS}/${parentTicket.id}`}>
+								<Badge key = {`edit_ticket_parent_epic_${parentTicket.id}`} className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>  
+							</Link>
+						)
+					})
+				} 
+				</div> 
+				<div className = "tw-pt-2 tw-pb-2">
+					<strong>Created {createdAt}</strong>
+				</div>
+			</>
+		)
+	}
+
 	return (
 		<div className = "tw-flex tw-flex-col tw-w-full tw-gap-y-2">
 			<FormProvider {...methods}>
 				<form onSubmit={(e) => {e.preventDefault()}}>
-					<div className = "tw-flex tw-flex-row tw-gap-x-4">
-						<div className = "tw-break-words tw-w-2/3 tw-flex tw-flex-col tw-gap-y-2">
+					<div className = "tw-flex tw-flex-col tw-gap-y-4 lg:tw-flex-row lg:tw-gap-x-4">
+						<div className = "tw-break-words tw-w-full lg:tw-w-2/3 tw-flex tw-flex-col tw-gap-y-2">
 							<div>
 							{
 								!editFieldVisibility.name ? (
@@ -379,102 +480,29 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								</>
 							</div>
 						</div>
-						<div className = "tw-w-1/3">
-							<EditTicketFormToolbar ticketAssignee={ticketAssignees?.[0]} ticketWatchers={ticketWatchers} statusesToDisplay={statuses} boardId={boardId} ticket={ticket}/>
-							<div className = "tw-flex tw-flex-col tw-gap-y-2">
-								<select 
-								{...register("statusId", registerOptions.statusId)} 
-								onChange={(e) => {
-									setValue("statusId", parseInt(e.target.value))
-								    handleSubmit(onSubmit)()
-								}}
-								style={{
-									background: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)",
-									borderColor: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)"
-								}}
-								className = "tw-w-full __custom-select">
-									{statuses.map((status) => {
-											return (
-												<option key = {status.id} value = {status.id}>{status.name}</option>
-											)
-										})
-									}
-								</select>
-								<div className = "tw-flex tw-flex-col tw-gap-y-2">
-									<span className = "tw-font-bold tw-text-xl">Details</span>
-									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-										<span className = "tw-font-semibold tw-w-1/2">Assignee</span>
-										{
-											!isTicketAssigneesLoading ? (
-												<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
-													<Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
-													{userProfileSelect}		
-												</div>
-											) : <LoadingSpinner/>
-										}	
-									</div>
-									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-										<span className = "tw-font-semibold tw-w-1/2">Reporter</span>	
-										<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center">
-											<Avatar imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
-											<div className = "tw-ml-3.5">{displayUser(reporter)}</div>
-										</div>
-									</div>
-									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-										<span className = "tw-font-semibold tw-w-1/2">Priority</span>
-										<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
-											<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "tw-shrink-0 tw-w-8 tw-h-8"}}>
-												{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
-											</IconContext.Provider>	
-											{prioritySelect}
-										</div>
-									</div>
-									<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-										<span className = "tw-font-semibold tw-w-1/2">Ticket Type</span>	
-										{
-											<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
-												{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-1.5 tw-w-6 tw-h-6 tw-shrink-0"/> : null}
-												{
-													epicTicketType?.id !== ticket?.ticketTypeId ?
-														<div className = "tw-w-full tw-ml-0.5">
-														{ticketTypeSelect}
-														</div>
-													: (
-													<div className = "tw-ml-3.5">
-														{ticketTypeName}	
-													</div>
-													)
-												}
-											</div>
-									}
-									</div>
-								</div>
-							</div>
-							<div className = "tw-flex tw-flex-row tw-gap-x-2">
+						<div className = "tw-w-full tw-flex tw-flex-row tw-gap-x-4 lg:tw-gap-y-2 lg:tw-flex-col lg:tw-w-1/3">
 							{
-								ticket?.epicParentTickets?.map((parentTicket) => {
-									return (
-										<Link key={`edit_ticket_parent_epic_link_${parentTicket.id}`} onClick = {() => {
-											// if we're in a modal, close the modal first
-											if (isModal){
-												dispatch(toggleShowModal(false))
-												dispatch(selectCurrentTicketId(null))
-											}
-										}} to = {`${TICKETS}/${parentTicket.id}`}>
-											<Badge key = {`edit_ticket_parent_epic_${parentTicket.id}`} className = {"tw-bg-light-purple tw-text-white"}><span className = "tw-text-sm">{parentTicket.name}</span></Badge>  
-										</Link>
-									)
-								})
-							} 
-							</div> 
-							<div className = "tw-pt-2 tw-pb-2">
-								<strong>Created {createdAt}</strong>
-							</div>
+								width >= LG_BREAKPOINT ? (
+									<>
+										<div>
+											<EditTicketFormToolbar ticketAssignee={ticketAssignees?.[0]} ticketWatchers={ticketWatchers} statusesToDisplay={statuses} boardId={boardId} ticket={ticket}/>
+										</div>
+										<div>{rightSection()}</div>	
+									</>
+								) : (
+									<>
+										<div className = "tw-flex-1">{rightSection()}</div>	
+										<div>
+											<EditTicketFormToolbar ticketAssignee={ticketAssignees?.[0]} ticketWatchers={ticketWatchers} statusesToDisplay={statuses} boardId={boardId} ticket={ticket}/>
+										</div>	
+									</>
+								)
+							}
 						</div>
 					</div>
 				</form>
 			</FormProvider>
-			<div className = "tw-flex tw-flex-col tw-break-words tw-w-2/3 tw-gap-y-2">
+			<div className = "tw-flex tw-flex-col tw-break-words tw-w-full lg:tw-w-2/3 tw-gap-y-2">
 				<div className = "tw-space-y-2">
 					{!isTicketRelationshipsLoading ? (
 						currentTicketId && (setShowAddLinkedIssue || ticketRelationships?.data?.length) ? 
