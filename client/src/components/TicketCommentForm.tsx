@@ -212,7 +212,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 				showAddCommentField ? (!showAddCommentForm ? (
 					<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
 						<CgProfile className = "tw-w-8 tw-h-8"/>
-						<button onClick = {() => setShowAddCommentForm(true)} className = "tw-bg-gray-50 tw-p-1 tw-w-[400px] tw-border tw-border-gray-300"><i>Add a comment...</i></button>
+						<button onClick = {() => setShowAddCommentForm(true)} className = "tw-bg-gray-50 tw-p-1 tw-w-full lg:tw-w-[400px] tw-border tw-border-gray-300"><i>Add a comment...</i></button>
 					</div>
 				) : (
 					<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2 tw-w-full">

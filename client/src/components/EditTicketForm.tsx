@@ -480,23 +480,14 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								</>
 							</div>
 						</div>
-						<div className = "tw-w-full tw-flex tw-flex-row tw-gap-x-4 lg:tw-gap-y-2 lg:tw-flex-col lg:tw-w-1/3">
+						<div className = "tw-w-full tw-flex-col tw-flex tw-gap-y-2 lg:tw-w-1/3">
 							{
-								width >= LG_BREAKPOINT ? (
-									<>
-										<div>
-											<EditTicketFormToolbar ticketAssignee={ticketAssignees?.[0]} ticketWatchers={ticketWatchers} statusesToDisplay={statuses} boardId={boardId} ticket={ticket}/>
-										</div>
-										<div>{rightSection()}</div>	
-									</>
-								) : (
-									<>
-										<div className = "tw-flex-1">{rightSection()}</div>	
-										<div>
-											<EditTicketFormToolbar ticketAssignee={ticketAssignees?.[0]} ticketWatchers={ticketWatchers} statusesToDisplay={statuses} boardId={boardId} ticket={ticket}/>
-										</div>	
-									</>
-								)
+								<>
+									<div>
+										<EditTicketFormToolbar ticketAssignee={ticketAssignees?.[0]} ticketWatchers={ticketWatchers} statusesToDisplay={statuses} boardId={boardId} ticket={ticket}/>
+									</div>
+									<div>{rightSection()}</div>	
+								</>
 							}
 						</div>
 					</div>

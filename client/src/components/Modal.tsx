@@ -40,7 +40,7 @@ export const Modal = () => {
 	const ModalContent = modalTypes[currentModalType as keyof typeof modalTypes] as React.FC 
 	const { width, height } = useScreenSize()
 	const style = {
-		width: `${width <= LG_BREAKPOINT ? width-40 : LG_BREAKPOINT }px`
+		width: `${width <= LG_BREAKPOINT + 140 ? width-40 : LG_BREAKPOINT + 140 }px`
 	}
 
 	// define modal handlers type as the partial subset of all keys of modal types
