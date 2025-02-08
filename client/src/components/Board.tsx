@@ -27,6 +27,8 @@ import { addToast } from "../slices/toastSlice"
 import { boardGroupBy } from "../helpers/groupBy"
 import { GroupedBoard } from "./boards/GroupedBoard"
 import { Board as DefaultBoard } from "./boards/Board"
+import { useScreenSize } from "../hooks/useScreenSize"
+import { LG_BREAKPOINT, XL_BREAKPOINT, MD_BREAKPOINT } from "../helpers/constants"
 
 export const Board = () => {
 	const {board, filteredTickets, tickets, statusesToDisplay, groupBy} = useAppSelector((state) => state.board)
@@ -34,12 +36,16 @@ export const Board = () => {
 	const { priorities } = useAppSelector((state) => state.priority)
 	const [updateTicketStatus] = useUpdateTicketStatusMutation() 
 	const dispatch = useAppDispatch()
+	const {width, height} = useScreenSize()
 	const boardStyle = {
+		"maxWidth": `${width}px`,
+		"overflowX": "scroll",
 		"display": "grid",	
 		"gridTemplateColumns": `repeat(${statusesToDisplay.length}, minmax(200px, 1fr))`,
 		"gridGap": "8px",
 		"width": "100%"
 	}
+
 	const prioritySort = (sortOrder: 1 | -1, statusId: number | undefined) => {
 		let sortedBoard = sortByPriority(
 			board,		
@@ -56,7 +62,13 @@ export const Board = () => {
 	}
 
 	const enableDropping = (e: React.DragEvent<HTMLDivElement>) => {
-		e.preventDefault()
+		/* 
+			Because of the side scroll that appears on smaller screens, 
+			disabling ticket dragging and movement for smaller screens
+		*/
+		if (width >= LG_BREAKPOINT){
+			e.preventDefault()
+		}
 	}
 
 	const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
@@ -91,6 +103,7 @@ export const Board = () => {
 			<ToolBar/>
 			{
 				groupBy !== "NONE" ? (
+					/* Dragging tickets is disabled on mobile */
 					<GroupedBoard
 						groupedTickets={boardGroupBy(groupBy, tickets, statusesToDisplay)}
 						board={board}
@@ -103,6 +116,7 @@ export const Board = () => {
 						allStatuses={allStatuses}
 					/>
 				) : (
+					/* Dragging tickets is disabled on mobile */
 					<DefaultBoard
 						enableDropping={enableDropping}
 						board={board}
@@ -111,6 +125,7 @@ export const Board = () => {
 						tickets={filteredTickets}
 						statusesToDisplay={statusesToDisplay}
 						allStatuses={allStatuses}
+						colWidth={{"maxWidth": `${width/statusesToDisplay.length}px`}}
 					/>		
 				)
 			}

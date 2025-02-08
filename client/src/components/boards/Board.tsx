@@ -24,6 +24,7 @@ type Props = {
 	statusesToDisplay: Array<Status>
 	allStatuses: Array<Status>
 	boardStyle: Record<string, string>
+	colWidth: Record<string, string>
 }
 
 export const Board = ({
@@ -33,7 +34,8 @@ export const Board = ({
 	enableDropping,
 	boardStyle, 
 	tickets,
-	statusesToDisplay
+	statusesToDisplay,
+	colWidth,
 }: Props) => {
 
 	const dispatch = useAppDispatch()

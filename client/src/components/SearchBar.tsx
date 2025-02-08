@@ -12,11 +12,11 @@ interface Props {
 export const SearchBar = ({placeholder, registerField, registerOptions}: Props) => {
 	const { register } = useFormContext()
 	return (
-		<div className = "tw-relative">
+		<div className = "tw-w-full tw-relative">
 			<IconContext.Provider value={{ className: "icon tw-absolute tw-top-3 tw-left-3"}}>
 				<FaSearch/>
 			</IconContext.Provider>
-			<input {...register(registerField, registerOptions)} placeholder = {placeholder} className = "tw-w-full xl:tw-w-96 !tw-pl-10" type = "text"/>
+			<input {...register(registerField, registerOptions)} placeholder = {placeholder} className = "tw-w-full lg:tw-w-[32rem] !tw-pl-10" type = "text"/>
 		</div>
 	)	
 }

@@ -85,7 +85,7 @@ const ProtectedLayout = () => {
 		<div>
 			<SideBar/>
 			<div className = "tw-flex tw-flex-col tw-gap-y-4">
-				<div className = "tw-px-16 tw-w-full tw-min-h-screen">
+				<div className = "tw-px-4 md:tw-px-16 tw-w-full tw-min-h-screen">
 					<TopNav/>
 					{isDataLoaded ? (
 						<Outlet/>

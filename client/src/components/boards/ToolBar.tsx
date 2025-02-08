@@ -11,7 +11,8 @@ import { OverlappingRow } from "../OverlappingRow"
 import { Board, GroupByOptionsKey } from "../../types/common"
 import { useGetUserProfilesQuery } from "../../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { GROUP_BY_OPTIONS } from "../../helpers/constants"
+import { useScreenSize } from "../../hooks/useScreenSize"
+import { MD_BREAKPOINT, GROUP_BY_OPTIONS } from "../../helpers/constants"
 
 type FormValues = {
 	query: string	
@@ -23,6 +24,7 @@ export const ToolBar = () => {
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { statuses } = useAppSelector((state) => state.status)
+	const { width, height } = useScreenSize()
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { data, isFetching} = useGetUserProfilesQuery(primaryBoardInfo?.assignees ? {userIds: primaryBoardInfo?.assignees} : skipToken)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
@@ -71,9 +73,9 @@ export const ToolBar = () => {
 	}
 
 	return (
-		<div className = "tw-py-4 tw-flex tw-flex-row tw-items-center">
+		<div className = "tw-py-4 tw-flex tw-flex-col tw-gap-y-2 xl:tw-gap-x-2 lg:tw-flex-row lg:tw-flex-wrap lg:tw-justify-between lg:tw-items-center">
 			<FormProvider {...methods}>
-				<form className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+				<form className = "tw-flex tw-flex-row tw-justify-between lg:tw-justify-normal lg:tw-items-center tw-gap-x-2">
 					<SearchBar 
 						registerOptions= { registerOptions.query }
 						registerField={"query"}
@@ -82,13 +84,13 @@ export const ToolBar = () => {
 					<button onClick={handleSubmit(onSubmit)} className = "button tw-bg-primary">Search</button>
 				</form>
 			</FormProvider>
-			<div>
-				{!isFetching && primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length > 0 ? 
+		{/*	<div>
+				{!isFetching && width >= MD_BREAKPOINT && primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length > 0 ? 
 					<OverlappingRow imageUrls={data?.data?.map((data) => data.imageUrl ?? "") ?? []}/>
 					: null
 				}
-			</div>
-			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+			</div>*/}
+			<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-gap-x-2">
 				<button className = "button" onClick = {() => {
 					dispatch(toggleShowModal(true))
 					dispatch(setModalType("ADD_TICKET_FORM"))
@@ -102,22 +104,26 @@ export const ToolBar = () => {
 					}}>Edit Statuses</button>) : null
 				}
 				<button className = "button" onClick = {(e) => prioritySort(1)}>Sort By Priority</button>
-				<label htmlFor="board-group-by" className = "label">Group By</label>
-				<select 
-					style={{
-						background: "var(--bs-primary)",
-						borderColor: "var(--bs-primary)"
-					}}
-					id = "board-group-by" 
-					className = "__custom-select" 
-					value={groupBy}
-					onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
-					{
-						Object.keys(GROUP_BY_OPTIONS).map((groupByKey) => (
-							<option key={`group_by_${groupByKey}`} value = {groupByKey}>{GROUP_BY_OPTIONS[groupByKey as GroupByOptionsKey]}</option>
-						))
-					}
-				</select>
+				<div className = "tw-flex tw-flex-col lg:tw-flex-row lg:tw-items-center tw-gap-y-2 lg:tw-gap-x-2">
+					<label className = "label" htmlFor="board-group-by">Group By</label>
+					<select 
+						style={{
+							background: "var(--bs-primary)",
+							borderColor: "var(--bs-primary)"
+						}}
+						id = "board-group-by" 
+						/* TODO: the margin top is coming from label CSS, need to refactor to make separate horizontal label class rather than
+						forcing the margin top to 0 here */
+						className = "__custom-select tw-w-full !tw-mt-0 lg:tw-w-auto" 
+						value={groupBy}
+						onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
+						{
+							Object.keys(GROUP_BY_OPTIONS).map((groupByKey) => (
+								<option key={`group_by_${groupByKey}`} value = {groupByKey}>{GROUP_BY_OPTIONS[groupByKey as GroupByOptionsKey]}</option>
+							))
+						}
+					</select>
+				</div>
 			</div>
 		</div>
 	)

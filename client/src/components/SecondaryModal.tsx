@@ -11,9 +11,10 @@ import { AddTicketFormModal } from "./primary-modals/AddTicketFormModal"
 import { MoveTicketFormModal } from "./secondary-modals/MoveTicketFormModal"
 import { AddTicketWatchersModal } from "./secondary-modals/AddTicketWatchersModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
-import { SECONDARY_MODAL_Z_INDEX } from "../helpers/constants"
+import { SECONDARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
+import { useScreenSize } from "../hooks/useScreenSize"
 
-const avoidAsyncSelectMenuOverflow =  {"modal-container": "tw-top-[50%] --m-modal", "modal": "!tw-overflow-visible tw-min-h-96"}
+const avoidAsyncSelectMenuOverflow =  {"modal-container": "tw-top-[50%]", "modal": "!tw-overflow-visible tw-min-h-96"}
 
 export const secondaryModalTypes = {
 	"SHOW_DELETE_COMMENT_WARNING": DeleteCommentWarning,
@@ -38,10 +39,14 @@ export const SecondaryModal = () => {
 	const ModalContent = secondaryModalTypes[currentSecondaryModalType as keyof typeof secondaryModalTypes] as React.FC
 	const modalContainerClassName = currentSecondaryModalType != null && currentSecondaryModalType in secondaryModalClassNames ? secondaryModalClassNames[currentSecondaryModalType as keyof typeof secondaryModalClassNames]["modal-container"] : ""
 	const modalClassName = currentSecondaryModalType != null && currentSecondaryModalType in secondaryModalClassNames ? secondaryModalClassNames[currentSecondaryModalType as keyof typeof secondaryModalClassNames]["modal"] : ""
+	const { width, height } = useScreenSize()
+	const style = {
+		width: `${width <= LG_BREAKPOINT ? width - 100 : LG_BREAKPOINT - 100 }px`
+	}
 
 	return (
 		<div className = {`${SECONDARY_MODAL_Z_INDEX} !tw-bg-black/50 overlay ${showSecondaryModal ? "--visible" : "--hidden"}`}>
-			<div className = {`${modalContainerClassName !== "" ? modalContainerClassName : "tw-top-[30%]"} modal-container`}>
+			<div style={style} className = {`${modalContainerClassName !== "" ? modalContainerClassName : "tw-top-[30%]"} modal-container`}>
 				<button 
 				className = "__modal-container-close --transparent"
 				onClick={

@@ -156,7 +156,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
     }
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-w-[500px]">
+		<div className = "tw-flex tw-flex-col lg:tw-w-[500px]">
 			<FormProvider {...methods}>
 				<form>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
