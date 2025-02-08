@@ -193,14 +193,14 @@ input::file-selector-button {
 	display: block;
 	font-weight: bold;
 
-/*	& + &,
+	& + &,
 	& + input,
 	& + select,
 	& + div,
 	& + button,
 	& + textarea {
 		margin-top: var(--margin-label);	
-	}*/
+	}
 }
 
 small {
