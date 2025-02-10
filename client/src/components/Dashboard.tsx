@@ -29,8 +29,8 @@ export const Dashboard = () => {
 	const [switchOrgId, setSwitchOrgId] = useState<number | null>(null)
 	const [cacheKey, setCacheKey] = useState(uuidv4())
 	const [switchUserOrganization, {isLoading, error}] = useSwitchUserOrganizationMutation()
-	const {data: assignedTickets, isFetching: isAssignedTicketsFetching} = useGetTicketsQuery({sortBy: "createdAt", order: "desc", page: assignedToPage, assignedToUser: userProfile?.id}) 
-	const {data: watchedTickets, isFetching: isWatchedTicketsFetching} = useGetTicketsQuery({sortBy: "createdAt", order: "desc", page: watchingPage, assignedToUser: userProfile?.id, isWatching: true}) 
+	const {data: assignedTickets, isFetching: isAssignedTicketsFetching} = useGetTicketsQuery({sortBy: "createdAt", order: "desc", page: assignedToPage, includeAssignees: true, assignedToUser: userProfile?.id}) 
+	const {data: watchedTickets, isFetching: isWatchedTicketsFetching} = useGetTicketsQuery({sortBy: "createdAt", order: "desc", page: watchingPage, includeAssignees: true, assignedToUser: userProfile?.id, isWatching: true}) 
 	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 
 	const switchOrganization = async () => {
