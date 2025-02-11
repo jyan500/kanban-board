@@ -89,7 +89,7 @@ const ProtectedLayout = () => {
 					<TopNav/>
 					{isDataLoaded ? (
 						<Outlet/>
-					): <LoadingSpinner/>}
+					): null}
 				</div>
 				<Footer/>
 			</div>

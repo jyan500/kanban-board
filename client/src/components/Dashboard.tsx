@@ -18,6 +18,8 @@ import { TicketRow } from "./TicketRow"
 import { TICKETS } from "../helpers/routes"
 import { Banner } from "./page-elements/Banner"
 import { TicketsContainer } from "./tickets/TicketsContainer"
+import { useGetBoardsQuery } from "../services/private/board"
+import { skipToken } from '@reduxjs/toolkit/query/react'
 
 export const Dashboard = () => {
 	const dispatch = useAppDispatch()
@@ -27,26 +29,27 @@ export const Dashboard = () => {
 	const [switchOrgId, setSwitchOrgId] = useState<number | null>(null)
 	const [cacheKey, setCacheKey] = useState(uuidv4())
 	const [switchUserOrganization, {isLoading, error}] = useSwitchUserOrganizationMutation()
-	const [assignedSearchParams, setAssignedSearchParams] = useState<Record<string, any>>({
-		sortBy: "createdAt", 
-		order: "desc", 
-		page: "1", 
-		includeAssignees: true, 
-		assignedToUser: userProfile?.id,
-		perPage: 5,
-	})
-	const [watchSearchParams, setWatchSearchParams] = useState<Record<string, any>>({
-		sortBy: "createdAt", 
-		order: "desc", 
-		page: "1", 
-		includeAssignees: true, 
-		assignedToUser: userProfile?.id, 
-		isWatching: true,
-		perPage: 5	
-	})
-	const {data: assignedTickets, isLoading: isAssignedTicketsLoading} = useGetTicketsQuery(assignedSearchParams) 
-	const {data: watchedTickets, isLoading: isWatchedTicketsLoading} = useGetTicketsQuery(watchSearchParams) 
+	const [assignedSearchParams, setAssignedSearchParams] = useState<Record<string, any>>({})
+	const [watchSearchParams, setWatchSearchParams] = useState<Record<string, any>>({})
+	const {data: assignedTickets, isLoading: isAssignedTicketsLoading} = useGetTicketsQuery(Object.keys(assignedSearchParams).length > 0 ? assignedSearchParams : skipToken)
+	const {data: watchedTickets, isLoading: isWatchedTicketsLoading} = useGetTicketsQuery(Object.keys(watchSearchParams).length > 0 ? watchSearchParams : skipToken)
+	const {data: boards, isLoading: isBoardsLoading} = useGetBoardsQuery({boardTicketAssignee: userProfile?.id})
 	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
+
+	useEffect(() => {
+		if (userProfile){
+			const params = {
+				sortBy: "createdAt", 
+				order: "desc", 
+				page: "1", 
+				includeAssignees: true, 
+				assignedToUser: userProfile?.id,
+				perPage: 5,
+			}
+			setAssignedSearchParams(params)
+			setWatchSearchParams({...params, isWatching: true})
+		}
+	}, [userProfile])
 
 	const switchOrganization = async () => {
 		if (switchOrgId){

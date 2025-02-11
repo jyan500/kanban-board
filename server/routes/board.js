@@ -20,7 +20,7 @@ const { mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject 
 router.get("/", async (req, res, next) => {
 	try {
 		let resData;
-		const boards = await db("boards").where("organization_id", req.user.organization)
+		const boards = await db("boards").where("boards.organization_id", req.user.organization)
 		.modify((queryBuilder) => {
 			if (req.query.query){
 				queryBuilder.whereILike("boards.name", `%${req.query.query}%`)
@@ -37,6 +37,12 @@ router.get("/", async (req, res, next) => {
 				.select(
 					"boards.updated_at as boardUpdatedAt",
 				)
+			}
+			if (req.query.boardTicketAssignee){
+				queryBuilder.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")	
+				.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
+				.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
+				.where("tickets_to_users.user_id", "=", req.query.boardTicketAssignee)
 			}
 		})	
 		.select(
