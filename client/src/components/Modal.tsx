@@ -2,6 +2,7 @@ import React, {ReactNode} from "react"
 import { IoMdClose } from "react-icons/io";
 import "../styles/modal.css"
 import { selectCurrentTicketId } from "../slices/boardSlice"
+import { setCurrentBoardId } from "../slices/boardInfoSlice"
 import { setModalType, setModalProps, toggleShowModal } from "../slices/modalSlice" 
 import { AddTicketFormModal } from "./primary-modals/AddTicketFormModal" 
 import { EditTicketFormModal } from "./primary-modals/EditTicketFormModal" 
@@ -61,6 +62,15 @@ export const Modal = () => {
 				dispatch(selectCurrentTicketId(null))
 			}
 		},
+		"BOARD_FORM": {
+			dismissHandler: () => {
+				dispatch(toggleShowModal(false))
+				dispatch(setModalType(undefined))
+				dispatch(setModalProps({}))
+				dispatch(setCurrentBoardId(null))
+			}
+		}
+
 	} 
 
 	return (

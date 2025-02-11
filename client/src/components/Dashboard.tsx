@@ -108,7 +108,7 @@ export const Dashboard = () => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
-			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm">
+			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
 				<h2>Dashboard</h2>
 			{/*<div className = "tw-flex tw-flex-col tw-gap-y-2">
 				<p className = "tw-font-bold">Organizations</p>
@@ -186,7 +186,7 @@ export const Dashboard = () => {
 					</div>
 				</div>
 			</div>
-			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm">
+			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
 				<h2>My Tasks</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
 					{assignedTickets && !isAssignedTicketsLoading ? (
