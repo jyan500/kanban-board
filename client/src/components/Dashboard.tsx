@@ -17,20 +17,35 @@ import { PaginationRow } from "./page-elements/PaginationRow"
 import { TicketRow } from "./TicketRow" 
 import { TICKETS } from "../helpers/routes"
 import { Banner } from "./page-elements/Banner"
-import { SimpleEditor } from "./page-elements/SimpleEditor"
+import { TicketsContainer } from "./tickets/TicketsContainer"
 
 export const Dashboard = () => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const location = useLocation()
-	const [assignedToPage, setAssignedToPage] = useState(1)
-	const [watchingPage, setWatchingPage] = useState(1)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const [switchOrgId, setSwitchOrgId] = useState<number | null>(null)
 	const [cacheKey, setCacheKey] = useState(uuidv4())
 	const [switchUserOrganization, {isLoading, error}] = useSwitchUserOrganizationMutation()
-	const {data: assignedTickets, isFetching: isAssignedTicketsFetching} = useGetTicketsQuery({sortBy: "createdAt", order: "desc", page: assignedToPage, includeAssignees: true, assignedToUser: userProfile?.id}) 
-	const {data: watchedTickets, isFetching: isWatchedTicketsFetching} = useGetTicketsQuery({sortBy: "createdAt", order: "desc", page: watchingPage, includeAssignees: true, assignedToUser: userProfile?.id, isWatching: true}) 
+	const [assignedSearchParams, setAssignedSearchParams] = useState<Record<string, any>>({
+		sortBy: "createdAt", 
+		order: "desc", 
+		page: "1", 
+		includeAssignees: true, 
+		assignedToUser: userProfile?.id,
+		perPage: 5,
+	})
+	const [watchSearchParams, setWatchSearchParams] = useState<Record<string, any>>({
+		sortBy: "createdAt", 
+		order: "desc", 
+		page: "1", 
+		includeAssignees: true, 
+		assignedToUser: userProfile?.id, 
+		isWatching: true,
+		perPage: 5	
+	})
+	const {data: assignedTickets, isLoading: isAssignedTicketsLoading} = useGetTicketsQuery(assignedSearchParams) 
+	const {data: watchedTickets, isLoading: isWatchedTicketsLoading} = useGetTicketsQuery(watchSearchParams) 
 	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 
 	const switchOrganization = async () => {
@@ -54,11 +69,71 @@ export const Dashboard = () => {
 		setCacheKey(uuidv4())
 	}
 
+	const setWatchFilter = (filterById: number | undefined) => {
+		setWatchSearchParams({
+			...watchSearchParams,
+			ticketType: filterById
+		})
+	}
+
+	const setAssignedFilter = (filterById: number | undefined) => {
+		setAssignedSearchParams({
+			...assignedSearchParams,
+			ticketType: filterById
+		})
+	}
+
+	const setWatchingPage = (page: number) => {
+		setWatchSearchParams({
+			...watchSearchParams,
+			page: page.toString()
+		})
+	}
+
+	const setAssignedToPage = (page: number) => {
+		setAssignedSearchParams({
+			...assignedSearchParams,
+			page: page.toString()
+		})
+	}
+ 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
-			<div className = "tw-w-full tw-flex tw-flex-row tw-h-full tw-gap-x-4">
-				<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
+			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-50 tw-shadow-sm">
+				<h1>Dashboard</h1>	
+			</div>
+			{/*<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<p className = "tw-font-bold">Organizations</p>
+				<div>
+					<AsyncSelect 
+						ref={selectRef}
+						cacheKey={cacheKey} 
+						urlParams={{excludeOwn: true}} 
+						onSelect={(selectedOption: OptionType | null) => {
+							if (selectedOption){
+								setSwitchOrgId(Number(selectedOption.value))
+							}
+						}} 
+						endpoint={USER_PROFILE_ORG_URL} 
+						className = "tw-w-full"
+					/>
+				</div>
+				<button onClick={switchOrganization} className = "button">Switch Organization</button>
+			</div>*/}
+			<div className = "tw-p-4 tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
+				<div className = "tw-flex-1 tw-flex tw-justify-center tw-items-center">Progress</div>
+				<div className = "tw-flex-1 tw-flex tw-justify-center tw-items-center">Time Spent</div>
+				<div className = "tw-flex-1 tw-flex tw-justify-center tw-items-center">Boards</div>
+			</div>
+			<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
+				{assignedTickets && !isAssignedTicketsLoading ? (
+					<TicketsContainer setPage={setAssignedToPage} setFilterBy={setAssignedFilter} tickets={assignedTickets} title={"Assigned"}/>
+				) : null}
+				{watchedTickets && !isWatchedTicketsLoading ? (
+					<TicketsContainer setPage={setWatchingPage} setFilterBy={setWatchFilter} tickets={watchedTickets} title={"Watching"}/>
+				) : null}
+				{/*<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
 					<h1>Organizations</h1>
 					<div>
 						<AsyncSelect 
@@ -75,8 +150,8 @@ export const Dashboard = () => {
 						/>
 					</div>
 					<button onClick={switchOrganization} className = "button">Switch Organization</button>
-				</div>
-				<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
+				</div>*/}
+				{/*<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
 					<div className = "tw-flex tw-flex-row tw-justify-between">
 						<h1>Assigned To Me</h1>
 						<PaginationRow setPage={setAssignedToPage} showPageNums={false} paginationData={assignedTickets?.pagination}/>
@@ -111,7 +186,7 @@ export const Dashboard = () => {
 							)
 						})}
 					</div>
-				</div>
+				</div>*/}
 			</div>
 		</div>
 	)	

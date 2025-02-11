@@ -15,9 +15,10 @@ type Props = {
 	ticketRelationshipId?: number
 	showUnlink?: boolean
 	onUnlink?: (ticketId: number | undefined, ticketRelationshipId: number) => void
+	borderless?: boolean
 }
 
-export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: Props) => {
+export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, borderless}: Props) => {
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { priorities } = useAppSelector((state) => state.priority)
@@ -27,7 +28,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink}: 
 	const [showConfirmUnlink, setShowConfirmUnlink] = useState(false)
 	const { data, isFetching } = useGetUserQuery(ticket?.assignees?.[0] ?? skipToken)
 	return (
-		<div className = "hover:tw-bg-gray-50 tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-border tw-border-gray-200 tw-rounded-md tw-group">
+		<div className = {`hover:tw-bg-gray-50 tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full ${borderless ? "" : "tw-border tw-border-gray-200"} tw-rounded-md tw-group`}>
 			<div className = "tw-w-3/5 tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4">
 				<div>
 					{ticketType ? (

@@ -112,7 +112,7 @@ router.get("/", async (req, res, next) => {
 			tickets = await tickets.paginate({ perPage: total, currentPage: 1, isLengthAware: true})
 		}
 		else {
-			tickets = await tickets.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+			tickets = await tickets.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		}
 		if (req.query.includeAssignees){
 			tickets = {...tickets, data: await Promise.all(
