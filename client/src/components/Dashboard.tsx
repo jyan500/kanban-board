@@ -24,6 +24,7 @@ import { MdOutlineViewKanban as BoardIcon } from "react-icons/md";
 import { LuClock as ClockIcon } from "react-icons/lu";
 import { BsFillFileBarGraphFill as BarsIcon } from "react-icons/bs";
 import { IconContext } from "react-icons"
+import { FaRegBuilding } from "react-icons/fa";
 
 export const Dashboard = () => {
 	const dispatch = useAppDispatch()
@@ -108,9 +109,7 @@ export const Dashboard = () => {
 		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
 			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm">
-
-				<h1>Dashboard</h1>	
-			</div>
+				<h2>Dashboard</h2>
 			{/*<div className = "tw-flex tw-flex-col tw-gap-y-2">
 				<p className = "tw-font-bold">Organizations</p>
 				<div>
@@ -129,49 +128,74 @@ export const Dashboard = () => {
 				</div>
 				<button onClick={switchOrganization} className = "button">Switch Organization</button>
 			</div>*/}
-			<div className = "tw-p-4 tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
-				<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
-					<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-						<IconContext.Provider value={{color: "var(--bs-primary)", className: "tw-w-4 tw-h-4"}}>
-							<BoardIcon/>
-						</IconContext.Provider>
-						<h3>Boards</h3>
+				<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
+					<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
+						<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+							<IconContext.Provider value={{className: "tw-w-4 tw-h-4"}}>
+								<FaRegBuilding/>
+							</IconContext.Provider>
+							<h3>Organization</h3>
+						</div>
+						<p>{userProfile?.organizationName}</p>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<AsyncSelect 
+								ref={selectRef}
+								cacheKey={cacheKey} 
+								urlParams={{excludeOwn: true}} 
+								onSelect={(selectedOption: OptionType | null) => {
+									if (selectedOption){
+										setSwitchOrgId(Number(selectedOption.value))
+									}
+								}} 
+								endpoint={USER_PROFILE_ORG_URL} 
+								className = "tw-w-full"
+							/>
+							<button onClick={switchOrganization} className = "button">Switch Organization</button>
+						</div>
 					</div>
-					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-						{boards?.data?.map((board) => (
-							<div>
-								<Link to={`${BOARDS}/${board.id}`}>{board.name}</Link>
-							</div>
-						))}	
+					<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
+						<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+							<IconContext.Provider value={{color: "var(--bs-primary)", className: "tw-w-4 tw-h-4"}}>
+								<BoardIcon/>
+							</IconContext.Provider>
+							<h3>Boards</h3>
+						</div>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							{boards?.data?.map((board) => (
+								<div>
+									<Link to={`${BOARDS}/${board.id}`}>{board.name}</Link>
+								</div>
+							))}	
+						</div>
 					</div>
-				</div>
-				<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
-					<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-						<IconContext.Provider value={{color: "var(--bs-warning)", className: "tw-w-4 tw-h-4"}}>
-							<ClockIcon/>
-						</IconContext.Provider>
-						<h3>Progress</h3>
+					<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
+						<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+							<IconContext.Provider value={{color: "var(--bs-warning)", className: "tw-w-4 tw-h-4"}}>
+								<ClockIcon/>
+							</IconContext.Provider>
+							<h3>Progress</h3>
+						</div>
 					</div>
-				</div>
-				<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
-					<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-						<IconContext.Provider value={{color: "var(--bs-success)", className: "tw-w-4 tw-h-4"}}>
-							<BarsIcon/>
-						</IconContext.Provider>
-						<h3>Time Spent</h3>
+					<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
+						<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+							<IconContext.Provider value={{color: "var(--bs-success)", className: "tw-w-4 tw-h-4"}}>
+								<BarsIcon/>
+							</IconContext.Provider>
+							<h3>Time Spent</h3>
+						</div>
 					</div>
 				</div>
 			</div>
 			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm">
-				<h1>My Tasks</h1>	
-			</div>
-			<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
-				{assignedTickets && !isAssignedTicketsLoading ? (
-					<TicketsContainer setPage={setAssignedToPage} setFilterBy={setAssignedFilter} tickets={assignedTickets} title={"Assigned"}/>
-				) : null}
-				{watchedTickets && !isWatchedTicketsLoading ? (
-					<TicketsContainer setPage={setWatchingPage} setFilterBy={setWatchFilter} tickets={watchedTickets} title={"Watching"}/>
-				) : null}
+				<h2>My Tasks</h2>
+				<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
+					{assignedTickets && !isAssignedTicketsLoading ? (
+						<TicketsContainer setPage={setAssignedToPage} setFilterBy={setAssignedFilter} tickets={assignedTickets} title={"Assigned"}/>
+					) : null}
+					{watchedTickets && !isWatchedTicketsLoading ? (
+						<TicketsContainer setPage={setWatchingPage} setFilterBy={setWatchFilter} tickets={watchedTickets} title={"Watching"}/>
+					) : null}
+				</div>
 			</div>
 		</div>
 	)	

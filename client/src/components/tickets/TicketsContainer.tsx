@@ -18,11 +18,9 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 	const [isActive, setIsActive] = useState<number>(0)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	return (
-		<div className = "tw-p-2 tw-w-full tw-flex tw-flex-col tw-gap-y-2 tw-border tw-border-gray-200 tw-shadow-sm">
+		<div className = "tw-w-full tw-flex tw-flex-col">
 			{/* Top */}
-			<div className = "tw-p-2">
-				<h2>{title}</h2>
-			</div>	
+			<h3>{title}</h3>
 			{/* Middle selection area */}
 			<div className = "tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
 				<FilterButton isActive={isActive === 0} onClick={(e) => {
