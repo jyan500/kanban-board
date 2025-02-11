@@ -21,7 +21,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 		<div className = "tw-p-2 tw-w-full tw-flex tw-flex-col tw-gap-y-2 tw-border tw-border-gray-200 tw-shadow-sm">
 			{/* Top */}
 			<div className = "tw-p-2">
-				<h1>{title}</h1>
+				<h2>{title}</h2>
 			</div>	
 			{/* Middle selection area */}
 			<div className = "tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">

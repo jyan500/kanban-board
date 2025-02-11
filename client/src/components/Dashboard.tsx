@@ -15,11 +15,15 @@ import { GroupBase, SelectInstance } from "react-select"
 import { USER_PROFILE_ORG_URL } from "../helpers/urls"
 import { PaginationRow } from "./page-elements/PaginationRow"
 import { TicketRow } from "./TicketRow" 
-import { TICKETS } from "../helpers/routes"
+import { TICKETS, BOARDS } from "../helpers/routes"
 import { Banner } from "./page-elements/Banner"
 import { TicketsContainer } from "./tickets/TicketsContainer"
 import { useGetBoardsQuery } from "../services/private/board"
 import { skipToken } from '@reduxjs/toolkit/query/react'
+import { MdOutlineViewKanban as BoardIcon } from "react-icons/md";
+import { LuClock as ClockIcon } from "react-icons/lu";
+import { BsFillFileBarGraphFill as BarsIcon } from "react-icons/bs";
+import { IconContext } from "react-icons"
 
 export const Dashboard = () => {
 	const dispatch = useAppDispatch()
@@ -104,6 +108,7 @@ export const Dashboard = () => {
 		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
 			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm">
+
 				<h1>Dashboard</h1>	
 			</div>
 			{/*<div className = "tw-flex tw-flex-col tw-gap-y-2">
@@ -125,9 +130,40 @@ export const Dashboard = () => {
 				<button onClick={switchOrganization} className = "button">Switch Organization</button>
 			</div>*/}
 			<div className = "tw-p-4 tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
-				<div className = "tw-flex-1 tw-flex tw-justify-center tw-items-center">Boards</div>
-				<div className = "tw-flex-1 tw-flex tw-justify-center tw-items-center">Progress</div>
-				<div className = "tw-flex-1 tw-flex tw-justify-center tw-items-center">Time Spent</div>
+				<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
+					<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+						<IconContext.Provider value={{color: "var(--bs-primary)", className: "tw-w-4 tw-h-4"}}>
+							<BoardIcon/>
+						</IconContext.Provider>
+						<h3>Boards</h3>
+					</div>
+					<div className = "tw-flex tw-flex-col tw-gap-y-2">
+						{boards?.data?.map((board) => (
+							<div>
+								<Link to={`${BOARDS}/${board.id}`}>{board.name}</Link>
+							</div>
+						))}	
+					</div>
+				</div>
+				<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
+					<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+						<IconContext.Provider value={{color: "var(--bs-warning)", className: "tw-w-4 tw-h-4"}}>
+							<ClockIcon/>
+						</IconContext.Provider>
+						<h3>Progress</h3>
+					</div>
+				</div>
+				<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
+					<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+						<IconContext.Provider value={{color: "var(--bs-success)", className: "tw-w-4 tw-h-4"}}>
+							<BarsIcon/>
+						</IconContext.Provider>
+						<h3>Time Spent</h3>
+					</div>
+				</div>
+			</div>
+			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm">
+				<h1>My Tasks</h1>	
 			</div>
 			<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
 				{assignedTickets && !isAssignedTicketsLoading ? (

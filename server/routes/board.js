@@ -42,6 +42,7 @@ router.get("/", async (req, res, next) => {
 				queryBuilder.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")	
 				.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
 				.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
+				.groupBy("tickets_to_users.user_id")
 				.where("tickets_to_users.user_id", "=", req.query.boardTicketAssignee)
 			}
 		})	
