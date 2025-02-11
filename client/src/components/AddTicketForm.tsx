@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { selectCurrentTicketId } from "../slices/boardSlice"
-import { toggleShowModal } from "../slices/modalSlice" 
+import { toggleShowModal, setModalType, setModalProps } from "../slices/modalSlice" 
 import { Controller, useForm, FormProvider } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import type { Mention, UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
@@ -135,7 +135,9 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 	    		await bulkEditTicketAssignees({ticketId: insertedTicketId, isWatcher: false, userIds: [values.userId]}).unwrap()
 	    	}
 			dispatch(toggleShowModal(false))
-			dispatch(toggleShowSecondaryModal(false))
+			dispatch(setModalType(undefined))
+			dispatch(setModalProps({}))
+			dispatch(selectCurrentTicketId(null))
 			dispatch(setSecondaryModalProps({}))
 			dispatch(setSecondaryModalType(undefined))
     		dispatch(addToast({

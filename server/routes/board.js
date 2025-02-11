@@ -43,12 +43,13 @@ router.get("/", async (req, res, next) => {
 				.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
 				.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
 				.groupBy("tickets_to_users.user_id")
+				.groupBy("boards.id")
 				.where("tickets_to_users.user_id", "=", req.query.boardTicketAssignee)
 			}
 		})	
 		.select(
 			"boards.id as id", "boards.name as name", "boards.organization_id as organizationId"
-		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 
 		let boardAssignees;
 		let boardAssigneesRes = {}

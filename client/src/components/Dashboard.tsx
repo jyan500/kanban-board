@@ -26,6 +26,29 @@ import { BsFillFileBarGraphFill as BarsIcon } from "react-icons/bs";
 import { IconContext } from "react-icons"
 import { FaRegBuilding } from "react-icons/fa";
 
+type DashboardSectionProps = {
+	title: string
+	iconColor?: string
+	iconClassname?: string
+	icon: React.ReactNode
+	children: React.ReactNode
+}
+
+const DashboardSection = ({title, iconColor, iconClassname, icon, children}: DashboardSectionProps) => {
+	return (
+		<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
+			<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+				<IconContext.Provider value={{color: iconColor ?? "var(--bs-primary)", className: `${iconClassname ?? "tw-w-4 tw-h-4"}`}}>
+					{/* icon */}	
+					{icon}
+				</IconContext.Provider>
+				<h3>{title}</h3>
+			</div>
+			{children}
+		</div>
+	)
+}
+
 export const Dashboard = () => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
@@ -38,7 +61,7 @@ export const Dashboard = () => {
 	const [watchSearchParams, setWatchSearchParams] = useState<Record<string, any>>({})
 	const {data: assignedTickets, isLoading: isAssignedTicketsLoading} = useGetTicketsQuery(Object.keys(assignedSearchParams).length > 0 ? assignedSearchParams : skipToken)
 	const {data: watchedTickets, isLoading: isWatchedTicketsLoading} = useGetTicketsQuery(Object.keys(watchSearchParams).length > 0 ? watchSearchParams : skipToken)
-	const {data: boards, isLoading: isBoardsLoading} = useGetBoardsQuery({boardTicketAssignee: userProfile?.id})
+	const {data: boards, isLoading: isBoardsLoading} = useGetBoardsQuery({boardTicketAssignee: userProfile?.id, perPage: 5})
 	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 
 	useEffect(() => {
@@ -104,86 +127,51 @@ export const Dashboard = () => {
 			page: page.toString()
 		})
 	}
- 
+
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
 			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
 				<h2>Dashboard</h2>
-			{/*<div className = "tw-flex tw-flex-col tw-gap-y-2">
-				<p className = "tw-font-bold">Organizations</p>
-				<div>
-					<AsyncSelect 
-						ref={selectRef}
-						cacheKey={cacheKey} 
-						urlParams={{excludeOwn: true}} 
-						onSelect={(selectedOption: OptionType | null) => {
-							if (selectedOption){
-								setSwitchOrgId(Number(selectedOption.value))
-							}
-						}} 
-						endpoint={USER_PROFILE_ORG_URL} 
-						className = "tw-w-full"
-					/>
-				</div>
-				<button onClick={switchOrganization} className = "button">Switch Organization</button>
-			</div>*/}
 				<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
-					<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
-						<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-							<IconContext.Provider value={{className: "tw-w-4 tw-h-4"}}>
-								<FaRegBuilding/>
-							</IconContext.Provider>
-							<h3>Organization</h3>
-						</div>
-						<p>{userProfile?.organizationName}</p>
-						<div className = "tw-flex tw-flex-col tw-gap-y-2">
-							<AsyncSelect 
-								ref={selectRef}
-								cacheKey={cacheKey} 
-								urlParams={{excludeOwn: true}} 
-								onSelect={(selectedOption: OptionType | null) => {
-									if (selectedOption){
-										setSwitchOrgId(Number(selectedOption.value))
-									}
-								}} 
-								endpoint={USER_PROFILE_ORG_URL} 
-								className = "tw-w-full"
-							/>
-							<button onClick={switchOrganization} className = "button">Switch Organization</button>
-						</div>
-					</div>
-					<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
-						<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-							<IconContext.Provider value={{color: "var(--bs-primary)", className: "tw-w-4 tw-h-4"}}>
-								<BoardIcon/>
-							</IconContext.Provider>
-							<h3>Boards</h3>
-						</div>
+					<DashboardSection title={"Organization"} icon={<FaRegBuilding/>}>
+						<>
+							<p>{userProfile?.organizationName}</p>
+							<div className = "tw-flex tw-flex-col tw-gap-y-2">
+								<AsyncSelect 
+									ref={selectRef}
+									cacheKey={cacheKey} 
+									urlParams={{excludeOwn: true}} 
+									onSelect={(selectedOption: OptionType | null) => {
+										if (selectedOption){
+											setSwitchOrgId(Number(selectedOption.value))
+										}
+									}} 
+									endpoint={USER_PROFILE_ORG_URL} 
+									className = "tw-w-full"
+								/>
+								<button onClick={switchOrganization} className = "button">Switch Organization</button>
+							</div>
+						</>
+					</DashboardSection>
+					<DashboardSection iconColor={"var(--bs-primary)"} icon={<BoardIcon/>} title={"Boards"}>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							{boards?.data?.map((board) => (
 								<div>
 									<Link to={`${BOARDS}/${board.id}`}>{board.name}</Link>
 								</div>
 							))}	
-						</div>
-					</div>
-					<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
-						<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-							<IconContext.Provider value={{color: "var(--bs-warning)", className: "tw-w-4 tw-h-4"}}>
-								<ClockIcon/>
-							</IconContext.Provider>
-							<h3>Progress</h3>
-						</div>
-					</div>
-					<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
-						<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-							<IconContext.Provider value={{color: "var(--bs-success)", className: "tw-w-4 tw-h-4"}}>
-								<BarsIcon/>
-							</IconContext.Provider>
-							<h3>Time Spent</h3>
-						</div>
-					</div>
+							<div>
+								<Link to={`${BOARDS}`}>See More</Link>
+							</div>
+						</div>	
+					</DashboardSection>
+					<DashboardSection iconColor={"var(--bs-warning)"} icon={<ClockIcon/>} title={"Progress"}>
+						<div></div>
+					</DashboardSection>
+					<DashboardSection iconColor={"var(--bs-success)"} icon={<BarsIcon/>} title={"Time Spent"}>
+						<div></div>
+					</DashboardSection>
 				</div>
 			</div>
 			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
