@@ -38,7 +38,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 					}>{ticketType.name}</button>
 				))}
 			</div>	
-			<div className = "tw-p-2 tw-flex tw-flex-col tw-gap-y-2">
+			<div className = "tw-p-2 tw-flex tw-flex-col">
 				<div className = "tw-flex tw-flex-row tw-justify-between">
 					<p><span className = "tw-font-bold">Total:</span> {tickets.pagination.total}</p>
 					<PaginationRow setPage={setPage} showPageNums={false} paginationData={tickets.pagination}/>

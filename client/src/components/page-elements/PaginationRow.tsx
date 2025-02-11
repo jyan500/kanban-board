@@ -29,14 +29,12 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
 						{showNumResults ? <p>Showing {paginationData.from} - {paginationData.to} out of {paginationData.total} results</p> : null}
 						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 							{
-								paginationData?.prevPage ? (
-		                            <ArrowButton onClick={(e => {
-		                            	e.preventDefault()
-		                            	if (paginationData.prevPage){
-		                            		setPage(paginationData.prevPage)
-		                            	}
-		                            })}/>
-								) : null	
+	                            <ArrowButton disabled={paginationData?.prevPage == null} onClick={(e => {
+	                            	e.preventDefault()
+	                            	if (paginationData.prevPage){
+	                            		setPage(paginationData.prevPage)
+	                            	}
+	                            })}/>
 							}
 							{
 								showPageNums ? (
@@ -60,14 +58,12 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
 								) : null
 							}
 							{
-								paginationData?.nextPage ? (
-	                                  <ArrowButton isForward={true} onClick={(e => {
-		                            	e.preventDefault()
-		                            	if (paginationData.nextPage){
-		                            		setPage(paginationData.nextPage)
-		                            	}
-		                            })}/>
-								) : null 
+                                <ArrowButton disabled={paginationData?.nextPage == null} isForward={true} onClick={(e => {
+	                            	e.preventDefault()
+	                            	if (paginationData.nextPage){
+	                            		setPage(paginationData.nextPage)
+	                            	}
+	                            })}/>
 							}
                         </div>
                     </>

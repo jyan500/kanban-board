@@ -7,11 +7,12 @@ interface Props {
 	onClick: (e: React.MouseEvent) => void	
 	text?: string
 	isForward?: boolean
+	disabled?: boolean
 }
 
-export const ArrowButton = ({onClick, isForward, text}: Props) => {
+export const ArrowButton = ({disabled, onClick, isForward, text}: Props) => {
 	return (
-		<IconButton onClick={onClick}>
+		<IconButton disabled={disabled} onClick={onClick}>
 			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 	            <IconContext.Provider value = {{className: `${text ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4"}`}}>
 	                {isForward ? <Next/> : <Previous/>}
