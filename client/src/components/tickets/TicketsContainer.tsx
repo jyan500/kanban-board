@@ -5,6 +5,7 @@ import { useAppSelector } from "../../hooks/redux-hooks"
 import { TicketRow } from "../TicketRow"
 import { TICKETS } from "../../helpers/routes"
 import { PaginationRow } from "../page-elements/PaginationRow"
+import { FilterButton } from "../page-elements/FilterButton"
 
 type Props = {
 	title: string
@@ -23,19 +24,20 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 				<h1>{title}</h1>
 			</div>	
 			{/* Middle selection area */}
-			<div className = "tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-100">
-				<button className = {`${isActive === 0 ? "tw-text-primary tw-font-bold" : ""}`} onClick={(e) => {
+			<div className = "tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
+				<FilterButton isActive={isActive === 0} onClick={(e) => {
 					setFilterBy(undefined)
 					setIsActive(0)
 				}}>
 					All
-				</button>
+				</FilterButton>
 				{ticketTypes.map((ticketType) => (
-					<button className = {`${isActive === ticketType.id ? "tw-text-primary tw-font-bold" : ""}`} onClick={(e) => {
+					<FilterButton isActive={isActive === ticketType.id} onClick={(e) => {
 						setFilterBy(ticketType.id)
 						setIsActive(ticketType.id)
-					}
-					}>{ticketType.name}</button>
+					}}>
+					{ticketType.name}
+					</FilterButton>
 				))}
 			</div>	
 			<div className = "tw-p-2 tw-flex tw-flex-col">

@@ -122,9 +122,9 @@ export const Dashboard = () => {
 				<button onClick={switchOrganization} className = "button">Switch Organization</button>
 			</div>*/}
 			<div className = "tw-p-4 tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
+				<div className = "tw-flex-1 tw-flex tw-justify-center tw-items-center">Boards</div>
 				<div className = "tw-flex-1 tw-flex tw-justify-center tw-items-center">Progress</div>
 				<div className = "tw-flex-1 tw-flex tw-justify-center tw-items-center">Time Spent</div>
-				<div className = "tw-flex-1 tw-flex tw-justify-center tw-items-center">Boards</div>
 			</div>
 			<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
 				{assignedTickets && !isAssignedTicketsLoading ? (
@@ -133,60 +133,6 @@ export const Dashboard = () => {
 				{watchedTickets && !isWatchedTicketsLoading ? (
 					<TicketsContainer setPage={setWatchingPage} setFilterBy={setWatchFilter} tickets={watchedTickets} title={"Watching"}/>
 				) : null}
-				{/*<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
-					<h1>Organizations</h1>
-					<div>
-						<AsyncSelect 
-							ref={selectRef}
-							cacheKey={cacheKey} 
-							urlParams={{excludeOwn: true}} 
-							onSelect={(selectedOption: OptionType | null) => {
-								if (selectedOption){
-									setSwitchOrgId(Number(selectedOption.value))
-								}
-							}} 
-							endpoint={USER_PROFILE_ORG_URL} 
-							className = "tw-w-full"
-						/>
-					</div>
-					<button onClick={switchOrganization} className = "button">Switch Organization</button>
-				</div>*/}
-				{/*<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
-					<div className = "tw-flex tw-flex-row tw-justify-between">
-						<h1>Assigned To Me</h1>
-						<PaginationRow setPage={setAssignedToPage} showPageNums={false} paginationData={assignedTickets?.pagination}/>
-					</div>
-					<div>
-						{assignedTickets?.data?.map((ticket: Ticket) => {
-							return (
-								<Link key={`assigned_to_${ticket.id}`} to={`${TICKETS}/${ticket.id}`}>
-									<TicketRow 
-										key={`assigned_to_ticket_${ticket.id}`} 
-										ticket={ticket}
-									/>
-								</Link>
-							)
-						})}
-					</div>
-				</div>
-				<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-1/3">
-					<div className = "tw-flex tw-flex-row tw-justify-between">
-						<h1>Watched Tickets</h1>
-						<PaginationRow setPage={setWatchingPage} showPageNums={false} paginationData={watchedTickets?.pagination}/>
-					</div>
-					<div>
-						{watchedTickets?.data?.map((ticket: Ticket) => {
-							return (
-								<Link key={`watching_${ticket.id}`} to={`${TICKETS}/${ticket.id}`}>
-									<TicketRow 
-										key={`watching_ticket_${ticket.id}`} 
-										ticket={ticket}
-									/>
-								</Link>
-							)
-						})}
-					</div>
-				</div>*/}
 			</div>
 		</div>
 	)	
