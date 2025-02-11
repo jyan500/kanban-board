@@ -100,7 +100,7 @@ export const Dashboard = () => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
-			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-50 tw-shadow-sm">
+			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm">
 				<h1>Dashboard</h1>	
 			</div>
 			{/*<div className = "tw-flex tw-flex-col tw-gap-y-2">

@@ -17,13 +17,13 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 	const [isActive, setIsActive] = useState<number>(0)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	return (
-		<div className = "tw-p-4 tw-w-full tw-flex tw-flex-col tw-gap-y-2 tw-border tw-border-gray-50 tw-shadow-sm">
+		<div className = "tw-p-2 tw-w-full tw-flex tw-flex-col tw-gap-y-2 tw-border tw-border-gray-200 tw-shadow-sm">
 			{/* Top */}
-			<div className = "tw-p-4">
+			<div className = "tw-p-2">
 				<h1>{title}</h1>
 			</div>	
 			{/* Middle selection area */}
-			<div className = "tw-p-4 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-100">
+			<div className = "tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-100">
 				<button className = {`${isActive === 0 ? "tw-text-primary tw-font-bold" : ""}`} onClick={(e) => {
 					setFilterBy(undefined)
 					setIsActive(0)
@@ -38,7 +38,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 					}>{ticketType.name}</button>
 				))}
 			</div>	
-			<div className = "tw-p-4 tw-flex tw-flex-col tw-gap-y-2">
+			<div className = "tw-p-2 tw-flex tw-flex-col tw-gap-y-2">
 				<div className = "tw-flex tw-flex-row tw-justify-between">
 					<p><span className = "tw-font-bold">Total:</span> {tickets.pagination.total}</p>
 					<PaginationRow setPage={setPage} showPageNums={false} paginationData={tickets.pagination}/>
