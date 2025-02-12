@@ -28,11 +28,13 @@ type Props = {
 	colWidth: Record<string, string>
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
+	boardId: number
 }
 
 export const Board = ({
 	allStatuses, 
 	board, 
+	boardId,
 	dragStart,
 	enableDropping,
 	boardStyle, 
@@ -87,6 +89,7 @@ export const Board = ({
 					<div>
 						<StatusHeader 
 							statusId={status.id} 
+							boardId={boardId}
 							numTickets={board[status.id]?.length} 
 							statusName={allStatuses.find((s: Status) => s.id === status.id)?.name ?? ""} 
 							addTicketHandler={addTicketHandler} 

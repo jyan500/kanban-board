@@ -304,6 +304,7 @@ router.get("/:boardId/status", validateGet, handleValidationResult, async (req, 
 			"statuses.name as name",
 			"statuses.order as order",
 			"statuses.is_active as isActive",
+			"boards_to_statuses.limit as limit",
 			"statuses.is_completed as isCompleted",
 			"statuses.organization_id as organizationId")
 		res.json(statuses)
@@ -324,9 +325,10 @@ router.get("/:boardId/status/:statusId", validateBoardStatusGet, handleValidatio
 			"statuses.id as id",
 			"statuses.name as name",
 			"statuses.order as order",
+			"boards_to_statuses.limit as limit",
 			"statuses.is_active as isActive",
 			"statuses.is_completed as isCompleted",
-			"statuses.organization_id as organizationId")
+			"statuses.organization_id as organizationId").first()
 		res.json(status)
 
 	}	

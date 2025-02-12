@@ -19,6 +19,9 @@ export const defaultStatusesToDisplay = [
 	"1","2","3","4"
 ]
 
+export const MIN_COLUMN_LIMIT = 1
+export const MAX_COLUMN_LIMIT = 50
+
 export const defaultRows = 4
 
 export const SELECT_Z_INDEX = "tw-z-0"

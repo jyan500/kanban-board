@@ -101,6 +101,13 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["BoardStatuses"],
 		}),
+		getBoardStatus: builder.query<Status, {boardId: number, statusId: number}>({
+			query: ({boardId, statusId}) => ({
+				url: BOARD_STATUS_URL(boardId, statusId),
+				method: "GET",
+			}),
+			providesTags: ["BoardStatuses"]
+		}),
 		addBoardTickets: builder.mutation<BoardTicketResponse, BoardTicketRequest>({
 			query: ({boardId, ticketIds}) => ({
 				url: BOARD_TICKET_URL(boardId, ""),
@@ -144,6 +151,16 @@ export const boardApi = privateApi.injectEndpoints({
 				method: "DELETE"
 			}),
 			invalidatesTags: ["Boards", "BoardStatuses"]
+		}),
+		updateBoardStatus: builder.mutation<{message: string}, {boardId: number, statusId: number, limit: number}>({
+			query: ({limit, boardId, statusId}) => ({
+				url: BOARD_STATUS_URL(boardId, statusId),
+				method: "PUT",
+				body: {
+					limit
+				}
+			}),
+			invalidatesTags: ["Boards", "BoardStatuses"]
 		})
 	}),
 })
@@ -153,11 +170,13 @@ export const {
 	useGetBoardsQuery, 
 	useGetBoardTicketsQuery,
 	useGetBoardStatusesQuery,
+	useGetBoardStatusQuery,
 	useAddBoardMutation,
 	useUpdateBoardMutation,
 	useAddBoardTicketsMutation,
 	useAddBoardStatusesMutation,
 	useDeleteBoardTicketMutation,
 	useDeleteBoardStatusMutation,
+	useUpdateBoardStatusMutation,
 	useBulkEditBoardStatusesMutation,
 } = boardApi 

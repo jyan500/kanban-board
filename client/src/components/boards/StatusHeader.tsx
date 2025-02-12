@@ -10,12 +10,13 @@ import { StatusHeaderDropdown } from "./StatusHeaderDropdown"
 type Props = {
 	numTickets: number
 	statusId: number
+	boardId: number
 	statusName: string
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
 }
 
-export const StatusHeader = ({numTickets, statusId, statusName, addTicketHandler, hideStatusHandler}: Props) => {
+export const StatusHeader = ({numTickets, boardId, statusId, statusName, addTicketHandler, hideStatusHandler}: Props) => {
 	const [ showDropdown, setShowDropdown ] = useState(false)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef<HTMLButtonElement>(null)
@@ -44,7 +45,7 @@ export const StatusHeader = ({numTickets, statusId, statusName, addTicketHandler
 					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-w-6 tw-h-6"/></button>
 					{
 						showDropdown ? (
-							<StatusHeaderDropdown statusId={statusId} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>
+							<StatusHeaderDropdown boardId = {boardId} statusId={statusId} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>
 						) : null
 					}
 				</IconContext.Provider>

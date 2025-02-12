@@ -1,6 +1,6 @@
 const db = require("../db/db")
 const { checkUniqueEntity, entityInOrganization, validateKeyExists } = require("./helper")
-const { BULK_INSERT_LIMIT } = require("../constants")
+const { BULK_INSERT_LIMIT, MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT } = require("../constants")
 const { body, param } = require("express-validator")
 
 const boardValidator = (actionType) => {
@@ -67,7 +67,7 @@ const boardStatusValidator = (actionType) => {
 	if (actionType === "update"){
 		validationRules = [
 			...validationRules,	
-			body("limit").isNumeric().withMessage("limit must be a number").isFloat({min: 1, max: 30}).withMessage("limit must be between 1 and 30")
+			body("limit").isNumeric().withMessage("limit must be a number").isFloat({min: MIN_COLUMN_LIMIT, max: MAX_COLUMN_LIMIT}).withMessage("limit must be between 1 and 30")
 		]
 	}
 	else if (actionType === "create" || actionType === "bulk-edit") {

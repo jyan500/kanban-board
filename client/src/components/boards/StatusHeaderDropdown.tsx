@@ -1,20 +1,23 @@
 import React, { useRef } from "react" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
+import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { Dropdown } from "../Dropdown" 
 import { addToast } from "../../slices/toastSlice"
 import { Toast, Notification } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { Link, useLocation } from 'react-router-dom';
 import { NOTIFICATIONS } from "../../helpers/routes"
+import { SetColumnLimitModalProps } from "../secondary-modals/SetColumnLimitModal"
 
 type Props = {
 	closeDropdown: () => void
 	statusId: number
+	boardId: number
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
 }
 
-export const StatusHeaderDropdown = React.forwardRef<HTMLDivElement, Props>(({closeDropdown, statusId, addTicketHandler, hideStatusHandler}: Props, ref) => {
+export const StatusHeaderDropdown = React.forwardRef<HTMLDivElement, Props>(({closeDropdown, statusId, boardId, addTicketHandler, hideStatusHandler}: Props, ref) => {
 	const dispatch = useAppDispatch()
 
 	const options = {
@@ -22,7 +25,11 @@ export const StatusHeaderDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 			addTicketHandler(statusId)
 		},
 		"Set Column Limit": () => {
-			console.log("Placeholder for set limit")
+			dispatch(toggleShowSecondaryModal(true))
+			dispatch(setSecondaryModalProps<SetColumnLimitModalProps>({
+				boardId, statusId	
+			}))
+			dispatch(setSecondaryModalType("SET_COLUMN_LIMIT_MODAL"))
 		},
 		"Hide Column": () => {
 			hideStatusHandler(statusId)

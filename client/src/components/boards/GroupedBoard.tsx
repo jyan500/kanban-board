@@ -34,6 +34,7 @@ type Props = {
 	statusesToDisplay: Array<Status>
 	allStatuses: Array<Status>
 	boardStyle: Record<string, string>
+	boardId: number
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
 }
@@ -47,6 +48,7 @@ export const GroupedBoard = ({
 	tickets,
 	groupedTickets, 
 	groupBy, 
+	boardId,
 	statusesToDisplay,
 	addTicketHandler,
 	hideStatusHandler,
@@ -103,6 +105,7 @@ export const GroupedBoard = ({
 						>
 							<StatusHeader 
 								statusId={status.id} 
+								boardId={boardId}
 								numTickets={board[status.id]?.length} 
 								statusName={allStatuses.find((s: Status) => s.id === status.id)?.name ?? ""} 
 								addTicketHandler={addTicketHandler}
