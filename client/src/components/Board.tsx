@@ -23,6 +23,7 @@ import type {
 } from "../types/common"
 import { prioritySort as sortByPriority, sortStatusByOrder } from "../helpers/functions" 
 import { useUpdateTicketStatusMutation } from "../services/private/ticket" 
+import { useDeleteBoardStatusMutation } from "../services/private/board"
 import { addToast } from "../slices/toastSlice"
 import { boardGroupBy } from "../helpers/groupBy"
 import { GroupedBoard } from "./boards/GroupedBoard"
@@ -31,10 +32,11 @@ import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT, XL_BREAKPOINT, MD_BREAKPOINT } from "../helpers/constants"
 
 export const Board = () => {
-	const {board, filteredTickets, tickets, statusesToDisplay, groupBy} = useAppSelector((state) => state.board)
+	const {board, boardInfo, filteredTickets, tickets, statusesToDisplay, groupBy} = useAppSelector((state) => state.board)
 	const { statuses: allStatuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const [updateTicketStatus] = useUpdateTicketStatusMutation() 
+	const [ deleteBoardStatus ] = useDeleteBoardStatusMutation()
 	const dispatch = useAppDispatch()
 	const {width, height} = useScreenSize()
 	const boardStyle = {
@@ -98,6 +100,42 @@ export const Board = () => {
 		}
 	}
 
+	const addTicketHandler = (statusId: number) => {
+		dispatch(toggleShowModal(true))
+		dispatch(setModalType("ADD_TICKET_FORM"))
+		dispatch(setModalProps({statusId: statusId, statusesToDisplay, boardId: boardInfo?.id}))
+	}
+
+	const hideStatusHandler = async (statusId: number) => {
+		if (boardInfo?.id && statusId){
+			try {
+				await deleteBoardStatus({statusId, boardId: boardInfo.id}).unwrap()
+				dispatch(addToast({
+	    			id: uuidv4(),
+	    			type: "success",
+	    			animationType: "animation-in",
+	    			message: `Status hidden successfully!`,
+	    		}))
+			}
+			catch {
+				dispatch(addToast({
+	    			id: uuidv4(),
+	    			type: "failure",
+	    			animationType: "animation-in",
+	    			message: `Failed to hide status.`,
+	    		}))	
+			}
+		}
+		else {
+			dispatch(addToast({
+    			id: uuidv4(),
+    			type: "failure",
+    			animationType: "animation-in",
+    			message: `Failed to hide status.`,
+    		}))		
+		}
+	}
+
 	return (
 		<div className = "tw-flex tw-flex-col">
 			<ToolBar/>
@@ -114,6 +152,8 @@ export const Board = () => {
 						tickets={filteredTickets}
 						statusesToDisplay={statusesToDisplay}
 						allStatuses={allStatuses}
+						addTicketHandler={addTicketHandler}
+						hideStatusHandler={hideStatusHandler}
 					/>
 				) : (
 					/* Dragging tickets is disabled on mobile */
@@ -126,6 +166,8 @@ export const Board = () => {
 						statusesToDisplay={statusesToDisplay}
 						allStatuses={allStatuses}
 						colWidth={{"maxWidth": `${width/statusesToDisplay.length}px`}}
+						addTicketHandler={addTicketHandler}
+						hideStatusHandler={hideStatusHandler}
 					/>		
 				)
 			}

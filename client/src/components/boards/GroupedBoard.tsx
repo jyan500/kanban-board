@@ -22,6 +22,7 @@ import { LoadingSpinner } from "../LoadingSpinner"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { sortStatusByOrder } from "../../helpers/functions"
+import { StatusHeader } from "./StatusHeader"
 
 type Props = {
 	groupedTickets: GroupedTickets
@@ -33,6 +34,8 @@ type Props = {
 	statusesToDisplay: Array<Status>
 	allStatuses: Array<Status>
 	boardStyle: Record<string, string>
+	addTicketHandler: (statusId: number) => void
+	hideStatusHandler: (statusId: number) => void
 }
 
 export const GroupedBoard = ({
@@ -44,7 +47,9 @@ export const GroupedBoard = ({
 	tickets,
 	groupedTickets, 
 	groupBy, 
-	statusesToDisplay
+	statusesToDisplay,
+	addTicketHandler,
+	hideStatusHandler,
 }: Props) => {
 	const dispatch = useAppDispatch()
 	/* object mapping the group by ids to boolean to denote whether the collapse arrow for that section is on/off */
@@ -96,16 +101,13 @@ export const GroupedBoard = ({
 						<div
 						className = "tw-flex tw-flex-col tw-bg-gray-50"
 						>
-							<>
-								<div className = "tw-ml-2 tw-py-2 tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-									<p className = "tw-font-bold">
-										{allStatuses.find((s: Status) => s.id === status.id)?.name}
-									</p>
-									<span>
-										{board[status.id]?.length}
-									</span>
-								</div>
-							</>
+							<StatusHeader 
+								statusId={status.id} 
+								numTickets={board[status.id]?.length} 
+								statusName={allStatuses.find((s: Status) => s.id === status.id)?.name ?? ""} 
+								addTicketHandler={addTicketHandler}
+								hideStatusHandler={hideStatusHandler}
+							/>
 						</div>
 					)
 				})}

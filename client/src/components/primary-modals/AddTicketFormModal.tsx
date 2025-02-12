@@ -7,10 +7,11 @@ type Props = {
 	statusesToDisplay?: Array<Status>
 	ticket?: Ticket | null | undefined
 	boardId?: number | null | undefined
+	statusId?: number | null | undefined
 }
 
-export const AddTicketFormModal = ({boardId, ticket, statusesToDisplay}: Props) => {
+export const AddTicketFormModal = ({boardId, ticket, statusesToDisplay, statusId}: Props) => {
 	return (
-		<AddTicketForm boardId={boardId} ticket={ticket} statusesToDisplay={statusesToDisplay}/>
+		<AddTicketForm boardId={boardId} ticket={ticket} statusesToDisplay={statusesToDisplay} statusId={statusId}/>
 	)	
 }

@@ -15,6 +15,7 @@ import { Ticket } from "../Ticket"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { sortStatusByOrder } from "../../helpers/functions"
+import { StatusHeader } from "./StatusHeader"
 
 type Props = {
 	tickets: Array<TicketType>
@@ -25,6 +26,8 @@ type Props = {
 	allStatuses: Array<Status>
 	boardStyle: Record<string, string>
 	colWidth: Record<string, string>
+	addTicketHandler: (statusId: number) => void
+	hideStatusHandler: (statusId: number) => void
 }
 
 export const Board = ({
@@ -36,6 +39,8 @@ export const Board = ({
 	tickets,
 	statusesToDisplay,
 	colWidth,
+	addTicketHandler,
+	hideStatusHandler,
 }: Props) => {
 
 	const dispatch = useAppDispatch()
@@ -80,14 +85,13 @@ export const Board = ({
 					className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[600px]"
 				>
 					<div>
-						<div className = "tw-ml-2 tw-py-2 tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-							<p className = "tw-font-bold">
-								{allStatuses.find((s: Status) => s.id === status.id)?.name}
-							</p>
-							<span>
-								{board[status.id]?.length}
-							</span>
-						</div>
+						<StatusHeader 
+							statusId={status.id} 
+							numTickets={board[status.id]?.length} 
+							statusName={allStatuses.find((s: Status) => s.id === status.id)?.name ?? ""} 
+							addTicketHandler={addTicketHandler} 
+							hideStatusHandler={hideStatusHandler}
+						/>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
 							{board[status.id]?.map((ticketId: number) => {
 								const ticket = tickets.find((t: TicketType) => t.id === ticketId)
