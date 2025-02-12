@@ -10,6 +10,7 @@ const {
 	validateBoardTicketDelete,
 	validateBoardStatusGet,
 	validateBoardStatusCreate,
+	validateBoardStatusUpdate,
 	validateBoardStatusDelete,
 	validateBoardStatusBulkEdit,
 }  = require("../validation/board")
@@ -344,6 +345,22 @@ router.post("/:boardId/status", validateBoardStatusCreate, handleValidationResul
 	}
 	catch (err) {
 		console.log(`Error while inserting statuses: ${err.message}`)
+		next(err)
+	}
+})
+
+router.put("/:boardId/status/:statusId", validateBoardStatusUpdate, handleValidationResult, async (req, res, next) => {
+	try {
+		const limit = req.body.limit	
+		const boardId = req.params.boardId
+		const statusId = req.params.statusId
+		await db("boards_to_statuses").where("status_id", statusId).where("board_id", boardId).update({
+			limit
+		})
+		res.json({message: "Status updated successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while updating status: ${err.message}`)
 		next(err)
 	}
 })

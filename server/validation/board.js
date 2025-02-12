@@ -58,10 +58,16 @@ const boardStatusValidator = (actionType) => {
 	let validationRules = [
 		param("boardId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "board", value, "boards"))
 	]	
-	if (actionType === "get" || actionType === "delete"){
+	if (actionType === "get" || actionType === "delete" || actionType === "update"){
 		validationRules = [
 			...validationRules,
 			param("statusId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "status", value, "statuses"))
+		]
+	}
+	if (actionType === "update"){
+		validationRules = [
+			...validationRules,	
+			body("limit").isNumeric().withMessage("limit must be a number").isFloat({min: 1, max: 30}).withMessage("limit must be between 1 and 30")
 		]
 	}
 	else if (actionType === "create" || actionType === "bulk-edit") {
@@ -104,5 +110,6 @@ module.exports = {
 	validateBoardStatusGet: boardStatusValidator("get"),
 	validateBoardStatusCreate: boardStatusValidator("create"),
 	validateBoardStatusDelete: boardStatusValidator("delete"),
+	validateBoardStatusUpdate: boardStatusValidator("update"),
 	validateBoardStatusBulkEdit: boardStatusValidator("bulk-edit"),
 }
