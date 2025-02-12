@@ -103,7 +103,7 @@ export const ToolBar = () => {
 						dispatch(setModalType("BOARD_STATUS_FORM"))
 					}}>Edit Statuses</button>) : null
 				}
-				<button className = "button" onClick = {(e) => prioritySort(1)}>Sort By Priority</button>
+				{/*<button className = "button" onClick = {(e) => prioritySort(1)}>Sort By Priority</button>*/}
 				<div className = "tw-flex tw-flex-col lg:tw-flex-row lg:tw-items-center tw-gap-y-2 lg:tw-gap-x-2">
 					<label className = "label" htmlFor="board-group-by">Group By</label>
 					<select 

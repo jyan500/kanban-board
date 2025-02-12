@@ -47,10 +47,11 @@ export type FormValues = {
 type Props = {
 	boardId?: number | null | undefined
 	ticket?: Ticket | null | undefined
+	statusId?: number | null | undefined
 	statusesToDisplay?: Array<Status>
 }
 
-export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
+export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId}: Props) => {
 	const dispatch = useAppDispatch()
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
@@ -71,7 +72,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay}: Props) => {
 		name: "",
 		description: "",
 		priorityId: 0,
-		statusId: 0,
+		statusId: statusId ?? 0,
 		ticketTypeId: 0,
 		userId: 0 
 	}
