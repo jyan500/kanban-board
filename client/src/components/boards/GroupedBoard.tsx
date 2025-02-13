@@ -6,6 +6,7 @@ import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { KanbanBoard, GroupedTickets, GroupByOptionsKey, Status, GroupByElement, Ticket as TicketType } from "../../types/common"
 import { useGetGroupByElementsQuery } from "../../services/private/groupBy"
 import { useUpdateTicketStatusMutation } from "../../services/private/ticket"
+import { MAX_COLUMN_LIMIT } from "../../helpers/constants"
 import { 
 	selectCurrentTicketId,
 } from "../../slices/boardSlice"
@@ -148,7 +149,7 @@ export const GroupedBoard = ({
 										>
 											<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
 												{
-													groupedTickets[groupById][status.id]?.map((ticketId: number) => {
+													groupedTickets[groupById][status.id]?.slice(0, status.limit ?? MAX_COLUMN_LIMIT).map((ticketId: number) => {
 														const ticket = tickets.find((t: TicketType) => t.id === ticketId)
 														return (
 															<div 

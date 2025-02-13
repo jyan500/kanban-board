@@ -82,6 +82,7 @@ export const SetColumnLimitModal = ({boardId, statusId}: SetColumnLimitModalProp
 				<BackendErrorMessage error={error}/>
 			</div>
 			<div>
+				<label className = "label">Maximum Tickets</label>
 				<input type = "number" {...register("limit", registerOptions.limit)} />	
 		        {errors?.limit && <small className = "--text-alert">{errors.limit.message}</small>}
 			</div>
