@@ -7,10 +7,11 @@ import { IconContext } from "react-icons"
 
 type Props = {
 	type: string
-	message: string
+	message?: string
+	children?: React.ReactNode
 }
 
-export const Banner = ({type, message}: Props) => {
+export const Banner = ({type, message, children}: Props) => {
 	const toastIcon = iconMap[type] as React.ReactNode || null
 	const color = colorMap[type] as string
 	return (
@@ -21,7 +22,8 @@ export const Banner = ({type, message}: Props) => {
 					{toastIcon}
 					</div>)}
 			</IconContext.Provider>
-			<p>{message}</p>		
+			{message ? (<p>{message}</p>) : null}
+			{children}
 		</div>
 	)
 }

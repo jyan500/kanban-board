@@ -11,6 +11,8 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ArrowButton } from "../../components/page-elements/ArrowButton"
 import { LoadingSpinner } from "../../components/LoadingSpinner"
+import { Link } from "react-router-dom"
+import { TICKETS } from "../../helpers/routes"
 import { Banner } from "../../components/page-elements/Banner"
 
 export const Board = () => {
@@ -19,7 +21,7 @@ export const Board = () => {
 	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
 	const {data: boardData, isLoading: isGetBoardLoading, isError: isGetBoardError } = useGetBoardQuery(boardId ? {id: boardId, urlParams: {assignees: true}} : skipToken)
-	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError } = useGetBoardTicketsQuery(boardId ? {id: boardId, urlParams: {"includeAssignees": true, "includeRelationshipInfo": true}} : skipToken)
+	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError } = useGetBoardTicketsQuery(boardId ? {id: boardId, urlParams: {"includeAssignees": true, "includeRelationshipInfo": true, "limit": true}} : skipToken)
 	const {data: statusData, isLoading: isGetBoardStatusesLoading, isError: isGetBoardStatusesError } = useGetBoardStatusesQuery(boardId ? {id: boardId, isActive: true} : skipToken)
 	const board = useAppSelector((state) => state.board)
 
@@ -54,6 +56,14 @@ export const Board = () => {
 			{ !isGetBoardLoading && !isGetBoardTicketsLoading && !isGetBoardStatusesLoading ? 
 				<>
 					<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>
+					{boardTicketData?.length === boardData?.[0]?.ticketLimit ? (
+						<Banner type = "warning">
+							<Link to={`${TICKETS}?board=${boardData?.[0]?.id}`} className = "hover:tw-opacity-60 tw-font-bold">
+								This board is displaying the max amount of tickets available. Click here
+								to see all tickets.
+							</Link>
+						</Banner>
+					) : null}
 					<KanbanBoard
 					/> 
 				</>
