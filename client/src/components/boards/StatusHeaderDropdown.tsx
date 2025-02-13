@@ -19,21 +19,25 @@ type Props = {
 
 export const StatusHeaderDropdown = React.forwardRef<HTMLDivElement, Props>(({closeDropdown, statusId, boardId, addTicketHandler, hideStatusHandler}: Props, ref) => {
 	const dispatch = useAppDispatch()
+	const { userProfile } = useAppSelector((state) => state.userProfile)
+	const { userRoleLookup } = useAppSelector((state) => state.userRole)
+	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null
+	const isAdminOrBoardAdmin = userRole && (userRole === "ADMIN" || userRole === "BOARD_ADMIN")
 
 	const options = {
 		"Add Ticket": () => {
 			addTicketHandler(statusId)
 		},
-		"Set Column Limit": () => {
+		...(isAdminOrBoardAdmin ? {"Set Column Limit": () => {
 			dispatch(toggleShowSecondaryModal(true))
 			dispatch(setSecondaryModalProps<SetColumnLimitModalProps>({
 				boardId, statusId	
 			}))
 			dispatch(setSecondaryModalType("SET_COLUMN_LIMIT_MODAL"))
-		},
-		"Hide Column": () => {
+		}} : {}),
+		...(isAdminOrBoardAdmin ? {"Hide Column": () => {
 			hideStatusHandler(statusId)
-		},
+		}} : {}),
 	}
 
 	return (
