@@ -16,6 +16,7 @@ import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { sortStatusByOrder } from "../../helpers/functions"
 import { StatusHeader } from "./StatusHeader"
+import { MAX_COLUMN_LIMIT } from "../../helpers/constants"
 
 type Props = {
 	tickets: Array<TicketType>
@@ -28,11 +29,13 @@ type Props = {
 	colWidth: Record<string, string>
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
+	boardId: number
 }
 
 export const Board = ({
 	allStatuses, 
 	board, 
+	boardId,
 	dragStart,
 	enableDropping,
 	boardStyle, 
@@ -86,14 +89,14 @@ export const Board = ({
 				>
 					<div>
 						<StatusHeader 
-							statusId={status.id} 
+							status={status} 
+							boardId={boardId}
 							numTickets={board[status.id]?.length} 
-							statusName={allStatuses.find((s: Status) => s.id === status.id)?.name ?? ""} 
 							addTicketHandler={addTicketHandler} 
 							hideStatusHandler={hideStatusHandler}
 						/>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
-							{board[status.id]?.map((ticketId: number) => {
+							{board[status.id]?.slice(0, status.limit ?? MAX_COLUMN_LIMIT).map((ticketId: number) => {
 								const ticket = tickets.find((t: TicketType) => t.id === ticketId)
 								return (
 									<div 

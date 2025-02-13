@@ -10,6 +10,7 @@ const {
 	validateBoardTicketDelete,
 	validateBoardStatusGet,
 	validateBoardStatusCreate,
+	validateBoardStatusUpdate,
 	validateBoardStatusDelete,
 	validateBoardStatusBulkEdit,
 }  = require("../validation/board")
@@ -303,6 +304,7 @@ router.get("/:boardId/status", validateGet, handleValidationResult, async (req, 
 			"statuses.name as name",
 			"statuses.order as order",
 			"statuses.is_active as isActive",
+			"boards_to_statuses.limit as limit",
 			"statuses.is_completed as isCompleted",
 			"statuses.organization_id as organizationId")
 		res.json(statuses)
@@ -323,9 +325,10 @@ router.get("/:boardId/status/:statusId", validateBoardStatusGet, handleValidatio
 			"statuses.id as id",
 			"statuses.name as name",
 			"statuses.order as order",
+			"boards_to_statuses.limit as limit",
 			"statuses.is_active as isActive",
 			"statuses.is_completed as isCompleted",
-			"statuses.organization_id as organizationId")
+			"statuses.organization_id as organizationId").first()
 		res.json(status)
 
 	}	
@@ -344,6 +347,22 @@ router.post("/:boardId/status", validateBoardStatusCreate, handleValidationResul
 	}
 	catch (err) {
 		console.log(`Error while inserting statuses: ${err.message}`)
+		next(err)
+	}
+})
+
+router.put("/:boardId/status/:statusId", validateBoardStatusUpdate, handleValidationResult, async (req, res, next) => {
+	try {
+		const limit = req.body.limit	
+		const boardId = req.params.boardId
+		const statusId = req.params.statusId
+		await db("boards_to_statuses").where("status_id", statusId).where("board_id", boardId).update({
+			limit
+		})
+		res.json({message: "Status updated successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while updating status: ${err.message}`)
 		next(err)
 	}
 })

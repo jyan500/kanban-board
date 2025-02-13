@@ -6,6 +6,7 @@ import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { KanbanBoard, GroupedTickets, GroupByOptionsKey, Status, GroupByElement, Ticket as TicketType } from "../../types/common"
 import { useGetGroupByElementsQuery } from "../../services/private/groupBy"
 import { useUpdateTicketStatusMutation } from "../../services/private/ticket"
+import { MAX_COLUMN_LIMIT } from "../../helpers/constants"
 import { 
 	selectCurrentTicketId,
 } from "../../slices/boardSlice"
@@ -34,6 +35,7 @@ type Props = {
 	statusesToDisplay: Array<Status>
 	allStatuses: Array<Status>
 	boardStyle: Record<string, string>
+	boardId: number
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
 }
@@ -47,6 +49,7 @@ export const GroupedBoard = ({
 	tickets,
 	groupedTickets, 
 	groupBy, 
+	boardId,
 	statusesToDisplay,
 	addTicketHandler,
 	hideStatusHandler,
@@ -102,9 +105,9 @@ export const GroupedBoard = ({
 						className = "tw-flex tw-flex-col tw-bg-gray-50"
 						>
 							<StatusHeader 
-								statusId={status.id} 
+								status={status} 
+								boardId={boardId}
 								numTickets={board[status.id]?.length} 
-								statusName={allStatuses.find((s: Status) => s.id === status.id)?.name ?? ""} 
 								addTicketHandler={addTicketHandler}
 								hideStatusHandler={hideStatusHandler}
 							/>
@@ -146,7 +149,7 @@ export const GroupedBoard = ({
 										>
 											<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
 												{
-													groupedTickets[groupById][status.id]?.map((ticketId: number) => {
+													groupedTickets[groupById][status.id]?.slice(0, status.limit ?? MAX_COLUMN_LIMIT).map((ticketId: number) => {
 														const ticket = tickets.find((t: TicketType) => t.id === ticketId)
 														return (
 															<div 

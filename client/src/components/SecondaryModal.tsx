@@ -9,6 +9,7 @@ import { DeleteTicketWarning } from "./secondary-modals/DeleteTicketWarning"
 import { AddToEpicFormModal } from "./secondary-modals/AddToEpicFormModal"
 import { AddTicketFormModal } from "./primary-modals/AddTicketFormModal"
 import { MoveTicketFormModal } from "./secondary-modals/MoveTicketFormModal"
+import { SetColumnLimitModal } from "./secondary-modals/SetColumnLimitModal"
 import { AddTicketWatchersModal } from "./secondary-modals/AddTicketWatchersModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SECONDARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
@@ -24,6 +25,7 @@ export const secondaryModalTypes = {
 	"MOVE_TICKET_FORM_MODAL": MoveTicketFormModal,
 	"CLONE_TICKET_FORM_MODAL": AddTicketFormModal,
 	"ADD_TICKET_WATCHERS_MODAL": AddTicketWatchersModal,
+	"SET_COLUMN_LIMIT_MODAL": SetColumnLimitModal,
 }
 
 export const secondaryModalClassNames = {

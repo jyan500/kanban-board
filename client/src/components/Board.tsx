@@ -23,7 +23,7 @@ import type {
 } from "../types/common"
 import { prioritySort as sortByPriority, sortStatusByOrder } from "../helpers/functions" 
 import { useUpdateTicketStatusMutation } from "../services/private/ticket" 
-import { useDeleteBoardStatusMutation } from "../services/private/board"
+import { useUpdateBoardStatusMutation, useDeleteBoardStatusMutation } from "../services/private/board"
 import { addToast } from "../slices/toastSlice"
 import { boardGroupBy } from "../helpers/groupBy"
 import { GroupedBoard } from "./boards/GroupedBoard"
@@ -145,6 +145,7 @@ export const Board = () => {
 					<GroupedBoard
 						groupedTickets={boardGroupBy(groupBy, tickets, statusesToDisplay)}
 						board={board}
+						boardId={boardInfo?.id ?? 0}
 						boardStyle={boardStyle}
 						groupBy={groupBy}
 						dragStart={dragStart}
@@ -160,6 +161,7 @@ export const Board = () => {
 					<DefaultBoard
 						enableDropping={enableDropping}
 						board={board}
+						boardId={boardInfo?.id ?? 0}
 						boardStyle={boardStyle}
 						dragStart={dragStart}
 						tickets={filteredTickets}
