@@ -104,10 +104,9 @@ export const GroupedBoard = ({
 						className = "tw-flex tw-flex-col tw-bg-gray-50"
 						>
 							<StatusHeader 
-								statusId={status.id} 
+								status={status} 
 								boardId={boardId}
 								numTickets={board[status.id]?.length} 
-								statusName={allStatuses.find((s: Status) => s.id === status.id)?.name ?? ""} 
 								addTicketHandler={addTicketHandler}
 								hideStatusHandler={hideStatusHandler}
 							/>
