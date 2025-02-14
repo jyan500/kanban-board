@@ -50,7 +50,10 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 				{Object.keys(options).map((option) => (
 					<li
 						key={option}
-						onClick={() => {
+						onClick={(e) => {
+							// the stop propagation here is to avoid the edit ticket form modal from opening
+							// when clicking the "..." menu on the individual ticket rather than from inside the edit ticket form modal
+							e.stopPropagation()
 							options[option as keyof typeof options]?.()
 							closeDropdown()
 						}}

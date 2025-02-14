@@ -116,6 +116,8 @@ export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
 				<div className = "tw-relative tw-inline-block tw-text-left">
 					<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
 						<button ref = {buttonRef} onClick={(e) => {
+							// the stop propagation here is to avoid the edit ticket form modal from opening
+							// when clicking the "..." menu on the individual ticket rather than from inside the edit ticket form modal
 							e.stopPropagation()
 							setShowDropdown(!showDropdown)
 						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
