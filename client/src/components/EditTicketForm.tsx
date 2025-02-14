@@ -502,26 +502,34 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								<>
 									<div className = "tw-flex tw-flex-row tw-justify-between">
 										<strong>Epic Tickets</strong>
-										<PaginationRow
-											showNumResults={false}
-											showPageNums={false}
-											setPage={(page: number) => { setEpicTicketPage(page)}}	
-											paginationData={epicTicketRelationships?.pagination}
-											currentPage={epicTicketPage}
-										/>
+										{
+											epicTicketRelationships?.pagination.nextPage || epicTicketRelationships?.pagination.prevPage ? (
+												<PaginationRow
+													showNumResults={false}
+													showPageNums={false}
+													setPage={(page: number) => { setEpicTicketPage(page)}}	
+													paginationData={epicTicketRelationships?.pagination}
+													currentPage={epicTicketPage}
+												/>
+											) : null
+										}
 									</div>
 									<LinkedTicketForm percentageCompleted={epicTicketRelationships?.additional?.percentageCompleted} isModal={isModal} currentTicketId={currentTicketId} isEpicParent={true} showAddLinkedIssue={showAddToEpic} setShowAddLinkedIssue={setShowAddToEpic} ticketRelationships={epicTicketRelationships?.data?.length ? epicTicketRelationships.data : []}/>
 								</>
 							) : null
 							}
 							<strong>Linked Issues</strong>	
-							<PaginationRow
-								showNumResults={false}
-								showPageNums={false}
-								setPage={(page: number) => { setLinkedTicketPage(page)}}	
-								paginationData={ticketRelationships?.pagination}
-								currentPage={linkedTicketPage}
-							/>
+							{
+								ticketRelationships?.pagination.nextPage || ticketRelationships?.pagination.prevPage ? (
+									<PaginationRow
+										showNumResults={false}
+										showPageNums={false}
+										setPage={(page: number) => { setLinkedTicketPage(page)}}	
+										paginationData={ticketRelationships?.pagination}
+										currentPage={linkedTicketPage}
+									/>
+								) : null
+							}
 							<LinkedTicketForm currentTicketId={currentTicketId} showAddLinkedIssue={showAddLinkedIssue} setShowAddLinkedIssue={setShowAddLinkedIssue} ticketRelationships={ticketRelationships?.data?.length ? ticketRelationships.data : []}/>
 						</div> : null
 					) : <LoadingSpinner/>}
@@ -531,13 +539,17 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<>
 							<div className = "tw-flex tw-flex-row tw-justify-between">
 								<strong>Activity</strong>
-								<PaginationRow
-									showNumResults={false}
-									showPageNums={false}
-									setPage={(page: number) => { setCommentPage(page)} }	
-									paginationData={ticketComments?.pagination}
-									currentPage={commentPage}
-								/>
+								{
+									ticketComments?.pagination.nextPage || ticketComments?.pagination.prevPage ? (
+										<PaginationRow
+											showNumResults={false}
+											showPageNums={false}
+											setPage={(page: number) => { setCommentPage(page)} }	
+											paginationData={ticketComments?.pagination}
+											currentPage={commentPage}
+										/>
+									) : null
+								}
 							</div>
 							<TicketCommentForm currentTicketId={currentTicketId} ticketComments={ticketComments?.data?.length ? ticketComments.data : []}/>
 						</>
