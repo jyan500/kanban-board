@@ -37,7 +37,7 @@
 }
 
 .--warning .--icon-thumb {
-	color: hsl(var(--toast-warning-hue) 97% 3%);
+	color: hsl(var(--toast-warning-hue) 90% 40%);
 }
 
 .toast-message {

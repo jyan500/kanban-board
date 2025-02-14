@@ -49,7 +49,7 @@ router.get("/", async (req, res, next) => {
 			}
 		})	
 		.select(
-			"boards.id as id", "boards.name as name", "boards.organization_id as organizationId"
+			"boards.ticket_limit as ticketLimit", "boards.id as id", "boards.name as name", "boards.organization_id as organizationId"
 		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 
 		let boardAssignees;
@@ -117,6 +117,7 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 		const boards = await db("boards").where("id", req.params.boardId).select(
 			"boards.id as id",
 			"boards.name as name",
+			"boards.ticket_limit as ticketLimit",
 			"boards.organization_id as organizationId",
 		)
 		let boardAssignees;
@@ -137,6 +138,7 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 				id: board.id,
 				name: board.name,
 				organizationId: board.organizationId,
+				ticketLimit: board.ticketLimit
 			}
 			if (req.query.assignees === "true" && board.id in boardAssigneesRes){
 				boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : 0}
@@ -174,9 +176,15 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 
 router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
+		const board = await db("boards").where("id", req.params.boardId).first()
 		let tickets = await db("tickets_to_boards")
 		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
 		.where("board_id", req.params.boardId)
+		.modify((queryBuilder) => {
+			if (req.query.limit){
+				queryBuilder.limit(board.ticket_limit)
+			}
+		})
 		.select(
 			"tickets.id as id",
 			"tickets.priority_id as priorityId",
@@ -402,6 +410,7 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 		const body = {...req.body, organization_id: req.user.organization}
 		const id = await db("boards").insert({
 			name: body.name,
+			ticket_limit: body.ticket_limit,
 			organization_id: body.organization_id
 		},["id"])
 		res.json({id: id[0], message: "Board inserted successfully!"})
@@ -416,6 +425,7 @@ router.put("/:boardId", validateUpdate, handleValidationResult, async (req, res,
 	try {
 		await db("boards").where("id", req.params.boardId).update({
 			name: req.body.name,
+			ticket_limit: req.body.ticket_limit,
 		})
 		res.json({message: "Board updated successfully!"})	
 	}	

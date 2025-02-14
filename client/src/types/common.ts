@@ -70,6 +70,7 @@ export interface Priority {
 export interface Board {
 	id: number
 	name: string 
+	ticketLimit: number
 	organizationId: number
 	lastModified?: Date
 	assignees?: Array<number>

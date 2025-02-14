@@ -14,6 +14,7 @@ import { parseURLParams } from "../../helpers/functions"
 type BoardRequest = {
 	id?: number
 	name: string
+	ticketLimit: number
 }
 
 type BoardResponse = {
@@ -69,7 +70,7 @@ export const boardApi = privateApi.injectEndpoints({
 		updateBoard: builder.mutation<void, BoardRequest>({
 			query: (board: BoardRequest) => ({
 				url: `${BOARD_URL}/${board.id}`,
-				body: {name: board.name},
+				body: {name: board.name, ticket_limit: board.ticketLimit},
 				method: "PUT",
 			}),
 			invalidatesTags: ["Boards"]
