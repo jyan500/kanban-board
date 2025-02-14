@@ -165,6 +165,8 @@ export const GroupedBoard = ({
 																>
 																{ticket ? <Ticket 
 																	ticket = {ticket}
+																	statusesToDisplay={statusesToDisplay}
+																	boardId={boardId}
 																/> : null}
 															</div>
 														)
