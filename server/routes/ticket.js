@@ -58,6 +58,9 @@ router.get("/", async (req, res, next) => {
 			if (req.query.board){
 				queryBuilder.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id").where("tickets_to_boards.board_id", "=", req.query.board)
 			}
+			if (req.query.status){
+				queryBuilder.where("tickets.status_id", req.query.status)
+			}
 			if (req.query.ticketIds){
 				queryBuilder.whereIn("id", req.query.ticketIds.split(","))
 			}

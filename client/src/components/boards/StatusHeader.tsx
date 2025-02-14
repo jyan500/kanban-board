@@ -62,7 +62,7 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 			</div>
 			{
 				status.limit && (status.limit <= numTickets) ? (
-				<Link className = "tw-pl-2" to={`${TICKETS}?board=${boardId}`}><span className = "tw-text-xs">Limit has been reached. View remaining tickets here</span></Link>
+				<Link className = "tw-pl-2" to={`${TICKETS}?board=${boardId}&status=${status.id}`}><span className = "tw-text-xs">Limit has been reached. View remaining tickets here</span></Link>
 				) : null
 			}
 		</div>
