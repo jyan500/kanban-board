@@ -1,6 +1,6 @@
-import React, {ReactNode} from "react"
+import React, {useState, useRef, ReactNode} from "react"
 import "../styles/ticket.css"
-import type { Ticket as TicketType } from "../types/common"
+import type { Ticket as TicketType, Status } from "../types/common"
 import { useAppSelector } from "../hooks/redux-hooks"
 import { IoReorderTwoOutline as MediumPriorityIcon } from "react-icons/io5";
 import { HiChevronDoubleUp as HighPriorityIcon } from "react-icons/hi2";
@@ -18,6 +18,9 @@ import { Avatar } from "./page-elements/Avatar"
 import { useGetUserQuery } from "../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSpinner } from "./LoadingSpinner"
+import { BsThreeDots as MenuIcon } from "react-icons/bs";
+import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown"
+import { useClickOutside } from "../hooks/useClickOutside" 
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
 	"Low": <LowPriorityIcon/>,	
@@ -54,16 +57,28 @@ export const colorMap: {[key: string]: string} = {
 
 type PropType = {
 	ticket: TicketType
+	statusesToDisplay: Array<Status>
+	boardId: number
 }
 
-export const Ticket = ({ticket}: PropType) => {
+export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
 	const {priorities} = useAppSelector((state) => state.priority)
 	const {statuses} = useAppSelector((state) => state.status)
 	const {ticketTypes} = useAppSelector((state) => state.ticketType)
 	const { data, isFetching } = useGetUserQuery(ticket?.assignees?.[0] ?? skipToken)
+	const menuDropdownRef = useRef<HTMLDivElement>(null)
+	const buttonRef = useRef(null)
+	const [showDropdown, setShowDropdown] = useState(false)
 
 	const priority = priorities.find((p) => p.id === ticket.priorityId)?.name
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name
+
+	const onClickOutside = () => {
+		setShowDropdown(false)	
+	}
+
+	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
+
 	return (
 		<div className = "tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2">
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1">
@@ -82,20 +97,37 @@ export const Ticket = ({ticket}: PropType) => {
 					)
 				}
 			</div>
-			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-				{ticketType ? (
-					<TicketTypeIcon type = {ticketType} className = {"tw-shrink-0 tw-w-5 tw-h-5"}/>
-				) : <></>}
-				{priority && priority in priorityIconMap ? 
-				(
-					<IconContext.Provider value = {{color: priority && priority in colorMap ? colorMap[priority] : "", className: "tw-shrink-0 tw-w-5 tw-h-5"}}>
-						{priority && priority in priorityIconMap && (
-							<>
-								{priorityIconMap[priority]}
-							</>)}
+			<div className = "tw-flex tw-flex-row tw-justify-between tw-w-full">
+				<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+					{ticketType ? (
+						<TicketTypeIcon type = {ticketType} className = {"tw-shrink-0 tw-w-5 tw-h-5"}/>
+					) : <></>}
+					{priority && priority in priorityIconMap ? 
+					(
+						<IconContext.Provider value = {{color: priority && priority in colorMap ? colorMap[priority] : "", className: "tw-shrink-0 tw-w-5 tw-h-5"}}>
+							{priority && priority in priorityIconMap && (
+								<>
+									{priorityIconMap[priority]}
+								</>)}
+						</IconContext.Provider>
+					)
+					: <></>}
+				</div>
+				<div className = "tw-relative tw-inline-block tw-text-left">
+					<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
+						<button ref = {buttonRef} onClick={(e) => {
+							// the stop propagation here is to avoid the edit ticket form modal from opening
+							// when clicking the "..." menu on the individual ticket rather than from inside the edit ticket form modal
+							e.stopPropagation()
+							setShowDropdown(!showDropdown)
+						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
+						{
+							showDropdown ? (
+								<EditTicketFormMenuDropdown closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
+							) : null
+						}
 					</IconContext.Provider>
-				)
-				: <></>}
+				</div>
 			</div>
 		</div>
 	)	

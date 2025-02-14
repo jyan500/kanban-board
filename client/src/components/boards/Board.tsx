@@ -117,6 +117,8 @@ export const Board = ({
 										>
 										{ticket ? <Ticket 
 											ticket = {ticket}
+											statusesToDisplay={statusesToDisplay}
+											boardId={boardId}
 										/> : null}
 									</div>
 								)
