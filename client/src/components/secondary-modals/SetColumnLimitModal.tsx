@@ -7,6 +7,7 @@ import { addToast } from "../../slices/toastSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { Toast } from "../../types/common"
 import { BackendErrorMessage } from "../page-elements/BackendErrorMessage"
+import { MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT } from "../../helpers/constants"
 
 export type SetColumnLimitModalProps = {
 	boardId: number
@@ -33,8 +34,8 @@ export const SetColumnLimitModal = ({boardId, statusId}: SetColumnLimitModalProp
 	    limit: { 
 	    	required: "Limit is required", 
 		    valueAsNumber: true,
-	        min: { value: 1, message: "Must be at least 1" },
-	        max: { value: 50, message: "Must be at most 50" }
+	        min: { value: MIN_COLUMN_LIMIT, message: `Must be at least ${MIN_COLUMN_LIMIT}` },
+	        max: { value: MAX_COLUMN_LIMIT, message: `Must be at most ${MAX_COLUMN_LIMIT}` }
 	    }
     }
 
@@ -78,7 +79,6 @@ export const SetColumnLimitModal = ({boardId, statusId}: SetColumnLimitModalProp
 			<div>
 				<h2>Set Column Limit</h2>	
 				<p>We'll highlight this column if the number of issues in it passes this limit.</p>
-				<p>Must be between 1 and 50.</p>
 				<BackendErrorMessage error={error}/>
 			</div>
 			<div>

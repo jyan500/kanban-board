@@ -410,6 +410,7 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 		const body = {...req.body, organization_id: req.user.organization}
 		const id = await db("boards").insert({
 			name: body.name,
+			ticket_limit: body.ticket_limit,
 			organization_id: body.organization_id
 		},["id"])
 		res.json({id: id[0], message: "Board inserted successfully!"})
@@ -424,6 +425,7 @@ router.put("/:boardId", validateUpdate, handleValidationResult, async (req, res,
 	try {
 		await db("boards").where("id", req.params.boardId).update({
 			name: req.body.name,
+			ticket_limit: req.body.ticket_limit,
 		})
 		res.json({message: "Board updated successfully!"})	
 	}	

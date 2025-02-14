@@ -21,6 +21,8 @@ export const defaultStatusesToDisplay = [
 
 export const MIN_COLUMN_LIMIT = 1
 export const MAX_COLUMN_LIMIT = 50
+export const MIN_BOARD_TICKET_LIMIT = 1
+export const MAX_BOARD_TICKET_LIMIT = 1000
 
 export const defaultRows = 4
 

@@ -1,6 +1,6 @@
 const db = require("../db/db")
 const { checkUniqueEntity, entityInOrganization, validateKeyExists } = require("./helper")
-const { BULK_INSERT_LIMIT, MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT } = require("../constants")
+const { BULK_INSERT_LIMIT, MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT, MIN_BOARD_TICKET_LIMIT, MAX_BOARD_TICKET_LIMIT } = require("../constants")
 const { body, param } = require("express-validator")
 
 const boardValidator = (actionType) => {
@@ -16,6 +16,7 @@ const boardValidator = (actionType) => {
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required"),
+			body("ticket_limit").isNumeric().withMessage("ticket limit must be a number").isFloat({min: MIN_BOARD_TICKET_LIMIT, max: MAX_BOARD_TICKET_LIMIT}).withMessage(`ticket limit must be between ${MIN_BOARD_TICKET_LIMIT} and ${MAX_BOARD_TICKET_LIMIT}`)
 		]
 	}
 	return validationRules
@@ -67,7 +68,7 @@ const boardStatusValidator = (actionType) => {
 	if (actionType === "update"){
 		validationRules = [
 			...validationRules,	
-			body("limit").isNumeric().withMessage("limit must be a number").isFloat({min: MIN_COLUMN_LIMIT, max: MAX_COLUMN_LIMIT}).withMessage("limit must be between 1 and 30")
+			body("limit").isNumeric().withMessage("limit must be a number").isFloat({min: MIN_COLUMN_LIMIT, max: MAX_COLUMN_LIMIT}).withMessage(`limit must be between ${MIN_COLUMN_LIMIT} and ${MAX_COLUMN_LIMIT}`)
 		]
 	}
 	else if (actionType === "create" || actionType === "bulk-edit") {
