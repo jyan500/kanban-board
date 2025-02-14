@@ -17,6 +17,7 @@ export type Filters = {
 	ticketType: string
 	priority: string
 	board: string
+	status: string
 }
 
 export type FormValues = Filters & {
@@ -38,6 +39,7 @@ export const TicketDisplay = () => {
 		"ticketType": searchParams.get("ticketType") ?? "",
 		"priority": searchParams.get("priority") ?? "",
 		"board": searchParams.get("board") ?? "",
+		"status": searchParams.get("status") ?? "",
 	}
 	const {data: data, isLoading } = useGetTicketsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
