@@ -101,7 +101,7 @@ export const ToolBar = () => {
 					<button className = "button" onClick = {() => {
 						dispatch(toggleShowModal(true))
 						dispatch(setModalType("BOARD_STATUS_FORM"))
-					}}>Edit Statuses</button>) : null
+					}}>Edit Columns</button>) : null
 				}
 				{/*<button className = "button" onClick = {(e) => prioritySort(1)}>Sort By Priority</button>*/}
 				<div className = "tw-flex tw-flex-col lg:tw-flex-row lg:tw-items-center tw-gap-y-2 lg:tw-gap-x-2">
