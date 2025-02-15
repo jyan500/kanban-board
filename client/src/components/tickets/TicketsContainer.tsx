@@ -41,7 +41,11 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 			<div className = "tw-p-2 tw-flex tw-flex-col">
 				<div className = "tw-flex tw-flex-row tw-justify-between">
 					<p><span className = "tw-font-bold">Total:</span> {tickets.pagination.total}</p>
-					<PaginationRow setPage={setPage} showPageNums={false} paginationData={tickets.pagination}/>
+					{
+						tickets.pagination.nextPage || tickets.pagination.prevPage ? 
+							<PaginationRow setPage={setPage} showPageNums={false} paginationData={tickets.pagination}/>
+						: null
+					}
 				</div>
 				<>
 					{tickets.data.map((ticket: Ticket) => {
