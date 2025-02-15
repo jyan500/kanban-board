@@ -41,7 +41,7 @@ export const Board = () => {
 	const {width, height} = useScreenSize()
 	const boardStyle = {
 		"maxWidth": `${width}px`,
-		"overflowX": "scroll",
+		"overflowX": "auto",
 		"display": "grid",	
 		"gridTemplateColumns": `repeat(${statusesToDisplay.length}, minmax(200px, 1fr))`,
 		"gridGap": "8px",
