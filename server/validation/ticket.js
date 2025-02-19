@@ -63,18 +63,24 @@ const ticketActivityValidator = (actionType) => {
 	if (actionType === "add" || actionType === "update"){
 		validationRules = [
 			...validationRules,	
-			body("userId").custom(async (value, {req}) => await checkEntityExistsIn("user", value, [{
-				col: "user_id",
-				value: value	
-			},
-			{
-				col: "ticket_id",
-				value: req.params.ticketId
-			}
-			], "tickets_to_users")),
-			body("minutes_spent").notEmpty().isNumeric().withMessage("Minutes spent must be a number"),
-			body("description").notEmpty().withMessage("Description is required")
+			body("minutes_spent").if((value, { req }) => {
+		        return req.body.minutes_spent
+	        }).isNumeric().withMessage("Minutes spent must be a number"),
 		]
+		if (actionType === "add"){
+			validationRules = [
+				...validationRules,
+				body("userId").custom(async (value, {req}) => await checkEntityExistsIn("user", value, [{
+					col: "user_id",
+					value: value	
+				},
+				{
+					col: "ticket_id",
+					value: req.params.ticketId
+				}
+				], "tickets_to_users")),
+			]
+		}
 	}
 	return validationRules
 }

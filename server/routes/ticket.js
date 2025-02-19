@@ -523,7 +523,15 @@ router.delete("/:ticketId/relationship/:relationshipId", validateTicketRelations
 
 router.get("/:ticketId/activity", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		
+		let ticketActivities = await db("ticket_activity").where("ticket_id", req.params.ticketId).orderBy("updated_at", "desc").select(
+			"id as id",
+			"description as description",
+			"ticket_id as ticketId",
+			"user_id as userId",
+			"minutes_spent as minutesSpent",
+			"updated_at as updatedAt"
+		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		res.json(ticketActivities)
 	}
 	catch (err) {
 		console.log(`Error while getting ticket activity: ${err.message}`)
@@ -533,7 +541,14 @@ router.get("/:ticketId/activity", validateGet, handleValidationResult, async (re
 
 router.post("/:ticketId/activity", validateTicketActivityAdd, handleValidationResult, async (req, res, next) => {
 	try {
-
+		const { description, minutes_spent, user_id } = req.body
+		await db("ticket_activity").insert({
+			ticket_id: req.params.ticketId,
+			description,
+			minutes_spent,
+			user_id
+		})
+		res.json({message: "ticket activity created successfully!"})
 	}
 	catch (err) {
 		console.log(`Error while adding ticket activity: ${err.message}`)
@@ -543,7 +558,15 @@ router.post("/:ticketId/activity", validateTicketActivityAdd, handleValidationRe
 
 router.get("/:ticketId/activity/:activityId", validateTicketActivityGet, handleValidationResult, async (req, res, next) => {
 	try {
-
+		let ticketActivity = await db("ticket_activity").where("ticket_id", req.params.ticketId).where("activity_id", req.params.activityId).select(
+			"id as id",
+			"description as description",
+			"ticket_id as ticketId",
+			"user_id as userId",
+			"minutes_spent as minutesSpent",
+			"updated_at as updatedAt"
+		).first()
+		res.json(ticketActivity)
 	}
 	catch (err) {
 		console.log(`Error while getting ticket activity: ${err.message}`)
@@ -553,7 +576,12 @@ router.get("/:ticketId/activity/:activityId", validateTicketActivityGet, handleV
 
 router.put("/:ticketId/activity/:activityId", validateTicketActivityUpdate, handleValidationResult, async (req, res, next) => {
 	try {
-
+		const { description, minutes_spent } = req.body
+		await db("ticket_activity").where("id", req.params.activityId).update({
+			description, 
+			minutes_spent,
+		})
+		res.json({message: "Ticket activity updated successfully!"})
 	}	
 	catch (err){
 		console.log(`Error while updatnig ticket activity: ${err.message}`)
@@ -563,7 +591,8 @@ router.put("/:ticketId/activity/:activityId", validateTicketActivityUpdate, hand
 
 router.delete("/:ticketId/activity/:activityId", validateTicketActivityDelete, handleValidationResult, async (req, res, next) => {
 	try {
-
+		await db("ticket_activity").where("id", req.params.activityId).del()
+		res.json({message: "Ticket activity deleted successfully!"})
 	}
 	catch (err) {
 		console.log(`Error while deleting ticket activity: ${err.message}`)
