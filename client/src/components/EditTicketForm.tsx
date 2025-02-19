@@ -62,8 +62,7 @@ type Props = {
 }
 
 type EditFormValues = FormValues & {
-	minutesSpent: number
-	storyPoints: number
+	storyPoints: number | string
 	dueDate: Date | null | undefined
 }
 
@@ -108,7 +107,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		"ticket-type": false,
 		"story-points": false,
 		"due-date": false,
-		"minutes-spent": false,
 	})
 	const [showAddLinkedIssue, setShowAddLinkedIssue] = useState(false)
 	const [showAddToEpic, setShowAddToEpic] = useState(false)
@@ -120,9 +118,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		statusId: 0,
 		ticketTypeId: 0,
 		userId: 0,
-		storyPoints: 0,
+		storyPoints: "",
 		dueDate: null,
-		minutesSpent: 0,
 	}	
 	const [preloadedValues, setPreloadedValues] = useState<EditFormValues>(defaultForm)
 	const methods = useForm<EditFormValues>({
@@ -135,6 +132,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
+	    dueDate: {},
+	    storyPoints: {},
 	    userId: {}
     }
     /* Get screen width and height */
@@ -208,6 +207,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			const { mentions } = await updateTicket({
     				...values, 
     				dueDate: values.dueDate ? new Date(values.dueDate) : null,
+    				storyPoints: !isNaN(Number(values.storyPoints)) ? Number(values.storyPoints) : 0,
     				id: values.id
     			}).unwrap()
     			if (mentionNotificationType && userProfile && mentions.length){
@@ -370,6 +370,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								</div>
 						}
 						</div>
+						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
+							<span className = "tw-font-semibold tw-w-1/2">Time Spent</span>	
+							</div>
 					</div>
 				</div>
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">

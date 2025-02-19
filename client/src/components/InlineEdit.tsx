@@ -43,12 +43,14 @@ export const InlineEdit = (
 
 	let element: React.ReactElement;
 	switch (type){
+		case "date":
+		case "number":
 		case "text":
 			element = (
 				<input
 					{...register(registerField, registerOptions)}
 					className = "tw-w-full"
-					type="text"
+					type={type}
 					aria-label="editable-field-text"
 					onKeyDown={onKeyDown}
 				/>

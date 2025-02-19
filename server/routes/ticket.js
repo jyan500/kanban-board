@@ -17,6 +17,10 @@ const {
 	validateTicketRelationshipGet,
 	validateTicketRelationshipCreate,
 	validateTicketRelationshipDelete,
+	validateTicketActivityAdd,
+	validateTicketActivityGet,
+	validateTicketActivityUpdate,
+	validateTicketActivityDelete,
 
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
@@ -35,7 +39,6 @@ router.get("/", async (req, res, next) => {
 			"tickets.status_id as statusId",
 			"tickets.ticket_type_id as ticketTypeId",
 			"tickets.story_points as storyPoints",
-			"tickets.minutes_spent as minutesSpent",
 			"tickets.due_date as dueDate",
 			"tickets.organization_id as organizationId",
 			"tickets.created_at as createdAt",
@@ -152,7 +155,6 @@ router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, n
 			"tickets.ticket_type_id as ticketTypeId",
 			"tickets.organization_id as organizationId",
 			"tickets.due_date as dueDate",
-			"tickets.minutes_spent as minutesSpent",
 			"tickets.story_points as storyPoints",
 			"tickets.created_at as createdAt",
 			"tickets.user_id as userId",
@@ -515,6 +517,56 @@ router.delete("/:ticketId/relationship/:relationshipId", validateTicketRelations
 	}	
 	catch (err) {
 		console.log(`Error while deleting ticket relationship: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:ticketId/activity", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		
+	}
+	catch (err) {
+		console.log(`Error while getting ticket activity: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/:ticketId/activity", validateTicketActivityAdd, handleValidationResult, async (req, res, next) => {
+	try {
+
+	}
+	catch (err) {
+		console.log(`Error while adding ticket activity: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:ticketId/activity/:activityId", validateTicketActivityGet, handleValidationResult, async (req, res, next) => {
+	try {
+
+	}
+	catch (err) {
+		console.log(`Error while getting ticket activity: ${err.message}`)
+		next(err)
+	}
+})
+
+router.put("/:ticketId/activity/:activityId", validateTicketActivityUpdate, handleValidationResult, async (req, res, next) => {
+	try {
+
+	}	
+	catch (err){
+		console.log(`Error while updatnig ticket activity: ${err.message}`)
+		next(err)
+	}
+})
+
+router.delete("/:ticketId/activity/:activityId", validateTicketActivityDelete, handleValidationResult, async (req, res, next) => {
+	try {
+
+	}
+	catch (err) {
+		console.log(`Error while deleting ticket activity: ${err.message}`)
 		next(err)
 	}
 })

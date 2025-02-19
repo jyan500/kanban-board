@@ -5,7 +5,6 @@
 exports.up = function(knex) {
 	return knex.schema.alterTable("tickets", function(table){
 		table.integer("story_points").unsigned()
-		table.integer("minutes_spent").unsigned()
 		table.timestamp("due_date")
 	}) 
 };
@@ -17,7 +16,6 @@ exports.up = function(knex) {
 exports.down = function(knex) {
 	return knex.schema.alterTable("tickets", function(table){
 		table.dropColumn("story_points")
-		table.dropColumn("minutes_spent")
 		table.dropColumn("due_date")
 	}) 
 };
