@@ -84,6 +84,9 @@ export interface Ticket {
 	statusId: number
 	ticketTypeId: number
 	organizationId: number
+	dueDate: Date | null
+	minutesSpent: number
+	storyPoints: number
 	userId: number
 	createdAt: Date
 	hasRelationship?: boolean

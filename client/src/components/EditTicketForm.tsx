@@ -61,6 +61,12 @@ type Props = {
 	isModal?: boolean
 }
 
+type EditFormValues = FormValues & {
+	minutesSpent: number
+	storyPoints: number
+	dueDate: Date | null | undefined
+}
+
 export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Props) => {
 	const dispatch = useAppDispatch()
 	const currentTicketId = ticket?.id
@@ -99,11 +105,14 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		"description": false,
 		"assignees": false,
 		"priority": false,
-		"ticket-type": false
+		"ticket-type": false,
+		"story-points": false,
+		"due-date": false,
+		"minutes-spent": false,
 	})
 	const [showAddLinkedIssue, setShowAddLinkedIssue] = useState(false)
 	const [showAddToEpic, setShowAddToEpic] = useState(false)
-	const defaultForm: FormValues = {
+	const defaultForm: EditFormValues = {
 		id: 0,
 		name: "",
 		description: "",
@@ -111,9 +120,12 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		statusId: 0,
 		ticketTypeId: 0,
 		userId: 0,
+		storyPoints: 0,
+		dueDate: null,
+		minutesSpent: 0,
 	}	
-	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const methods = useForm<FormValues>({
+	const [preloadedValues, setPreloadedValues] = useState<EditFormValues>(defaultForm)
+	const methods = useForm<EditFormValues>({
 		defaultValues: preloadedValues
 	})
 	const { register , control, handleSubmit, reset, resetField, setValue, watch, formState: {errors} } = methods
@@ -183,7 +195,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		}
 	}, [ticketAssignees])
 
-	const onSubmit = async (values: FormValues) => {
+	const onSubmit = async (values: EditFormValues) => {
     	try {
     		// update existing ticket
     		if (values.id != null){
@@ -195,6 +207,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			}
     			const { mentions } = await updateTicket({
     				...values, 
+    				dueDate: values.dueDate ? new Date(values.dueDate) : null,
     				id: values.id
     			}).unwrap()
     			if (mentionNotificationType && userProfile && mentions.length){
