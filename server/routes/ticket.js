@@ -607,7 +607,9 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 			description: req.body.description,
 			priority_id: req.body.priority_id,
 			status_id: req.body.status_id,
-			ticket_type_id: req.body.ticket_type_id
+			ticket_type_id: req.body.ticket_type_id,
+			due_date: req.body.due_date !== "" ? new Date(req.body.due_date) : null,
+			story_points: req.body.story_points,
 		})
 		// remove existing mentioned users first before adding
 		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: req.params.ticketId, is_mention: true}, req.user.organization)

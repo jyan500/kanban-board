@@ -14,6 +14,8 @@ type Props = {
 	registerOptions: Record<string, any>
 	isLoading?: boolean
 	mentionsEnabled?: boolean
+	minDate?: string
+	maxDate?: string
 }
 
 export const InlineEdit = (
@@ -26,7 +28,9 @@ export const InlineEdit = (
 		customReset, 
 		registerField, 
 		registerOptions, 
-		mentionsEnabled
+		mentionsEnabled,
+		minDate,
+		maxDate
 	}: Props) => {
 	const methods = useFormContext()
 	const { control, handleSubmit, register, resetField, getValues, setValue } = methods
@@ -44,6 +48,18 @@ export const InlineEdit = (
 	let element: React.ReactElement;
 	switch (type){
 		case "date":
+			element = (
+				<input
+					{...register(registerField, registerOptions)}
+					className = "tw-w-full"
+					type={"date"}
+					aria-label="editable-field-date"
+					min={minDate ?? ""}
+					max={maxDate ?? ""}
+					onKeyDown={onKeyDown}
+				/>
+			)
+			break
 		case "number":
 		case "text":
 			element = (

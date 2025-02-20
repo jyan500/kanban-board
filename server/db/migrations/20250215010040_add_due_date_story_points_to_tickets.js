@@ -5,7 +5,7 @@
 exports.up = function(knex) {
 	return knex.schema.alterTable("tickets", function(table){
 		table.integer("story_points").unsigned()
-		table.timestamp("due_date")
+		table.timestamp("due_date").nullable()
 	}) 
 };
 

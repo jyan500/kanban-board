@@ -158,5 +158,17 @@ export const parseDelimitedWord = (word: string, delimiter: string) => {
 	return edited.join(" ")
 }
 
+/**
+ * @param string representing a date
+ * @return boolean on whether the string represents a valid date
+ */
+export const isValidDateString = (dateString: string | null | undefined) => {
+	if (dateString == null || dateString == undefined){
+		return false
+	}
+    return !isNaN(Date.parse(dateString));
+}
+
+
 
 

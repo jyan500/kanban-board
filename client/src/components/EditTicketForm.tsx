@@ -49,6 +49,8 @@ import { Avatar } from "./page-elements/Avatar"
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../helpers/constants"
+import { isValidDateString } from "../helpers/functions"
+import { format, toDate } from "date-fns-tz"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -63,7 +65,7 @@ type Props = {
 
 type EditFormValues = FormValues & {
 	storyPoints: number | string
-	dueDate: Date | null | undefined
+	dueDate: string
 }
 
 export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Props) => {
@@ -119,7 +121,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		ticketTypeId: 0,
 		userId: 0,
 		storyPoints: "",
-		dueDate: null,
+		dueDate: "" 
 	}	
 	const [preloadedValues, setPreloadedValues] = useState<EditFormValues>(defaultForm)
 	const methods = useForm<EditFormValues>({
@@ -150,6 +152,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	const priorityName = priorities.find((priority) => priority.id === watch("priorityId"))?.name
 
+	console.log("dueDate: ", watch("dueDate"))
+
 	const toggleFieldVisibility = (field: string, flag: boolean) => {
 		let fieldVisibility = {...editFieldVisibility}
 		for (let key in fieldVisibility){
@@ -170,7 +174,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 				"description": false,
 				"assignees": false,
 				"priority": false,
-				"ticket-type": false
+				"ticket-type": false,
+				"due-date": false,
+				"story-points": false,
 			})
 			setShowAddLinkedIssue(false)
 			setShowAddToEpic(false)
@@ -179,6 +185,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		if (currentTicketId){
 			reset({
 				...ticket, 
+				dueDate: ticket.dueDate != null && ticket.dueDate !== "" ? new Date(ticket.dueDate).toISOString().split("T")[0] : "",
 				userId: ticketAssignees?.length ? ticketAssignees[0].id : 0
 			} ?? defaultForm
 			)
@@ -206,8 +213,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			}
     			const { mentions } = await updateTicket({
     				...values, 
-    				dueDate: values.dueDate ? new Date(values.dueDate) : null,
     				storyPoints: !isNaN(Number(values.storyPoints)) ? Number(values.storyPoints) : 0,
+    				dueDate: values.dueDate ? new Date(values.dueDate) : "",  
     				id: values.id
     			}).unwrap()
     			if (mentionNotificationType && userProfile && mentions.length){
@@ -371,8 +378,71 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						}
 						</div>
 						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Time Spent</span>	
-							</div>
+							<span className = "tw-font-semibold tw-w-1/2">Story Points</span>	
+							{
+								!editFieldVisibility["story-points"] ? (
+									<div onClick = {(e) => toggleFieldVisibility("story-points", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
+										{watch("storyPoints") !== "" && watch("storyPoints") ? watch("storyPoints") : "None"}
+									</div>
+								) : (
+									<>
+										<InlineEdit 
+											isLoading={isUpdateTicketLoading}
+											mentionsEnabled={false}
+											customReset={() => {
+												if (ticket?.storyPoints){
+													setValue("storyPoints", ticket.storyPoints)
+												}
+												else {
+													setValue("storyPoints", "")
+												}
+											}}
+											type="number"
+											onSubmit = {async () => {
+											await handleSubmit(onSubmit)()
+											if (!errors?.storyPoints){
+												toggleFieldVisibility("storyPoints", false)
+											}
+										}} registerField = {"storyPoints"} registerOptions = {registerOptions.storyPoints} value={watch("storyPoints")?.toString()} onCancel={() => {toggleFieldVisibility("story-points", false)}}/>
+								        {errors?.storyPoints && <small className = "--text-alert">{errors.storyPoints.message}</small>}
+							        </>
+								)
+							}
+						</div>
+						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
+							<span className = "tw-font-semibold tw-w-1/2">Due Date</span>	
+							{
+								!editFieldVisibility["due-date"] ? (
+									<div onClick = {(e) => toggleFieldVisibility("due-date", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
+										{isValidDateString(watch("dueDate")) ? format(toDate(watch("dueDate")), "MM/dd/yyyy") : "None"}
+									</div>
+								) : (
+									<>
+										<InlineEdit 
+											isLoading={isUpdateTicketLoading}
+											mentionsEnabled={false}
+											type="date"
+											minDate={new Date().toISOString().split("T")[0]}
+											customReset={() => {
+												if (ticket?.dueDate){
+													// TODO: Fix error where due date needs to be a string
+													setValue("dueDate", new Date(ticket.dueDate).toISOString().split("T")[0])
+												}
+												else {
+													setValue("dueDate", "")
+												}
+											}}
+											onSubmit = {async () => {
+												await handleSubmit(onSubmit)()
+												if (!errors?.dueDate){
+													toggleFieldVisibility("due-date", false)
+												}
+										}} registerField = {"dueDate"} registerOptions = {registerOptions.dueDate} value={watch("dueDate")} onCancel={() => {toggleFieldVisibility("due-date", false)}}/>
+								        {errors?.dueDate && <small className = "--text-alert">{errors.dueDate.message}</small>}
+							        </>
+								)
+							}
+						</div>
 					</div>
 				</div>
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
