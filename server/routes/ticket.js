@@ -546,7 +546,7 @@ router.post("/:ticketId/activity", validateTicketActivityAdd, handleValidationRe
 			ticket_id: req.params.ticketId,
 			description,
 			minutes_spent,
-			user_id
+			user_id: req.user.id
 		})
 		res.json({message: "ticket activity created successfully!"})
 	}

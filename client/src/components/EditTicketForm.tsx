@@ -34,6 +34,7 @@ import { TICKETS } from "../helpers/routes"
 import { USER_PROFILE_URL } from "../helpers/urls"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
+import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { AsyncSelect } from "./AsyncSelect"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg"
@@ -66,6 +67,20 @@ type Props = {
 type EditFormValues = FormValues & {
 	storyPoints: number | string
 	dueDate: string
+}
+
+type RightSectionRowProps = {
+	title: string
+	children: React.ReactNode
+}
+
+const RightSectionRow = ({children, title}: RightSectionRowProps) => {
+	return (
+		<div className = "tw-flex tw-flex-row tw-w-full tw-items-center tw-min-h-9">	
+			<span className = "tw-font-semibold tw-w-1/2">{title}</span>
+			{children}
+		</div>
+	)
 }
 
 export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Props) => {
@@ -151,8 +166,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const ticketTypeName = ticketTypes.find((ticketType) => ticketType.id === watch("ticketTypeId"))?.name
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	const priorityName = priorities.find((priority) => priority.id === watch("priorityId"))?.name
-
-	console.log("dueDate: ", watch("dueDate"))
 
 	const toggleFieldVisibility = (field: string, flag: boolean) => {
 		let fieldVisibility = {...editFieldVisibility}
@@ -331,37 +344,33 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 					</select>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						<span className = "tw-font-bold tw-text-xl">Details</span>
-						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Assignee</span>
+						<RightSectionRow title={"Assignee"}>
 							{
 								!isTicketAssigneesLoading ? (
-									<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
+									<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
 										<Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 										{userProfileSelect}		
-									</div>
+									</button>
 								) : <LoadingSpinner/>
 							}	
-						</div>
-						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Reporter</span>	
+						</RightSectionRow>
+						<RightSectionRow title={"Reporter"}>
 							<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center">
 								<Avatar imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 								<div className = "tw-ml-3.5">{displayUser(reporter)}</div>
 							</div>
-						</div>
-						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Priority</span>
-							<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
+						</RightSectionRow>
+						<RightSectionRow title={"Priority"}>
+							<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
 								<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "tw-shrink-0 tw-w-8 tw-h-8"}}>
 									{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
 								</IconContext.Provider>	
 								{prioritySelect}
-							</div>
-						</div>
-						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Ticket Type</span>	
+							</button>
+						</RightSectionRow>
+						<RightSectionRow title={"Ticket Type"}>
 							{
-								<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
+								<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
 									{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-1.5 tw-w-6 tw-h-6 tw-shrink-0"/> : null}
 									{
 										epicTicketType?.id !== ticket?.ticketTypeId ?
@@ -374,16 +383,15 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 										</div>
 										)
 									}
-								</div>
-						}
-						</div>
-						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Story Points</span>	
+								</button>
+							}
+						</RightSectionRow>
+						<RightSectionRow title={"Story Points"}>
 							{
 								!editFieldVisibility["story-points"] ? (
-									<div onClick = {(e) => toggleFieldVisibility("story-points", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
+									<button onClick = {(e) => toggleFieldVisibility("story-points", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
 										{watch("storyPoints") !== "" && watch("storyPoints") ? watch("storyPoints") : "None"}
-									</div>
+									</button>
 								) : (
 									<>
 										<InlineEdit 
@@ -408,14 +416,13 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							        </>
 								)
 							}
-						</div>
-						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Due Date</span>	
+						</RightSectionRow>
+						<RightSectionRow title={"Due Date"}>
 							{
 								!editFieldVisibility["due-date"] ? (
-									<div onClick = {(e) => toggleFieldVisibility("due-date", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
+									<button onClick = {(e) => toggleFieldVisibility("due-date", true)} className = "hover:tw-opacity-60">
 										{isValidDateString(watch("dueDate")) ? format(toDate(watch("dueDate")), "MM/dd/yyyy") : "None"}
-									</div>
+									</button>
 								) : (
 									<>
 										<InlineEdit 
@@ -442,7 +449,14 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							        </>
 								)
 							}
-						</div>
+						</RightSectionRow>
+						<RightSectionRow title={"Time Spent"}>
+							<button className = "hover:tw-opacity-60" onClick={(e) => {
+								dispatch(toggleShowSecondaryModal(true))
+								dispatch(setSecondaryModalProps({ticketId: ticket?.id ?? 0}))
+								dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
+							}}>2w 3d 4h 30m</button>
+						</RightSectionRow>
 					</div>
 				</div>
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">

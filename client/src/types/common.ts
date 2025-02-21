@@ -102,6 +102,15 @@ export interface TicketComment {
 	user?: Omit<UserProfile, "organizationId" | "userRoleId">
 }
 
+export interface TicketActivity {
+	id: number
+	description: string
+	minutesSpent: number
+	userId: number
+	ticketId: number
+	createdAt: Date
+}
+
 export interface Cell {
 	id: number 
 	rowNum?: number
