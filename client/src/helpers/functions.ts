@@ -2,6 +2,7 @@ import type { KanbanBoard, Cell, Status, Toast, Ticket, Priority, UserProfile } 
 import { v4 as uuidv4 } from "uuid"
 import { AppDispatch } from "../store"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
+import { MAX_MINUTES, TIME_DISPLAY_FORMAT, MINUTES_PER_WEEK, MINUTES_PER_DAY, MINUTES_PER_HOUR } from "./constants"
 /* 
 
 New Design:
@@ -168,6 +169,115 @@ export const isValidDateString = (dateString: string | null | undefined) => {
 	}
     return !isNaN(Date.parse(dateString));
 }
+
+/**
+ * @param minutes 
+ * @return time display string in ww d hh mm format
+ */
+export const convertMinutesToTimeDisplay = (minutes: number, includeLeadingZeroes = false) => {
+	/* 
+	Approach:
+	1) Figure out how many weeks go evenly into the amount of minutes using integer division,
+	then multiply the amount based on the conversion rate (10,080 minutes in a week) to get the 
+	actual amount of minutes, and subtract from the total amount of minutes.
+	2) Repeat this process for the next largest unit of time (days)
+
+	Note that if at any point, the integer division results in 0, this would result in
+	this unit of measurement having a value of 0. Move onto the next unit of measurement instead.
+
+	Example:	
+	160000 minutes
+	weeks conversion = how many minutes in a week?
+	60 minutes/1 hr * 24 hrs/1 day * 7 days/1 week = 60 * 24 * 7 = 10,080 minutes
+	160000 minutes//10080 minutes = 15 weeks
+	10080 * 15 = 151200
+	160000 - 151200 = 8800 minutes remaining
+
+	60 minutes/1hr * 24hrs/1day = 1440 minutes
+	8800//1440 = 6 days
+	1440 * 6 = 8640 minutes
+	8800 - 8640 = 160 minutes
+	
+	60 minutes/hr = 160//60 = 2
+
+	160 - 120 = 40
+
+	160000 minutes = 15 weeks 6 days 2 hours 40 minutes
+	*/
+	if (minutes > MAX_MINUTES || minutes < 0){
+		return "invalid"
+	}
+	let curMinutes = minutes
+	/* minutes in one week, minutes in one day, minutes in one hour respectively */
+	const timeUnits = ["w", "d", "h"]
+	const conversions = [MINUTES_PER_WEEK, MINUTES_PER_DAY, MINUTES_PER_HOUR]
+	const res = []
+	for (let i = 0; i < conversions.length; ++i){
+		const amountOf = Math.floor(curMinutes/conversions[i])
+		if (amountOf === 0){
+			res.push((includeLeadingZeroes && timeUnits[i] !== "d" ? `00` : `0`) + timeUnits[i])
+			continue
+		}
+		const actualAmountInMinutes = conversions[i] * amountOf 
+		// include a leading zero if the amount is less than 10
+		res.push((includeLeadingZeroes && amountOf < 10 && timeUnits[i] !== "d" ? "0" + amountOf.toString() : amountOf.toString()) + timeUnits[i])
+		curMinutes -= actualAmountInMinutes
+	}
+	// include minutes, make sure leading zero is included if amount is less than 10
+	res.push((includeLeadingZeroes && curMinutes < 10 ? "0" : "") + `${curMinutes}m`)
+	return res.join(" ")
+}
+
+/**
+ * @param time display string in __w _d __h __m format, where the underscores are a positive integer
+ * @return minutes. Note that in case of parsing failure, it will return -1
+ */
+export const convertTimeDisplayToMinutes = (displayString: string) => {
+	/* 
+		Parse the display string 
+		"__w _d __h __m"
+		convert each of the time units to minutes and sum them together
+		__w, use split to convert to [__, w], and then take the first portion
+	*/
+	try {
+		const parts = displayString.split(" ")
+		const weeks = Number(parts[0].split("w")[0]) * MINUTES_PER_WEEK
+		const days = Number(parts[1].split("d")[0]) * MINUTES_PER_DAY
+		const hours = Number(parts[2].split("h")[0]) * MINUTES_PER_HOUR
+		const minutes = Number(parts[3].split("m")[0])
+		if (isNaN(weeks) || isNaN(days) || isNaN(hours) || isNaN(minutes)){
+			return -1
+		}
+		return weeks + days + hours + minutes
+	}
+	catch (e){
+		return -1
+	}
+}
+/**
+ * @param value string in __w _d __h __m format, where the underscores are a positive integer
+ * @return string if error, boolean if valid
+ */
+export const validateTimeFormat = (value: string): boolean | string => {
+	console.log("validateTimeFormat")
+    const match = value.match(TIME_DISPLAY_FORMAT)
+    if (!match) return "Invalid format. Example: 10w 6d 3h 20m."
+
+    const weeks = parseInt(match[1], 10)
+    const days = parseInt(match[2], 10)
+    const hours = parseInt(match[3], 10)
+    const minutes = parseInt(match[4], 10)
+
+    console.log("weeks: ", weeks)
+    console.log("days: ", days)
+
+    if (days > 7) return "Days must be between 0 and 7."
+    if (hours > 23) return "Hours must be between 0 and 23."
+    if (minutes > 59) return "Minutes must be between 0 and 59."
+
+    return true
+}
+
 
 
 

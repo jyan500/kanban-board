@@ -9,11 +9,7 @@
     "@draft-js-plugins/linkify": "^4.2.2",
     "@draft-js-plugins/static-toolbar": "^4.1.4",
     "@reduxjs/toolkit": "^2.2.1",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
     "@types/draft-js": "^0.11.18",
-    "@types/jest": "^27.5.2",
     "@types/node": "^16.18.56",
     "@types/react": "^18.2.24",
     "@types/react-dom": "^18.2.8",
@@ -23,7 +19,6 @@
     "date-fns-tz": "^3.2.0",
     "draft-js": "^0.11.7",
     "draft-js-export-html": "^1.4.1",
-    "jest": "^27.5.1",
     "quill-mention": "^4.1.0",
     "react": "^18.2.0",
     "react-datetime-picker": "^5.5.2",
@@ -70,8 +65,15 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
     "@types/redux-logger": "^3.0.13",
     "@types/uuid": "^9.0.8",
-    "tailwindcss": "^3.4.10"
+    "jest": "^27.5.1",
+    "tailwindcss": "^3.4.10",
+    "ts-jest": "^29.2.5"
   }
 }

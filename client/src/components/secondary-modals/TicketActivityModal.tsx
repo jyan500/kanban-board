@@ -9,6 +9,8 @@ import { useGetTicketActivityQuery, useAddTicketActivityMutation, useUpdateTicke
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
+import { TIME_DISPLAY_FORMAT, TIME_DISPLAY_INPUT_MASK, TIME_DISPLAY_PLACEHOLDER } from "../../helpers/constants"
+import { validateTimeFormat, convertMinutesToTimeDisplay, convertTimeDisplayToMinutes } from "../../helpers/functions"
 
 type FormValues = {
 	id?: number
@@ -25,7 +27,7 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 	const dispatch = useAppDispatch()
 	const defaultForm = {
 		id: 0,  
-		timeSpent: "",
+		timeSpent: "00w 0d 00h 00m",
 		description: "",
 	}
 
@@ -36,9 +38,13 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 	const [addTicketActivity, {isLoading: isAddTicketActivityLoading, error: addTicketActivityError}] = useAddTicketActivityMutation()
 	const [updateTicketActivity, {isLoading: isUpdateTicketActivityLoading, error: updateTicketActivityError}] = useUpdateTicketActivityMutation()
 	const registerOptions = {
-		timeSpent: {required: "Time Spent is required"},
+		timeSpent: {
+			required: "Time Spent is required",
+			validate: validateTimeFormat,
+		},
 		description: {required: "Description is required"}
 	}
+
 
 	useEffect(() => {
 		if (ticketActivity){
@@ -50,52 +56,54 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 		}
 	}, [ticketActivity])
 
+	
+
 	const onSubmit = async (values: FormValues) => {
+		console.log("values: ", values)
 		const toast: Toast = {
 			id: uuidv4(),
 			message: "Ticket activity was saved successfully!",
 			animationType: "animation-in",
 			type: "success",
 		}
-		if (ticketId){
-			try {
-				if (!ticketActivityId){
-					console.log("add ticket activity")
-					await addTicketActivity({
-						ticketId: ticketId,
-						body: {
-							minutesSpent: 0,
-							description: values.description,
-						}
-					}).unwrap()
-				}
-				else {
-					await updateTicketActivity({
-						ticketId: ticketId, 
-						body: {
-							id: ticketActivityId,
-							minutesSpent: 0,
-							description: values.description,
-						}
-					}).unwrap()
-				}
-				dispatch(addToast(toast))
-			}
-			catch (err){
-				dispatch(addToast({
-					...toast,
-					type: "failure",
-					message: "Something went wrong when saving ticket activity"
-				}))
-			}
-		}
-		else {
-			dispatch(addToast({
-				...toast,
-				type: "failure",
-				message: "Something went wrong when saving ticket activity"
-			}))	
-		}
+		// if (ticketId){
+		// 	try {
+		// 		if (!ticketActivityId){
+		// 			await addTicketActivity({
+		// 				ticketId: ticketId,
+		// 				body: {
+		// 					minutesSpent: 0,
+		// 					description: values.description,
+		// 				}
+		// 			}).unwrap()
+		// 		}
+		// 		else {
+		// 			await updateTicketActivity({
+		// 				ticketId: ticketId, 
+		// 				body: {
+		// 					id: ticketActivityId,
+		// 					minutesSpent: 0,
+		// 					description: values.description,
+		// 				}
+		// 			}).unwrap()
+		// 		}
+		// 		dispatch(addToast(toast))
+		// 	}
+		// 	catch (err){
+		// 		dispatch(addToast({
+		// 			...toast,
+		// 			type: "failure",
+		// 			message: "Something went wrong when saving ticket activity"
+		// 		}))
+		// 	}
+		// }
+		// else {
+		// 	dispatch(addToast({
+		// 		...toast,
+		// 		type: "failure",
+		// 		message: "Something went wrong when saving ticket activity"
+		// 	}))	
+		// }
 
 		dispatch(toggleShowSecondaryModal(false))
 		dispatch(setSecondaryModalType(undefined))
@@ -125,7 +133,8 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 									onPaste={(e) => e.preventDefault()}
 									id={"time-spent"}
 									type="text"
-								    mask="99w 9d 99h 99m"
+								    mask={TIME_DISPLAY_INPUT_MASK}
+								    placeholder={TIME_DISPLAY_PLACEHOLDER}
 								    value={value}
 								    onChange={onChange}
 							    />		
