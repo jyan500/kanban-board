@@ -45,6 +45,26 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 		description: {required: "Description is required"}
 	}
 
+	/* Ensure that the values for week, day, hour, minute fall within constraints while the user is typing */
+	const parseValueForConstraints = (value: string) => {
+	    const match = value.match(TIME_DISPLAY_FORMAT);
+
+	    if (match) {
+		    let weeks = parseInt(match[1])
+		    let days = parseInt(match[2])
+		    let hours = parseInt(match[3])
+		    let minutes = parseInt(match[4])
+	    	// Ensure constraints
+		    days = Math.min(days, 6)
+		    hours = Math.min(hours, 23)
+		    minutes = Math.min(minutes, 59)
+
+	    	return `${weeks.toString().padStart(2, "0")}w ${days}d ${hours.toString().padStart(2, "0")}h ${minutes.toString().padStart(2, "0")}m`
+	    }
+
+	    return value 
+	};
+
 
 	useEffect(() => {
 		if (ticketActivity){
@@ -136,7 +156,9 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 								    mask={TIME_DISPLAY_INPUT_MASK}
 								    placeholder={TIME_DISPLAY_PLACEHOLDER}
 								    value={value}
-								    onChange={onChange}
+								    onChange={(e) => {
+								    	setValue("timeSpent", parseValueForConstraints(e.target.value))
+								    }}
 							    />		
 						    )
 						}}

@@ -220,11 +220,11 @@ export const convertMinutesToTimeDisplay = (minutes: number, includeLeadingZeroe
 		}
 		const actualAmountInMinutes = conversions[i] * amountOf 
 		// include a leading zero if the amount is less than 10
-		res.push((includeLeadingZeroes && amountOf < 10 && timeUnits[i] !== "d" ? "0" + amountOf.toString() : amountOf.toString()) + timeUnits[i])
+		res.push((timeUnits[i] !== "d" && includeLeadingZeroes ? amountOf.toString().padStart(2, "0") : amountOf.toString()) + timeUnits[i])
 		curMinutes -= actualAmountInMinutes
 	}
 	// include minutes, make sure leading zero is included if amount is less than 10
-	res.push((includeLeadingZeroes && curMinutes < 10 ? "0" : "") + `${curMinutes}m`)
+	res.push((includeLeadingZeroes ? curMinutes.toString().padStart(2, "0") : curMinutes.toString()) + "m")
 	return res.join(" ")
 }
 
@@ -259,19 +259,15 @@ export const convertTimeDisplayToMinutes = (displayString: string) => {
  * @return string if error, boolean if valid
  */
 export const validateTimeFormat = (value: string): boolean | string => {
-	console.log("validateTimeFormat")
     const match = value.match(TIME_DISPLAY_FORMAT)
     if (!match) return "Invalid format. Example: 10w 6d 3h 20m."
 
-    const weeks = parseInt(match[1], 10)
-    const days = parseInt(match[2], 10)
-    const hours = parseInt(match[3], 10)
-    const minutes = parseInt(match[4], 10)
+    const weeks = parseInt(match[1])
+    const days = parseInt(match[2])
+    const hours = parseInt(match[3])
+    const minutes = parseInt(match[4])
 
-    console.log("weeks: ", weeks)
-    console.log("days: ", days)
-
-    if (days > 7) return "Days must be between 0 and 7."
+    if (days > 7) return "Days must be between 0 and 6."
     if (hours > 23) return "Hours must be between 0 and 23."
     if (minutes > 59) return "Minutes must be between 0 and 59."
 

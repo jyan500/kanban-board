@@ -76,7 +76,7 @@ Matches the standard 10 digit phone:
 1----800----555-1234
 */
 export const PHONE_PATTERN = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
-export const TIME_DISPLAY_FORMAT = /^(\d{1,2}w \d{1}d \d{1,2}h \d{1,2}m)$/
+export const TIME_DISPLAY_FORMAT = /^(\d{2})w (\d{1})d (\d{2})h (\d{2})m$/
 
 export const GROUP_BY_OPTIONS = {
 	"NONE": "None",
@@ -100,6 +100,6 @@ Note this was calculated like so ,
 this represents the largest input possible according to the input mask
 */
 export const MAX_MINUTES = 1007999 
-export const TIME_DISPLAY_INPUT_MASK = "99w 6d 24h 59m"
+export const TIME_DISPLAY_INPUT_MASK = "99w 9d 99h 99m"
 export const TIME_DISPLAY_PLACEHOLDER = "ww d hh mm"
 
