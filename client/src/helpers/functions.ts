@@ -267,9 +267,14 @@ export const validateTimeFormat = (value: string): boolean | string => {
     const hours = parseInt(match[3])
     const minutes = parseInt(match[4])
 
-    if (days > 7) return "Days must be between 0 and 6."
-    if (hours > 23) return "Hours must be between 0 and 23."
-    if (minutes > 59) return "Minutes must be between 0 and 59."
+    const errors = []
+    if (days > 6) errors.push("Days must be between 0 and 6.")
+    if (hours > 23) errors.push("Hours must be between 0 and 23.")
+    if (minutes > 59) errors.push("Minutes must be between 0 and 59.")
+
+    if (errors.length){
+    	return errors.join("<br/>")
+    }
 
     return true
 }

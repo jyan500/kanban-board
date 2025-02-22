@@ -10,7 +10,11 @@ import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { TIME_DISPLAY_FORMAT, TIME_DISPLAY_INPUT_MASK, TIME_DISPLAY_PLACEHOLDER } from "../../helpers/constants"
-import { validateTimeFormat, convertMinutesToTimeDisplay, convertTimeDisplayToMinutes } from "../../helpers/functions"
+import { 
+	validateTimeFormat, 
+	convertMinutesToTimeDisplay, 
+	convertTimeDisplayToMinutes 
+} from "../../helpers/functions"
 
 type FormValues = {
 	id?: number
@@ -32,7 +36,9 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 	}
 
 	const [preloadedFormValues, setPreloadedFormValues] = useState<FormValues>(defaultForm)
-	const methods = useForm<FormValues>({defaultValues: preloadedFormValues})
+	const methods = useForm<FormValues>({
+		defaultValues: preloadedFormValues
+	})
 	const { register , control, handleSubmit, reset, setValue, watch, formState: {errors} } = methods
 	const {data: ticketActivity, isLoading, isError} = useGetTicketActivityQuery(ticketActivityId ? {ticketId: ticketId, activityId: ticketActivityId} : skipToken)
 	const [addTicketActivity, {isLoading: isAddTicketActivityLoading, error: addTicketActivityError}] = useAddTicketActivityMutation()
@@ -62,7 +68,7 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 	    	return `${weeks.toString().padStart(2, "0")}w ${days}d ${hours.toString().padStart(2, "0")}h ${minutes.toString().padStart(2, "0")}m`
 	    }
 
-	    return value 
+	    return value
 	};
 
 
@@ -140,6 +146,7 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 				<li>h = hours</li>
 				<li>m = minutes</li>
 			</ul>
+			<small>Note that values cannot exceed the following: <span className = "tw-font-bold">99w 6d 23h 59m</span></small>
 			<form className="tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
 				<div>
 					<label className = "label" htmlFor = "time-spent">Time Spent</label>
@@ -163,7 +170,11 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 						    )
 						}}
 					/>
-			        {errors?.timeSpent && <small className = "--text-alert">{errors.timeSpent.message}</small>}
+					{/* 
+						This is a hack in order to get multiple error messages to show as React Hook Form doesn't have an easy way
+						of displaying multiple error messages for the same field and same validation type.
+					*/}
+			        {errors?.timeSpent && <small className = "--text-alert" dangerouslySetInnerHTML={{ __html: errors.timeSpent.message ?? ""}}></small>}
 				</div>
 				<div>
 					<label className = "label">Description</label>
