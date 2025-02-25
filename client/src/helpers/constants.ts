@@ -96,8 +96,11 @@ export const MINUTES_PER_WEEK = 10080
 export const MINUTES_PER_DAY = 1440
 export const MINUTES_PER_HOUR = 60
 /* 
-Note this was calculated like so ,
+Note this was calculated like so 
+(100 * 10080) - 1
+this is 100 weeks converted to minutes, subtracted by one.
 this represents the largest input possible according to the input mask
+like so: 99w 6d 23h 59m
 */
 export const MAX_MINUTES = 1007999 
 export const TIME_DISPLAY_INPUT_MASK = "99w 9d 99h 99m"
