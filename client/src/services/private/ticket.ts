@@ -9,9 +9,10 @@ import {
 	TICKET_ASSIGNEE_URL,
 	TICKET_BULK_EDIT_ASSIGNEES_URL ,
 	TICKET_RELATIONSHIP_URL,
+	TICKET_ACTIVITY_URL,
 } 
 from "../../helpers/urls" 
-import { CustomError, Mention, ListResponse, Ticket, TicketComment, TicketRelationship, UserProfile } from "../../types/common" 
+import { CustomError, Mention, ListResponse, Ticket, TicketComment, TicketActivity, TicketRelationship, UserProfile } from "../../types/common" 
 import { privateApi } from "../private"
 
 type TicketAssigneeRequest = {
@@ -164,7 +165,7 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets"],
 		}),
-		addTicket: builder.mutation<{id: number, message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "id" | "createdAt">>({
+		addTicket: builder.mutation<{id: number, message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "id" | "createdAt" | "storyPoints" | "dueDate">>({
 			query: (ticket) => ({
 				url: `${TICKET_URL}`,
 				method: "POST",
@@ -186,6 +187,8 @@ export const ticketApi = privateApi.injectEndpoints({
 					id: ticket.id,
 					name: ticket.name,
 					description: ticket.description,
+					story_points: ticket.storyPoints,
+					due_date: ticket.dueDate,
 					priority_id: ticket.priorityId,
 					ticket_type_id: ticket.ticketTypeId,
 					status_id: ticket.statusId
@@ -238,6 +241,44 @@ export const ticketApi = privateApi.injectEndpoints({
 			// TODO: should not invalidate all tickets and board tickets, just the specific ticket that was changed
 			invalidatesTags: ["BoardTickets", "Tickets", "TicketRelationships"]
 		}),
+		getTicketActivities: builder.query<ListResponse<TicketActivity>, {ticketId: number, urlParams: Record<string, any>}>({
+			query: ({ticketId, urlParams}) => ({
+				url: TICKET_ACTIVITY_URL(ticketId, ""),
+				method: "GET",
+				params: urlParams
+			}),
+			providesTags: ["TicketActivity"]
+		}),
+		getTicketActivity: builder.query<TicketActivity, {ticketId: number, activityId: number}>({
+			query: ({ticketId, activityId}) => ({
+				url: TICKET_ACTIVITY_URL(ticketId, activityId),
+				method: "GET"
+			}),
+			providesTags: ["TicketActivity"]
+		}),
+		addTicketActivity: builder.mutation<{message: string}, {ticketId: number, body: Omit<TicketActivity, "id" | "ticketId" | "createdAt" | "userId">}>({
+			query: ({ticketId, body}) => ({
+				url: TICKET_ACTIVITY_URL(ticketId, ""),
+				method: "POST",
+				body: {
+					minutes_spent: body.minutesSpent,	
+					description: body.description,
+				}
+			}),
+			invalidatesTags: ["TicketActivity"]
+		}),
+		updateTicketActivity: builder.mutation<{message: string}, {ticketId: number, body: Omit<TicketActivity, "ticketId" | "createdAt" | "userId">}>({
+			query: ({ticketId, body}) => ({
+				url: TICKET_ACTIVITY_URL(ticketId, body.id),
+				method: "PUT",
+				body: {
+					ticket_id: ticketId,
+					minutes_spent: body.minutesSpent,
+					description: body.description,
+				}
+			}),
+			invalidatesTags: ["TicketActivity"]
+		}),
 	}),
 })
 
@@ -259,4 +300,8 @@ export const {
 	useGetTicketRelationshipsQuery,
 	useAddTicketRelationshipMutation,
 	useDeleteTicketRelationshipMutation,
+	useGetTicketActivitiesQuery,
+	useGetTicketActivityQuery,
+	useAddTicketActivityMutation,
+	useUpdateTicketActivityMutation,
 } = ticketApi 

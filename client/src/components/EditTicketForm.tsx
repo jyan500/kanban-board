@@ -10,7 +10,8 @@ import {
 	useGetTicketRelationshipsQuery, 
 	useGetTicketCommentsQuery,
 	useUpdateTicketMutation, 
-	useBulkEditTicketAssigneesMutation 
+	useBulkEditTicketAssigneesMutation,
+	useGetTicketActivitiesQuery,
 } from "../services/private/ticket"
 import { useGetUserQuery } from "../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -34,6 +35,7 @@ import { TICKETS } from "../helpers/routes"
 import { USER_PROFILE_URL } from "../helpers/urls"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
+import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { AsyncSelect } from "./AsyncSelect"
 import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg"
@@ -49,6 +51,8 @@ import { Avatar } from "./page-elements/Avatar"
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../helpers/constants"
+import { isValidDateString, convertMinutesToTimeDisplay } from "../helpers/functions"
+import { format, toDate } from "date-fns-tz"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -59,6 +63,25 @@ type Props = {
 	boardId?: number | string | null | undefined
 	statusesToDisplay: Array<Status>
 	isModal?: boolean
+}
+
+type EditFormValues = FormValues & {
+	storyPoints: number | string
+	dueDate: string
+}
+
+type RightSectionRowProps = {
+	title: string
+	children: React.ReactNode
+}
+
+const RightSectionRow = ({children, title}: RightSectionRowProps) => {
+	return (
+		<div className = "tw-flex tw-flex-row tw-w-full tw-items-center tw-min-h-9">	
+			<span className = "tw-font-semibold tw-w-1/2">{title}</span>
+			{children}
+		</div>
+	)
 }
 
 export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Props) => {
@@ -83,6 +106,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { data: epicTicketRelationships, isLoading: isEpicTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
 		{ticketId: currentTicketId, params: {page: epicTicketPage, includeEpicPercentageCompletion: true, isEpic: true}} : skipToken
 	)
+	const { data: ticketActivities, isLoading: isTicketActivitiesLoading } = useGetTicketActivitiesQuery(currentTicketId ? {ticketId: currentTicketId, urlParams: {includeTotalTime: true}} : skipToken)
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
@@ -99,11 +123,13 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		"description": false,
 		"assignees": false,
 		"priority": false,
-		"ticket-type": false
+		"ticket-type": false,
+		"story-points": false,
+		"due-date": false,
 	})
 	const [showAddLinkedIssue, setShowAddLinkedIssue] = useState(false)
 	const [showAddToEpic, setShowAddToEpic] = useState(false)
-	const defaultForm: FormValues = {
+	const defaultForm: EditFormValues = {
 		id: 0,
 		name: "",
 		description: "",
@@ -111,9 +137,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		statusId: 0,
 		ticketTypeId: 0,
 		userId: 0,
+		storyPoints: "",
+		dueDate: "" 
 	}	
-	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const methods = useForm<FormValues>({
+	const [preloadedValues, setPreloadedValues] = useState<EditFormValues>(defaultForm)
+	const methods = useForm<EditFormValues>({
 		defaultValues: preloadedValues
 	})
 	const { register , control, handleSubmit, reset, resetField, setValue, watch, formState: {errors} } = methods
@@ -123,6 +151,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
 	    ticketTypeId: { required: "Ticket Type is required"},
+	    dueDate: {},
+	    storyPoints: {},
 	    userId: {}
     }
     /* Get screen width and height */
@@ -159,7 +189,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 				"description": false,
 				"assignees": false,
 				"priority": false,
-				"ticket-type": false
+				"ticket-type": false,
+				"due-date": false,
+				"story-points": false,
 			})
 			setShowAddLinkedIssue(false)
 			setShowAddToEpic(false)
@@ -168,6 +200,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		if (currentTicketId){
 			reset({
 				...ticket, 
+				dueDate: ticket.dueDate != null && ticket.dueDate !== "" ? new Date(ticket.dueDate).toISOString().split("T")[0] : "",
 				userId: ticketAssignees?.length ? ticketAssignees[0].id : 0
 			} ?? defaultForm
 			)
@@ -183,7 +216,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		}
 	}, [ticketAssignees])
 
-	const onSubmit = async (values: FormValues) => {
+	const onSubmit = async (values: EditFormValues) => {
     	try {
     		// update existing ticket
     		if (values.id != null){
@@ -195,6 +228,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			}
     			const { mentions } = await updateTicket({
     				...values, 
+    				storyPoints: !isNaN(Number(values.storyPoints)) ? Number(values.storyPoints) : 0,
+    				dueDate: values.dueDate ? new Date(values.dueDate) : "",  
     				id: values.id
     			}).unwrap()
     			if (mentionNotificationType && userProfile && mentions.length){
@@ -311,37 +346,33 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 					</select>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						<span className = "tw-font-bold tw-text-xl">Details</span>
-						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Assignee</span>
+						<RightSectionRow title={"Assignee"}>
 							{
 								!isTicketAssigneesLoading ? (
-									<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
+									<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
 										<Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 										{userProfileSelect}		
-									</div>
+									</button>
 								) : <LoadingSpinner/>
 							}	
-						</div>
-						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Reporter</span>	
+						</RightSectionRow>
+						<RightSectionRow title={"Reporter"}>
 							<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center">
 								<Avatar imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 								<div className = "tw-ml-3.5">{displayUser(reporter)}</div>
 							</div>
-						</div>
-						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Priority</span>
-							<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
+						</RightSectionRow>
+						<RightSectionRow title={"Priority"}>
+							<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
 								<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "tw-shrink-0 tw-w-8 tw-h-8"}}>
 									{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
 								</IconContext.Provider>	
 								{prioritySelect}
-							</div>
-						</div>
-						<div className = "tw-flex tw-flex-row tw-w-full tw-items-center">
-							<span className = "tw-font-semibold tw-w-1/2">Ticket Type</span>	
+							</button>
+						</RightSectionRow>
+						<RightSectionRow title={"Ticket Type"}>
 							{
-								<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
+								<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
 									{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-1.5 tw-w-6 tw-h-6 tw-shrink-0"/> : null}
 									{
 										epicTicketType?.id !== ticket?.ticketTypeId ?
@@ -354,9 +385,83 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 										</div>
 										)
 									}
-								</div>
-						}
-						</div>
+								</button>
+							}
+						</RightSectionRow>
+						<RightSectionRow title={"Story Points"}>
+							{
+								!editFieldVisibility["story-points"] ? (
+									<button onClick = {(e) => toggleFieldVisibility("story-points", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
+										{watch("storyPoints") !== "" && watch("storyPoints") ? watch("storyPoints") : "None"}
+									</button>
+								) : (
+									<>
+										<InlineEdit 
+											isLoading={isUpdateTicketLoading}
+											mentionsEnabled={false}
+											customReset={() => {
+												if (ticket?.storyPoints){
+													setValue("storyPoints", ticket.storyPoints)
+												}
+												else {
+													setValue("storyPoints", "")
+												}
+											}}
+											type="number"
+											onSubmit = {async () => {
+											await handleSubmit(onSubmit)()
+											if (!errors?.storyPoints){
+												toggleFieldVisibility("storyPoints", false)
+											}
+										}} registerField = {"storyPoints"} registerOptions = {registerOptions.storyPoints} value={watch("storyPoints")?.toString()} onCancel={() => {toggleFieldVisibility("story-points", false)}}/>
+								        {errors?.storyPoints && <small className = "--text-alert">{errors.storyPoints.message}</small>}
+							        </>
+								)
+							}
+						</RightSectionRow>
+						<RightSectionRow title={"Due Date"}>
+							{
+								!editFieldVisibility["due-date"] ? (
+									<button onClick = {(e) => toggleFieldVisibility("due-date", true)} className = "hover:tw-opacity-60">
+										{isValidDateString(watch("dueDate")) ? format(toDate(watch("dueDate")), "MM/dd/yyyy") : "None"}
+									</button>
+								) : (
+									<>
+										<InlineEdit 
+											isLoading={isUpdateTicketLoading}
+											mentionsEnabled={false}
+											type="date"
+											minDate={new Date().toISOString().split("T")[0]}
+											customReset={() => {
+												if (ticket?.dueDate){
+													// TODO: Fix error where due date needs to be a string
+													setValue("dueDate", new Date(ticket.dueDate).toISOString().split("T")[0])
+												}
+												else {
+													setValue("dueDate", "")
+												}
+											}}
+											onSubmit = {async () => {
+												await handleSubmit(onSubmit)()
+												if (!errors?.dueDate){
+													toggleFieldVisibility("due-date", false)
+												}
+										}} registerField = {"dueDate"} registerOptions = {registerOptions.dueDate} value={watch("dueDate")} onCancel={() => {toggleFieldVisibility("due-date", false)}}/>
+								        {errors?.dueDate && <small className = "--text-alert">{errors.dueDate.message}</small>}
+							        </>
+								)
+							}
+						</RightSectionRow>
+						<RightSectionRow title={"Time Spent"}>
+							<button className = "hover:tw-opacity-60" onClick={(e) => {
+								dispatch(toggleShowSecondaryModal(true))
+								dispatch(setSecondaryModalProps({
+									...(!isTicketActivitiesLoading && ticketActivities?.additional?.totalTime ? {totalTime: ticketActivities?.additional?.totalTime} : {}), 
+									ticketId: ticket?.id ?? 0
+								}))
+								dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
+							}}>{!isTicketActivitiesLoading ? (ticketActivities?.additional?.totalTime ? convertMinutesToTimeDisplay(ticketActivities?.additional?.totalTime) : <span>None</span>) : <LoadingSpinner/>}</button>
+						</RightSectionRow>
 					</div>
 				</div>
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">

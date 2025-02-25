@@ -17,6 +17,10 @@ const {
 	validateTicketRelationshipGet,
 	validateTicketRelationshipCreate,
 	validateTicketRelationshipDelete,
+	validateTicketActivityAdd,
+	validateTicketActivityGet,
+	validateTicketActivityUpdate,
+	validateTicketActivityDelete,
 
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
@@ -34,6 +38,8 @@ router.get("/", async (req, res, next) => {
 			"tickets.description as description",
 			"tickets.status_id as statusId",
 			"tickets.ticket_type_id as ticketTypeId",
+			"tickets.story_points as storyPoints",
+			"tickets.due_date as dueDate",
 			"tickets.organization_id as organizationId",
 			"tickets.created_at as createdAt",
 			"tickets.user_id as userId",
@@ -148,6 +154,8 @@ router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, n
 			"tickets.status_id as statusId",
 			"tickets.ticket_type_id as ticketTypeId",
 			"tickets.organization_id as organizationId",
+			"tickets.due_date as dueDate",
+			"tickets.story_points as storyPoints",
 			"tickets.created_at as createdAt",
 			"tickets.user_id as userId",
 		)
@@ -513,6 +521,92 @@ router.delete("/:ticketId/relationship/:relationshipId", validateTicketRelations
 	}
 })
 
+router.get("/:ticketId/activity", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		let ticketActivities = await db("ticket_activity").where("ticket_id", req.params.ticketId).orderBy("updated_at", "desc").select(
+			"id as id",
+			"description as description",
+			"ticket_id as ticketId",
+			"user_id as userId",
+			"minutes_spent as minutesSpent",
+			"updated_at as updatedAt"
+		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		let totalMinutes = 0
+		if (req.query.includeTotalTime){
+			totalMinutes = await db("ticket_activity").where("ticket_id", req.params.ticketId).sum("minutes_spent as totalMinutesSpent").first()
+		}
+		res.json({
+			...ticketActivities,
+			...(req.query.includeTotalTime ? {additional: {totalTime: totalMinutes?.totalMinutesSpent ?? 0}} : {})
+		})
+	}
+	catch (err) {
+		console.log(`Error while getting ticket activity: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/:ticketId/activity", validateTicketActivityAdd, handleValidationResult, async (req, res, next) => {
+	try {
+		const { description, minutes_spent, user_id } = req.body
+		await db("ticket_activity").insert({
+			ticket_id: req.params.ticketId,
+			description,
+			minutes_spent,
+			user_id: req.user.id
+		})
+		res.json({message: "ticket activity created successfully!"})
+	}
+	catch (err) {
+		console.log(`Error while adding ticket activity: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:ticketId/activity/:activityId", validateTicketActivityGet, handleValidationResult, async (req, res, next) => {
+	try {
+		let ticketActivity = await db("ticket_activity").where("ticket_id", req.params.ticketId).where("activity_id", req.params.activityId).select(
+			"id as id",
+			"description as description",
+			"ticket_id as ticketId",
+			"user_id as userId",
+			"minutes_spent as minutesSpent",
+			"updated_at as updatedAt"
+		).first()
+		res.json(ticketActivity)
+	}
+	catch (err) {
+		console.log(`Error while getting ticket activity: ${err.message}`)
+		next(err)
+	}
+})
+
+router.put("/:ticketId/activity/:activityId", validateTicketActivityUpdate, handleValidationResult, async (req, res, next) => {
+	try {
+		const { description, minutes_spent } = req.body
+		await db("ticket_activity").where("id", req.params.activityId).update({
+			description, 
+			minutes_spent,
+		})
+		res.json({message: "Ticket activity updated successfully!"})
+	}	
+	catch (err){
+		console.log(`Error while updatnig ticket activity: ${err.message}`)
+		next(err)
+	}
+})
+
+router.delete("/:ticketId/activity/:activityId", validateTicketActivityDelete, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("ticket_activity").where("id", req.params.activityId).del()
+		res.json({message: "Ticket activity deleted successfully!"})
+	}
+	catch (err) {
+		console.log(`Error while deleting ticket activity: ${err.message}`)
+		next(err)
+	}
+})
+
 router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res, next) => {
 	try {
 		await db("tickets").where("id", req.params.ticketId).update({
@@ -520,7 +614,9 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 			description: req.body.description,
 			priority_id: req.body.priority_id,
 			status_id: req.body.status_id,
-			ticket_type_id: req.body.ticket_type_id
+			ticket_type_id: req.body.ticket_type_id,
+			due_date: req.body.due_date !== "" ? new Date(req.body.due_date) : null,
+			story_points: req.body.story_points,
 		})
 		// remove existing mentioned users first before adding
 		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: req.params.ticketId, is_mention: true}, req.user.organization)

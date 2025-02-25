@@ -47,6 +47,7 @@ export const TAG_TYPES = [
 	"Priorities",
 	"TicketRelationshipTypes",
 	"TicketRelationships",
+	"TicketActivity",
 	"RegistrationRequests",
 	"UserProfiles",
 	"Notifications",
@@ -75,6 +76,7 @@ Matches the standard 10 digit phone:
 1----800----555-1234
 */
 export const PHONE_PATTERN = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
+export const TIME_DISPLAY_FORMAT = /^(\d{2})w (\d{1})d (\d{2})h (\d{2})m$/
 
 export const GROUP_BY_OPTIONS = {
 	"NONE": "None",
@@ -89,4 +91,18 @@ export const MD_BREAKPOINT = 768
 export const LG_BREAKPOINT = 1024
 export const XL_BREAKPOINT = 1280
 export const TWO_XL_BREAKPOINT = 1536
+
+export const MINUTES_PER_WEEK = 10080
+export const MINUTES_PER_DAY = 1440
+export const MINUTES_PER_HOUR = 60
+/* 
+Note this was calculated like so 
+(100 * 10080) - 1
+this is 100 weeks converted to minutes, subtracted by one.
+this represents the largest input possible according to the input mask
+like so: 99w 6d 23h 59m
+*/
+export const MAX_MINUTES = 1007999 
+export const TIME_DISPLAY_INPUT_MASK = "99w 9d 99h 99m"
+export const TIME_DISPLAY_PLACEHOLDER = "ww d hh mm"
 

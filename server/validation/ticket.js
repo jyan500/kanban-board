@@ -25,9 +25,47 @@ const ticketValidator = (actionType) => {
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required"),
 			body("description").notEmpty().withMessage("description is required"),
+			body("story_points").if((value, { req }) => {
+		        return req.body.story_points
+	        }).isNumeric().withMessage("Story Points must be a number"),
+			body("due_date").if((value, { req }) => {
+		        return req.body.due_date
+	        }).isISO8601().toDate(),
 			body("ticket_type_id").notEmpty().withMessage("ticket_type_id is required").custom(async (value, {req}) => await checkEntityExistsIn("ticket type", value, [{col: "id", value: value}], "ticket_types")),
 			body("status_id").notEmpty().withMessage("status_id is required").custom(async (value, {req}) => await checkEntityExistsIn("status", value, [{"col": "id", "value": value}], "statuses")),
 			body("priority_id").notEmpty().withMessage("priority_id is required").custom(async (value, {req}) => await checkEntityExistsIn("priority", value, [{"col": "id", "value": value}], "priorities")),
+		]
+	}
+	return validationRules
+}
+
+const ticketActivityValidator = (actionType) => {
+	let validationRules = [
+		param("ticketId").custom(async (value, {req}) => await checkEntityExistsIn("ticket", req.params.ticketId, [{
+			col: "id", 
+			value: req.params.ticketId 
+		},
+		{
+			col: "organization_id",
+			value: req.user.organization
+		}], "tickets"))
+	]
+	if (actionType === "get" || actionType === "update" || actionType === "delete"){
+		validationRules = [
+			...validationRules, 
+			param("activityId").custom(async (value, {req}) => await checkEntityExistsIn("activity", value, [{
+				col: "id",
+				value: value	
+			},
+			], "ticket_activity")),
+		]		
+	}
+	if (actionType === "add" || actionType === "update"){
+		validationRules = [
+			...validationRules,	
+			body("minutes_spent").if((value, { req }) => {
+		        return req.body.minutes_spent
+	        }).isNumeric().withMessage("Minutes spent must be a number"),
 		]
 	}
 	return validationRules
@@ -202,4 +240,8 @@ module.exports = {
 	validateTicketRelationshipGet: ticketRelationshipValidator("get"),
 	validateTicketRelationshipCreate: ticketRelationshipValidator("create"),
 	validateTicketRelationshipDelete: ticketRelationshipValidator("delete"),
+	validateTicketActivityGet: ticketActivityValidator("get"),
+	validateTicketActivityAdd: ticketActivityValidator("add"),
+	validateTicketActivityUpdate: ticketActivityValidator("update"),
+	validateTicketActivityDelete: ticketActivityValidator("delete"),
 }

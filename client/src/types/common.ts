@@ -84,6 +84,8 @@ export interface Ticket {
 	statusId: number
 	ticketTypeId: number
 	organizationId: number
+	dueDate: Date | string
+	storyPoints: number
 	userId: number
 	createdAt: Date
 	hasRelationship?: boolean
@@ -98,6 +100,15 @@ export interface TicketComment {
 	ticketId: number
 	createdAt: Date
 	user?: Omit<UserProfile, "organizationId" | "userRoleId">
+}
+
+export interface TicketActivity {
+	id: number
+	description: string
+	minutesSpent: number
+	userId: number
+	ticketId: number
+	createdAt: Date
 }
 
 export interface Cell {
