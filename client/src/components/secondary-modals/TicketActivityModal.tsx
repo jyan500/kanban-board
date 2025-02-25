@@ -15,23 +15,26 @@ import {
 	convertMinutesToTimeDisplay, 
 	convertTimeDisplayToMinutes 
 } from "../../helpers/functions"
+import { IconContext } from "react-icons"
+import { LuClock as ClockIcon } from "react-icons/lu";
 
 type FormValues = {
 	id?: number
-	timeSpent: string
+	minutesSpent: string
 	description: string
 }
 
 type Props = {
 	ticketId: number
 	ticketActivityId?: number
+	totalTime?: number
 }
 
-export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
+export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: Props) => {
 	const dispatch = useAppDispatch()
 	const defaultForm = {
 		id: 0,  
-		timeSpent: "00w 0d 00h 00m",
+		minutesSpent: "00w 0d 00h 00m",
 		description: "",
 	}
 
@@ -44,7 +47,7 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 	const [addTicketActivity, {isLoading: isAddTicketActivityLoading, error: addTicketActivityError}] = useAddTicketActivityMutation()
 	const [updateTicketActivity, {isLoading: isUpdateTicketActivityLoading, error: updateTicketActivityError}] = useUpdateTicketActivityMutation()
 	const registerOptions = {
-		timeSpent: {
+		minutesSpent: {
 			required: "Time Spent is required",
 			validate: validateTimeFormat,
 		},
@@ -76,7 +79,7 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 		if (ticketActivity){
 			reset({
 				id: ticketActivity.id,
-				timeSpent: "",
+				minutesSpent: convertMinutesToTimeDisplay(ticketActivity.minutesSpent),
 				description: ticketActivity.description,
 			})
 		}
@@ -85,51 +88,50 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 	
 
 	const onSubmit = async (values: FormValues) => {
-		console.log("values: ", values)
 		const toast: Toast = {
 			id: uuidv4(),
 			message: "Ticket activity was saved successfully!",
 			animationType: "animation-in",
 			type: "success",
 		}
-		// if (ticketId){
-		// 	try {
-		// 		if (!ticketActivityId){
-		// 			await addTicketActivity({
-		// 				ticketId: ticketId,
-		// 				body: {
-		// 					minutesSpent: 0,
-		// 					description: values.description,
-		// 				}
-		// 			}).unwrap()
-		// 		}
-		// 		else {
-		// 			await updateTicketActivity({
-		// 				ticketId: ticketId, 
-		// 				body: {
-		// 					id: ticketActivityId,
-		// 					minutesSpent: 0,
-		// 					description: values.description,
-		// 				}
-		// 			}).unwrap()
-		// 		}
-		// 		dispatch(addToast(toast))
-		// 	}
-		// 	catch (err){
-		// 		dispatch(addToast({
-		// 			...toast,
-		// 			type: "failure",
-		// 			message: "Something went wrong when saving ticket activity"
-		// 		}))
-		// 	}
-		// }
-		// else {
-		// 	dispatch(addToast({
-		// 		...toast,
-		// 		type: "failure",
-		// 		message: "Something went wrong when saving ticket activity"
-		// 	}))	
-		// }
+		if (ticketId){
+			try {
+				if (!ticketActivityId){
+					await addTicketActivity({
+						ticketId: ticketId,
+						body: {
+							minutesSpent: convertTimeDisplayToMinutes(values.minutesSpent),
+							description: values.description,
+						}
+					}).unwrap()
+				}
+				else {
+					await updateTicketActivity({
+						ticketId: ticketId, 
+						body: {
+							id: ticketActivityId,
+							minutesSpent: convertTimeDisplayToMinutes(values.minutesSpent),
+							description: values.description,
+						}
+					}).unwrap()
+				}
+				dispatch(addToast(toast))
+			}
+			catch (err){
+				dispatch(addToast({
+					...toast,
+					type: "failure",
+					message: "Something went wrong when saving ticket activity"
+				}))
+			}
+		}
+		else {
+			dispatch(addToast({
+				...toast,
+				type: "failure",
+				message: "Something went wrong when saving ticket activity"
+			}))	
+		}
 
 		dispatch(toggleShowSecondaryModal(false))
 		dispatch(setSecondaryModalType(undefined))
@@ -139,6 +141,19 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-justify-center">
 			<h2>Time Tracking</h2>
+			{
+				totalTime ? ( 
+					<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-border tw-p-1">
+						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+							<IconContext.Provider value={{color: "var(--bs-primary)", className: "tw-w-4 tw-h-4"}}>
+								<ClockIcon/>	
+							</IconContext.Provider>
+							<p className = "tw-font-bold">Total Time Spent</p>
+						</div>
+						<p>{convertMinutesToTimeDisplay(totalTime)}</p>
+					</div>
+				) : null 
+			}
 			<p>Please use the following format: </p>	
 			<ul>
 				<li>w = weeks</li>
@@ -147,13 +162,14 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 				<li>m = minutes</li>
 			</ul>
 			<small>Note that values cannot exceed the following: <span className = "tw-font-bold">99w 6d 23h 59m</span></small>
+		
 			<form className="tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
 				<div>
 					<label className = "label" htmlFor = "time-spent">Time Spent</label>
 					<Controller
-						name={"timeSpent"}
+						name={"minutesSpent"}
 						control={control}
-						rules={registerOptions.timeSpent}
+						rules={registerOptions.minutesSpent}
 						render={({ field: { onChange, value } }) => {
 							return (
 								<InputMask
@@ -164,7 +180,7 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 								    placeholder={TIME_DISPLAY_PLACEHOLDER}
 								    value={value}
 								    onChange={(e) => {
-								    	setValue("timeSpent", parseValueForConstraints(e.target.value))
+								    	setValue("minutesSpent", parseValueForConstraints(e.target.value))
 								    }}
 							    />		
 						    )
@@ -174,7 +190,7 @@ export const TicketActivityModal = ({ticketId, ticketActivityId}: Props) => {
 						This is a hack in order to get multiple error messages to show as React Hook Form doesn't have an easy way
 						of displaying multiple error messages for the same field and same validation type.
 					*/}
-			        {errors?.timeSpent && <small className = "--text-alert" dangerouslySetInnerHTML={{ __html: errors.timeSpent.message ?? ""}}></small>}
+			        {errors?.minutesSpent && <small className = "--text-alert" dangerouslySetInnerHTML={{ __html: errors.minutesSpent.message ?? ""}}></small>}
 				</div>
 				<div>
 					<label className = "label">Description</label>

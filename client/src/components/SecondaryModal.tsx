@@ -35,6 +35,7 @@ export const secondaryModalClassNames = {
 	"MOVE_TICKET_FORM_MODAL": avoidAsyncSelectMenuOverflow,
 	"CLONE_TICKET_FORM_MODAL": avoidAsyncSelectMenuOverflow,
 	"ADD_TICKET_WATCHERS_MODAL": avoidAsyncSelectMenuOverflow,
+	"TICKET_ACTIVITY_MODAL": avoidAsyncSelectMenuOverflow,
 }
 
 export const SecondaryModal = () => {

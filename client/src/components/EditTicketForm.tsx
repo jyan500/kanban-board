@@ -10,7 +10,8 @@ import {
 	useGetTicketRelationshipsQuery, 
 	useGetTicketCommentsQuery,
 	useUpdateTicketMutation, 
-	useBulkEditTicketAssigneesMutation 
+	useBulkEditTicketAssigneesMutation,
+	useGetTicketActivitiesQuery,
 } from "../services/private/ticket"
 import { useGetUserQuery } from "../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -50,7 +51,7 @@ import { Avatar } from "./page-elements/Avatar"
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../helpers/constants"
-import { isValidDateString } from "../helpers/functions"
+import { isValidDateString, convertMinutesToTimeDisplay } from "../helpers/functions"
 import { format, toDate } from "date-fns-tz"
 
 type EditFieldVisibility = {
@@ -105,6 +106,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { data: epicTicketRelationships, isLoading: isEpicTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
 		{ticketId: currentTicketId, params: {page: epicTicketPage, includeEpicPercentageCompletion: true, isEpic: true}} : skipToken
 	)
+	const { data: ticketActivities, isLoading: isTicketActivitiesLoading } = useGetTicketActivitiesQuery(currentTicketId ? {ticketId: currentTicketId, urlParams: {includeTotalTime: true}} : skipToken)
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
@@ -453,9 +455,12 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Time Spent"}>
 							<button className = "hover:tw-opacity-60" onClick={(e) => {
 								dispatch(toggleShowSecondaryModal(true))
-								dispatch(setSecondaryModalProps({ticketId: ticket?.id ?? 0}))
+								dispatch(setSecondaryModalProps({
+									...(!isTicketActivitiesLoading && ticketActivities?.additional?.totalTime ? {totalTime: ticketActivities?.additional?.totalTime} : {}), 
+									ticketId: ticket?.id ?? 0
+								}))
 								dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
-							}}>2w 3d 4h 30m</button>
+							}}>{!isTicketActivitiesLoading ? (ticketActivities?.additional?.totalTime ? convertMinutesToTimeDisplay(ticketActivities?.additional?.totalTime) : <span>None</span>) : <LoadingSpinner/>}</button>
 						</RightSectionRow>
 					</div>
 				</div>

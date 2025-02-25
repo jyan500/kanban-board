@@ -166,10 +166,10 @@ export const Dashboard = () => {
 							</div>
 						</div>	
 					</DashboardSection>
-					<DashboardSection iconColor={"var(--bs-warning)"} icon={<ClockIcon/>} title={"Progress"}>
+					<DashboardSection iconColor={"var(--bs-warning)"} icon={<BarsIcon/>} title={"Progress"}>
 						<div></div>
 					</DashboardSection>
-					<DashboardSection iconColor={"var(--bs-success)"} icon={<BarsIcon/>} title={"Time Spent"}>
+					<DashboardSection iconColor={"var(--bs-success)"} icon={<ClockIcon/>} title={"Time Spent"}>
 						<div></div>
 					</DashboardSection>
 				</div>

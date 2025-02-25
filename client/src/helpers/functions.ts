@@ -260,7 +260,7 @@ export const convertTimeDisplayToMinutes = (displayString: string) => {
  */
 export const validateTimeFormat = (value: string): boolean | string => {
     const match = value.match(TIME_DISPLAY_FORMAT)
-    if (!match) return "Invalid format. Example: 10w 6d 3h 20m."
+    if (!match) return "Invalid format. Example: 10w 6d 03h 20m."
 
     const weeks = parseInt(match[1])
     const days = parseInt(match[2])
@@ -268,6 +268,9 @@ export const validateTimeFormat = (value: string): boolean | string => {
     const minutes = parseInt(match[4])
 
     const errors = []
+    if (days === 0 && weeks === 0 && hours === 0 && minutes === 0){
+    	return "Please enter time for at least one field. Example: 00w 6d 00h 00m"
+    }
     if (days > 6) errors.push("Days must be between 0 and 6.")
     if (hours > 23) errors.push("Hours must be between 0 and 23.")
     if (minutes > 59) errors.push("Minutes must be between 0 and 59.")

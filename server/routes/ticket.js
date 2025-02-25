@@ -531,7 +531,14 @@ router.get("/:ticketId/activity", validateGet, handleValidationResult, async (re
 			"minutes_spent as minutesSpent",
 			"updated_at as updatedAt"
 		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		res.json(ticketActivities)
+		let totalMinutes = 0
+		if (req.query.includeTotalTime){
+			totalMinutes = await db("ticket_activity").where("ticket_id", req.params.ticketId).sum("minutes_spent as totalMinutesSpent").first()
+		}
+		res.json({
+			...ticketActivities,
+			...(req.query.includeTotalTime ? {additional: {totalTime: totalMinutes?.totalMinutesSpent ?? 0}} : {})
+		})
 	}
 	catch (err) {
 		console.log(`Error while getting ticket activity: ${err.message}`)
