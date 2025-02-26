@@ -580,7 +580,7 @@ router.post("/:ticketId/activity", validateTicketActivityAdd, handleValidationRe
 
 router.get("/:ticketId/activity/:activityId", validateTicketActivityGet, handleValidationResult, async (req, res, next) => {
 	try {
-		let ticketActivity = await db("ticket_activity").where("ticket_id", req.params.ticketId).where("activity_id", req.params.activityId).select(
+		let ticketActivity = await db("ticket_activity").where("id", req.params.activityId).select(
 			"id as id",
 			"description as description",
 			"ticket_id as ticketId",
