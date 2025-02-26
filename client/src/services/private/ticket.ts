@@ -241,11 +241,11 @@ export const ticketApi = privateApi.injectEndpoints({
 			// TODO: should not invalidate all tickets and board tickets, just the specific ticket that was changed
 			invalidatesTags: ["BoardTickets", "Tickets", "TicketRelationships"]
 		}),
-		getTicketActivities: builder.query<ListResponse<TicketActivity>, {ticketId: number, urlParams: Record<string, any>}>({
-			query: ({ticketId, urlParams}) => ({
+		getTicketActivities: builder.query<ListResponse<TicketActivity>, {ticketId: number, params: Record<string, any>}>({
+			query: ({ticketId, params}) => ({
 				url: TICKET_ACTIVITY_URL(ticketId, ""),
 				method: "GET",
-				params: urlParams
+				params: params
 			}),
 			providesTags: ["TicketActivity"]
 		}),
@@ -279,6 +279,13 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["TicketActivity"]
 		}),
+		deleteTicketActivity: builder.mutation<{message: string}, {ticketId: number, activityId: number}>({
+			query: ({ticketId, activityId}) => ({
+				url: TICKET_ACTIVITY_URL(ticketId, activityId),
+				method: "DELETE",
+			}),
+			invalidatesTags: ["TicketActivity"]
+		}),
 	}),
 })
 
@@ -304,4 +311,5 @@ export const {
 	useGetTicketActivityQuery,
 	useAddTicketActivityMutation,
 	useUpdateTicketActivityMutation,
+	useDeleteTicketActivityMutation,
 } = ticketApi 

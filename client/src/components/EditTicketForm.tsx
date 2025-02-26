@@ -37,15 +37,6 @@ import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { AsyncSelect } from "./AsyncSelect"
-import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
-import { Editor } from "react-draft-wysiwyg"
-import { stateToHTML } from 'draft-js-export-html'; 
-import { 
-	textAreaValidation, 
-	convertEditorStateToJSON, 
-	convertEditorStateToHTML, 
-	convertJSONToEditorState 
-} from "./page-elements/TextArea"
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { ActivityContainer } from "./ActivityContainer"
 import { Avatar } from "./page-elements/Avatar"
@@ -54,6 +45,7 @@ import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../helpers/constants"
 import { isValidDateString, convertMinutesToTimeDisplay } from "../helpers/functions"
 import { format, toDate } from "date-fns-tz"
+import { TicketActivityModalProps } from "./secondary-modals/TicketActivityModal"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -101,14 +93,14 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { data: reporter, isLoading: isUserLoading } = useGetUserQuery(ticket?.userId ?? skipToken)
 	const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: false, isMention: false}} : skipToken)
 	const { data: ticketWatchers, isLoading: isTicketWatchersLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: true, isMention: false}} : skipToken)
-	const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: commentPage}} : skipToken)
+	const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: commentPage, perPage: 5}} : skipToken)
 	const { data: ticketRelationships, isLoading: isTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
 		{ticketId: currentTicketId, params: {page: linkedTicketPage, isEpic: false}} : skipToken
 	)
 	const { data: epicTicketRelationships, isLoading: isEpicTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
 		{ticketId: currentTicketId, params: {page: epicTicketPage, includeEpicPercentageCompletion: true, isEpic: true}} : skipToken
 	)
-	const { data: ticketActivities, isLoading: isTicketActivitiesLoading } = useGetTicketActivitiesQuery(currentTicketId ? {ticketId: currentTicketId, urlParams: {includeTotalTime: true}} : skipToken)
+	const { data: ticketActivities, isLoading: isTicketActivitiesLoading } = useGetTicketActivitiesQuery(currentTicketId ? {ticketId: currentTicketId, params: {includeTotalTime: true, perPage: 5}} : skipToken)
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
@@ -457,7 +449,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Time Spent"}>
 							<button className = "hover:tw-opacity-60" onClick={(e) => {
 								dispatch(toggleShowSecondaryModal(true))
-								dispatch(setSecondaryModalProps({
+								dispatch(setSecondaryModalProps<TicketActivityModalProps>({
 									...(!isTicketActivitiesLoading && ticketActivities?.additional?.totalTime ? {totalTime: ticketActivities?.additional?.totalTime} : {}), 
 									ticketId: ticket?.id ?? 0
 								}))

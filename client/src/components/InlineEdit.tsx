@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { Controller, useForm, FormProvider, useFormContext } from "react-hook-form"
-import { TextArea } from "./page-elements/TextArea"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
 

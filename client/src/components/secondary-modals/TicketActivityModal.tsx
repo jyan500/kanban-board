@@ -24,13 +24,13 @@ type FormValues = {
 	description: string
 }
 
-type Props = {
+export type TicketActivityModalProps = {
 	ticketId: number
 	ticketActivityId?: number
 	totalTime?: number
 }
 
-export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: Props) => {
+export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: TicketActivityModalProps) => {
 	const dispatch = useAppDispatch()
 	const defaultForm = {
 		id: 0,  

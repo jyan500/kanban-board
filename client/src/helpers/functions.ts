@@ -174,7 +174,7 @@ export const isValidDateString = (dateString: string | null | undefined) => {
  * @param minutes 
  * @return time display string in ww d hh mm format
  */
-export const convertMinutesToTimeDisplay = (minutes: number, includeLeadingZeroes = false, excludeZeroes = false) => {
+export const convertMinutesToTimeDisplay = (minutes: number, includeLeadingZeroes = false, excludeZeroedTimeUnits = false) => {
 	/* 
 	Approach:
 	1) Figure out how many weeks go evenly into the amount of minutes using integer division,
@@ -215,7 +215,7 @@ export const convertMinutesToTimeDisplay = (minutes: number, includeLeadingZeroe
 	for (let i = 0; i < conversions.length; ++i){
 		const amountOf = Math.floor(curMinutes/conversions[i])
 		if (amountOf === 0){
-			if (!excludeZeroes){
+			if (!excludeZeroedTimeUnits){
 				res.push((includeLeadingZeroes && timeUnits[i] !== "d" ? `00` : `0`) + timeUnits[i])
 			}
 			continue
@@ -226,7 +226,7 @@ export const convertMinutesToTimeDisplay = (minutes: number, includeLeadingZeroe
 		curMinutes -= actualAmountInMinutes
 	}
 	// include minutes, make sure leading zero is included if amount is less than 10
-	if ((curMinutes === 0 && !excludeZeroes) || curMinutes > 0){
+	if ((curMinutes === 0 && !excludeZeroedTimeUnits) || curMinutes > 0){
 		res.push((includeLeadingZeroes ? curMinutes.toString().padStart(2, "0") : curMinutes.toString()) + "m")
 	}
 	return res.join(" ")

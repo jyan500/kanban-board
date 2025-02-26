@@ -18,14 +18,6 @@ import { displayUser } from "../helpers/functions"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { DeleteCommentWarningProps } from "./secondary-modals/DeleteCommentWarning"
 import { LoadingButton } from "./page-elements/LoadingButton"
-import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
-import { 
-	TextArea,
-	textAreaValidation, 
-	convertEditorStateToJSON, 
-	convertEditorStateToHTML, 
-	convertJSONToEditorState 
-} from "./page-elements/TextArea"
 import { Avatar } from "./page-elements/Avatar"
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
@@ -275,7 +267,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 								)}
 								{comment.userId === userProfile?.id && !showAddCommentForm && !showEditCommentId ? (
 									<div className = "tw-flex tw-flex-row tw-gap-x-2">
-										<button className = "button" onClick={() => {
+										<button className = "tw-font-bold tw-text-secondary" onClick={() => {
 											reset({
 												id: comment.id,
 												ticketId: comment.ticketId,
@@ -290,7 +282,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 											dispatch(toggleShowSecondaryModal(true))
 											dispatch(setSecondaryModalProps<DeleteCommentWarningProps>({ticketId: currentTicketId ?? undefined, commentId: comment.id}))
 											dispatch(setSecondaryModalType("SHOW_DELETE_COMMENT_WARNING"))
-										}} className = "button --alert">Delete</button>
+										}} className = "tw-font-bold tw-text-secondary">Delete</button>
 									</div>
 								) : null}
 							</div>

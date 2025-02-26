@@ -24,15 +24,7 @@ import { IoIosWarning as WarningIcon } from "react-icons/io"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
-import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
 import { SimpleEditor } from "./page-elements/SimpleEditor"
-import { 
-	TextArea,
-	textAreaValidation, 
-	convertEditorStateToJSON, 
-	convertEditorStateToHTML, 
-	convertJSONToEditorState 
-} from "./page-elements/TextArea"
 
 export type FormValues = {
 	id?: number

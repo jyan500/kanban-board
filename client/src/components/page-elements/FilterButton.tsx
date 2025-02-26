@@ -8,6 +8,6 @@ type FilterButtonProps = {
 
 export const FilterButton = ({isActive, onClick, children}: FilterButtonProps) => {
 	return (
-		<button className = {`tw-p-1.5 tw-text-sm tw-rounded-sm tw-font-bold hover:tw-bg-sky-50 hover:tw-text-primary ${isActive ? "tw-text-primary tw-bg-sky-50 tw-font-bold" : ""}`} onClick={onClick}>{children}</button>
+		<button className = {`tw-p-1.5 tw-rounded-sm tw-font-bold hover:tw-bg-sky-50 hover:tw-text-primary ${isActive ? "tw-text-primary tw-bg-sky-50 tw-font-bold" : ""}`} onClick={onClick}>{children}</button>
 	)
 }
