@@ -79,7 +79,8 @@ export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: Tic
 		if (ticketActivity){
 			reset({
 				id: ticketActivity.id,
-				minutesSpent: convertMinutesToTimeDisplay(ticketActivity.minutesSpent),
+				// include leading zeroes on the time display
+				minutesSpent: convertMinutesToTimeDisplay(ticketActivity.minutesSpent, true),
 				description: ticketActivity.description,
 			})
 		}
