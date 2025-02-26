@@ -23,6 +23,7 @@ import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 import { TICKETS } from "../helpers/routes"
+import { ProfileActivityRow } from "./page-elements/ProfileActivityRow"
 
 type CommentFormValues = {
 	id: number
@@ -233,35 +234,29 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 			<div className = "tw-flex tw-flex-col tw-gap-y-4">
 				{
 					ticketComments?.map((comment: TicketComment) => (
-						<div key = { comment.id } className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
-							{/*<CgProfile className = "tw-w-8 tw-h-8"/>*/}
-							<Avatar className = "tw-rounded-full" imageUrl={comment?.user?.imageUrl}/>
-							<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
-								<div className = "tw-flex tw-flex-row tw-gap-x-2">
-									<span className = "tw-font-bold">{displayUser(comment.user)}</span>
-									<span>{comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ""}</span>
-								</div>
+						<ProfileActivityRow data={comment}>
+							<>
 								{showEditCommentId === comment.id ? (
-									<FormProvider {...methods}>
-										<CommentField
-										isLoading={isUpdateTicketCommentLoading}
-										registerOptions={registerOptions.comment}
-										onSubmit={async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-											e.preventDefault()
-											await handleSubmit(onSubmit)()
-											if (!Object.keys(errors).length){
-												setShowEditCommentId(undefined)
-												setShowAddCommentField(true)
-												reset(defaultForm)
-											}
-										}}
-										onCancel={() => {
-											reset(defaultForm)
-											setShowAddCommentField(true)
+								<FormProvider {...methods}>
+									<CommentField
+									isLoading={isUpdateTicketCommentLoading}
+									registerOptions={registerOptions.comment}
+									onSubmit={async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+										e.preventDefault()
+										await handleSubmit(onSubmit)()
+										if (!Object.keys(errors).length){
 											setShowEditCommentId(undefined)
-										}}
-										/>
-									</FormProvider>
+											setShowAddCommentField(true)
+											reset(defaultForm)
+										}
+									}}
+									onCancel={() => {
+										reset(defaultForm)
+										setShowAddCommentField(true)
+										setShowEditCommentId(undefined)
+									}}
+									/>
+								</FormProvider>
 								) : (
 									<TextAreaDisplay rawHTMLString={comment.comment}/>
 								)}
@@ -277,16 +272,15 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 											setShowAddCommentField(false)
 											setShowEditCommentId(comment.id)
 										}}>Edit</button>
-										{/*<button onClick={() => onDelete(comment.id)} className = "button --alert">Delete</button>*/}
 										<button onClick={() => {
 											dispatch(toggleShowSecondaryModal(true))
 											dispatch(setSecondaryModalProps<DeleteCommentWarningProps>({ticketId: currentTicketId ?? undefined, commentId: comment.id}))
 											dispatch(setSecondaryModalType("SHOW_DELETE_COMMENT_WARNING"))
 										}} className = "tw-font-bold tw-text-secondary">Delete</button>
 									</div>
-								) : null}
-							</div>
-						</div>
+								) : null}	
+							</>
+						</ProfileActivityRow>
 					))
 				}
 			</div>	
