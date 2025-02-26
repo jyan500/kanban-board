@@ -45,7 +45,8 @@ export const ActivityContainer = ({
 			{
 				isActive === 0 ? (
 					<>
-						<div className = "tw-flex tw-flex-row tw-justify-between">
+						<div className = "tw-flex tw-flex-row tw-justify-between tw-items-start tw-gap-x-4">
+							<TicketCommentForm currentTicketId={currentTicketId} ticketComments={ticketComments?.data?.length ? ticketComments.data : []}/>
 							{
 								ticketComments?.pagination.nextPage || ticketComments?.pagination.prevPage ? (
 									<PaginationRow
@@ -58,11 +59,11 @@ export const ActivityContainer = ({
 								) : null
 							}
 						</div>
-						<TicketCommentForm currentTicketId={currentTicketId} ticketComments={ticketComments?.data?.length ? ticketComments.data : []}/>
 					</>
 				) : (
 					<>
-						<div className = "tw-flex tw-flex-row tw-justify-between">
+						<div className = "tw-flex tw-flex-row tw-justify-between tw-items-start tw-gap-x-4">
+							<TicketActivity currentTicketId={currentTicketId} ticketActivities={ticketActivities?.data?.length ? ticketActivities.data : []}/>
 							{
 								ticketActivities?.pagination.nextPage || ticketActivities?.pagination.prevPage ? (
 									<PaginationRow
@@ -75,7 +76,6 @@ export const ActivityContainer = ({
 								) : null
 							}
 						</div>
-						<TicketActivity currentTicketId={currentTicketId} ticketActivities={ticketActivities?.data?.length ? ticketActivities.data : []}/>
 					</>
 				)
 			}

@@ -19,32 +19,32 @@ export const TicketActivity = ({currentTicketId, ticketActivities}: Props) => {
 	const adminRole = userRoles?.find((role) => role.name === "ADMIN")
 	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-				{
-					ticketActivities?.map((activity: TicketActivityType) => (
-						<ProfileActivityRow data={activity} additionalHeaderContent={<span>Logged <span className = "tw-font-bold">{convertMinutesToTimeDisplay(activity.minutesSpent, false, true)}</span></span>} >
-							<>
-								<TextAreaDisplay rawHTMLString={activity.description}/>
-								{
-									activity.userId === userProfile?.id || userProfile?.userRoleId === adminRole?.id ? (
-										<div className = "tw-flex tw-flex-row tw-gap-x-2">
-											<button className = "tw-font-bold tw-text-secondary" onClick={() => {
-												dispatch(toggleShowSecondaryModal(true))
-												dispatch(setSecondaryModalProps({ticketId: currentTicketId ?? undefined, ticketActivityId: activity.id}))
-												dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
-											}}>Edit</button>
-											<button onClick={() => {
-												dispatch(toggleShowSecondaryModal(true))
-												dispatch(setSecondaryModalProps<DeleteTicketActivityWarningProps>({ticketId: currentTicketId ?? undefined, activityId: activity.id}))
-												dispatch(setSecondaryModalType("DELETE_TICKET_ACTIVITY_WARNING"))
-											}} className = "tw-font-bold tw-text-secondary">Delete</button>
-										</div>
-									) : null
-								}
-							</>
-						</ProfileActivityRow>
-					))
-				}
-			</div>
+		<div className = "tw-flex tw-flex-col tw-gap-y-4">
+			{
+				ticketActivities?.map((activity: TicketActivityType) => (
+					<ProfileActivityRow data={activity} additionalHeaderContent={<span>Logged <span className = "tw-font-bold">{convertMinutesToTimeDisplay(activity.minutesSpent, false, true)}</span></span>} >
+						<>
+							<TextAreaDisplay rawHTMLString={activity.description}/>
+							{
+								activity.userId === userProfile?.id || userProfile?.userRoleId === adminRole?.id ? (
+									<div className = "tw-flex tw-flex-row tw-gap-x-2">
+										<button className = "tw-font-bold tw-text-secondary" onClick={() => {
+											dispatch(toggleShowSecondaryModal(true))
+											dispatch(setSecondaryModalProps({ticketId: currentTicketId ?? undefined, ticketActivityId: activity.id}))
+											dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
+										}}>Edit</button>
+										<button onClick={() => {
+											dispatch(toggleShowSecondaryModal(true))
+											dispatch(setSecondaryModalProps<DeleteTicketActivityWarningProps>({ticketId: currentTicketId ?? undefined, activityId: activity.id}))
+											dispatch(setSecondaryModalType("DELETE_TICKET_ACTIVITY_WARNING"))
+										}} className = "tw-font-bold tw-text-secondary">Delete</button>
+									</div>
+								) : null
+							}
+						</>
+					</ProfileActivityRow>
+				))
+			}
+		</div>
 	)
 }

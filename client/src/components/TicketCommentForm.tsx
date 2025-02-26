@@ -199,7 +199,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-auto tw-max-h-[calc(var(--l-modal-height)/2)]">
+		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			{
 				showAddCommentField ? (!showAddCommentForm ? (
 					<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
@@ -230,7 +230,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 					</div>
 				)) : null
 			}
-			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+			<div className = "tw-flex tw-flex-col tw-gap-y-4">
 				{
 					ticketComments?.map((comment: TicketComment) => (
 						<div key = { comment.id } className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
