@@ -47,6 +47,7 @@ import {
 	convertJSONToEditorState 
 } from "./page-elements/TextArea"
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
+import { ActivityContainer } from "./ActivityContainer"
 import { Avatar } from "./page-elements/Avatar"
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 import { useScreenSize } from "../hooks/useScreenSize"
@@ -96,6 +97,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const [ epicTicketPage, setEpicTicketPage ] = useState(1)
 	const [ linkedTicketPage, setLinkedTicketPage ] = useState(1)
 	const [ commentPage, setCommentPage ] = useState(1)
+	const [ activityPage, setActivityPage ] = useState(1)
 	const { data: reporter, isLoading: isUserLoading } = useGetUserQuery(ticket?.userId ?? skipToken)
 	const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: false, isMention: false}} : skipToken)
 	const { data: ticketWatchers, isLoading: isTicketWatchersLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: true, isMention: false}} : skipToken)
@@ -640,24 +642,16 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 					) : <LoadingSpinner/>}
 				</div>
 				<div className = "tw-space-y-2">
-					{!isTicketCommentsLoading && currentTicketId ? (
-						<>
-							<div className = "tw-flex tw-flex-row tw-justify-between">
-								<strong>Activity</strong>
-								{
-									ticketComments?.pagination.nextPage || ticketComments?.pagination.prevPage ? (
-										<PaginationRow
-											showNumResults={false}
-											showPageNums={false}
-											setPage={(page: number) => { setCommentPage(page)} }	
-											paginationData={ticketComments?.pagination}
-											currentPage={commentPage}
-										/>
-									) : null
-								}
-							</div>
-							<TicketCommentForm currentTicketId={currentTicketId} ticketComments={ticketComments?.data?.length ? ticketComments.data : []}/>
-						</>
+					{!isTicketCommentsLoading && !isTicketActivitiesLoading && currentTicketId ? (
+						<ActivityContainer 
+							ticketActivities={ticketActivities}
+							activityPage={activityPage}
+							setActivityPage={setActivityPage}
+							ticketComments={ticketComments}
+							setCommentPage={setCommentPage}
+							commentPage={commentPage}
+							currentTicketId={currentTicketId}
+						/>
 					) : <LoadingSpinner/>}
 				</div>
 			</div>

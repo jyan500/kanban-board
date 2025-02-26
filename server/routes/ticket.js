@@ -523,21 +523,35 @@ router.delete("/:ticketId/relationship/:relationshipId", validateTicketRelations
 
 router.get("/:ticketId/activity", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		let ticketActivities = await db("ticket_activity").where("ticket_id", req.params.ticketId).orderBy("updated_at", "desc").select(
+		let ticketActivities = await db("ticket_activity").where("ticket_id", req.params.ticketId).orderBy("created_at", "desc").select(
 			"id as id",
 			"description as description",
 			"ticket_id as ticketId",
 			"user_id as userId",
 			"minutes_spent as minutesSpent",
-			"updated_at as updatedAt"
+			"created_at as createdAt"
 		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		let totalMinutes = 0
-		if (req.query.includeTotalTime){
-			totalMinutes = await db("ticket_activity").where("ticket_id", req.params.ticketId).sum("minutes_spent as totalMinutesSpent").first()
-		}
-		res.json({
-			...ticketActivities,
-			...(req.query.includeTotalTime ? {additional: {totalTime: totalMinutes?.totalMinutesSpent ?? 0}} : {})
+		Promise.all(ticketActivities.data.map(async (ticketActivity) => {
+			const user = await db("users").where("users.id", ticketActivity.userId).select(
+				"users.id as id", 
+				"users.first_name as firstName", 
+				"users.last_name as lastName", 
+				"users.image_url as imageUrl",
+				"users.email as email").first()
+			return {
+				...ticketActivity,
+				user: user
+			}
+		})).then(async (activitiesWithUsers) => {
+			let totalMinutes = 0
+			if (req.query.includeTotalTime){
+				totalMinutes = await db("ticket_activity").where("ticket_id", req.params.ticketId).sum("minutes_spent as totalMinutesSpent").first()
+			}
+			res.json({
+				data: activitiesWithUsers,
+				pagination: ticketActivities.pagination,
+				...(req.query.includeTotalTime ? {additional: {totalTime: totalMinutes?.totalMinutesSpent ?? 0}} : {})
+			})
 		})
 	}
 	catch (err) {
@@ -571,7 +585,7 @@ router.get("/:ticketId/activity/:activityId", validateTicketActivityGet, handleV
 			"ticket_id as ticketId",
 			"user_id as userId",
 			"minutes_spent as minutesSpent",
-			"updated_at as updatedAt"
+			"created_at as createdAt"
 		).first()
 		res.json(ticketActivity)
 	}
