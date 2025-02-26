@@ -18,19 +18,12 @@ import { displayUser } from "../helpers/functions"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { DeleteCommentWarningProps } from "./secondary-modals/DeleteCommentWarning"
 import { LoadingButton } from "./page-elements/LoadingButton"
-import { EditorState, convertFromRaw, convertToRaw } from "draft-js";
-import { 
-	TextArea,
-	textAreaValidation, 
-	convertEditorStateToJSON, 
-	convertEditorStateToHTML, 
-	convertJSONToEditorState 
-} from "./page-elements/TextArea"
 import { Avatar } from "./page-elements/Avatar"
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 import { TICKETS } from "../helpers/routes"
+import { ProfileActivityRow } from "./page-elements/ProfileActivityRow"
 
 type CommentFormValues = {
 	id: number
@@ -207,7 +200,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-overflow-y-auto tw-max-h-[calc(var(--l-modal-height)/2)]">
+		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			{
 				showAddCommentField ? (!showAddCommentForm ? (
 					<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
@@ -238,44 +231,38 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 					</div>
 				)) : null
 			}
-			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+			<div className = "tw-flex tw-flex-col tw-gap-y-4">
 				{
 					ticketComments?.map((comment: TicketComment) => (
-						<div key = { comment.id } className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
-							{/*<CgProfile className = "tw-w-8 tw-h-8"/>*/}
-							<Avatar className = "tw-rounded-full" imageUrl={comment?.user?.imageUrl}/>
-							<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
-								<div className = "tw-flex tw-flex-row tw-gap-x-2">
-									<span className = "tw-font-bold">{displayUser(comment.user)}</span>
-									<span>{comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ""}</span>
-								</div>
+						<ProfileActivityRow data={comment}>
+							<>
 								{showEditCommentId === comment.id ? (
-									<FormProvider {...methods}>
-										<CommentField
-										isLoading={isUpdateTicketCommentLoading}
-										registerOptions={registerOptions.comment}
-										onSubmit={async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-											e.preventDefault()
-											await handleSubmit(onSubmit)()
-											if (!Object.keys(errors).length){
-												setShowEditCommentId(undefined)
-												setShowAddCommentField(true)
-												reset(defaultForm)
-											}
-										}}
-										onCancel={() => {
-											reset(defaultForm)
-											setShowAddCommentField(true)
+								<FormProvider {...methods}>
+									<CommentField
+									isLoading={isUpdateTicketCommentLoading}
+									registerOptions={registerOptions.comment}
+									onSubmit={async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+										e.preventDefault()
+										await handleSubmit(onSubmit)()
+										if (!Object.keys(errors).length){
 											setShowEditCommentId(undefined)
-										}}
-										/>
-									</FormProvider>
+											setShowAddCommentField(true)
+											reset(defaultForm)
+										}
+									}}
+									onCancel={() => {
+										reset(defaultForm)
+										setShowAddCommentField(true)
+										setShowEditCommentId(undefined)
+									}}
+									/>
+								</FormProvider>
 								) : (
 									<TextAreaDisplay rawHTMLString={comment.comment}/>
 								)}
 								{comment.userId === userProfile?.id && !showAddCommentForm && !showEditCommentId ? (
 									<div className = "tw-flex tw-flex-row tw-gap-x-2">
-										<button className = "button" onClick={() => {
+										<button className = "tw-font-bold tw-text-secondary" onClick={() => {
 											reset({
 												id: comment.id,
 												ticketId: comment.ticketId,
@@ -285,16 +272,15 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 											setShowAddCommentField(false)
 											setShowEditCommentId(comment.id)
 										}}>Edit</button>
-										{/*<button onClick={() => onDelete(comment.id)} className = "button --alert">Delete</button>*/}
 										<button onClick={() => {
 											dispatch(toggleShowSecondaryModal(true))
 											dispatch(setSecondaryModalProps<DeleteCommentWarningProps>({ticketId: currentTicketId ?? undefined, commentId: comment.id}))
 											dispatch(setSecondaryModalType("SHOW_DELETE_COMMENT_WARNING"))
-										}} className = "button --alert">Delete</button>
+										}} className = "tw-font-bold tw-text-secondary">Delete</button>
 									</div>
-								) : null}
-							</div>
-						</div>
+								) : null}	
+							</>
+						</ProfileActivityRow>
 					))
 				}
 			</div>	

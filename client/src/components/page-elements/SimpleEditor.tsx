@@ -18,6 +18,7 @@ type Props = {
 export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, mentionsUrl, mentionsUrlParams}: Props) => {
 	const { control, handleSubmit, register, resetField, getValues, setValue } = useFormContext()
 	const [ genericFetch ] = useLazyGenericFetchQuery()
+	// modified from: https://github.com/zenoamaro/react-quill/issues/324#issuecomment-1186874701
 	const source = useCallback(async (searchTerm: string, renderList: Function, _: string) => {
 		/* TODO: figure how to integrate react select with this component (if possible with this library),
 			or alternatively figure out how to enable scrolling with pagination, with loading indicators.

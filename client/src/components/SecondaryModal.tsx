@@ -4,6 +4,7 @@ import "../styles/modal.css"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../slices/secondaryModalSlice" 
 import { DeleteCommentWarning } from "./secondary-modals/DeleteCommentWarning"
+import { DeleteTicketActivityWarning } from "./secondary-modals/DeleteTicketActivityWarning"
 import { UnlinkTicketWarning } from "./secondary-modals/UnlinkTicketWarning"
 import { DeleteTicketWarning } from "./secondary-modals/DeleteTicketWarning" 
 import { AddToEpicFormModal } from "./secondary-modals/AddToEpicFormModal"
@@ -22,6 +23,7 @@ export const secondaryModalTypes = {
 	"SHOW_DELETE_COMMENT_WARNING": DeleteCommentWarning,
 	"SHOW_UNLINK_TICKET_WARNING": UnlinkTicketWarning,
 	"DELETE_TICKET_WARNING": DeleteTicketWarning,
+	"DELETE_TICKET_ACTIVITY_WARNING": DeleteTicketActivityWarning,
 	"ADD_TO_EPIC_FORM_MODAL": AddToEpicFormModal,
 	"MOVE_TICKET_FORM_MODAL": MoveTicketFormModal,
 	"CLONE_TICKET_FORM_MODAL": AddTicketFormModal,

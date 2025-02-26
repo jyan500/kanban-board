@@ -27,4 +27,10 @@ describe("convertMinutesToTimeDisplay", () => {
 		expect(convertMinutesToTimeDisplay(120, true)).toBe("00w 0d 02h 00m")
 		expect(convertMinutesToTimeDisplay(0, true)).toBe("00w 0d 00h 00m")
 	})
+	it("if excluding zeroes, should not include all units that have a value of 0", () => {
+		expect(convertMinutesToTimeDisplay(5, true, true)).toBe("05m")	
+		expect(convertMinutesToTimeDisplay(120, true, true)).toBe("02h")	
+		expect(convertMinutesToTimeDisplay(1440, true, true)).toBe("1d")	
+		expect(convertMinutesToTimeDisplay(10080, true, true)).toBe("01w")	
+	})
 })

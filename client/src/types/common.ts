@@ -109,7 +109,10 @@ export interface TicketActivity {
 	userId: number
 	ticketId: number
 	createdAt: Date
+	user?: Omit<UserProfile, "organizationId" | "userRoleId">
 }
+
+export type ProfileActivity = Pick<TicketComment, "id" | "user" | "createdAt" >
 
 export interface Cell {
 	id: number 

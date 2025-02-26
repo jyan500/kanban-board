@@ -24,13 +24,13 @@ type FormValues = {
 	description: string
 }
 
-type Props = {
+export type TicketActivityModalProps = {
 	ticketId: number
 	ticketActivityId?: number
 	totalTime?: number
 }
 
-export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: Props) => {
+export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: TicketActivityModalProps) => {
 	const dispatch = useAppDispatch()
 	const defaultForm = {
 		id: 0,  
@@ -79,7 +79,8 @@ export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: Pro
 		if (ticketActivity){
 			reset({
 				id: ticketActivity.id,
-				minutesSpent: convertMinutesToTimeDisplay(ticketActivity.minutesSpent),
+				// include leading zeroes on the time display
+				minutesSpent: convertMinutesToTimeDisplay(ticketActivity.minutesSpent, true),
 				description: ticketActivity.description,
 			})
 		}

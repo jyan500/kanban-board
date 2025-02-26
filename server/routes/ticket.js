@@ -26,6 +26,7 @@ const {
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { parseMentions } = require("../helpers/functions")
 const db = require("../db/db")
+const { DEFAULT_PER_PAGE } = require("../constants")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -121,7 +122,7 @@ router.get("/", async (req, res, next) => {
 			tickets = await tickets.paginate({ perPage: total, currentPage: 1, isLengthAware: true})
 		}
 		else {
-			tickets = await tickets.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+			tickets = await tickets.paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		}
 		if (req.query.includeAssignees){
 			tickets = {...tickets, data: await Promise.all(
@@ -323,7 +324,7 @@ router.get("/:ticketId/comment", validateGet, handleValidationResult, async (req
 			"comment as comment",
 			"created_at as createdAt"
 		)
-		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		.paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		Promise.all(comments.data.map(async (comment) => {
 			const user = await db("users").where("users.id", comment.userId).select(
 				"users.id as id", 
@@ -458,7 +459,7 @@ router.get("/:ticketId/relationship", validateGet, handleValidationResult, async
 			"parent_ticket_id as parentTicketId",
 			"child_ticket_id as childTicketId",
 			"ticket_relationship_type_id as ticketRelationshipTypeId",
-		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		).paginate({ perPage: DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		let total = relationships.pagination.total
 		let completedTickets = []
 		if (req.query.includeEpicPercentageCompletion){
@@ -523,21 +524,35 @@ router.delete("/:ticketId/relationship/:relationshipId", validateTicketRelations
 
 router.get("/:ticketId/activity", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		let ticketActivities = await db("ticket_activity").where("ticket_id", req.params.ticketId).orderBy("updated_at", "desc").select(
+		let ticketActivities = await db("ticket_activity").where("ticket_id", req.params.ticketId).orderBy("created_at", "desc").select(
 			"id as id",
 			"description as description",
 			"ticket_id as ticketId",
 			"user_id as userId",
 			"minutes_spent as minutesSpent",
-			"updated_at as updatedAt"
-		).paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		let totalMinutes = 0
-		if (req.query.includeTotalTime){
-			totalMinutes = await db("ticket_activity").where("ticket_id", req.params.ticketId).sum("minutes_spent as totalMinutesSpent").first()
-		}
-		res.json({
-			...ticketActivities,
-			...(req.query.includeTotalTime ? {additional: {totalTime: totalMinutes?.totalMinutesSpent ?? 0}} : {})
+			"created_at as createdAt"
+		).paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		Promise.all(ticketActivities.data.map(async (ticketActivity) => {
+			const user = await db("users").where("users.id", ticketActivity.userId).select(
+				"users.id as id", 
+				"users.first_name as firstName", 
+				"users.last_name as lastName", 
+				"users.image_url as imageUrl",
+				"users.email as email").first()
+			return {
+				...ticketActivity,
+				user: user
+			}
+		})).then(async (activitiesWithUsers) => {
+			let totalMinutes = 0
+			if (req.query.includeTotalTime){
+				totalMinutes = await db("ticket_activity").where("ticket_id", req.params.ticketId).sum("minutes_spent as totalMinutesSpent").first()
+			}
+			res.json({
+				data: activitiesWithUsers,
+				pagination: ticketActivities.pagination,
+				...(req.query.includeTotalTime ? {additional: {totalTime: totalMinutes?.totalMinutesSpent ?? 0}} : {})
+			})
 		})
 	}
 	catch (err) {
@@ -565,13 +580,13 @@ router.post("/:ticketId/activity", validateTicketActivityAdd, handleValidationRe
 
 router.get("/:ticketId/activity/:activityId", validateTicketActivityGet, handleValidationResult, async (req, res, next) => {
 	try {
-		let ticketActivity = await db("ticket_activity").where("ticket_id", req.params.ticketId).where("activity_id", req.params.activityId).select(
+		let ticketActivity = await db("ticket_activity").where("id", req.params.activityId).select(
 			"id as id",
 			"description as description",
 			"ticket_id as ticketId",
 			"user_id as userId",
 			"minutes_spent as minutesSpent",
-			"updated_at as updatedAt"
+			"created_at as createdAt"
 		).first()
 		res.json(ticketActivity)
 	}
