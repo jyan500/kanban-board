@@ -35,7 +35,7 @@ export const DeleteTicketActivityWarning = ({ticketId, activityId}: DeleteTicket
 				closeSecondaryModal()
 				dispatch(addToast({
 					...defaultToast, 
-					message: "activity deleted successfully!",
+					message: "Activity deleted successfully!",
 					type: "success",
 				}))
 			}
@@ -63,7 +63,7 @@ export const DeleteTicketActivityWarning = ({ticketId, activityId}: DeleteTicket
 				cancelText={"Cancel"}
 			>
 				<div className = "tw-py-4">
-					<strong>Are you sure you want to delete this ticket Activity?</strong>
+					<strong>Are you sure you want to delete this ticket activity?</strong>
 				</div>
 			</Warning>
 		</div>

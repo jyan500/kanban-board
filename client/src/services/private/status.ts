@@ -7,6 +7,7 @@ import { privateApi } from "../private"
 type AddStatusRequest = {
 	name: string
 	isActive: boolean
+	isCompleted: boolean
 	order: number	
 }
 
@@ -34,23 +35,24 @@ export const statusApi = privateApi.injectEndpoints({
 			providesTags: ["Statuses"]
 		}),
 		addStatus: builder.mutation<{message: string}, AddStatusRequest>({
-			query: ({name, order, isActive}) => ({
+			query: ({name, order, isActive, isCompleted}) => ({
 				url: STATUS_URL,
 				method: "POST",
 				body: {
 					name,
 					order,
-					is_active: isActive
+					is_active: isActive,
+					is_completed: isCompleted,
 				}
 			}),
 			invalidatesTags: ["Statuses", "BoardStatuses"]
 		}),
 		updateStatus: builder.mutation<{message: string}, UpdateStatusRequest>({
-			query: ({id, name, order, isActive}) => ({
+			query: ({id, name, order, isActive, isCompleted}) => ({
 				url: `${STATUS_URL}/${id}`,
 				method: "PUT",
 				body: {
-					name, order, is_active: isActive
+					name, order, is_active: isActive, is_completed: isCompleted,
 				}
 			}),
 			invalidatesTags: ["Statuses", "BoardStatuses"]

@@ -61,7 +61,7 @@ export const Dashboard = () => {
 	const [watchSearchParams, setWatchSearchParams] = useState<Record<string, any>>({})
 	const {data: assignedTickets, isLoading: isAssignedTicketsLoading} = useGetTicketsQuery(Object.keys(assignedSearchParams).length > 0 ? assignedSearchParams : skipToken)
 	const {data: watchedTickets, isLoading: isWatchedTicketsLoading} = useGetTicketsQuery(Object.keys(watchSearchParams).length > 0 ? watchSearchParams : skipToken)
-	const {data: boards, isLoading: isBoardsLoading} = useGetBoardsQuery({boardTicketAssignee: userProfile?.id, perPage: 5})
+	const {data: boards, isLoading: isBoardsLoading} = useGetBoardsQuery({includeUserDashboardInfo: true, perPage: 5})
 	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 
 	useEffect(() => {

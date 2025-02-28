@@ -22,6 +22,7 @@ type FormValues = {
 	id?: number
 	name: string
 	isActive: boolean
+	isCompleted: boolean
 }
 
 export const OrganizationStatusModal = () => {
@@ -38,7 +39,8 @@ export const OrganizationStatusModal = () => {
 	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
-		isActive: false
+		isActive: false,
+		isCompleted: false,
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const { register , handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
@@ -58,13 +60,23 @@ export const OrganizationStatusModal = () => {
 				}
 				<div className = {`tw-flex tw-flex-col tw-gap-y-2`}>
 					<div className = "">
-						<label className = "label">Name</label>
-						<input type = "text" {...register("name")}/>
+						<label htmlFor = "status-name" className = "label">Name</label>
+						<input id = "status-name" type = "text" {...register("name")}/>
 				        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 					</div>
 					<div className = "tw-flex tw-flex-row tw-gap-x-2">
-						<input type = "checkbox" {...register("isActive")}/>
-						<label className = "label">Is Active</label>	
+						<input id = "status-is-active" type = "checkbox" {...register("isActive")}/>
+						<label htmlFor = "status-is-active" className = "label">Is Active</label>	
+					</div>
+					<div>
+						<small><span className = "tw-font-bold">*</span>check this off to display this status across all boards in this organization</small>	
+					</div>
+					<div className = "tw-flex tw-flex-row tw-gap-x-2">
+						<input id = "status-is-completed" type = "checkbox" {...register("isCompleted")}/>
+						<label htmlFor = "status-is-completed" className = "label">Is Completed</label>	
+					</div>
+					<div>
+						<small><span className = "tw-font-bold">*</span>check this off so that all tickets in this status are considered "completed" for progress checking purposes</small>	
 					</div>
 					<div>
 						<button type = "submit" className = "button">Save</button>
@@ -183,7 +195,8 @@ export const OrganizationStatusModal = () => {
 		reset({
 			id: undefined,	
 			name: "",
-			isActive: false
+			isActive: false,
+			isCompleted: false,
 		})
 		setSelectedStatusId(null)
 	}		
@@ -199,7 +212,8 @@ export const OrganizationStatusModal = () => {
 						reset({
 							id: undefined,	
 							name: "",
-							isActive: false
+							isActive: false,
+							isCompleted: false,
 						})
 					}} className = "button --secondary">
 						<div className = "tw-flex tw-items-center tw-gap-x-2">
@@ -224,6 +238,7 @@ export const OrganizationStatusModal = () => {
 									id: status.id,	
 									name: status.name,
 									isActive: status.isActive,
+									isCompleted: status.isCompleted,
 								})
 							}} key = {status.id} className = "button">
 								{status.name}
