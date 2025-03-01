@@ -74,6 +74,8 @@ export interface Board {
 	organizationId: number
 	lastModified?: Date
 	assignees?: Array<number>
+	minutesSpent?: number
+	percentComplete?: number
 }
 
 export interface Ticket {

@@ -4,7 +4,7 @@ import "../styles/dashboard.css"
 import { useNavigate, useLocation, Link } from "react-router-dom" 
 import { useGetUserOrganizationsQuery, useSwitchUserOrganizationMutation } from "../services/private/userProfile"
 import { useGetTicketsQuery } from "../services/private/ticket"
-import { Ticket, Organization, Toast, OptionType } from "../types/common"
+import { Ticket, Organization, Toast, OptionType, ProgressBarPercentage } from "../types/common"
 import { setCredentials } from "../slices/authSlice"
 import { logout } from "../slices/authSlice" 
 import { privateApi } from "../services/private" 
@@ -15,6 +15,7 @@ import { GroupBase, SelectInstance } from "react-select"
 import { USER_PROFILE_ORG_URL } from "../helpers/urls"
 import { PaginationRow } from "./page-elements/PaginationRow"
 import { TicketRow } from "./TicketRow" 
+import { ProgressBar } from "./page-elements/ProgressBar"
 import { TICKETS, BOARDS } from "../helpers/routes"
 import { Banner } from "./page-elements/Banner"
 import { TicketsContainer } from "./tickets/TicketsContainer"
@@ -25,6 +26,7 @@ import { LuClock as ClockIcon } from "react-icons/lu";
 import { BsFillFileBarGraphFill as BarsIcon } from "react-icons/bs";
 import { IconContext } from "react-icons"
 import { FaRegBuilding } from "react-icons/fa";
+import { convertMinutesToTimeDisplay } from "../helpers/functions"
 
 type DashboardSectionProps = {
 	title: string
@@ -61,8 +63,26 @@ export const Dashboard = () => {
 	const [watchSearchParams, setWatchSearchParams] = useState<Record<string, any>>({})
 	const {data: assignedTickets, isLoading: isAssignedTicketsLoading} = useGetTicketsQuery(Object.keys(assignedSearchParams).length > 0 ? assignedSearchParams : skipToken)
 	const {data: watchedTickets, isLoading: isWatchedTicketsLoading} = useGetTicketsQuery(Object.keys(watchSearchParams).length > 0 ? watchSearchParams : skipToken)
-	const {data: boards, isLoading: isBoardsLoading} = useGetBoardsQuery({boardTicketAssignee: userProfile?.id, perPage: 5})
+	const {data: boards, isLoading: isBoardsLoading} = useGetBoardsQuery({includeUserDashboardInfo: true, perPage: 5})
 	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
+
+	// extract the remaining dashboard info into separate array of objects for
+	// easier display on the dashboard
+	const timeSpentPerBoard = boards?.data?.map((board) => {
+		return {
+			id: board.id,
+			minutesSpent: board.minutesSpent ? convertMinutesToTimeDisplay(board.minutesSpent, false, true) : ""
+		}	
+	})
+	const percentageCompletePerBoard = boards?.data?.map((board) => {
+		return {
+			id: board.id,
+			percentComplete: [
+				{className: "tw-bg-primary", label: "Completed", value: board.percentComplete ?? 0},
+				{className: "tw-bg-secondary", label: "Not Completed", value: 100 - (board.percentComplete ?? 0)},
+			]	
+		}	
+	})
 
 	useEffect(() => {
 		if (userProfile){
@@ -167,10 +187,24 @@ export const Dashboard = () => {
 						</div>	
 					</DashboardSection>
 					<DashboardSection iconColor={"var(--bs-warning)"} icon={<BarsIcon/>} title={"Progress"}>
-						<div></div>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							{
+								percentageCompletePerBoard?.map((board) => (
+									<div className = "tw-flex tw-flex-row tw-items-center tw-min-h-[24px]">
+										<ProgressBar percentages = {board.percentComplete}/> 
+									</div>
+								))
+							}	
+						</div>
 					</DashboardSection>
 					<DashboardSection iconColor={"var(--bs-success)"} icon={<ClockIcon/>} title={"Time Spent"}>
-						<div></div>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							{
+								timeSpentPerBoard?.map((board) => (
+									<div>{board.minutesSpent}</div>
+								))
+							}
+						</div>
 					</DashboardSection>
 				</div>
 			</div>

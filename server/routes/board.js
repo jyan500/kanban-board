@@ -39,13 +39,13 @@ router.get("/", async (req, res, next) => {
 					"boards.updated_at as boardUpdatedAt",
 				)
 			}
-			if (req.query.boardTicketAssignee){
+			if (req.query.includeUserDashboardInfo){
 				queryBuilder.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")	
 				.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
 				.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
 				.groupBy("tickets_to_users.user_id")
 				.groupBy("boards.id")
-				.where("tickets_to_users.user_id", "=", req.query.boardTicketAssignee)
+				.where("tickets_to_users.user_id", "=", req.user.id)
 			}
 		})	
 		.select(
@@ -79,7 +79,44 @@ router.get("/", async (req, res, next) => {
 			numTicketsRes = mapIdToRowObject(numTickets)
 		}
 
-		if (req.query.lastModified === "true" || req.query.assignees === "true" || req.query.numTickets === "true"){
+		let dashboardInfoMap = {}
+		if (req.query.includeUserDashboardInfo === "true"){
+			assignedTickets = await db("boards").where("boards.organization_id", req.user.organization).whereIn("boards.id", boards.data.map((b) => b.id))
+			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
+			.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets_to_boards.ticket_id")
+			.join("tickets", "tickets_to_boards.ticket_id", "=", "tickets.id")
+			.leftJoin("ticket_activity", "tickets_to_boards.ticket_id", "=", "ticket_activity.ticket_id")
+			.sum("ticket_activity.minutes_spent as minutesSpent")
+			.groupBy("tickets.id")
+			.where("tickets_to_users.user_id", "=", req.user.id)
+			.where("tickets_to_users.is_watcher", false)
+			.where("tickets_to_users.is_mention", false)
+			.select(
+				"boards.id as id",
+				"tickets.id as ticketId",
+				"tickets.status_id as statusId",
+			)
+			/* 
+				map the board id to the ticket information
+				'13': [ { ticketId: 198, statusId: 8, minutesSpent: null }, { ticketId: 188, statusId: 7, minutesSpent: 360 } ],
+				'14': [ { ticketId: 181, statusId: 7, minutesSpent: null }, { ticketId: 185, statusId: 7, minutesSpent: null } ]
+			*/
+			const boardsToAssignedTickets = mapIdToRowAggregateObjArray(assignedTickets, ["ticketId", "statusId", "minutesSpent"])
+			const allIsCompleteStatuses = await db("statuses").where("is_completed", true).where("organization_id", req.user.organization)
+			const statusIds = allIsCompleteStatuses.map((status) => status.id)
+			Object.keys(boardsToAssignedTickets).forEach((boardId) => {
+				const numTicketsCompletedByUser = boardsToAssignedTickets[boardId].filter((ticket) => statusIds.includes(ticket.statusId)).length
+				const allTickets = boardsToAssignedTickets[boardId].length
+				const percentComplete = Math.floor((numTicketsCompletedByUser/allTickets) * 100)
+				const totalMinutesSpent = boardsToAssignedTickets[boardId].reduce((acc, obj) => {
+					return acc + obj.minutesSpent
+				}, 0)
+				dashboardInfoMap[boardId] = {minutesSpent: totalMinutesSpent, percentComplete: percentComplete}
+			})
+
+		}
+
+		if (req.query.lastModified === "true" || req.query.assignees === "true" || req.query.numTickets === "true" || req.query.includeUserDashboardInfo){
 			resData = boards.data.map((board) => {
 				let lastUpdated;
 				if (req.query.lastModified === "true"){
@@ -90,6 +127,12 @@ router.get("/", async (req, res, next) => {
 					name: board.name,
 					organizationId: board.organizationId,
 					...(req.query.lastModified === "true" ? {lastModified: lastUpdated ?? null} : {})
+				}
+				if (req.query.includeUserDashboardInfo){
+					boardRes = {...boardRes,
+						percentComplete: dashboardInfoMap[board.id].percentComplete ?? 0,
+						minutesSpent: dashboardInfoMap[board.id].minutesSpent ?? 0
+					}
 				}
 				if (req.query.assignees === "true" && board.id in boardAssigneesRes){
 					boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : 0}

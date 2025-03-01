@@ -48,6 +48,7 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			name: body.name,
 			order: body.order,
 			is_active: req.body.is_active,
+			is_completed: req.body.is_completed,
 			organization_id: body.organization_id
 		}, ["id"])
 		res.json({id: id[0], message: `Status inserted successfully!`})
@@ -63,6 +64,7 @@ router.put("/:id", validateUpdate, handleValidationResult, async (req, res, next
 		await db("statuses").where("id", req.params.id).update({
 			name: req.body.name,
 			is_active: req.body.is_active,
+			is_completed: req.body.is_completed,
 			order: req.body.order,
 		})
 		res.json({message: "Status updated successfully!"})	
