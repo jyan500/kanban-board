@@ -389,7 +389,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 										{watch("storyPoints") !== "" && watch("storyPoints") ? watch("storyPoints") : "None"}
 									</button>
 								) : (
-									<>
+									<div className = "tw-w-1/2">
 										<InlineEdit 
 											isLoading={isUpdateTicketLoading}
 											mentionsEnabled={false}
@@ -409,7 +409,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 											}
 										}} registerField = {"storyPoints"} registerOptions = {registerOptions.storyPoints} value={watch("storyPoints")?.toString()} onCancel={() => {toggleFieldVisibility("story-points", false)}}/>
 								        {errors?.storyPoints && <small className = "--text-alert">{errors.storyPoints.message}</small>}
-							        </>
+							        </div>
 								)
 							}
 						</RightSectionRow>
@@ -420,7 +420,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 										{isValidDateString(watch("dueDate")) ? format(toDate(watch("dueDate")), "MM/dd/yyyy") : "None"}
 									</button>
 								) : (
-									<>
+									<div className = "tw-w-1/2">
 										<InlineEdit 
 											isLoading={isUpdateTicketLoading}
 											mentionsEnabled={false}
@@ -442,7 +442,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 												}
 										}} registerField = {"dueDate"} registerOptions = {registerOptions.dueDate} value={watch("dueDate")} onCancel={() => {toggleFieldVisibility("due-date", false)}}/>
 								        {errors?.dueDate && <small className = "--text-alert">{errors.dueDate.message}</small>}
-							        </>
+							        </div>
 								)
 							}
 						</RightSectionRow>
@@ -579,7 +579,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								</>
 							</div>
 						</div>
-						<div className = "tw-w-full tw-flex-col tw-flex tw-gap-y-2 lg:tw-w-1/3">
+						<div className = "tw-w-full tw-flex-col tw-flex tw-gap-y-2 lg:tw-w-1/3 tw-mt-8 lg:tw-mt-0">
 							{
 								<>
 									<div>
