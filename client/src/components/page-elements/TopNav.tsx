@@ -21,10 +21,15 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { addToast } from "../../slices/toastSlice"
 import { Toast, Notification } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
+import { useScreenSize } from "../../hooks/useScreenSize"
+import { SM_BREAKPOINT } from "../../helpers/constants"
+import { NOTIFICATIONS } from "../../helpers/routes"
+import { Link } from "react-router-dom"
 
 export const TopNav = () => {
 	const dispatch = useAppDispatch()
 	const [showDropdown, setShowDropdown] = useState(false)
+	const { width, height } = useScreenSize()
 	const { organizations } = useAppSelector((state) => state.org)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { token } = useAppSelector((state) => state.auth)
@@ -109,40 +114,53 @@ export const TopNav = () => {
 	return (
 		<div className = "tw-my-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
 			<HamburgerButton/>	
-			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
-				{!isLoading ? (
-					<>
-						<div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
-							<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
-								<button ref = {buttonRef} onClick={(e) => {
-									e.preventDefault()
-									setShowDropdown(!showDropdown)
-								}} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
-									<FaRegBell className = "--l-icon"/>
-									<Indicator showIndicator={showIndicator}/>
-								</button>
-								{
-									showDropdown ? (
-										<NotificationDropdown 
-											notifications={currentNotifications ?? []}
-											closeDropdown={onClickOutside} 
-											ref = {menuDropdownRef}/>
-									) : null
-								}
-							</IconContext.Provider>
-						</div>
-						<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
-						<div>
-							<span>{displayUser(userProfile)}</span>
-						</div>
-					</>
-				) : (
-					<LoadingSpinner/>
-				)}
-				<div>
-					<button onClick={onLogout}>Logout</button>
+			{
+				width >= SM_BREAKPOINT ? (
+				<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
+					{!isLoading ? (
+						<>
+							<div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
+								<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
+									<button ref = {buttonRef} onClick={(e) => {
+										e.preventDefault()
+										setShowDropdown(!showDropdown)
+									}} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
+										<FaRegBell className = "--l-icon"/>
+										<Indicator showIndicator={showIndicator}/>
+									</button>
+									{
+										showDropdown ? (
+											<NotificationDropdown 
+												notifications={currentNotifications ?? []}
+												closeDropdown={onClickOutside} 
+												ref = {menuDropdownRef}/>
+										) : null
+									}
+								</IconContext.Provider>
+							</div>
+							<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
+							<div>
+								<span>{displayUser(userProfile)}</span>
+							</div>
+						</>
+					) : (
+						<LoadingSpinner/>
+					)}
+					<div>
+						<button onClick={onLogout}>Logout</button>
+					</div>
 				</div>
-			</div>
+			) : (
+				/* On the mobile version, only display the bell icon, and tapping it will link to the notifications page */
+				<div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
+					<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
+						<Link to={NOTIFICATIONS} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
+							<FaRegBell className = "--l-icon"/>
+							<Indicator showIndicator={showIndicator}/>
+						</Link>
+					</IconContext.Provider>
+				</div>
+			)}
 		</div>
 	)
 }

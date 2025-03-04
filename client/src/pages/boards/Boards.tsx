@@ -65,9 +65,9 @@ export const Boards = () => {
 			</div>
 			{isFetching ? <LoadingSpinner/> : (
 				<>
-					<div className = "tw-flex tw-flex-row tw-gap-x-2">
+					<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 						<FormProvider {...methods}>
-							<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
+							<form className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
 								<SearchBar placeholder={"Search..."} registerField={"query"} registerOptions={registerOptions.query}/>
 								<button type = "submit" className = "button">Search</button>
 							</form>
