@@ -23,6 +23,9 @@ import { TICKET_URL } from "../helpers/urls"
 import { GroupBase, SelectInstance } from "react-select"
 import { OptionType, ProgressBarPercentage } from "../types/common"
 import { ProgressBar } from "./page-elements/ProgressBar"
+import { InlineEditButton } from "./page-elements/InlineEditButton"
+import { IconCheckmark } from "./icons/IconCheckmark"
+import { IconClose } from "./icons/IconClose"
 
 type LinkedTicketFormValues = {
 	parentTicketId: number | null | undefined
@@ -246,15 +249,6 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 							        {errors?.ticketRelationshipTypeId && <small className = "--text-alert">{errors.ticketRelationshipTypeId.message}</small>}
 								</div>
 								<div className = "tw-w-2/3 tw-w-full tw-flex tw-flex-col tw-gap-y-1">
-									{/* TODO: autocomplete search box instead of select menu */}	
-									{/*
-									<select className = "tw-w-full" {...register("childTicketId", registerOptions.childTicketId)}>	
-										<option value="" disabled></option>
-										{tickets?.data?.filter((ticket) => ticket.id !== currentTicketId && ticket.ticketTypeId !== epicTicketType?.id && !isTicketAlreadyLinked(ticket.id)).map((ticket) => 
-											<option key = {ticket.id} value = {ticket.id}>{ticket.name}</option>
-										)}
-									</select>
-									*/}
 									{/* The current ticket should not be available for selection, as well as any ticket that has already been linked as a parent or child*/}
 						        	<Controller
 										name={"childTicketId"}
@@ -276,17 +270,21 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 							</div>
 							<div className = "tw-flex tw-flex-row tw-justify-end">
 								<div className = "btn-group">
-									<button className = "button" onClick = {async (e) => {
+									<InlineEditButton onClick = {async (e) => {
 										e.preventDefault()
 										await handleSubmit(onSubmit)()
 										if (!Object.keys(errors).length){
 											reset(defaultForm)
 										}
-									}}>Link</button>
-									<button className = "button --secondary" onClick = {(e) => {
+									}}>
+										<IconCheckmark/>	
+									</InlineEditButton>
+									<InlineEditButton onClick = {(e) => {
 										e.preventDefault()
 										setShowAddLinkedIssue(false)
-									}}>Cancel</button>
+									}}>
+										<IconClose/>	
+									</InlineEditButton>
 								</div>
 							</div>
 						</form>

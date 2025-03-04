@@ -2,6 +2,9 @@ import React, { useState } from "react"
 import { Controller, useForm, FormProvider, useFormContext } from "react-hook-form"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
+import { IconCheckmark } from "./icons/IconCheckmark"
+import { IconClose } from "./icons/IconClose"
+import { InlineEditButton } from "./page-elements/InlineEditButton"
 
 type Props = {
 	type: string
@@ -94,22 +97,29 @@ export const InlineEdit = (
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-2">
+		<div className = "tw-relative tw-w-full">
 			<div>
 				{element}
 			</div>
-			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<LoadingButton isLoading={isLoading} className = "button" text={"Save"} onClick={(e) => {
-					e.preventDefault()
-					onSubmit()
-				}}></LoadingButton>
-				<button type = "button" onClick={(e) => {
-					e.preventDefault()
-					customReset ? customReset() : resetField(registerField)
-					onCancel()
-				}
-				} className = "button --secondary">Cancel</button>
-			</div>
+		<div className="tw-absolute tw-right-0 tw-mt-2 tw-flex tw-flex-row tw-gap-x-2">
+			<InlineEditButton 
+				onClick={(e) => {
+				e.preventDefault()
+				onSubmit()
+			}}>
+				<IconCheckmark/>
+			</InlineEditButton>
+			<InlineEditButton
+				onClick={(e) => {
+				e.preventDefault()
+				customReset ? customReset() : resetField(registerField)
+				onCancel()
+				}}
+			>
+				<IconClose/>
+			</InlineEditButton>
+      </div>
+			
 		</div>
 	)
 }
