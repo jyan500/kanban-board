@@ -26,7 +26,7 @@ export const TicketActivity = ({currentTicketId, ticketActivities}: Props) => {
 						<>
 							<TextAreaDisplay rawHTMLString={activity.description}/>
 							{
-								activity.userId === userProfile?.id || userProfile?.userRoleId === adminRole?.id ? (
+								activity.userId === userProfile?.id ? (
 									<div className = "tw-flex tw-flex-row tw-gap-x-2">
 										<button className = "tw-font-bold tw-text-secondary" onClick={() => {
 											dispatch(toggleShowSecondaryModal(true))
