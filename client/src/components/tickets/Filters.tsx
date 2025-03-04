@@ -16,7 +16,7 @@ export const Filters = () => {
 	const { register, getValues, control } = methods
 	const { data: boardInfo, isLoading, isError } = useGetBoardQuery(getValues("board") ? {id: getValues("board"), urlParams: {}} : skipToken)
 	return (
-		<div className = "tw-flex tw-flex-row tw-gap-x-2">
+		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
 				<select className = "tw-w-full" id = "filters-ticket-type" {...register("ticketType")}>

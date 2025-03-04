@@ -9,6 +9,8 @@ import { FormValues } from "../../pages/tickets/TicketDisplay"
 import { MdOutlineKeyboardArrowDown as ArrowDown } from "react-icons/md";
 import { Filters } from "./Filters"
 import { Filters as FiltersType } from "../../pages/tickets/TicketDisplay"
+import { useScreenSize } from "../../hooks/useScreenSize"
+import { LG_BREAKPOINT } from "../../helpers/constants"
 
 type Props = {
 	currentPage: number
@@ -35,13 +37,13 @@ export const SearchToolBar = ({children, onFormSubmit, showFilters, registerOpti
 	const {register, reset, getValues, control, formState: {errors}} = methods
 
 	return (
-		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
-			<div className = "tw-w-full tw-flex tw-flex-row tw-items-center tw-justify-between">
+		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
+			<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-justify-between">
 				<FormProvider {...methods}>
 					<form onSubmit={(e) => {
 						e.preventDefault()
 						onFormSubmit()
-					}} className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+					}} className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-gap-x-2">
 						{searchOptions && Object.keys(searchOptions).length > 0 ? 
 							(
 								<select {...register("searchBy", registerOptions.searchBy)}>
@@ -87,15 +89,7 @@ export const SearchToolBar = ({children, onFormSubmit, showFilters, registerOpti
 						{additionalButtons ? additionalButtons() : null}
 					</form>
 				</FormProvider>
-				<div className = "tw-p-4 tw-rounded-md tw-border tw-border-gray-300">
-					<PaginationRow
-						showNumResults={true}
-						showPageNums={false}
-						setPage={setPage}
-						currentPage={currentPage}
-						paginationData={paginationData}
-					/>
-				</div>
+
 			</div>
 			{/* 
 			For some reason, error messages when retrieved from useFormContext() have to be converted to strings explicitly, see below:
@@ -110,6 +104,15 @@ export const SearchToolBar = ({children, onFormSubmit, showFilters, registerOpti
 					</FormProvider>
 				) : null
 			}
+			</div>
+			<div className = "tw-w-full lg:tw-w-1/3 tw-p-4 tw-rounded-md tw-border tw-border-gray-300">
+				<PaginationRow
+					showNumResults={true}
+					showPageNums={false}
+					setPage={setPage}
+					currentPage={currentPage}
+					paginationData={paginationData}
+				/>
 			</div>
 		</div>
 	)
