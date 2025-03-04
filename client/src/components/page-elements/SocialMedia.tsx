@@ -11,16 +11,6 @@ export const SocialMedia = () => {
 			<a href = "https://www.linkedin.com/in/jansenyan">
 				<IconLinkedin className="tw-w-10 tw-h-10" color="white"/>
 			</a>
-		{/*	<a href = "#">
-				<IconContext.Provider value={{className: "tw-w-[35px] tw-h-[35px]", color: "white"}}>
-					<Facebook/>
-				</IconContext.Provider>
-			</a>
-			<a href = "#">
-				<IconContext.Provider value={{className: "tw-w-10 tw-h-10", color: "white"}}>
-					<Youtube/>
-				</IconContext.Provider>
-			</a>*/}
 		</div>
 	)	
 }
