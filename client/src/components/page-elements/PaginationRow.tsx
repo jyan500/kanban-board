@@ -21,7 +21,7 @@ interface Props {
 export const PaginationRow = ({showPageNums, showNumResults, paginationData, setPage, url, urlParams, currentPage, customPageParam}: Props) => {
 
 	return (
-		<div className = {`tw-flex tw-flex-row tw-items-center tw-gap-x-4`}>
+		<div className = {`tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-gap-x-4`}>
 			{
 				paginationData ? (
 					<>
