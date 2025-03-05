@@ -22,7 +22,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 			{/* Top */}
 			<h3>{title}</h3>
 			{/* Middle selection area */}
-			<div className = "tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
+			<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
 				<FilterButton isActive={isActive === 0} onClick={(e) => {
 					setFilterBy(undefined)
 					setIsActive(0)
@@ -38,7 +38,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 					</FilterButton>
 				))}
 			</div>	
-			<div className = "tw-p-2 tw-flex tw-flex-col">
+			<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-col">
 				<div className = "tw-flex tw-flex-row tw-justify-between">
 					<p><span className = "tw-font-bold">Total:</span> {tickets.pagination.total}</p>
 					{

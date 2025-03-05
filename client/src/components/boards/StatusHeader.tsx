@@ -32,7 +32,7 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 		<div className = {`${status.limit && (status.limit <= numTickets) ? "tw-bg-red-100" : ""} tw-w-full tw-py-2 tw-flex tw-flex-col tw-gap-y-1`}>
 			<div className = "tw-pl-2 tw-flex tw-flex-row tw-items-center tw-justify-between">
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
-					<p className = "tw-font-bold">
+					<p className = "tw-font-semibold">
 						{status.name}
 					</p>
 					<span>
@@ -42,7 +42,7 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 				{
 					status.limit && (status.limit <= numTickets) ?
 					<div className = "tw-p-0.5 tw-border tw-border-red-300 tw-bg-red-300">
-						<p className = "tw-font-bold">Max: {status.limit}</p>
+						<p className = "tw-font-semibold">Max: {status.limit}</p>
 					</div>
 					: null
 				}

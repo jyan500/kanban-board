@@ -54,14 +54,14 @@ export const SearchToolBar = ({children, onFormSubmit, showFilters, registerOpti
 								</select>
 							) : null
 						}
-						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+						<div className = "tw-flex tw-flex-row tw-gap-x-2">
 							<SearchBar 
 								registerOptions= { registerOptions.query }
 								registerField={"query"}
 								placeholder={"Search..."}
 							/>
+							<button type = "submit" className = "button">Search</button>
 						</div>
-						<button type = "submit" className = "button">Search</button>
 						{
 							filters && renderFilter ? (
 								<button onClick={() => setShowFilter(!showFilter)} type = "button" className = "button">

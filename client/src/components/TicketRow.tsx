@@ -9,6 +9,8 @@ import { IconButton } from "./page-elements/IconButton"
 import { useGetUserQuery } from "../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Avatar } from "./page-elements/Avatar"
+import { useScreenSize } from "../hooks/useScreenSize"
+import { SM_BREAKPOINT } from "../helpers/constants"
 
 type Props = {
 	ticket: Ticket | undefined
@@ -27,17 +29,18 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 	const priority = priorities?.find((priority) => priority.id === ticket?.priorityId)?.name
 	const [showConfirmUnlink, setShowConfirmUnlink] = useState(false)
 	const { data, isFetching } = useGetUserQuery(ticket?.assignees?.[0] ?? skipToken)
+	const { width, height } = useScreenSize()
 	return (
-		<div className = {`hover:tw-bg-gray-50 tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full ${borderless ? "" : "tw-border tw-border-gray-200"} tw-rounded-md`}>
-			<div className = "tw-w-3/5 tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4">
+		<div className = {`hover:tw-bg-gray-50 tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full ${borderless ? "" : "tw-border tw-border-gray-200"} tw-rounded-md`}>
+			<div className = "tw-w-3/5 lg:tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4">
 				<div>
 					{ticketType ? (
 							<TicketTypeIcon type={ticketType} />	
 						) : <></>}
 				</div>
-				<div className = "tw-text-left tw-break-words"><strong>{ticket?.name}</strong></div>
+				<div className = "tw-text-left tw-break-words"><p className = "tw-font-medium">{ticket?.name}</p></div>
 			</div>
-			<div className = "tw-p-1 tw-flex tw-flex-1 tw-flex-row tw-justify-start tw-items-center tw-gap-x-2">
+			<div className = "lg:tw-p-1 tw-flex tw-flex-1 tw-flex-row tw-justify-start tw-items-center tw-gap-x-2">
 				<div>
 					{priority && priority in priorityIconMap ? 
 					(
@@ -50,7 +53,9 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 					)
 					: <></>}	
 				</div>
-				{isFetching ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>}
+				{width >= SM_BREAKPOINT ? 
+					(isFetching ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>) 
+				: null}
 				<div className = "tw-text-left tw-break-words">{status?.name}</div>
 			</div>
 			<div className = "tw-flex tw-flex-row tw-justify-end">

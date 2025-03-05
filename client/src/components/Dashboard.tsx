@@ -151,12 +151,12 @@ export const Dashboard = () => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
-			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
+			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
 				<h2>Dashboard</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
 					<DashboardSection title={"Organization"} icon={<FaRegBuilding/>}>
 						<>
-							<p>{userProfile?.organizationName}</p>
+							<p className = "tw-font-medium">{userProfile?.organizationName}</p>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<AsyncSelect 
 									ref={selectRef}
@@ -178,7 +178,7 @@ export const Dashboard = () => {
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							{boards?.data?.map((board) => (
 								<div>
-									<Link to={`${BOARDS}/${board.id}`}>{board.name}</Link>
+									<Link to={`${BOARDS}/${board.id}`}><span className = "tw-font-medium">{board.name}</span></Link>
 								</div>
 							))}	
 							<div>
@@ -201,14 +201,14 @@ export const Dashboard = () => {
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							{
 								timeSpentPerBoard?.map((board) => (
-									<div>{board.minutesSpent}</div>
+									<div><span className = "tw-font-medium">{board.minutesSpent}</span></div>
 								))
 							}
 						</div>
 					</DashboardSection>
 				</div>
 			</div>
-			<div className = "tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
+			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
 				<h2>My Tasks</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
 					{assignedTickets && !isAssignedTicketsLoading ? (

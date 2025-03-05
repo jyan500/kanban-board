@@ -21,6 +21,8 @@ import { LoadingSpinner } from "./LoadingSpinner"
 import { BsThreeDots as MenuIcon } from "react-icons/bs";
 import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown"
 import { useClickOutside } from "../hooks/useClickOutside" 
+import { useScreenSize } from "../hooks/useScreenSize"
+import { SM_BREAKPOINT } from "../helpers/constants"
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
 	"Low": <LowPriorityIcon/>,	
@@ -72,6 +74,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
 
 	const priority = priorities.find((p) => p.id === ticket.priorityId)?.name
 	const ticketType = ticketTypes.find((t) => t.id === ticket.ticketTypeId)?.name
+	const { width, height } = useScreenSize()
 
 	const onClickOutside = () => {
 		setShowDropdown(false)	
@@ -82,7 +85,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
 	return (
 		<div className = "tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2">
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1">
-				<span className = "tw-font-bold">{ticket.name}</span>
+				<span className = "tw-font-medium">{ticket.name}</span>
 				{/*<CgProfile className="tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>*/}
 				{isFetching ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>}
 			</div>
@@ -113,7 +116,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
 					)
 					: <></>}
 				</div>
-				<div className = "tw-relative tw-inline-block tw-text-left">
+				<div className = {`${width > SM_BREAKPOINT ? "tw-relative" : ""} tw-inline-block tw-text-left`}>
 					<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
 						<button ref = {buttonRef} onClick={(e) => {
 							// the stop propagation here is to avoid the edit ticket form modal from opening
@@ -123,7 +126,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
 						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
 						{
 							showDropdown ? (
-								<EditTicketFormMenuDropdown closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
+								<EditTicketFormMenuDropdown isMobile={width <= SM_BREAKPOINT} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
 							) : null
 						}
 					</IconContext.Provider>
