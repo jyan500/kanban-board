@@ -61,9 +61,10 @@ type PropType = {
 	ticket: TicketType
 	statusesToDisplay: Array<Status>
 	boardId: number
+	dropdownAlignLeft?: boolean
 }
 
-export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
+export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: PropType) => {
 	const {priorities} = useAppSelector((state) => state.priority)
 	const {statuses} = useAppSelector((state) => state.status)
 	const {ticketTypes} = useAppSelector((state) => state.ticketType)
@@ -77,6 +78,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
 	const { width, height } = useScreenSize()
 
 	const onClickOutside = () => {
+		console.log("dropdownAlignLeft: ", dropdownAlignLeft)
 		setShowDropdown(false)	
 	}
 
@@ -126,7 +128,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
 						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
 						{
 							showDropdown ? (
-								<EditTicketFormMenuDropdown isMobile={width <= LG_BREAKPOINT} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
+								<EditTicketFormMenuDropdown dropdownAlignLeft={dropdownAlignLeft} isMobile={width <= LG_BREAKPOINT} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
 							) : null
 						}
 					</IconContext.Provider>

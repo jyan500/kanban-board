@@ -104,7 +104,7 @@ export const GroupedBoard = ({
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div style={boardStyle}>
-				{statusesToDisplay.map((status: Status) => {
+				{statusesToDisplay.map((status: Status, i: number) => {
 					return (
 						<div
 						className = "tw-flex tw-flex-col tw-bg-gray-50"
@@ -115,6 +115,7 @@ export const GroupedBoard = ({
 								numTickets={board[status.id]?.length} 
 								addTicketHandler={addTicketHandler}
 								hideStatusHandler={hideStatusHandler}
+								dropdownAlignLeft={i === 0}
 							/>
 						</div>
 					)
@@ -153,7 +154,7 @@ export const GroupedBoard = ({
 						{!collapseArrows[groupById] ? (
 							<div style = {boardStyle}>
 							{
-								statusesToDisplay.map((status) => {
+								statusesToDisplay.map((status, i) => {
 									return (
 										<div 
 											className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[400px] tw-pt-2"
@@ -180,6 +181,7 @@ export const GroupedBoard = ({
 																>
 																{ticket ? <Ticket 
 																	ticket = {ticket}
+																	dropdownAlignLeft={i === 0}
 																	statusesToDisplay={statusesToDisplay}
 																	boardId={boardId}
 																/> : null}

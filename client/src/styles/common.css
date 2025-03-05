@@ -66,7 +66,7 @@
 	--btn-transition-inputs:
 		opacity var(--transition-duration-inputs) var(--transition-function-inputs);
 	--width-inputs: 300px;
-	--width-input-border: 2px;
+	--width-input-border: 1px;
 	--width-textarea: 450px;
 	--width-menu: 600px;
 	--z-index-top: 99;
@@ -112,7 +112,7 @@ input[type="text"] {
 	accent-color: var(--co-body-accent);
 	transition: var(--input-transition-inputs);
 	padding: var(--padding-inputs);
-	border: var(--width-input-border) solid var(--co-textfld-border);
+	border: var(--width-input-border) solid var(--bs-light-gray);
 	border-radius: var(--radius-inputs);
 	/*width: var(--width-inputs);*/
 	max-width: 100%;
@@ -192,7 +192,7 @@ input::file-selector-button {
 .label {
 	cursor: pointer;
 	display: block;
-	font-weight: bold;
+	font-weight: 500;
 
 	& + &,
 	& + input,

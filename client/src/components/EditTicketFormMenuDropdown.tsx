@@ -9,10 +9,18 @@ type Props = {
 	boardId: string | number | null | undefined
 	statusesToDisplay: Array<Status>
 	isMobile?: boolean
+	dropdownAlignLeft?: boolean
 	closeDropdown: () => void
 }
 
-export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({statusesToDisplay, boardId, ticket, closeDropdown, isMobile}: Props, ref) => {
+export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({
+	statusesToDisplay, 
+	boardId, 
+	ticket, 
+	closeDropdown, 
+	isMobile,
+	dropdownAlignLeft,
+}: Props, ref) => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -46,7 +54,7 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 		}: {})
 	}
 	return (
-		<Dropdown isMobile={isMobile} closeDropdown={closeDropdown} ref = {ref}>
+		<Dropdown alignLeft={dropdownAlignLeft} isMobile={isMobile} closeDropdown={closeDropdown} ref = {ref}>
 			<ul>
 				{Object.keys(options).map((option) => (
 					<li

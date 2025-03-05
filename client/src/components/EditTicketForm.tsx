@@ -476,7 +476,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 				} 
 				</div> 
 				<div className = "tw-pt-2 tw-pb-2">
-					<strong>Created {createdAt}</strong>
+					<p className = "tw-font-medium">Created {createdAt}</p>
 				</div>
 			</>
 		)
@@ -617,7 +617,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								</>
 							) : null
 							}
-							<strong>Linked Issues</strong>	
+							<p className = "tw-font-medium">Linked Issues</p>	
 							{
 								ticketRelationships?.pagination.nextPage || ticketRelationships?.pagination.prevPage ? (
 									<PaginationRow

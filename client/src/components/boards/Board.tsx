@@ -78,7 +78,7 @@ export const Board = ({
 
 	return (
 		<div style = {boardStyle}>
-			{statusesToDisplay.map((status: Status) => {
+			{statusesToDisplay.map((status: Status, i: number) => {
 				return (
 				<div 
 					id = {`status_${status.id}`} 
@@ -94,6 +94,7 @@ export const Board = ({
 							numTickets={board[status.id]?.length} 
 							addTicketHandler={addTicketHandler} 
 							hideStatusHandler={hideStatusHandler}
+							dropdownAlignLeft={i === 0}
 						/>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
 							{board[status.id]?.slice(0, status.limit ?? MAX_COLUMN_LIMIT).map((ticketId: number) => {
@@ -123,6 +124,7 @@ export const Board = ({
 										>
 										{ticket ? <Ticket 
 											ticket = {ticket}
+											dropdownAlignLeft={i === 0}
 											statusesToDisplay={statusesToDisplay}
 											boardId={boardId}
 										/> : null}
