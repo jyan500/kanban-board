@@ -11,6 +11,8 @@ import { Ticket, Status, UserProfile } from "../types/common"
 import { TICKETS } from "../helpers/routes"
 import { addToast } from "../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
+import { useScreenSize } from "../hooks/useScreenSize"
+import { LG_BREAKPOINT } from "../helpers/constants"
 
 type Props = {
 	ticket: Ticket | null | undefined	
@@ -29,6 +31,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 	const buttonRef = useRef(null)
 	const watchButtonRef = useRef(null)
 	const dispatch = useAppDispatch()
+	const { width, height } = useScreenSize()
 
 	const onClickOutside = () => {
 		setShowDropdown(false)	

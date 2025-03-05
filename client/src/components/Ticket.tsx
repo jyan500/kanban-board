@@ -128,7 +128,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: 
 						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
 						{
 							showDropdown ? (
-								<EditTicketFormMenuDropdown dropdownAlignLeft={dropdownAlignLeft} isMobile={width <= LG_BREAKPOINT} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
+								<EditTicketFormMenuDropdown dropdownAlignLeft={dropdownAlignLeft} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
 							) : null
 						}
 					</IconContext.Provider>

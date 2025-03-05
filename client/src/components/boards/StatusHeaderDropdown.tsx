@@ -13,7 +13,7 @@ type Props = {
 	closeDropdown: () => void
 	statusId: number
 	boardId: number
-	isMobile: boolean
+	isMobile?: boolean
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
 	dropdownAlignLeft?: boolean 

@@ -22,9 +22,10 @@ type Props = {
 	ticket: Ticket | null | undefined
 	ticketAssignee: UserProfile | null | undefined
 	ticketWatchers: Array<UserProfile> | null | undefined
+	isMobile?: boolean
 }
 
-export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({closeDropdown, ticket, ticketAssignee, ticketWatchers}: Props, ref) => {
+export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMobile, closeDropdown, ticket, ticketAssignee, ticketWatchers}: Props, ref) => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -115,7 +116,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 		} : {}),
 	}
 	return (
-		<Dropdown ref = {ref}>
+		<Dropdown isMobile = {isMobile} ref = {ref}>
 			<ul>
 				{Object.keys(options).map((option) => {
 					if (option === "Start Watching" || option === "Stop Watching"){

@@ -58,7 +58,7 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-w-6 tw-h-6"/></button>
 						{
 							showDropdown ? (
-								<StatusHeaderDropdown dropdownAlignLeft={dropdownAlignLeft} isMobile={width <= LG_BREAKPOINT} boardId = {boardId} statusId={status.id} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>
+								<StatusHeaderDropdown dropdownAlignLeft={dropdownAlignLeft} boardId = {boardId} statusId={status.id} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>
 							) : null
 						}
 					</IconContext.Provider>
