@@ -16,7 +16,7 @@ export const Dropdown = React.forwardRef<HTMLDivElement, Props>(({className, chi
 				<button 
 					className = "tw-absolute tw-top-0 tw-right-0 tw-mr-1 tw-mt-1"
 					onClick={(e) => {
-						e.stopPropagation()
+						e.preventDefault()
 						closeDropdown()
 					}}
 				>

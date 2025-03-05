@@ -47,7 +47,10 @@ export const StatusHeaderDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 				{Object.keys(options).map((option) => (
 					<li
 						key={option}
-						onClick={() => {
+						onClick={(e) => {
+							if (e.defaultPrevented){
+								return 
+							}
 							options[option as keyof typeof options]?.()
 							closeDropdown()
 						}}

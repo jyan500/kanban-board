@@ -54,7 +54,10 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 						onClick={(e) => {
 							// the stop propagation here is to avoid the edit ticket form modal from opening
 							// when clicking the "..." menu on the individual ticket rather than from inside the edit ticket form modal
-							e.stopPropagation()
+							if (e.defaultPrevented){
+								return
+							}
+							e.preventDefault()
 							options[option as keyof typeof options]?.()
 							closeDropdown()
 						}}

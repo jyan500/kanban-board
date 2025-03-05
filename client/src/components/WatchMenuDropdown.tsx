@@ -122,7 +122,12 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 						return (
 							<li
 								key={option}
-								onClick={() => options[option as keyof typeof options]?.()}
+								onClick={(e) => {
+									if (e.defaultPrevented){
+										return
+									}
+									options[option as keyof typeof options]?.()
+								}}
 								className="tw-border-b tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
 								role="menuitem"
 							>
