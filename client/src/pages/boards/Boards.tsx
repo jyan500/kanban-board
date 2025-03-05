@@ -59,7 +59,7 @@ export const Boards = () => {
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-4">
+		<div className = "tw-space-y-4">
 			<div>
 				<h1>Boards</h1>
 			</div>

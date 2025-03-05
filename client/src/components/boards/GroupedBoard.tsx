@@ -38,6 +38,7 @@ type Props = {
 	allStatuses: Array<Status>
 	boardStyle: Record<string, string>
 	boardId: number
+	colWidth: number
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
 }
@@ -45,6 +46,7 @@ type Props = {
 export const GroupedBoard = ({
 	allStatuses, 
 	board, 
+	colWidth, 
 	dragStart,
 	enableDropping,
 	boardStyle, 

@@ -8,6 +8,8 @@ import { IconContext } from "react-icons"
 import { StatusHeaderDropdown } from "./StatusHeaderDropdown"
 import { Link } from "react-router-dom"
 import { TICKETS } from "../../helpers/routes"
+import { LG_BREAKPOINT } from "../../helpers/constants"
+import { useScreenSize } from "../../hooks/useScreenSize"
 
 type Props = {
 	numTickets: number
@@ -21,6 +23,7 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 	const [ showDropdown, setShowDropdown ] = useState(false)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef<HTMLButtonElement>(null)
+	const { width, height } = useScreenSize()
 
 	const onClickOutside = () => {
 		setShowDropdown(false)	
@@ -54,7 +57,7 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-w-6 tw-h-6"/></button>
 						{
 							showDropdown ? (
-								<StatusHeaderDropdown boardId = {boardId} statusId={status.id} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>
+								<StatusHeaderDropdown isMobile={width <= LG_BREAKPOINT} boardId = {boardId} statusId={status.id} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>
 							) : null
 						}
 					</IconContext.Provider>

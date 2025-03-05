@@ -12,6 +12,7 @@ export const useClickOutside = (
 	addEventListener = true
 ) => {
 	const handleClick = (event: MouseEvent) => {
+		console.log("ignoreClickRef: ", ignoreClickRef)
 		if (ref.current && !ref.current.contains(event.target as HTMLElement) 
 			&& (ignoreClickRef?.current && !ignoreClickRef.current.contains(event.target as HTMLElement))){
 			callback()

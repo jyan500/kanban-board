@@ -13,11 +13,12 @@ type Props = {
 	closeDropdown: () => void
 	statusId: number
 	boardId: number
+	isMobile: boolean
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
 }
 
-export const StatusHeaderDropdown = React.forwardRef<HTMLDivElement, Props>(({closeDropdown, statusId, boardId, addTicketHandler, hideStatusHandler}: Props, ref) => {
+export const StatusHeaderDropdown = React.forwardRef<HTMLDivElement, Props>(({closeDropdown, statusId, boardId, addTicketHandler, hideStatusHandler, isMobile}: Props, ref) => {
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
@@ -41,7 +42,7 @@ export const StatusHeaderDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 	}
 
 	return (
-		<Dropdown ref = {ref}>
+		<Dropdown closeDropdown={closeDropdown} isMobile={isMobile} ref = {ref}>
 			<ul>
 				{Object.keys(options).map((option) => (
 					<li

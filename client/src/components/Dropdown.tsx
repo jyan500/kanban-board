@@ -1,15 +1,28 @@
 import React, { useRef } from "react"
 import { DROPDOWN_Z_INDEX } from "../helpers/constants"
+import { IconClose } from "./icons/IconClose"
 
 type Props = {
 	children: React.ReactNode
 	isMobile?: boolean
+	closeDropdown?: () => void
 	className?: string 
 }
 
-export const Dropdown = React.forwardRef<HTMLDivElement, Props>(({className, children, isMobile}, ref) => {
+export const Dropdown = React.forwardRef<HTMLDivElement, Props>(({className, children, isMobile, closeDropdown}, ref) => {
 	return (
-		<div ref = {ref} className={`${DROPDOWN_Z_INDEX} tw-origin-top-right tw-absolute tw-left-auto tw-right-0 tw-mt-2 tw-w-56 tw-rounded-md tw-shadow-lg tw-bg-white tw-ring-1 tw-ring-black tw-ring-opacity-5 ${className}`}>
+		<div ref = {ref} className={`${DROPDOWN_Z_INDEX} ${!isMobile ? "tw-origin-top-right tw-absolute tw-left-auto tw-right-0 tw-w-56" : "tw-inset-x-0 tw-fixed tw-bottom-0 tw-w-full tw-min-h-48"} tw-mt-2 tw-rounded-md tw-shadow-lg tw-bg-white tw-ring-1 tw-ring-black tw-ring-opacity-5 ${className}`}>
+			{isMobile && closeDropdown ? (
+				<button 
+					className = "tw-absolute tw-top-0 tw-right-0 tw-mr-1 tw-mt-1"
+					onClick={(e) => {
+						e.stopPropagation()
+						closeDropdown()
+					}}
+				>
+					<IconClose className = "tw-w-4 tw-h-4"/>
+				</button>
+			) : null}
 			<div className="tw-py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
 				{children}
 			</div>

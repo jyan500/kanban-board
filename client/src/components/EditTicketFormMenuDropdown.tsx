@@ -46,7 +46,7 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 		}: {})
 	}
 	return (
-		<Dropdown isMobile={isMobile} ref = {ref}>
+		<Dropdown isMobile={isMobile} closeDropdown={closeDropdown} ref = {ref}>
 			<ul>
 				{Object.keys(options).map((option) => (
 					<li

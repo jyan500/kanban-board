@@ -22,7 +22,7 @@ import { BsThreeDots as MenuIcon } from "react-icons/bs";
 import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown"
 import { useClickOutside } from "../hooks/useClickOutside" 
 import { useScreenSize } from "../hooks/useScreenSize"
-import { SM_BREAKPOINT } from "../helpers/constants"
+import { LG_BREAKPOINT } from "../helpers/constants"
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
 	"Low": <LowPriorityIcon/>,	
@@ -83,7 +83,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
 	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
 
 	return (
-		<div className = "tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2">
+		<div className = {`tw-relative tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2`}>
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1">
 				<span className = "tw-font-medium">{ticket.name}</span>
 				{/*<CgProfile className="tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>*/}
@@ -116,17 +116,17 @@ export const Ticket = ({ticket, boardId, statusesToDisplay}: PropType) => {
 					)
 					: <></>}
 				</div>
-				<div className = {`${width > SM_BREAKPOINT ? "tw-relative" : ""} tw-inline-block tw-text-left`}>
+				<div className = {"tw-inline-block tw-text-left"}>
 					<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
 						<button ref = {buttonRef} onClick={(e) => {
-							// the stop propagation here is to avoid the edit ticket form modal from opening
+							// the prevent default here is to avoid the edit ticket form modal from opening
 							// when clicking the "..." menu on the individual ticket rather than from inside the edit ticket form modal
-							e.stopPropagation()
+							e.preventDefault()
 							setShowDropdown(!showDropdown)
 						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
 						{
 							showDropdown ? (
-								<EditTicketFormMenuDropdown isMobile={width <= SM_BREAKPOINT} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
+								<EditTicketFormMenuDropdown isMobile={width <= LG_BREAKPOINT} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
 							) : null
 						}
 					</IconContext.Provider>
