@@ -228,6 +228,9 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.limit){
 				queryBuilder.limit(board.ticket_limit)
 			}
+			if (req.query.sortByCreatedAt){
+				queryBuilder.orderBy("tickets.created_at", "desc")
+			}
 		})
 		.select(
 			"tickets.id as id",

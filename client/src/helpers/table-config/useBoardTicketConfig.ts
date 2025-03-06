@@ -3,8 +3,7 @@ import { userProfileModifier, dateModifier, nameModifier } from "../table-modifi
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks" 
 import { setModalType, toggleShowModal } from "../../slices/modalSlice" 
 import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
-import { Toast, UserRegistrationRequest } from "../../types/common"
-import { useBulkEditRegistrationRequestsMutation, useUpdateRegistrationRequestMutation } from "../../services/private/organization"
+import { Toast, Ticket  } from "../../types/common"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 
@@ -15,7 +14,9 @@ export type RegistrationRequestConfigType = {
 }
 
 export const useBoardTicketConfig = (
-	bulkEditMode: boolean
+	bulkEditMode: boolean,
+	selectedIds: Array<number>,
+	setSelectedIds: (ids: Array<number>) => void
 ) => {
 	const { userProfiles, userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
@@ -43,6 +44,26 @@ export const useBoardTicketConfig = (
 		},
 		bulkEdit: {
 			isEnabled: bulkEditMode,
+			canSelect: (ticket: Ticket) => {
+				return true 
+			},
+			onClick: (id: number) => {
+				if (selectedIds.includes(id)){
+					setSelectedIds(selectedIds.filter((itemId) => id !== itemId))
+				}
+				else {
+					setSelectedIds([...selectedIds, id])
+				}
+			},
+			getIds: () => {
+				return selectedIds
+			},
+			updateIds: (ids: Array<number>) => {
+				setSelectedIds(ids)
+			},
+			filter: (data: Array<Ticket>) => {
+				return data
+			}
 		},
 	}
 }

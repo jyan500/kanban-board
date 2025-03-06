@@ -11,11 +11,12 @@ interface Props {
 
 export const BulkActionsForm = ({boardId}: Props) => {
 	const [step, setStep] = useState(1)
+	const [selectedIds, setSelectedIds] = useState<Array<number>>([])
 
 	const renderStep = () => {
 		switch (step){
 			case 1:
-				return <BulkActionsFormStep1 boardId={boardId}/>
+				return <BulkActionsFormStep1 selectedIds={selectedIds} setSelectedIds={setSelectedIds} boardId={boardId}/>
 			case 2:
 				return <BulkActionsFormStep2/>
 			case 3:

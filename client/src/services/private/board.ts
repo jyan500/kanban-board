@@ -90,11 +90,14 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["BoardTickets"],
 			// sort by ticket name
-			transformResponse: (response: ListResponse<Ticket>) => {
-				return {
-					data: response.data.sort((a,b) => a.name.localeCompare(b.name)),
-					pagination: response.pagination
+			transformResponse: (response: ListResponse<Ticket>, meta: unknown, arg: Record<string, any>) => {
+				if (!arg.urlParams.sortByCreatedAt){
+					return {
+						data: response.data.sort((a,b) => a.name.localeCompare(b.name)),
+						pagination: response.pagination
+					}
 				}
+				return response
 			}
 		}),
 		getBoardStatuses: builder.query<Array<Status>, Record<string, any>>({
