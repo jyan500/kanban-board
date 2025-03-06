@@ -152,6 +152,7 @@ export const Board = () => {
 						enableDropping={enableDropping}
 						tickets={filteredTickets}
 						statusesToDisplay={statusesToDisplay}
+						colWidth={width/statusesToDisplay.length}
 						allStatuses={allStatuses}
 						addTicketHandler={addTicketHandler}
 						hideStatusHandler={hideStatusHandler}
@@ -167,7 +168,7 @@ export const Board = () => {
 						tickets={filteredTickets}
 						statusesToDisplay={statusesToDisplay}
 						allStatuses={allStatuses}
-						colWidth={{"maxWidth": `${width/statusesToDisplay.length}px`}}
+						colWidth={width/statusesToDisplay.length}
 						addTicketHandler={addTicketHandler}
 						hideStatusHandler={hideStatusHandler}
 					/>		

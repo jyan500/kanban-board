@@ -26,7 +26,7 @@ type Props = {
 	statusesToDisplay: Array<Status>
 	allStatuses: Array<Status>
 	boardStyle: Record<string, string>
-	colWidth: Record<string, string>
+	colWidth: number 
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
 	boardId: number
@@ -78,7 +78,7 @@ export const Board = ({
 
 	return (
 		<div style = {boardStyle}>
-			{statusesToDisplay.map((status: Status) => {
+			{statusesToDisplay.map((status: Status, i: number) => {
 				return (
 				<div 
 					id = {`status_${status.id}`} 
@@ -94,20 +94,27 @@ export const Board = ({
 							numTickets={board[status.id]?.length} 
 							addTicketHandler={addTicketHandler} 
 							hideStatusHandler={hideStatusHandler}
+							dropdownAlignLeft={i === 0}
 						/>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
 							{board[status.id]?.slice(0, status.limit ?? MAX_COLUMN_LIMIT).map((ticketId: number) => {
 								const ticket = tickets.find((t: TicketType) => t.id === ticketId)
 								return (
 									<div 
-										key = {ticketId} 
+										key = {`ticket_${ticketId}`} 
 										id = {`ticket_${ticketId}`}
 										/* 
 										For semantic HTML purposes, move the ticket component into a button, and then move the 
 										onClick handler into the button. It does mess up the styling of the card within the column
 										so need to fix that too
 										*/
-										onClick = {() => {
+										onClick = {(e) => {
+											/* The reasoning for e.defaultPrevented is that we have e.preventDefault() being called in the child,
+											so if the child is clicked, we don't need to activate this click handler here in the parent,
+											so we just return */
+											if (e.defaultPrevented){
+												return
+											}
 											dispatch(toggleShowModal(true))
 											dispatch(setModalType("EDIT_TICKET_FORM"))
 											dispatch(selectCurrentTicketId(ticketId))
@@ -117,6 +124,7 @@ export const Board = ({
 										>
 										{ticket ? <Ticket 
 											ticket = {ticket}
+											dropdownAlignLeft={i === 0}
 											statusesToDisplay={statusesToDisplay}
 											boardId={boardId}
 										/> : null}

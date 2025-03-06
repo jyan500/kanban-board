@@ -29,7 +29,7 @@ export const ActivityContainer = ({
 	const [isActive, setIsActive] = useState<number>(0)
 	return (
 		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
-			<h3>Activity</h3>
+			<p className = "tw-font-semibold">Activity</p>
 			<div className = "tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
 				<FilterButton isActive={isActive === 0} onClick={(e) => {
 					setIsActive(0)

@@ -29,7 +29,8 @@ export const modalClassNames = {
 	// "ORGANIZATION_STATUS_FORM": "--l-modal-height tw-top-[50%]"
 	"ADD_TICKET_FORM": "--l-modal-height tw-top-[50%]",
 	"EDIT_TICKET_FORM": "--l-modal-height tw-top-[50%]",
-	"ORGANIZATION_STATUS_FORM": "--l-modal-height tw-top-[50%]"
+	"ORGANIZATION_STATUS_FORM": "--l-modal-height tw-top-[50%]",
+	"BOARD_FORM": "--l-modal-height tw-top-[50%]",
 }
 
 // type for partial subset of keys

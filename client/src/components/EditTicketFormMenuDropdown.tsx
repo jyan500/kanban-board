@@ -8,10 +8,19 @@ type Props = {
 	ticket: Ticket | null | undefined
 	boardId: string | number | null | undefined
 	statusesToDisplay: Array<Status>
+	isMobile?: boolean
+	dropdownAlignLeft?: boolean
 	closeDropdown: () => void
 }
 
-export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({statusesToDisplay, boardId, ticket, closeDropdown}: Props, ref) => {
+export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({
+	statusesToDisplay, 
+	boardId, 
+	ticket, 
+	closeDropdown, 
+	isMobile,
+	dropdownAlignLeft,
+}: Props, ref) => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -45,7 +54,7 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 		}: {})
 	}
 	return (
-		<Dropdown ref = {ref}>
+		<Dropdown alignLeft={dropdownAlignLeft} isMobile={isMobile} closeDropdown={closeDropdown} ref = {ref}>
 			<ul>
 				{Object.keys(options).map((option) => (
 					<li
@@ -53,7 +62,10 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 						onClick={(e) => {
 							// the stop propagation here is to avoid the edit ticket form modal from opening
 							// when clicking the "..." menu on the individual ticket rather than from inside the edit ticket form modal
-							e.stopPropagation()
+							if (e.defaultPrevented){
+								return
+							}
+							e.preventDefault()
 							options[option as keyof typeof options]?.()
 							closeDropdown()
 						}}

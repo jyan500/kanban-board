@@ -22,9 +22,10 @@ type Props = {
 	ticket: Ticket | null | undefined
 	ticketAssignee: UserProfile | null | undefined
 	ticketWatchers: Array<UserProfile> | null | undefined
+	isMobile?: boolean
 }
 
-export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({closeDropdown, ticket, ticketAssignee, ticketWatchers}: Props, ref) => {
+export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMobile, closeDropdown, ticket, ticketAssignee, ticketWatchers}: Props, ref) => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -115,14 +116,19 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({close
 		} : {}),
 	}
 	return (
-		<Dropdown ref = {ref}>
+		<Dropdown isMobile = {isMobile} ref = {ref}>
 			<ul>
 				{Object.keys(options).map((option) => {
 					if (option === "Start Watching" || option === "Stop Watching"){
 						return (
 							<li
 								key={option}
-								onClick={() => options[option as keyof typeof options]?.()}
+								onClick={(e) => {
+									if (e.defaultPrevented){
+										return
+									}
+									options[option as keyof typeof options]?.()
+								}}
 								className="tw-border-b tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
 								role="menuitem"
 							>

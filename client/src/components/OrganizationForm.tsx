@@ -113,7 +113,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 				</div>
 				{
 					!isOrgRegister ? (
-						<div className = "tw-flex tw-flex-row tw-gap-x-2">
+						<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 							<div className = "tw-flex tw-flex-col">
 								<label className = "label" htmlFor = "organization-name">Address:</label>
 								<input id = "organization-address" type = "text"
@@ -126,13 +126,13 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 								{...register("city")}
 								/>
 							</div>
-							<div className = "tw-flex tw-flex-col tw-w-16">
+							<div className = "tw-flex tw-flex-col lg:tw-w-16">
 								<label className = "label" htmlFor = "organization-state">State:</label>
 								<input id = "organization-state" type = "text"
 								{...register("state")}
 								/>
 							</div>
-							<div className = "tw-flex tw-flex-col tw-w-32">
+							<div className = "tw-flex tw-flex-col lg:tw-w-32">
 								<label className = "label" htmlFor = "organization-zipcode">Zipcode:</label>
 								<input id = "organization-zipcode" type = "text"
 								{...register("zipcode")}
@@ -153,13 +153,13 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 								{...register("city")}
 								/>
 							</div>
-							<div className = "tw-flex tw-flex-col tw-w-16">
+							<div className = "tw-flex tw-flex-col lg:tw-w-16">
 								<label className = "label" htmlFor = "organization-state">State:</label>
 								<input id = "organization-state" type = "text"
 								{...register("state")}
 								/>
 							</div>
-							<div className = "tw-flex tw-flex-col tw-w-32">
+							<div className = "tw-flex tw-flex-col lg:tw-w-32">
 								<label className = "label" htmlFor = "organization-zipcode">Zipcode:</label>
 								<input id = "organization-zipcode" type = "text"
 								{...register("zipcode")}
@@ -168,13 +168,14 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 						</>
 					)
 				}
-
-				<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			        {errors?.address && <small className = "--text-alert">{errors.address.message}</small>}
-			        {errors?.city && <small className = "--text-alert">{errors.city.message}</small>}
-			        {errors?.state && <small className = "--text-alert">{errors.state.message}</small>}
-			        {errors?.zipcode && <small className = "--text-alert">{errors.zipcode.message}</small>}
-				</div>
+				{errors?.address || errors?.city || errors?.state || errors?.zipcode ? (
+					<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				        {errors?.address && <small className = "--text-alert">{errors.address.message}</small>}
+				        {errors?.city && <small className = "--text-alert">{errors.city.message}</small>}
+				        {errors?.state && <small className = "--text-alert">{errors.state.message}</small>}
+				        {errors?.zipcode && <small className = "--text-alert">{errors.zipcode.message}</small>}
+					</div>
+				) : null}
 				<div>
 					<label className = "label" htmlFor = "organization-phone">Phone:<span className = "tw-font-bold tw-text-red-500">*</span></label>
 					<input id = "organization-phone" type = "text"

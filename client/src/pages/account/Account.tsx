@@ -67,11 +67,11 @@ export const Account = () => {
 
 	return (
 		<div>
-			<div className = "tw-flex tw-flex-row tw-gap-x-6">
+			<div className = "tw-flex tw-flex-col tw-gap-y-6 lg:tw-flex-row lg:tw-gap-x-6">
 				{userProfile ? 
 					<>
 						<div className = "tw-space-y-4 tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center">
-							<Avatar imageUrl={userProfile.imageUrl} size="l"/>
+							<Avatar className = "tw-rounded-full" imageUrl={userProfile.imageUrl} size="l"/>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 									<div><FaUser className = "--icon tw-mt-1"/></div>

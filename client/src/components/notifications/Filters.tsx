@@ -11,7 +11,7 @@ export const Filters = () => {
 	const methods = useFormContext()
 	const { register, control } = methods
 	return (
-		<div className = "tw-flex tw-flex-row tw-gap-x-2">
+		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-noti-type">Notification Type</label>
 				<select className = "tw-w-full" id = "filters-noti-type" {...register("notificationType")}>

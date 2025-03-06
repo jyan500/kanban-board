@@ -24,6 +24,8 @@ import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { sortStatusByOrder } from "../../helpers/functions"
 import { StatusHeader } from "./StatusHeader"
+import { useScreenSize } from "../../hooks/useScreenSize"
+import { LG_BREAKPOINT } from "../../helpers/constants"
 
 type Props = {
 	groupedTickets: GroupedTickets
@@ -36,6 +38,7 @@ type Props = {
 	allStatuses: Array<Status>
 	boardStyle: Record<string, string>
 	boardId: number
+	colWidth: number
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
 }
@@ -43,6 +46,7 @@ type Props = {
 export const GroupedBoard = ({
 	allStatuses, 
 	board, 
+	colWidth, 
 	dragStart,
 	enableDropping,
 	boardStyle, 
@@ -62,6 +66,7 @@ export const GroupedBoard = ({
 		return acc
 	}, {}))
 	const [updateTicketStatus] = useUpdateTicketStatusMutation() 
+	const { width, height } = useScreenSize()
 	const {data: groupByElements, isLoading, isError} = useGetGroupByElementsQuery({groupBy: groupBy, ids: Object.keys(groupedTickets)})  
 
 	const handleDrop = async (e: React.DragEvent<HTMLDivElement>, groupById: string) => {
@@ -99,7 +104,7 @@ export const GroupedBoard = ({
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div style={boardStyle}>
-				{statusesToDisplay.map((status: Status) => {
+				{statusesToDisplay.map((status: Status, i: number) => {
 					return (
 						<div
 						className = "tw-flex tw-flex-col tw-bg-gray-50"
@@ -110,6 +115,7 @@ export const GroupedBoard = ({
 								numTickets={board[status.id]?.length} 
 								addTicketHandler={addTicketHandler}
 								hideStatusHandler={hideStatusHandler}
+								dropdownAlignLeft={i === 0}
 							/>
 						</div>
 					)
@@ -120,10 +126,20 @@ export const GroupedBoard = ({
 				return (
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						<div style = {boardStyle}>
-							<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-pl-2">
-								<p className = "tw-font-bold">{groupByElement?.name}</p>
-								<p>{`${Object.values(groupedTickets[groupById]).reduce((acc: number, arr: Array<number>) => 
-									acc + arr.length, 0)} issues`}</p>
+							<div className = "tw-w-full tw-flex tw-flex-row tw-gap-x-2 tw-pl-2 tw-justify-between lg:tw-justify-self">
+								{width <= LG_BREAKPOINT ? (
+									<div className = "tw-flex-col tw-flex tw-gap-y-2">
+										<p className = "tw-font-bold">{groupByElement?.name}</p>
+										<p className = "tw-flex tw-flex-1">{`${Object.values(groupedTickets[groupById]).reduce((acc: number, arr: Array<number>) => 
+											acc + arr.length, 0)} issues`}</p>
+									</div>
+								) : (
+									<>
+										<p className = "tw-font-bold">{groupByElement?.name}</p>
+										<p className = "tw-flex tw-flex-1">{`${Object.values(groupedTickets[groupById]).reduce((acc: number, arr: Array<number>) => 
+										acc + arr.length, 0)} issues`}</p>
+									</>
+								)}
 								<IconButton onClick={() => {
 									setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})	
 								}}>
@@ -138,7 +154,7 @@ export const GroupedBoard = ({
 						{!collapseArrows[groupById] ? (
 							<div style = {boardStyle}>
 							{
-								statusesToDisplay.map((status) => {
+								statusesToDisplay.map((status, i) => {
 									return (
 										<div 
 											className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[400px] tw-pt-2"
@@ -165,6 +181,7 @@ export const GroupedBoard = ({
 																>
 																{ticket ? <Ticket 
 																	ticket = {ticket}
+																	dropdownAlignLeft={i === 0}
 																	statusesToDisplay={statusesToDisplay}
 																	boardId={boardId}
 																/> : null}

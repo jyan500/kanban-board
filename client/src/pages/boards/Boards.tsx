@@ -59,13 +59,13 @@ export const Boards = () => {
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-4">
+		<div className = "tw-space-y-4">
 			<div>
 				<h1>Boards</h1>
 			</div>
 			{isFetching ? <LoadingSpinner/> : (
 				<>
-					<div className = "tw-flex tw-flex-row tw-gap-x-2">
+					<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 						<FormProvider {...methods}>
 							<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
 								<SearchBar placeholder={"Search..."} registerField={"query"} registerOptions={registerOptions.query}/>
