@@ -120,7 +120,7 @@ export const TicketDisplay = () => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
-			<h1>Tickets Backlog</h1>
+			<h1>Backlog</h1>
 			<FormProvider {...methods}>
 				<SearchToolBar 
 					paginationData={data?.pagination} 
@@ -141,7 +141,7 @@ export const TicketDisplay = () => {
 			{isLoading ? <LoadingSpinner/> : (
 				<>
 				<div className = "tw-flex tw-flex-col lg:tw-flex-row tw-gap-y-6 lg:tw-gap-x-6">
-					<div className = "tw-w-full tw-max-h-[300px] tw-overflow-y-auto lg:tw-overflow-hidden lg:tw-max-h-full lg:tw-w-1/3 tw-flex tw-flex-col tw-gap-y-4">
+					<div className = "tw-w-full tw-max-h-[300px] tw-overflow-y-auto lg:tw-overflow-hidden lg:tw-max-h-full lg:tw-w-1/3 tw-flex tw-flex-col tw-gap-y-2">
 						
 						{data?.data?.map((ticket: Ticket) => {
 							return (
