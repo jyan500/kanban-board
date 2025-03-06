@@ -19,7 +19,7 @@ import { useGetUserQuery } from "../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSpinner } from "./LoadingSpinner"
 import { BsThreeDots as MenuIcon } from "react-icons/bs";
-import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown"
+import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown"
 import { useClickOutside } from "../hooks/useClickOutside" 
 import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../helpers/constants"

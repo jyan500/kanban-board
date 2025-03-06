@@ -220,7 +220,7 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const board = await db("boards").where("id", req.params.boardId).first()
-		let tickets = await db("tickets_to_boards")
+		let tickets = db("tickets_to_boards")
 		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
 		.where("board_id", req.params.boardId)
 		.modify((queryBuilder) => {
@@ -241,9 +241,23 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			"tickets.user_id as userId",
 			"tickets.created_at as createdAt",
 		)
+		// hack to keep the tickets paginate data format into {data, pagination},
+		// which finds the total amount of data and 
+		// loads all data into one page. Should prioritize using pagination when possible.
+		if (req.query.skipPaginate){
+			const ticketsForAmt = await tickets
+			const total = ticketsForAmt.length
+			tickets = await tickets.paginate({ perPage: total, currentPage: 1, isLengthAware: true})
+		}
+		else {
+			tickets = await tickets.paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		}
+
 		if (req.query.includeAssignees){
-			tickets = await Promise.all(
-				tickets.map(async (ticket) => {
+			tickets = {
+				...tickets,
+				data: await Promise.all(
+				tickets.data.map(async (ticket) => {
 					const assignees = await db("tickets_to_users").where("ticket_id", ticket.id).where("is_watcher", false).where("is_mention", false).select(
 						"user_id as userId",
 					)
@@ -253,35 +267,39 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 					}					
 				})
 			)
+			}
 		}
 		if (req.query.includeRelationshipInfo){
 			const epicTicketRelationshipType = await db("ticket_relationship_types").where("name" , "Epic").first()
 			const epicTicketType = await db("ticket_types").where("name", "Epic").first()
-			tickets = await Promise.all(
-				tickets.map(async (ticket) => {
-					const hasRelationship = await db("ticket_relationships")
-					.where("child_ticket_id", ticket.id)
-					.orWhere("parent_ticket_id", ticket.id).limit(1).first() != null
-					// figure out if this ticket is attached as a child to a relationship that's typed as an Epic
-					// note that the ticket itself cannot be an epic since you can't attach an epic to itself
-					let epicParentTickets = []
-					if (ticket.ticketTypeId !== epicTicketType?.id){
-						epicParentTickets = await db("ticket_relationships")
+			tickets = {
+				...tickets,
+				data: await Promise.all(
+					tickets.data.map(async (ticket) => {
+						const hasRelationship = await db("ticket_relationships")
 						.where("child_ticket_id", ticket.id)
-						.where("ticket_relationship_type_id", epicTicketRelationshipType?.id)
-						.join("tickets", "tickets.id", "=", "ticket_relationships.parent_ticket_id")
-						.select(
-							"tickets.id as id",
-							"tickets.name as name"
-						)
+						.orWhere("parent_ticket_id", ticket.id).limit(1).first() != null
+						// figure out if this ticket is attached as a child to a relationship that's typed as an Epic
+						// note that the ticket itself cannot be an epic since you can't attach an epic to itself
+						let epicParentTickets = []
+						if (ticket.ticketTypeId !== epicTicketType?.id){
+							epicParentTickets = await db("ticket_relationships")
+							.where("child_ticket_id", ticket.id)
+							.where("ticket_relationship_type_id", epicTicketRelationshipType?.id)
+							.join("tickets", "tickets.id", "=", "ticket_relationships.parent_ticket_id")
+							.select(
+								"tickets.id as id",
+								"tickets.name as name"
+							)
+						}
+						return {
+							...ticket,
+							hasRelationship,
+							epicParentTickets,
+						}
 					}
-					return {
-						...ticket,
-						hasRelationship,
-						epicParentTickets,
-					}
-				}
-			))
+				))
+			}
 		}
 		res.json(tickets)
 

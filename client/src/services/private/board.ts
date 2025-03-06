@@ -82,7 +82,7 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Boards"]
 		}),
-		getBoardTickets: builder.query<Array<Ticket>, {id: number, urlParams: Record<string, any>}>({
+		getBoardTickets: builder.query<ListResponse<Ticket>, {id: number, urlParams: Record<string, any>}>({
 			query: ({id, urlParams}) => ({
 				url: BOARD_TICKET_URL(id, ""),
 				method: "GET",
@@ -90,8 +90,11 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["BoardTickets"],
 			// sort by ticket name
-			transformResponse: (response: Array<Ticket>) => {
-				return response.sort((a,b) => a.name.localeCompare(b.name))
+			transformResponse: (response: ListResponse<Ticket>) => {
+				return {
+					data: response.data.sort((a,b) => a.name.localeCompare(b.name)),
+					pagination: response.pagination
+				}
 			}
 		}),
 		getBoardStatuses: builder.query<Array<Status>, Record<string, any>>({

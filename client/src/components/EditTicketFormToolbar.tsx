@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useRef} from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { IconContext } from "react-icons" 
-import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown"
-import { WatchMenuDropdown } from "./WatchMenuDropdown"
+import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown"
+import { WatchMenuDropdown } from "./dropdowns/WatchMenuDropdown"
 import { IoMdEye as WatchIcon, IoMdEyeOff as WatchOffIcon } from "react-icons/io";
 import { BsThreeDots as MenuIcon } from "react-icons/bs";
 import { FiShare2 as ShareIcon } from "react-icons/fi";

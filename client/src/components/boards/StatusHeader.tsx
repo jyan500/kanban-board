@@ -5,7 +5,7 @@ import { IconButton } from "../page-elements/IconButton"
 import { BsThreeDots as MenuIcon } from "react-icons/bs";
 import { useClickOutside } from "../../hooks/useClickOutside" 
 import { IconContext } from "react-icons"
-import { StatusHeaderDropdown } from "./StatusHeaderDropdown"
+import { StatusHeaderDropdown } from "../dropdowns/StatusHeaderDropdown"
 import { Link } from "react-router-dom"
 import { TICKETS } from "../../helpers/routes"
 import { LG_BREAKPOINT } from "../../helpers/constants"

@@ -1,21 +1,21 @@
 import React, { useRef } from "react" 
-import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
-import { Dropdown } from "./Dropdown" 
-import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../slices/secondaryModalSlice" 
-import { Toast, Ticket, Status, UserProfile } from "../types/common"
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
+import { Dropdown } from "../Dropdown" 
+import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice" 
+import { Toast, Ticket, Status, UserProfile } from "../../types/common"
 import { CgProfile } from "react-icons/cg"
-import { Avatar } from "./page-elements/Avatar"
+import { Avatar } from "../page-elements/Avatar"
 import { IoMdEye as WatchIcon, IoMdEyeOff as WatchOffIcon } from "react-icons/io";
 import { 
 	useAddTicketAssigneeMutation,
 	useDeleteTicketAssigneeMutation, 
-} from "../services/private/ticket"
-import { useAddNotificationMutation } from "../services/private/notification"
-import { addToast } from "../slices/toastSlice"
+} from "../../services/private/ticket"
+import { useAddNotificationMutation } from "../../services/private/notification"
+import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
-import { displayUser } from "../helpers/functions"
+import { displayUser } from "../../helpers/functions"
 import { FiPlus as PlusIcon } from "react-icons/fi";
-import { TICKETS } from "../helpers/routes"
+import { TICKETS } from "../../helpers/routes"
 
 type Props = {
 	closeDropdown: () => void
