@@ -1,4 +1,4 @@
-import { UserProfile } from "../../types/common"
+import { GenericObject, UserProfile } from "../../types/common"
 import { displayUser, parseDelimitedWord } from "../../helpers/functions"
 // replace list of user ids with a string of all users' first and last names
 export const userProfileModifier = (row: Array<Pick<UserProfile, "firstName" | "lastName">>) => {
@@ -15,6 +15,10 @@ export const userRoleModifier = (row: number, userRoles: {[id: number]: string})
 	else {
 		return ""
 	}
+}
+
+export const nameModifier = (row: number, objArray: Array<GenericObject>) => {
+	return objArray.find((obj) => obj.id === row)?.name	
 }
 
 // convert UTC timestamp from backend to date format for display

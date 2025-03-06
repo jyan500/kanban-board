@@ -17,6 +17,7 @@ const {
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
 const { mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
+const { DEFAULT_PER_PAGE } = require("../constants")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -258,12 +259,19 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 				...tickets,
 				data: await Promise.all(
 				tickets.data.map(async (ticket) => {
-					const assignees = await db("tickets_to_users").where("ticket_id", ticket.id).where("is_watcher", false).where("is_mention", false).select(
-						"user_id as userId",
+					const assignees = await db("tickets_to_users").join("users", "users.id", "=", "tickets_to_users.user_id").where("ticket_id", ticket.id).where("is_watcher", false).where("is_mention", false).select(
+						"users.id as id",
+						"users.first_name as firstName",
+						"users.last_name as lastName",
 					)
 					return {
 						...ticket,
-						assignees: assignees.map((assignee) => assignee.userId)
+						assignees: assignees.map((assignee) => ({
+							id: assignee.id,
+							firstName: assignee.firstName,
+							lastName: assignee.lastName,
+						}
+						))
 					}					
 				})
 			)
