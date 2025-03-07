@@ -71,11 +71,21 @@ export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSe
 	})
 
 	const selectCurrentPageIds = () => {
-
+		const nonSelectedIdsOnCurrentPage = data?.data.map((ticket) => ticket.id).filter((id) => !selectedIds.includes(id))
+		// concatenate the remainder of the ids on the current page that haven't been selected yet
+		if (nonSelectedIdsOnCurrentPage){
+			setSelectedIds([...selectedIds, ...nonSelectedIdsOnCurrentPage])
+		}
 	}
 
 	const unselectCurrentPageIds = () => {
-
+		// all the selected ids on the current page
+		const ids = data?.data.map((ticket) => ticket.id)
+		// exclude all the ids on the current page
+		if (ids){
+			const withoutCurrentPageIds = selectedIds.filter((id) => !ids.includes(id))
+			setSelectedIds(withoutCurrentPageIds)
+		}
 	}
 
 	const onSubmit = (values: FormValues) => {
@@ -109,7 +119,7 @@ export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSe
 				</SearchToolBar>
 			</FormProvider>
 			{
-				!isLoading && !isFetching && data?.data && boardId ? (
+				!isLoading && data?.data && boardId ? (
 					<>
 						<BulkEditToolbar 
 							updateIds={(ids: Array<number>) => setSelectedIds(ids)} 
