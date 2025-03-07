@@ -89,7 +89,10 @@ const router = createBrowserRouter([
 					},
 					{
 						path: BOARD_ID,
-						element: <Board/>,
+						element: <>
+							<ScrollRestoration/>
+							<Board/>
+						</>,
 					},
 				],
 			},

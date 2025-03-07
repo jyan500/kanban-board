@@ -292,6 +292,7 @@ export const ticketApi = privateApi.injectEndpoints({
 export const { 
 	useGetTicketQuery, 
 	useGetTicketsQuery, 
+	useLazyGetTicketsQuery,
 	useAddTicketMutation, 
 	useUpdateTicketMutation,
 	useUpdateTicketStatusMutation,

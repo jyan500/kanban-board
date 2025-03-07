@@ -78,7 +78,6 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: 
 	const { width, height } = useScreenSize()
 
 	const onClickOutside = () => {
-		console.log("dropdownAlignLeft: ", dropdownAlignLeft)
 		setShowDropdown(false)	
 	}
 

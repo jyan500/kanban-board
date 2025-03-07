@@ -183,6 +183,9 @@ input[type="date"]{
     &:focus{
     	/*background-color: var(--co-btn-active-bg);*/
     }
+  &:disabled {
+   	opacity: .5;
+  }
 }
 
 input::file-selector-button {

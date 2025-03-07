@@ -10,9 +10,10 @@ type Props = {
 	data: Array<Record<string, any>> | undefined 
 	itemIds?: Array<number>
 	tableKey?: string
+	hideCheckAllBox?: boolean
 }
 
-export const Table = ({config, data, itemIds, tableKey: tKey}: Props) => {
+export const Table = ({config, data, itemIds, tableKey: tKey, hideCheckAllBox}: Props) => {
 	const [tableKey, setTableKey] = useState(tKey ?? uuidv4())
 	const allIds = config.bulkEdit?.isEnabled && config.bulkEdit?.filter ? config.bulkEdit?.filter(data).map((row: Record<string, any>) => row.id) : data?.map((row) => row.id)
 	// if there any actions we can take on each row, but the row is not selectable due to a specific condition from the config,
@@ -24,9 +25,11 @@ export const Table = ({config, data, itemIds, tableKey: tKey}: Props) => {
 				<thead>
 					<tr>
 						{showCheckboxes ? (
-							<th><input type = "checkbox" checked={itemIds?.length === allIds?.length && itemIds?.length !== 0} onChange={(e) => {
-								config.bulkEdit?.updateIds(itemIds?.length === allIds?.length ? [] : allIds)
-							}}/></th>
+							<th>
+								{!hideCheckAllBox ? <input type = "checkbox" checked={itemIds?.length === allIds?.length && itemIds?.length !== 0} onChange={(e) => {
+									config.bulkEdit?.updateIds(itemIds?.length === allIds?.length ? [] : allIds)
+								}}/> : <></>}
+							</th>
 						) : null}
 						{(Object.values(config.headers) as Array<string>).map((header) => (
 							<th key = {`${tableKey}-${header !== "" ? header : uuidv4()}`}>{header}</th>	

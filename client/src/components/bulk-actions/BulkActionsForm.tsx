@@ -16,7 +16,13 @@ export const BulkActionsForm = ({boardId}: Props) => {
 	const renderStep = () => {
 		switch (step){
 			case 1:
-				return <BulkActionsFormStep1 selectedIds={selectedIds} setSelectedIds={setSelectedIds} boardId={boardId}/>
+				return <BulkActionsFormStep1 
+					step={step} 
+					setStep={setStep} 
+					selectedIds={selectedIds} 
+					setSelectedIds={setSelectedIds} 
+					boardId={boardId}
+				/>
 			case 2:
 				return <BulkActionsFormStep2/>
 			case 3:
@@ -38,7 +44,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 						<li className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2"><IconCircleCheckmark/>Confirmation</li>
 					</ol>
 				</div>
-				<div className = "lg:tw-w-3/4">
+				<div className = "tw-flex tw-flex-1">
 					{
 						renderStep()
 					}	
