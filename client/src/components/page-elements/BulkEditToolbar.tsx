@@ -25,7 +25,7 @@ export const BulkEditToolbar = ({itemIds, applyActionToAll, applyRemoveToAll, ac
 			<div><p className = "tw-font-bold tw-text-lg">{itemIds.length} Selected</p></div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				{children}
-				<button onClick={(e) => updateIds([])} className = "button --secondary">Unselect All</button>
+				<button onClick={(e) => updateIds([])} className = "button --alert">Unselect All</button>
 				{
 					applyActionToAll && actionText ? 
 						<button onClick={(e) => applyActionToAll(itemIds)} className = "button">{actionText}</button>

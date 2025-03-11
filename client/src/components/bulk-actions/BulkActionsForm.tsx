@@ -1,17 +1,34 @@
 import React, {useEffect, useState} from "react"
+import { IconButton } from "../page-elements/IconButton"
 import { IconCircleCheckmark } from "../icons/IconCircleCheckmark"
 import { BulkActionsFormStep1 } from "./BulkActionsFormStep1" 
 import { BulkActionsFormStep2 } from "./BulkActionsFormStep2" 
 import { BulkActionsFormStep3 } from "./BulkActionsFormStep3" 
 import { BulkActionsFormStep4 } from "./BulkActionsFormStep4" 
+import { BulkActionsFormStepIndicator } from "./BulkActionsFormStepIndicator"
 
 interface Props {
 	boardId: number | null | undefined
 }
 
+export interface BulkEditOption {
+	key: string
+	text: string
+	description: string
+}
+
+export type BulkEditOptionKey = "move-issues" | "edit-issues" | "delete-issues" | "watch-issues" | "stop-watching-issues"
+
 export const BulkActionsForm = ({boardId}: Props) => {
 	const [step, setStep] = useState(1)
 	const [selectedIds, setSelectedIds] = useState<Array<number>>([])
+	const [operation, setOperation] = useState<BulkEditOptionKey | null | undefined>(null)
+	const steps = [
+		{step: 1, text: "Choose Issues"},
+		{step: 2, text: "Choose Operation"},
+		{step: 3, text: "Operation Details"},
+		{step: 4, text: "Confirmation"},
+	]
 
 	const renderStep = () => {
 		switch (step){
@@ -24,7 +41,13 @@ export const BulkActionsForm = ({boardId}: Props) => {
 					boardId={boardId}
 				/>
 			case 2:
-				return <BulkActionsFormStep2/>
+				return <BulkActionsFormStep2 
+					step={step} 
+					setStep={setStep}
+					numSelectedIssues={selectedIds.length}
+					setOperation={setOperation}
+					operation={operation}
+				/>
 			case 3:
 				return <BulkActionsFormStep3/>
 			case 4:
@@ -38,10 +61,9 @@ export const BulkActionsForm = ({boardId}: Props) => {
 			<div className = "tw-flex tw-flex-col lg:tw-flex-row">
 				<div className = "lg:tw-w-1/4">
 					<ol>
-						<li className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2"><IconCircleCheckmark/>Choose Issues</li>
-						<li className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2"><IconCircleCheckmark/>Choose Operation</li>
-						<li className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2"><IconCircleCheckmark/>Operation Details</li>
-						<li className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2"><IconCircleCheckmark/>Confirmation</li>
+						{steps.map((s) => 
+							<BulkActionsFormStepIndicator Icon={<IconCircleCheckmark color={step > s.step ? "var(--bs-success)" : ""}/>} step = {s.step} setStep={setStep} currentStep = {step} text = {s.text}/>
+						)}
 					</ol>
 				</div>
 				<div className = "tw-flex tw-flex-1">
