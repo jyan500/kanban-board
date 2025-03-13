@@ -223,7 +223,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId}: Pr
 								        <IconContext.Provider value={{color: "var(--bs-warning)"}}>
 											<WarningIcon className = "tw-h-6 tw-w-6"/>
 										</IconContext.Provider>
-										<span className = "tw-font-bold">If the ticket type is "Epic", it cannot changed once saved.</span>
+										<span className = "tw-font-semibold">If the ticket type is "Epic", it cannot changed once saved.</span>
 									</div>
 					        	) : null
 					        }

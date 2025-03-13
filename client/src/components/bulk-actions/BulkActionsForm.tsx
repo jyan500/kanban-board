@@ -11,18 +11,18 @@ interface Props {
 	boardId: number | null | undefined
 }
 
-export interface BulkEditOption {
+export interface BulkEditOperation {
 	key: string
 	text: string
 	description: string
 }
 
-export type BulkEditOptionKey = "move-issues" | "edit-issues" | "delete-issues" | "watch-issues" | "stop-watching-issues"
+export type BulkEditOperationKey = "move-issues" | "edit-issues" | "delete-issues" | "watch-issues" | "stop-watching-issues"
 
 export const BulkActionsForm = ({boardId}: Props) => {
 	const [step, setStep] = useState(1)
 	const [selectedIds, setSelectedIds] = useState<Array<number>>([])
-	const [operation, setOperation] = useState<BulkEditOptionKey | null | undefined>(null)
+	const [operation, setOperation] = useState<BulkEditOperationKey | null | undefined>(null)
 	const steps = [
 		{step: 1, text: "Choose Issues"},
 		{step: 2, text: "Choose Operation"},
@@ -49,7 +49,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 					operation={operation}
 				/>
 			case 3:
-				return <BulkActionsFormStep3/>
+				return <BulkActionsFormStep3 boardId={boardId} operation={operation} step={step} setStep={setStep}/>
 			case 4:
 				return <BulkActionsFormStep4/>
 		}	
@@ -62,7 +62,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 				<div className = "lg:tw-w-1/4">
 					<ol>
 						{steps.map((s) => 
-							<BulkActionsFormStepIndicator Icon={<IconCircleCheckmark color={step > s.step ? "var(--bs-success)" : ""}/>} step = {s.step} setStep={setStep} currentStep = {step} text = {s.text}/>
+							<BulkActionsFormStepIndicator key={s.step} Icon={<IconCircleCheckmark color={step > s.step ? "var(--bs-success)" : ""}/>} step = {s.step} setStep={setStep} currentStep = {step} text = {s.text}/>
 						)}
 					</ol>
 				</div>
