@@ -131,13 +131,18 @@ export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSe
 								<button onClick={unselectCurrentPageIds} className = "button --secondary">Unselect current page</button>	
 							</>
 						</BulkEditToolbar>
-						<PaginationRow
-							showNumResults={true}
-							showPageNums={false}
-							setPage={setPage}	
-							paginationData={data?.pagination}
-							currentPage={page}
-						/>
+						{
+							data?.pagination.nextPage || data?.pagination.prevPage ? (
+								<PaginationRow
+									showNumResults={true}
+									showPageNums={false}
+									setPage={setPage}	
+									paginationData={data?.pagination}
+									currentPage={page}
+								/>
+							) : null
+						}
+
 						<Table 
 							hideCheckAllBox={true} 
 							data={data?.data} 

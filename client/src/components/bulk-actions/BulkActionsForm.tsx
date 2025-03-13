@@ -19,15 +19,51 @@ export interface BulkEditOperation {
 
 export type BulkEditOperationKey = "move-issues" | "edit-issues" | "delete-issues" | "watch-issues" | "stop-watching-issues"
 
+export interface BulkEditFormValues {
+	selectedTicketIds?: Array<number>
+	boardId?: string | number | null | undefined
+	[key: string]: any
+}
+
+
 export const BulkActionsForm = ({boardId}: Props) => {
 	const [step, setStep] = useState(1)
 	const [selectedIds, setSelectedIds] = useState<Array<number>>([])
 	const [operation, setOperation] = useState<BulkEditOperationKey | null | undefined>(null)
+	const [formValues, setFormValues] = useState<BulkEditFormValues>({})
 	const steps = [
 		{step: 1, text: "Choose Issues"},
 		{step: 2, text: "Choose Operation"},
 		{step: 3, text: "Operation Details"},
 		{step: 4, text: "Confirmation"},
+	]
+
+	const operations: Array<BulkEditOperation> = [
+		{
+			key: "edit-issues",
+			text: "Edit Issues",
+			description: "Edit Field Values of Issues",
+		},
+		{
+			key: "move-issues",
+			text: "Move Issues",
+			description: "Move issues to new boards",
+		},
+		{
+			key: "delete-issues",
+			text: "Delete Issues",
+			description: "Permanently delete issues",
+		},
+		{
+			key: "watch-issues",
+			text: "Watch Issues",
+			description: "Watch all selected issues",
+		},
+		{
+			key: "stop-watching-issues",
+			text: "Stop Watching Issues",
+			description: "Stop watching all selected issues"
+		}
 	]
 
 	const renderStep = () => {
@@ -47,11 +83,12 @@ export const BulkActionsForm = ({boardId}: Props) => {
 					numSelectedIssues={selectedIds.length}
 					setOperation={setOperation}
 					operation={operation}
+					operations={operations}
 				/>
 			case 3:
-				return <BulkActionsFormStep3 boardId={boardId} operation={operation} step={step} setStep={setStep}/>
+				return <BulkActionsFormStep3 setFormValues={setFormValues} selectedIds={selectedIds} boardId={boardId} operation={operation} step={step} setStep={setStep}/>
 			case 4:
-				return <BulkActionsFormStep4/>
+				return <BulkActionsFormStep4 operation={operation} operations={operations} setSelectedIds={setSelectedIds} selectedIds={selectedIds} setStep={setStep} step={step} formValues={formValues}/>
 		}	
 	}
 

@@ -18,6 +18,6 @@ type Props = {
 
 export const MoveTicketFormModal = ({boardId: currentBoardId, ticketId}: Props) => {
 	return (
-		<MoveTicketForm ticketId={ticketId} boardId={currentBoardId} title={"Move Ticket"}/>
+		<MoveTicketForm ticketId={ticketId} boardId={currentBoardId} title={"Move Issue"}/>
 	)
 }

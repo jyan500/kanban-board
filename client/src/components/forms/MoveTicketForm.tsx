@@ -15,6 +15,8 @@ type Props = {
 	boardId: number | string | null | undefined
 	onSubmit?: (values: FormValues) => void
 	title: string
+	buttonBar?: React.ReactNode
+	numSelectedIssues?: number
 }
 
 export type FormValues = {
@@ -22,7 +24,7 @@ export type FormValues = {
 	shouldUnlink: boolean
 }
 
-export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubmit: propsOnSubmit}: Props) => {
+export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubmit: propsOnSubmit, buttonBar, numSelectedIssues}: Props) => {
 	const dispatch = useAppDispatch()
 	const [addBoardTickets, {isLoading: addBoardTicketsLoading, error: addBoardTicketsErrors}] = useAddBoardTicketsMutation()
 	const [deleteBoardTicket, {isLoading: deleteBoardTicketLoading, error: deleteBoardTicketErrors}] = useDeleteBoardTicketMutation()
@@ -81,12 +83,16 @@ export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubm
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-4">
-			<p className = "tw-font-bold">{title}</p>		
+		<div className = "tw-flex tw-flex-col tw-gap-y-2">
+			<div className = "tw-flex tw-flex-col tw-gap-y-0.5">
+				<p className = "tw-font-bold">{title}</p>		
+				<span className = "tw-text-xs"><span className = "tw-font-semibold">{numSelectedIssues ? numSelectedIssues : ""}</span> Issue(s) will be copied to the selected board below.</span>
+			</div>
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(propsOnSubmit ? propsOnSubmit : onSubmit)}>
 				<Controller
 					name={"boardId"}
 					control={control}
+					rules={registerOptions.boardId}
 	                render={({ field: { onChange, value, name, ref } }) => (
 	                	<AsyncSelect 
 		                	endpoint={BOARD_URL} 
@@ -99,13 +105,19 @@ export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubm
 		                />
 	                )}
 				/>
+		        {errors?.boardId && <small className = "--text-alert">{errors.boardId.message}</small>}
 				{currentBoardId ? (
-					<div className = "tw-flex tw-flex-row tw-gap-x-2">
-						<input id = "should-unlink" type = "checkbox" {...register("shouldUnlink")}/>
-						<label className = "label" htmlFor="should-unlink">Unlink from current board</label>	
-					</div>
+					<>
+						<span className = "tw-text-xs">Select this to remove the issue(s) from the current board after copying</span>
+						<div className = "tw-flex tw-flex-row tw-gap-x-2">
+							<input id = "should-unlink" type = "checkbox" {...register("shouldUnlink")}/>
+							<label className = "label" htmlFor="should-unlink">Unlink from current board</label>	
+						</div>
+					</>
 				) : null}
-				<button className = "button">Submit</button>
+				{
+					buttonBar ? buttonBar : <button type = "submit" className = "button">Submit</button>
+				}
 			</form>
 		</div>
 	)		

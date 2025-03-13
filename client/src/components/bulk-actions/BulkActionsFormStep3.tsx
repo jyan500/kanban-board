@@ -1,5 +1,5 @@
 import React from "react"
-import { BulkEditOperationKey } from "./BulkActionsForm"
+import { BulkEditFormValues, BulkEditOperationKey } from "./BulkActionsForm"
 import { MoveTicketForm, FormValues as MoveTicketFormValues } from "../forms/MoveTicketForm"
 
 interface Props {
@@ -7,12 +7,13 @@ interface Props {
 	setStep: (step: number) => void
 	operation: BulkEditOperationKey | null | undefined
 	boardId: number | null | undefined
+	selectedIds: Array<number>
+	setFormValues: (values: BulkEditFormValues) => void
 }
 
-export const BulkActionsFormStep3 = ({step, setStep, operation, boardId}: Props) => {
+export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selectedIds, setFormValues}: Props) => {
 
 	const renderOperation = () => {
-		console.log("operation: ", operation)
 		switch (operation){
 			case "move-issues":
 				return (
@@ -24,11 +25,28 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId}: Props)
 	}
 
 	const moveTicketSubmit = async (values: MoveTicketFormValues) => {
+		setStep(step+1)
+		setFormValues({
+			selectedTicketIds: selectedIds,
+			currentBoardId: boardId,
+			...values
+		})
+	}
 
+	const buttonBar = () => {
+		return (
+			<div className = "tw-flex tw-flex-row tw-gap-x-2">
+				<button className = "button" type = "submit">Next</button>
+				<button onClick={(e) => {
+					e.preventDefault()
+					setStep(step-1)
+				}} className = "button --secondary">Cancel</button>
+			</div>
+		)	
 	}
 
 	const operationComponents = {
-		"move-issues": <MoveTicketForm onSubmit={moveTicketSubmit} boardId={boardId} title={"Move Tickets"}/>,
+		"move-issues": <MoveTicketForm numSelectedIssues={selectedIds.length} onSubmit={moveTicketSubmit} boardId={boardId} title={"Move Issues"} buttonBar={buttonBar()}/>,
 		"edit-issues": "",
 		"delete-issues": "",
 		"watch-issues": "",

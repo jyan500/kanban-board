@@ -7,36 +7,11 @@ interface Props {
 	numSelectedIssues: number
 	operation: BulkEditOperationKey | null | undefined
 	setOperation: (operation: BulkEditOperationKey | null | undefined) => void
+	operations: Array<BulkEditOperation>
 }
 
-export const BulkActionsFormStep2 = ({step, setStep, numSelectedIssues, operation: propOperation, setOperation}: Props) => {
-	const operations: Array<BulkEditOperation> = [
-		{
-			key: "edit-issues",
-			text: "Edit Issues",
-			description: "Edit Field Values of Issues",
-		},
-		{
-			key: "move-issues",
-			text: "Move Issues",
-			description: "Move issues to new boards",
-		},
-		{
-			key: "delete-issues",
-			text: "Delete Issues",
-			description: "Permanently delete issues",
-		},
-		{
-			key: "watch-issues",
-			text: "Watch Issues",
-			description: "Watch all selected issues",
-		},
-		{
-			key: "stop-watching-issues",
-			text: "Stop Watching Issues",
-			description: "Stop watching all selected issues"
-		}
-	]
+export const BulkActionsFormStep2 = ({step, setStep, numSelectedIssues, operation: propOperation, setOperation, operations}: Props) => {
+	
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<h3 className = "tw-m-0">Step 2 of 4: Choose Operation</h3>
