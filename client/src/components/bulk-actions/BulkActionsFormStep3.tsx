@@ -8,10 +8,11 @@ interface Props {
 	operation: BulkEditOperationKey | null | undefined
 	boardId: number | null | undefined
 	selectedIds: Array<number>
+	formValues: BulkEditFormValues
 	setFormValues: (values: BulkEditFormValues) => void
 }
 
-export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selectedIds, setFormValues}: Props) => {
+export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selectedIds, formValues, setFormValues}: Props) => {
 
 	const renderOperation = () => {
 		switch (operation){
@@ -46,7 +47,10 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 	}
 
 	const operationComponents = {
-		"move-issues": <MoveTicketForm numSelectedIssues={selectedIds.length} onSubmit={moveTicketSubmit} boardId={boardId} title={"Move Issues"} buttonBar={buttonBar()}/>,
+		"move-issues": <MoveTicketForm formValues={{
+			boardIdOption: formValues.boardIdOption,
+			shouldUnlink: formValues.shouldUnlink
+		}} numSelectedIssues={selectedIds.length} onSubmit={moveTicketSubmit} boardId={boardId} title={"Move Issues"} buttonBar={buttonBar()}/>,
 		"edit-issues": "",
 		"delete-issues": "",
 		"watch-issues": "",

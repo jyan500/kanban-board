@@ -21,7 +21,7 @@ export type BulkEditOperationKey = "move-issues" | "edit-issues" | "delete-issue
 
 export interface BulkEditFormValues {
 	selectedTicketIds?: Array<number>
-	boardId?: string | number | null | undefined
+	currentBoardId?: string | number | null | undefined
 	[key: string]: any
 }
 
@@ -86,7 +86,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 					operations={operations}
 				/>
 			case 3:
-				return <BulkActionsFormStep3 setFormValues={setFormValues} selectedIds={selectedIds} boardId={boardId} operation={operation} step={step} setStep={setStep}/>
+				return <BulkActionsFormStep3 formValues={formValues} setFormValues={setFormValues} selectedIds={selectedIds} boardId={boardId} operation={operation} step={step} setStep={setStep}/>
 			case 4:
 				return <BulkActionsFormStep4 operation={operation} operations={operations} setSelectedIds={setSelectedIds} selectedIds={selectedIds} setStep={setStep} step={step} formValues={formValues}/>
 		}	

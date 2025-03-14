@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import { AsyncSelect } from "../AsyncSelect"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { useForm, Controller } from "react-hook-form"
@@ -6,7 +6,7 @@ import { BOARD_URL } from "../../helpers/urls"
 import { addToast } from "../../slices/toastSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { toggleShowModal, setModalProps } from "../../slices/modalSlice"
-import { Toast } from "../../types/common"
+import { OptionType, Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../../services/private/board"
 
@@ -17,32 +17,39 @@ type Props = {
 	title: string
 	buttonBar?: React.ReactNode
 	numSelectedIssues?: number
+	formValues?: FormValues
 }
 
 export type FormValues = {
-	boardId: number | string
+	boardIdOption: OptionType
 	shouldUnlink: boolean
 }
 
-export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubmit: propsOnSubmit, buttonBar, numSelectedIssues}: Props) => {
+export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubmit: propsOnSubmit, buttonBar, numSelectedIssues, formValues}: Props) => {
 	const dispatch = useAppDispatch()
 	const [addBoardTickets, {isLoading: addBoardTicketsLoading, error: addBoardTicketsErrors}] = useAddBoardTicketsMutation()
 	const [deleteBoardTicket, {isLoading: deleteBoardTicketLoading, error: deleteBoardTicketErrors}] = useDeleteBoardTicketMutation()
 	const [cacheKey, setCacheKey] = useState(uuidv4())
 
 	const defaultForm = {
-		boardId: "",
+		boardIdOption: {value: "", label: ""},
 		shouldUnlink: false,
 	}
 
 	const registerOptions = {
-		boardId: { required: "Board is required"},
+		boardIdOption: { required: "Board is required"},
     }
 
     const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const { register, control, handleSubmit, reset, setValue, watch, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
+
+	useEffect(() => {
+		if (formValues){
+			reset(formValues)
+		}
+	}, [formValues])
 
 	const onSubmit = async (values: FormValues) => {
 		let defaultToast: Toast = {
@@ -52,8 +59,9 @@ export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubm
 			type: "failure"
 		}
 		if (ticketId){
+			const { value: boardId } = values.boardIdOption
 	    	try {
-			    	await addBoardTickets({boardId: !isNaN(Number(values.boardId)) ? Number(values.boardId) : 0, ticketIds: [!isNaN(Number(ticketId)) ? Number(ticketId) : 0]}).unwrap()
+			    	await addBoardTickets({boardId: !isNaN(Number(boardId)) ? Number(boardId) : 0, ticketIds: [!isNaN(Number(ticketId)) ? Number(ticketId) : 0]}).unwrap()
 			    	if (currentBoardId && values.shouldUnlink){
 				    	await deleteBoardTicket({boardId: !isNaN(Number(currentBoardId)) ? Number(currentBoardId) : 0, ticketId: !isNaN(Number(ticketId)) ? Number(ticketId) : 0}).unwrap()
 			    	}
@@ -90,22 +98,23 @@ export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubm
 			</div>
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(propsOnSubmit ? propsOnSubmit : onSubmit)}>
 				<Controller
-					name={"boardId"}
+					name={"boardIdOption"}
 					control={control}
-					rules={registerOptions.boardId}
+					rules={registerOptions.boardIdOption}
 	                render={({ field: { onChange, value, name, ref } }) => (
 	                	<AsyncSelect 
 		                	endpoint={BOARD_URL} 
 		                	cacheKey={cacheKey}
 		                	className={"tw-w-64"}
 		                	urlParams={{ignoreBoard: currentBoardId}} 
+		                	/* defaultValue={{value: watch("boardId").value, label: watch("boardId").label}} */
 		                	onSelect={(selectedOption: {label: string, value: string} | null) => {
-		                		onChange(selectedOption?.value ?? "") 	
+		                		onChange(selectedOption) 	
 		                	}}
 		                />
 	                )}
 				/>
-		        {errors?.boardId && <small className = "--text-alert">{errors.boardId.message}</small>}
+		        {errors?.boardIdOption && <small className = "--text-alert">{errors.boardIdOption.message}</small>}
 				{currentBoardId ? (
 					<>
 						<span className = "tw-text-xs">Select this to remove the issue(s) from the current board after copying</span>
