@@ -44,11 +44,13 @@ export const BulkActionsFormStep4 = ({selectedIds, step, setStep, formValues, se
 								/>
 							) : null
 						}
-						<Table 
-							data={data?.data} 
-							config={config} 
-							tableKey={"bulk-actions-confirmation"}
-						></Table>
+						<div className = "tw-h-96 tw-overflow-y-auto">
+							<Table 
+								data={data?.data} 
+								config={config} 
+								tableKey={"bulk-actions-confirmation"}
+							></Table>
+						</div>
 					</>
 				) : null
 			}

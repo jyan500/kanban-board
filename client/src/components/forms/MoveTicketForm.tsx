@@ -18,6 +18,7 @@ type Props = {
 	buttonBar?: React.ReactNode
 	numSelectedIssues?: number
 	formValues?: FormValues
+	step?: number 
 }
 
 export type FormValues = {
@@ -25,7 +26,7 @@ export type FormValues = {
 	shouldUnlink: boolean
 }
 
-export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubmit: propsOnSubmit, buttonBar, numSelectedIssues, formValues}: Props) => {
+export const MoveTicketForm = ({step, title, boardId: currentBoardId, ticketId, onSubmit: propsOnSubmit, buttonBar, numSelectedIssues, formValues}: Props) => {
 	const dispatch = useAppDispatch()
 	const [addBoardTickets, {isLoading: addBoardTicketsLoading, error: addBoardTicketsErrors}] = useAddBoardTicketsMutation()
 	const [deleteBoardTicket, {isLoading: deleteBoardTicketLoading, error: deleteBoardTicketErrors}] = useDeleteBoardTicketMutation()
@@ -46,10 +47,11 @@ export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubm
 	})
 
 	useEffect(() => {
-		if (formValues){
+		if (step && formValues){
+			console.log("formValues: ", formValues)
 			reset(formValues)
 		}
-	}, [formValues])
+	}, [step, formValues])
 
 	const onSubmit = async (values: FormValues) => {
 		let defaultToast: Toast = {
@@ -107,7 +109,7 @@ export const MoveTicketForm = ({title, boardId: currentBoardId, ticketId, onSubm
 		                	cacheKey={cacheKey}
 		                	className={"tw-w-64"}
 		                	urlParams={{ignoreBoard: currentBoardId}} 
-		                	/* defaultValue={{value: watch("boardId").value, label: watch("boardId").label}} */
+		                	defaultValue={{value: watch("boardIdOption").value.toString(), label: watch("boardIdOption").label.toString()}}
 		                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 		                		onChange(selectedOption) 	
 		                	}}

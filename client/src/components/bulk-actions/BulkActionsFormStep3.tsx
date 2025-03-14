@@ -47,7 +47,7 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 	}
 
 	const operationComponents = {
-		"move-issues": <MoveTicketForm formValues={{
+		"move-issues": <MoveTicketForm step={step} formValues={{
 			boardIdOption: formValues.boardIdOption,
 			shouldUnlink: formValues.shouldUnlink
 		}} numSelectedIssues={selectedIds.length} onSubmit={moveTicketSubmit} boardId={boardId} title={"Move Issues"} buttonBar={buttonBar()}/>,

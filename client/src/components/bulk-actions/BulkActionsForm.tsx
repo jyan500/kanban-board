@@ -6,6 +6,8 @@ import { BulkActionsFormStep2 } from "./BulkActionsFormStep2"
 import { BulkActionsFormStep3 } from "./BulkActionsFormStep3" 
 import { BulkActionsFormStep4 } from "./BulkActionsFormStep4" 
 import { BulkActionsFormStepIndicator } from "./BulkActionsFormStepIndicator"
+import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
+import { useAppDispatch } from "../../hooks/redux-hooks"
 
 interface Props {
 	boardId: number | null | undefined
@@ -28,6 +30,7 @@ export interface BulkEditFormValues {
 
 export const BulkActionsForm = ({boardId}: Props) => {
 	const [step, setStep] = useState(1)
+	const dispatch = useAppDispatch()
 	const [selectedIds, setSelectedIds] = useState<Array<number>>([])
 	const [operation, setOperation] = useState<BulkEditOperationKey | null | undefined>(null)
 	const [formValues, setFormValues] = useState<BulkEditFormValues>({})
@@ -66,6 +69,12 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		}
 	]
 
+	const closeModal = () => {
+		dispatch(toggleShowModal(false))
+		dispatch(setModalType(undefined))
+		dispatch(setModalProps({}))
+	}
+
 	const renderStep = () => {
 		switch (step){
 			case 1:
@@ -75,6 +84,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 					selectedIds={selectedIds} 
 					setSelectedIds={setSelectedIds} 
 					boardId={boardId}
+					closeModal={closeModal}
 				/>
 			case 2:
 				return <BulkActionsFormStep2 

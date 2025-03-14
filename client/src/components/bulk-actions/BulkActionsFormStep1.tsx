@@ -18,6 +18,7 @@ interface Props {
 	setSelectedIds: (ids: Array<number>) => void
 	step: number
 	setStep: (step: number) => void
+	closeModal: () => void
 }
 
 type Filters = {
@@ -31,7 +32,7 @@ export type FormValues = Filters & {
 	query: string	
 }
 
-export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSelectedIds}: Props) => {
+export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSelectedIds, closeModal}: Props) => {
 	const [ page, setPage ] = useState(1)
 
 	const filters: Filters = {
@@ -126,7 +127,6 @@ export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSe
 							itemIds={selectedIds} 
 						>
 							<>
-								<button onClick={() => setStep(step+1)} className = "button">Next Step</button>	
 								<button onClick={selectCurrentPageIds} className = "button --secondary">Select current page</button>	
 								<button onClick={unselectCurrentPageIds} className = "button --secondary">Unselect current page</button>	
 							</>
@@ -142,18 +142,22 @@ export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSe
 								/>
 							) : null
 						}
-
-						<Table 
-							hideCheckAllBox={true} 
-							data={data?.data} 
-							config={config} 
-							itemIds={selectedIds} 
-							tableKey={"bulk-actions"}
-						></Table>
+						<div className = "tw-h-96 tw-overflow-y-auto">
+							<Table 
+								hideCheckAllBox={true} 
+								data={data?.data} 
+								config={config} 
+								itemIds={selectedIds} 
+								tableKey={"bulk-actions"}
+							></Table>
+						</div>
 						{/*<LoadingButton isLoading={isLoading || isFetching} disabled = {!data.pagination.nextPage} onClick={() => {
 							setPage(page+1)
 						}} className = "button --secondary" text={"Load More"}></LoadingButton>*/}
-					
+						<div className = "tw-flex tw-flex-row tw-gap-x-2">
+							<button disabled={selectedIds.length === 0} onClick={() => setStep(step+1)} className = "button">Next</button>	
+							<button onClick={closeModal} className = "button --secondary">Cancel</button>	
+						</div>
 					</>
 				) : null
 			}
