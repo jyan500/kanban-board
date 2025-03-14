@@ -109,7 +109,7 @@ export const MoveTicketForm = ({step, title, boardId: currentBoardId, ticketId, 
 		                	cacheKey={cacheKey}
 		                	className={"tw-w-64"}
 		                	urlParams={{ignoreBoard: currentBoardId}} 
-		                	defaultValue={{value: watch("boardIdOption").value.toString(), label: watch("boardIdOption").label.toString()}}
+		                	defaultValue={formValues ? formValues.boardIdOption : undefined}
 		                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 		                		onChange(selectedOption) 	
 		                	}}
