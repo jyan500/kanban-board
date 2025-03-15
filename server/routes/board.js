@@ -8,6 +8,7 @@ const {
 	validateBoardTicketGet,
 	validateBoardTicketCreate,
 	validateBoardTicketDelete,
+	validateBoardTicketBulkDelete,
 	validateBoardStatusGet,
 	validateBoardStatusCreate,
 	validateBoardStatusUpdate,
@@ -18,6 +19,7 @@ const { handleValidationResult }  = require("../middleware/validationMiddleware"
 const db = require("../db/db")
 const { mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
+const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -357,6 +359,18 @@ router.get("/:boardId/ticket/:ticketId", validateBoardTicketGet, handleValidatio
 		next(err)
 	}
 })
+
+
+router.delete("/:boardId/ticket", validateBoardTicketBulkDelete, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("tickets_to_boards").whereIn("ticket_id", req.body.ticket_ids).where("board_id", req.params.boardId).del()
+		res.json({message: "tickets deleted from board successfully!"})
+	}
+	catch (err) {
+		console.log(`Error while deleting tickets from board: ${err.message}`)
+		next(err)
+	}})
+
 
 router.delete("/:boardId/ticket/:ticketId", validateBoardTicketDelete, handleValidationResult, async (req, res, next) => {
 	try {

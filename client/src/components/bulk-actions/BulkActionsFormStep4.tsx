@@ -14,9 +14,10 @@ interface Props {
 	formValues: BulkEditFormValues
 	operation: BulkEditOperationKey | null | undefined
 	operations: Array<BulkEditOperation>
+	onSubmit: () => void
 }
 
-export const BulkActionsFormStep4 = ({selectedIds, step, setStep, formValues, setSelectedIds, operation, operations}: Props) => {
+export const BulkActionsFormStep4 = ({selectedIds, step, setStep, formValues, setSelectedIds, operation, operations, onSubmit}: Props) => {
 	const [page, setPage] = useState(1)
 	const { data, isLoading, isFetching, isError } = useGetTicketsQuery({
 		page: page,
@@ -55,7 +56,7 @@ export const BulkActionsFormStep4 = ({selectedIds, step, setStep, formValues, se
 				) : null
 			}
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<button onClick={() => {}} className = "button">Confirm</button>
+				<button onClick={onSubmit} className = "button">Confirm</button>
 				<button onClick={() => {
 					setStep(step-1)
 				}} className = "button --secondary">Cancel</button>

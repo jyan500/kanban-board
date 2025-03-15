@@ -7,7 +7,11 @@ import { BulkActionsFormStep3 } from "./BulkActionsFormStep3"
 import { BulkActionsFormStep4 } from "./BulkActionsFormStep4" 
 import { BulkActionsFormStepIndicator } from "./BulkActionsFormStepIndicator"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
-import { useAppDispatch } from "../../hooks/redux-hooks"
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
+import { useAddBoardTicketsMutation, useDeleteBoardTicketsMutation } from "../../services/private/board"
+import { OptionType, Toast } from "../../types/common"
+import { addToast } from "../../slices/toastSlice"
+import { v4 as uuidv4 } from "uuid"
 
 interface Props {
 	boardId: number | null | undefined
@@ -31,9 +35,15 @@ export interface BulkEditFormValues {
 export const BulkActionsForm = ({boardId}: Props) => {
 	const [step, setStep] = useState(1)
 	const dispatch = useAppDispatch()
+	const { userProfile } = useAppSelector((state) => state.userProfile)
+	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const [selectedIds, setSelectedIds] = useState<Array<number>>([])
 	const [operation, setOperation] = useState<BulkEditOperationKey | null | undefined>(null)
 	const [formValues, setFormValues] = useState<BulkEditFormValues>({})
+	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null
+	const isAdminOrBoardAdmin = userRole != null && userRole !== "" && (userRole === "ADMIN" || userRole === "BOARD_ADMIN")
+	const [addBoardTickets, {isLoading: addBoardTicketsLoading, error: addBoardTicketsErrors}] = useAddBoardTicketsMutation()
+	const [deleteBoardTickets, {isLoading: deleteBoardTicketsLoading, error: deleteBoardTicketsErrors}] = useDeleteBoardTicketsMutation()
 	const steps = [
 		{step: 1, text: "Choose Issues"},
 		{step: 2, text: "Choose Operation"},
@@ -69,6 +79,63 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		}
 	]
 
+		const editIssues = async () => {
+
+	} 
+
+	const moveIssues = async () => {
+		let defaultToast: Toast = {
+			id: uuidv4(),
+			message: "Something went wrong while moving tickets.",
+			animationType: "animation-in",
+			type: "failure"
+		}
+    	try {
+		    	await addBoardTickets({boardId: formValues?.boardIdOption?.value ?? 0, ticketIds: selectedIds}).unwrap()
+		    	if (boardId && formValues?.shouldUnlink){
+			    	await deleteBoardTickets({boardId: boardId, ticketIds: selectedIds}).unwrap()
+		    	}
+		    	dispatch(addToast({
+		    		...defaultToast,
+		    		message: `${selectedIds.length} tickets moved successfully!`,
+		    		type: "success"
+		    	}))			    	
+	    	}
+    	catch (e){
+    		dispatch(addToast(defaultToast))
+    	}
+	}
+
+	const deleteIssues = async () => {
+
+	}
+
+	const watchIssues = async () => {
+
+	}
+
+	const stopWatchingIssues = async () => {
+
+	}
+
+	const onSubmit = () => {
+		switch (operation){
+			case "edit-issues":
+				break
+			case "move-issues":
+				moveIssues()
+				break
+			case "delete-issues":
+				break
+			case "watch-issues":
+				break
+			case "stop-watching-issues":
+				break
+		}
+		closeModal()
+	}
+
+
 	const closeModal = () => {
 		dispatch(toggleShowModal(false))
 		dispatch(setModalType(undefined))
@@ -88,6 +155,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 				/>
 			case 2:
 				return <BulkActionsFormStep2 
+					isAdminOrBoardAdmin={isAdminOrBoardAdmin ?? false}
 					step={step} 
 					setStep={setStep}
 					numSelectedIssues={selectedIds.length}
@@ -98,9 +166,10 @@ export const BulkActionsForm = ({boardId}: Props) => {
 			case 3:
 				return <BulkActionsFormStep3 formValues={formValues} setFormValues={setFormValues} selectedIds={selectedIds} boardId={boardId} operation={operation} step={step} setStep={setStep}/>
 			case 4:
-				return <BulkActionsFormStep4 operation={operation} operations={operations} setSelectedIds={setSelectedIds} selectedIds={selectedIds} setStep={setStep} step={step} formValues={formValues}/>
+				return <BulkActionsFormStep4 onSubmit={onSubmit} operation={operation} operations={operations} setSelectedIds={setSelectedIds} selectedIds={selectedIds} setStep={setStep} step={step} formValues={formValues}/>
 		}	
 	}
+
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-w-full">

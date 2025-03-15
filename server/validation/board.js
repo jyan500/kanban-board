@@ -32,7 +32,7 @@ const boardTicketValidator = (actionType) => {
 			param("ticketId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "ticket", value, "tickets")),
 		]
 	}
-	else if (actionType === "create") {
+	else if (actionType === "create" || actionType === "bulk-delete") {
 		validationRules = [
 			...validationRules,
 			// must be an array of length > 0
@@ -41,6 +41,12 @@ const boardTicketValidator = (actionType) => {
 			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
 			body("ticket_ids.*")
 				.custom(async (value, {req}) => await entityInOrganization(req.user.organization, "ticket", value, "tickets"))
+				
+		]		
+		if (actionType === "create"){
+			validationRules = [
+				...validationRules,
+				body("ticket_ids.*")
 				.custom(async (value, {req}) => await checkUniqueEntity("ticket", value, [{
 					"col": "ticket_id",
 					"value": value,
@@ -50,7 +56,8 @@ const boardTicketValidator = (actionType) => {
 					"value": req.params.boardId
 				}
 				],"tickets_to_boards"))
-		]		
+			]
+		}
 	}
 	return validationRules
 }
@@ -108,6 +115,7 @@ module.exports = {
 	validateBoardTicketGet: boardTicketValidator("get"),
 	validateBoardTicketCreate: boardTicketValidator("create"),
 	validateBoardTicketDelete: boardTicketValidator("delete"),
+	validateBoardTicketBulkDelete: boardTicketValidator("bulk-delete"),
 	validateBoardStatusGet: boardStatusValidator("get"),
 	validateBoardStatusCreate: boardStatusValidator("create"),
 	validateBoardStatusDelete: boardStatusValidator("delete"),

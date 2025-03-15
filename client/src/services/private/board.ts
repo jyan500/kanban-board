@@ -152,6 +152,16 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Boards", "BoardTickets"]	
 		}),
+		deleteBoardTickets: builder.mutation<BoardTicketResponse, {boardId: number, ticketIds: Array<number>}>({
+			query: ({boardId, ticketIds}) => ({
+				url: BOARD_TICKET_URL(boardId, ""),
+				body: {
+					ticket_ids: ticketIds
+				},
+				method: "DELETE"
+			}),
+			invalidatesTags: ["Boards", "BoardTickets"]
+		}),
 		deleteBoardStatus: builder.mutation<BoardStatusResponse, {boardId: number, statusId: number}>({
 			query: ({boardId, statusId}) => ({
 				url: BOARD_STATUS_URL(boardId, statusId),	
@@ -183,6 +193,7 @@ export const {
 	useAddBoardTicketsMutation,
 	useAddBoardStatusesMutation,
 	useDeleteBoardTicketMutation,
+	useDeleteBoardTicketsMutation,
 	useDeleteBoardStatusMutation,
 	useUpdateBoardStatusMutation,
 	useBulkEditBoardStatusesMutation,

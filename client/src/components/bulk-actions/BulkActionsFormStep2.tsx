@@ -8,16 +8,19 @@ interface Props {
 	operation: BulkEditOperationKey | null | undefined
 	setOperation: (operation: BulkEditOperationKey | null | undefined) => void
 	operations: Array<BulkEditOperation>
+	isAdminOrBoardAdmin: boolean
 }
 
-export const BulkActionsFormStep2 = ({step, setStep, numSelectedIssues, operation: propOperation, setOperation, operations}: Props) => {
-	
+export const BulkActionsFormStep2 = ({step, setStep, numSelectedIssues, operation: propOperation, setOperation, operations, isAdminOrBoardAdmin}: Props) => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<h3 className = "tw-m-0">Step 2 of 4: Choose Operation</h3>
 			<p>Choose the operation you wish to perform on <span className = "tw-font-semibold">{numSelectedIssues}</span> issues</p>
 			<div>
 				{operations.map((operation, index) => {
+					if (operation.key === "delete-issues" && !isAdminOrBoardAdmin){
+						return <></>
+					}
 					return (
 						<div key={operation.key} className = {`${index === 0 ? "tw-border-y" : "tw-border-b"} tw-flex tw-flex-row tw-py-2 tw-gap-x-4 tw-border-gray-300`} >
 							<div>
