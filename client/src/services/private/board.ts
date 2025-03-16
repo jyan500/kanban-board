@@ -62,7 +62,7 @@ export const boardApi = privateApi.injectEndpoints({
 		addBoard: builder.mutation<BoardResponse, BoardRequest>({
 			query: (board: BoardRequest) => ({
 				url: BOARD_URL,
-				body: {name: board.name},
+				body: {name: board.name, ticket_limit: board.ticketLimit},
 				method: "POST",
 			}),
 			invalidatesTags: ["Boards"]
