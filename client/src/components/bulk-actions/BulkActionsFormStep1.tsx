@@ -127,7 +127,7 @@ export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSe
 							itemIds={selectedIds} 
 						>
 							<>
-								<button onClick={selectCurrentPageIds} className = "button --secondary">Select current page</button>	
+								<button onClick={selectCurrentPageIds} className = "button">Select current page</button>	
 								<button onClick={unselectCurrentPageIds} className = "button --secondary">Unselect current page</button>	
 							</>
 						</BulkEditToolbar>

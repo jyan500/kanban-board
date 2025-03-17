@@ -41,9 +41,12 @@ type Props = {
 	ticket?: Ticket | null | undefined
 	statusId?: number | null | undefined
 	statusesToDisplay?: Array<Status>
+	isBulkAction?: boolean
+	title?: string
+	buttonBar?: React.ReactNode
 }
 
-export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId}: Props) => {
+export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isBulkAction, title, buttonBar}: Props) => {
 	const dispatch = useAppDispatch()
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
@@ -62,10 +65,10 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId}: Pr
 	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
+		ticketTypeId: 0,
 		description: "",
 		priorityId: 0,
 		statusId: statusId ?? 0,
-		ticketTypeId: 0,
 		userId: 0 
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
@@ -80,12 +83,14 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId}: Pr
 	const mentionNotificationType = notificationTypes?.find((notificationType) => notificationType?.name === "Mention")
 
 	const registerOptions = {
-	    name: { required: "Name is required" },
+		...(!isBulkAction ? {
+		    name: { required: "Name is required" },
+		    userId: {},
+		    ticketTypeId: { required: "Ticket Type is required"},
+		} : {}),
 		description: { required: "Description is required"},
 	    priorityId: { required: "Priority is required"},
 	    statusId: { required: "Status is required"},
-	    ticketTypeId: { required: "Ticket Type is required"},
-	    userId: {}
     }
 
 	useEffect(() => {
@@ -155,13 +160,18 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId}: Pr
 			<FormProvider {...methods}>
 				<form>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-						<div>
-							<label className = "label" htmlFor="ticket-name">Name</label>
-							<input className = "tw-w-full" id = "ticket-name" type = "text"
-							{...register("name", registerOptions.name)}
-							/>
-					        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
-						</div>
+						{title ? <p className = "tw-font-bold">{title}</p> : null}
+						{
+							!isBulkAction ? (
+								<div>
+									<label className = "label" htmlFor="ticket-name">Name</label>
+									<input className = "tw-w-full" id = "ticket-name" type = "text"
+									{...register("name", registerOptions.name)}
+									/>
+							        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
+								</div>
+							) : null
+						}
 						<div>
 							<label className = "label" htmlFor = "ticket-status">Status</label>
 							<select className = "tw-w-full" id = "ticket-status" {...register("statusId", registerOptions.statusId)}>
@@ -207,31 +217,38 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId}: Pr
 							</select>
 					        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
 						</div>
-						<div className = "tw-space-y-2">
-							<>
-								<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
-								<select className = "tw-w-full" id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
-									{ticketTypes.map((ticketType: TicketType) => {
-										return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
-									})}
-								</select>
-							</>
-					        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
-					        {
-					        	watch("ticketTypeId") == epicTicketType?.id ? (
-							        <div className = "tw-flex tw-flex tw-items-center tw-gap-x-2">
-								        <IconContext.Provider value={{color: "var(--bs-warning)"}}>
-											<WarningIcon className = "tw-h-6 tw-w-6"/>
-										</IconContext.Provider>
-										<span className = "tw-font-semibold">If the ticket type is "Epic", it cannot changed once saved.</span>
-									</div>
-					        	) : null
-					        }
-						</div>
-						
-						<div>
-							<LoadingButton onClick={handleSubmit(onSubmit)} className = "button" text={"Submit"}></LoadingButton>
-						</div>
+						{
+							!isBulkAction ? (
+								<div className = "tw-space-y-2">
+									<>
+										<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
+										<select className = "tw-w-full" id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
+											{ticketTypes.map((ticketType: TicketType) => {
+												return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
+											})}
+										</select>
+									</>
+							        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
+							        {
+							        	watch("ticketTypeId") == epicTicketType?.id ? (
+									        <div className = "tw-flex tw-flex tw-items-center tw-gap-x-2">
+										        <IconContext.Provider value={{color: "var(--bs-warning)"}}>
+													<WarningIcon className = "tw-h-6 tw-w-6"/>
+												</IconContext.Provider>
+												<span className = "tw-font-semibold">If the ticket type is "Epic", it cannot changed once saved.</span>
+											</div>
+							        	) : null
+							        }
+								</div>	
+							) : null
+						}
+						{
+							buttonBar ? buttonBar : (
+								<div>
+									<LoadingButton onClick={handleSubmit(onSubmit)} className = "button" text={"Submit"}></LoadingButton>
+								</div>
+							)
+						}
 					</div>
 				</form>
 			</FormProvider>

@@ -1,6 +1,8 @@
 import React from "react"
 import { BulkEditFormValues, BulkEditOperationKey } from "./BulkActionsForm"
 import { MoveTicketForm, FormValues as MoveTicketFormValues } from "../forms/MoveTicketForm"
+import { AddTicketForm, FormValues as AddTicketFormValues } from "../AddTicketForm"
+import { useAppSelector } from "../../hooks/redux-hooks"
 
 interface Props {
 	step: number
@@ -13,6 +15,7 @@ interface Props {
 }
 
 export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selectedIds, formValues, setFormValues}: Props) => {
+	const { statuses } = useAppSelector((state) => state.status)
 
 	const renderOperation = () => {
 		switch (operation){
@@ -22,6 +25,8 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 						{operationComponents["move-issues"]}
 					</div>
 				)
+			case "edit-issues":
+				return operationComponents["edit-issues"]
 		}
 	}
 
@@ -51,7 +56,7 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 			boardIdOption: formValues.boardIdOption,
 			shouldUnlink: formValues.shouldUnlink
 		}} numSelectedIssues={selectedIds.length} onSubmit={moveTicketSubmit} boardId={boardId} title={"Move Issues"} buttonBar={buttonBar()}/>,
-		"edit-issues": "",
+		"edit-issues": <AddTicketForm title={"Edit Issues"} buttonBar={buttonBar()} boardId={boardId} isBulkAction={true} statusesToDisplay={statuses}/>,
 		"delete-issues": "",
 		"watch-issues": "",
 		"stop-watching-issues": "",
