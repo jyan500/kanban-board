@@ -5,6 +5,7 @@ const {
 	validateCreate, 
 	validateUpdate, 
 	validateDelete,
+	validateBulkEdit,
 	validateTicketUserGet,
 	validateTicketUserCreate,
 	validateTicketUserDelete,
@@ -188,6 +189,34 @@ router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, n
 	}	
 	catch (err) {
 		console.log(`Error while getting tickets: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, res, next) => {
+	try {
+		const updateBody = {
+			...(req.body.status_id ? {status_id: req.body.status_id} : {}),
+			...(req.body.priority_id ? {priority_id: req.body.priority_id} : {})
+		}
+		if (Object.keys(updateBody).length){
+			await db("tickets").whereIn("id", req.body.ticket_ids).update(updateBody)
+		}
+		// re-assign user
+		if (req.body.user_ids.length){
+			const ticketUserBody = req.body.ticket_ids.map((id) => ({
+				ticket_id: id,
+				user_id: req.body.user_ids[0]
+			}))
+			// delete all existing assignees
+			await db("tickets_to_users").where("is_watcher", false).where("is_mention", false).whereIn("ticket_id", req.body.ticket_ids).del()
+			// re-insert new assignee for each ticket
+			await db("tickets_to_users").insert(ticketUserBody)
+		}
+		res.json({message: "Tickets updated successfully!"})
+	}	
+	catch (err) {
+		console.error(`Error while updating ticket: ${err.message}`)	
 		next(err)
 	}
 })

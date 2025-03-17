@@ -197,6 +197,19 @@ export const ticketApi = privateApi.injectEndpoints({
 			invalidatesTags: ["Tickets", "BoardTickets"]
 			// invalidatesTags: (result, error, arg) => [{type: "Tickets", id: arg.id}, {type: "BoardTickets", id: arg.id}]
 		}),
+		bulkEditTickets: builder.mutation<{message: string}, {ticketIds: Array<number>, priorityId: number, userIds: Array<number>, statusId: number}>({
+			query: ({ticketIds, priorityId, userIds, statusId}) => ({
+				url: `${TICKET_URL}/bulk-edit`,
+				method: "POST",
+				body: {
+					ticket_ids: ticketIds,
+					priority_id: priorityId,
+					user_ids: userIds,
+					status_id: statusId,
+				}
+			}),
+			invalidatesTags: ["Tickets", "BoardTickets"]
+		}),
 		deleteTicket: builder.mutation<{message: string}, number>({
 			query: (ticketId) => ({
 				url: `${TICKET_URL}/${ticketId}`,
@@ -294,6 +307,7 @@ export const {
 	useGetTicketsQuery, 
 	useLazyGetTicketsQuery,
 	useAddTicketMutation, 
+	useBulkEditTicketsMutation,
 	useUpdateTicketMutation,
 	useUpdateTicketStatusMutation,
 	useDeleteTicketMutation,

@@ -1,7 +1,7 @@
 import React from "react"
 import { BulkEditFormValues, BulkEditOperationKey } from "./BulkActionsForm"
 import { MoveTicketForm, FormValues as MoveTicketFormValues } from "../forms/MoveTicketForm"
-import { AddTicketForm, FormValues as AddTicketFormValues } from "../AddTicketForm"
+import { AddTicketForm, AddTicketFormValues } from "../AddTicketForm"
 import { useAppSelector } from "../../hooks/redux-hooks"
 
 interface Props {
@@ -39,6 +39,11 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 		})
 	}
 
+	const editTicketSubmit = async (values: AddTicketFormValues) => {
+		setStep(step+1)
+		setFormValues(values)
+	}
+
 	const buttonBar = () => {
 		return (
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
@@ -56,7 +61,14 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 			boardIdOption: formValues.boardIdOption,
 			shouldUnlink: formValues.shouldUnlink
 		}} numSelectedIssues={selectedIds.length} onSubmit={moveTicketSubmit} boardId={boardId} title={"Move Issues"} buttonBar={buttonBar()}/>,
-		"edit-issues": <AddTicketForm title={"Edit Issues"} buttonBar={buttonBar()} boardId={boardId} isBulkAction={true} statusesToDisplay={statuses}/>,
+		"edit-issues": <AddTicketForm step={step} formValues={{
+			statusId: formValues.statusId,
+			priorityId: formValues.priorityId,
+			userIdOption: formValues.userIdOption,
+			ticketTypeId: 0,
+			description: "",
+			name: "",
+		}} title={"Edit Issues"} onSubmit={editTicketSubmit} buttonBar={buttonBar()} boardId={boardId} isBulkAction={true} statusesToDisplay={statuses}/>,
 		"delete-issues": "",
 		"watch-issues": "",
 		"stop-watching-issues": "",

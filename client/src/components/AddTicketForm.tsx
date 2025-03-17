@@ -4,12 +4,13 @@ import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal, setModalType, setModalProps } from "../slices/modalSlice" 
 import { Controller, useForm, FormProvider } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
-import type { Mention, UserProfile, Status, Ticket, TicketType, Priority } from "../types/common"
+import type { Mention, UserProfile, Status, Ticket, TicketType, Priority, OptionType } from "../types/common"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
 import { 
 	useAddTicketMutation, 
 	useDeleteTicketMutation, 
 	useBulkEditTicketAssigneesMutation,
+	useBulkEditTicketsMutation,
 } 
 from "../services/private/ticket"
 import { TICKETS } from "../helpers/routes" 
@@ -26,14 +27,21 @@ import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
 
-export type FormValues = {
+export type FormCommon = {
 	id?: number
 	name: string
 	description: string 
 	priorityId: number
 	statusId: number
 	ticketTypeId: number
-	userId: number
+}
+
+export type FormValues = FormCommon & {
+	userId: number 
+}
+
+export type AddTicketFormValues = FormCommon & {
+	userIdOption: OptionType
 }
 
 type Props = {
@@ -44,9 +52,12 @@ type Props = {
 	isBulkAction?: boolean
 	title?: string
 	buttonBar?: React.ReactNode
+	onSubmit?: (values: AddTicketFormValues) => void
+	formValues?: AddTicketFormValues
+	step?: number
 }
 
-export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isBulkAction, title, buttonBar}: Props) => {
+export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isBulkAction, title, buttonBar, step, formValues, onSubmit: propsOnSubmit}: Props) => {
 	const dispatch = useAppDispatch()
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
@@ -62,17 +73,17 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
 	const [ deleteBoardTicket, {isLoading: isDeleteBoardTicketLoading, error: isDeleteBoardTicketError}] = useDeleteBoardTicketMutation()
 	const [ bulkCreateNotifications, {isLoading: isBulkCreateNotificationLoading}] = useBulkCreateNotificationsMutation()
-	const defaultForm: FormValues = {
+	const defaultForm: AddTicketFormValues = {
 		id: undefined,
 		name: "",
 		ticketTypeId: 0,
 		description: "",
 		priorityId: 0,
 		statusId: statusId ?? 0,
-		userId: 0 
+		userIdOption: {value: "", label: ""}
 	}
-	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const methods = useForm<FormValues>({
+	const [preloadedValues, setPreloadedValues] = useState<AddTicketFormValues>(defaultForm)
+	const methods = useForm<AddTicketFormValues>({
 		defaultValues: preloadedValues
 	})
 	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = methods
@@ -85,12 +96,12 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 	const registerOptions = {
 		...(!isBulkAction ? {
 		    name: { required: "Name is required" },
-		    userId: {},
+			description: { required: "Description is required"},
 		    ticketTypeId: { required: "Ticket Type is required"},
+		    priorityId: { required: "Priority is required"},
+		    statusId: { required: "Status is required"},
 		} : {}),
-		description: { required: "Description is required"},
-	    priorityId: { required: "Priority is required"},
-	    statusId: { required: "Status is required"},
+	    userIdOption: {},
     }
 
 	useEffect(() => {
@@ -99,7 +110,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 			reset({
 				...ticket, 
 				id: undefined,
-				userId: 0
+				userIdOption: {label: "", value: ""}
 			})
 		}
 		else {
@@ -107,10 +118,19 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 		}
 	}, [ticket])
 
-    const onSubmit = async (values: FormValues) => {
+	useEffect(() => {
+		if (formValues){
+			reset(formValues)
+		}
+	}, [formValues])
+
+    const onSubmit = async (values: AddTicketFormValues) => {
     	try {
+    		const assigneeId = !isNaN(Number(values.userIdOption.value)) ? Number(values.userIdOption.value) : 0
 	    	const {id: insertedTicketId, mentions} = await addTicket({
 	    		...values, 
+	    		// this value is unused, just for typescript purposes
+	    		userId: assigneeId,
 	    		description: values.description
 	    	}).unwrap()
 			if (mentionNotificationType && userProfile && mentions.length){
@@ -129,8 +149,8 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 		    	await addBoardTickets({boardId: boardId, ticketIds: [insertedTicketId]}).unwrap()
 	    	}
 	    	// update ticket assignees
-	    	if (values.userId){
-	    		await bulkEditTicketAssignees({ticketId: insertedTicketId, isWatcher: false, userIds: [values.userId]}).unwrap()
+	    	if (assigneeId){
+	    		await bulkEditTicketAssignees({ticketId: insertedTicketId, isWatcher: false, userIds: [assigneeId]}).unwrap()
 	    	}
 			dispatch(toggleShowModal(false))
 			dispatch(setModalType(undefined))
@@ -158,9 +178,12 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 	return (
 		<div className = "tw-flex tw-flex-col lg:tw-w-[500px]">
 			<FormProvider {...methods}>
-				<form>
+				<form onSubmit={handleSubmit(propsOnSubmit ?? onSubmit)}>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						{title ? <p className = "tw-font-bold">{title}</p> : null}
+						{
+							isBulkAction ? <span className = "tw-text-xs tw-font-semibold">Fill out the fields that you would like to update across all the selected tickets. Blank fields will be unchanged on the selected tickets.</span> : null
+						}
 						{
 							!isBulkAction ? (
 								<div>
@@ -181,32 +204,37 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 							</select>	
 					        {errors?.statusId && <small className = "--text-alert">{errors.statusId.message}</small>}
 						</div>
-						<div>
-							<label className = "label" htmlFor = "ticket-description">Description</label>
-							<SimpleEditor
-								registerField={"description"}
-								registerOptions={registerOptions.description}
-								mentionsEnabled={true}
-							/>
-					        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
-					    </div>
+						{
+							!isBulkAction ? (
+								<div>
+									<label className = "label" htmlFor = "ticket-description">Description</label>
+									<SimpleEditor
+										registerField={"description"}
+										registerOptions={registerOptions.description}
+										mentionsEnabled={true}
+									/>
+							        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
+							    </div>
+							) : null
+						}
 					    <div>
 							<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
 							<Controller
-								name={"userId"}
+								name={"userIdOption"}
 								control={control}
 				                render={({ field: { onChange, value, name, ref } }) => (
 			                	<AsyncSelect 
+			                		defaultValue={formValues?.userIdOption ?? {label: "", value: "'"}}
 				                	endpoint={USER_PROFILE_URL} 
 				                	urlParams={{forSelect: true}} 
 				                	className={"tw-w-full"}
 				                	onSelect={(selectedOption: {label: string, value: string} | null) => {
-				                		onChange(selectedOption?.value ?? "") 	
+				                		onChange(selectedOption) 	
 				                	}}
 				                />
 			                )}
 							/>
-					        {errors?.userId && <small className = "--text-alert">{errors.userId.message}</small>}
+					        {errors?.userIdOption && <small className = "--text-alert">{errors.userIdOption.message}</small>}
 						</div>
 						<div>
 							<label className = "label" htmlFor = "ticket-priority">Priority</label>
@@ -245,7 +273,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 						{
 							buttonBar ? buttonBar : (
 								<div>
-									<LoadingButton onClick={handleSubmit(onSubmit)} className = "button" text={"Submit"}></LoadingButton>
+									<LoadingButton type="submit" className = "button" text={"Submit"}></LoadingButton>
 								</div>
 							)
 						}

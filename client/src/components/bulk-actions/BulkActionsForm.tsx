@@ -9,6 +9,7 @@ import { BulkActionsFormStepIndicator } from "./BulkActionsFormStepIndicator"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketsMutation } from "../../services/private/board"
+import { useBulkEditTicketsMutation } from "../../services/private/ticket"
 import { OptionType, Toast } from "../../types/common"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
@@ -44,6 +45,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 	const isAdminOrBoardAdmin = userRole != null && userRole !== "" && (userRole === "ADMIN" || userRole === "BOARD_ADMIN")
 	const [addBoardTickets, {isLoading: addBoardTicketsLoading, error: addBoardTicketsErrors}] = useAddBoardTicketsMutation()
 	const [deleteBoardTickets, {isLoading: deleteBoardTicketsLoading, error: deleteBoardTicketsErrors}] = useDeleteBoardTicketsMutation()
+	const [bulkEditTickets, {isLoading: bulkEditTicketsLoading, error: bulkEditTicketsError}] = useBulkEditTicketsMutation()
 	const steps = [
 		{step: 1, text: "Choose Issues"},
 		{step: 2, text: "Choose Operation"},
@@ -79,8 +81,25 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		}
 	]
 
-		const editIssues = async () => {
-
+	const editIssues = async () => {
+		let defaultToast: Toast = {
+			id: uuidv4(),
+			message: "Something went wrong while editing tickets.",
+			animationType: "animation-in",
+			type: "failure"
+		}	
+		const { priorityId, statusId, userIdOption } = formValues
+		try {
+			await bulkEditTickets({ticketIds: selectedIds, priorityId, statusId, userIds: userIdOption.value !== "" ? [userIdOption.value] : []}).unwrap()
+			dispatch(addToast({
+				...defaultToast,
+				message: `${selectedIds.length} tickets edited successfully!`,
+				type: "success"
+			}))
+		}
+		catch (e){
+			dispatch(addToast(defaultToast))
+		}
 	} 
 
 	const moveIssues = async () => {
@@ -121,6 +140,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 	const onSubmit = () => {
 		switch (operation){
 			case "edit-issues":
+				editIssues()
 				break
 			case "move-issues":
 				moveIssues()
@@ -164,9 +184,26 @@ export const BulkActionsForm = ({boardId}: Props) => {
 					operations={operations}
 				/>
 			case 3:
-				return <BulkActionsFormStep3 formValues={formValues} setFormValues={setFormValues} selectedIds={selectedIds} boardId={boardId} operation={operation} step={step} setStep={setStep}/>
+				return <BulkActionsFormStep3 
+					formValues={formValues} 
+					setFormValues={setFormValues} 
+					selectedIds={selectedIds} 
+					boardId={boardId} 
+					operation={operation} 
+					step={step} 
+					setStep={setStep}
+				/>
 			case 4:
-				return <BulkActionsFormStep4 onSubmit={onSubmit} operation={operation} operations={operations} setSelectedIds={setSelectedIds} selectedIds={selectedIds} setStep={setStep} step={step} formValues={formValues}/>
+				return <BulkActionsFormStep4 
+					onSubmit={onSubmit} 
+					operation={operation} 
+					operations={operations} 
+					setSelectedIds={setSelectedIds} 
+					selectedIds={selectedIds} 
+					setStep={setStep} 
+					step={step} 
+					formValues={formValues}
+				/>
 		}	
 	}
 
