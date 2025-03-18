@@ -50,6 +50,7 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 			"Delete": () => {
 				dispatch(toggleShowSecondaryModal(true))
 				dispatch(setSecondaryModalType("DELETE_TICKET_WARNING"))
+				dispatch(setSecondaryModalProps({"currentTicketId": ticket?.id}))
 			}
 		}: {})
 	}

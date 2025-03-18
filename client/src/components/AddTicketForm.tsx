@@ -156,6 +156,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 			dispatch(setModalType(undefined))
 			dispatch(setModalProps({}))
 			dispatch(selectCurrentTicketId(null))
+			dispatch(toggleShowSecondaryModal(false))
 			dispatch(setSecondaryModalProps({}))
 			dispatch(setSecondaryModalType(undefined))
     		dispatch(addToast({
