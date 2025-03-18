@@ -1,8 +1,8 @@
 import React, { useRef } from "react" 
-import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
-import { Dropdown } from "./Dropdown" 
-import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../slices/secondaryModalSlice" 
-import { Ticket, Status } from "../types/common"
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
+import { Dropdown } from "../Dropdown" 
+import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice" 
+import { Ticket, Status } from "../../types/common"
 
 type Props = {
 	ticket: Ticket | null | undefined

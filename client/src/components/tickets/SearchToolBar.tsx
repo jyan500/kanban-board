@@ -24,9 +24,23 @@ type Props = {
 	additionalButtons?: () => React.ReactNode 
 	renderFilter?: () => React.ReactNode
 	children?: React.ReactNode
+	hidePagination?: boolean
 }
 
-export const SearchToolBar = ({children, onFormSubmit, showFilters, registerOptions, currentPage, paginationData, setPage, filters, renderFilter, additionalButtons, searchOptions}: Props) => {
+export const SearchToolBar = ({
+	children, 
+	onFormSubmit, 
+	showFilters, 
+	registerOptions, 
+	currentPage, 
+	paginationData, 
+	setPage, 
+	filters, 
+	renderFilter, 
+	additionalButtons, 
+	searchOptions,
+	hidePagination,
+}: Props) => {
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
@@ -37,7 +51,7 @@ export const SearchToolBar = ({children, onFormSubmit, showFilters, registerOpti
 	const {register, reset, getValues, control, formState: {errors}} = methods
 
 	return (
-		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
+		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-justify-between">
 				<FormProvider {...methods}>
 					<form onSubmit={(e) => {
@@ -105,15 +119,20 @@ export const SearchToolBar = ({children, onFormSubmit, showFilters, registerOpti
 				) : null
 			}
 			</div>
-			<div className = "tw-w-full lg:tw-w-1/3 tw-p-4 tw-rounded-md tw-border tw-border-gray-300">
-				<PaginationRow
-					showNumResults={true}
-					showPageNums={false}
-					setPage={setPage}
-					currentPage={currentPage}
-					paginationData={paginationData}
-				/>
-			</div>
+			{
+				!hidePagination ? (
+					<div className = "tw-w-full lg:tw-w-1/3 tw-p-4 tw-rounded-md tw-border tw-border-gray-300">
+						<PaginationRow
+							showNumResults={true}
+							showPageNums={false}
+							setPage={setPage}
+							currentPage={currentPage}
+							paginationData={paginationData}
+						/>
+					</div>
+				) : null
+			}
+			
 		</div>
 	)
 }

@@ -10,7 +10,7 @@ import { useClickOutside } from "../../hooks/useClickOutside"
 import { FaRegBell } from "react-icons/fa";
 import { IconContext } from "react-icons"
 import { Indicator } from "../../components/page-elements/Indicator"
-import { NotificationDropdown } from "../NotificationDropdown"
+import { NotificationDropdown } from "../dropdowns/NotificationDropdown"
 import { 
 	useGetNotificationsQuery, 
 	usePollNotificationsQuery,

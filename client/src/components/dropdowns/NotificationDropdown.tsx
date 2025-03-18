@@ -1,15 +1,15 @@
 import React, { useRef } from "react" 
-import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
-import { Dropdown } from "./Dropdown" 
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
+import { Dropdown } from "../Dropdown" 
 import { 
 	useUpdateNotificationMutation,
 	useBulkEditNotificationsMutation, 
-} from "../services/private/notification"
-import { addToast } from "../slices/toastSlice"
-import { Toast, Notification } from "../types/common"
+} from "../../services/private/notification"
+import { addToast } from "../../slices/toastSlice"
+import { Toast, Notification } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { Link, useLocation } from 'react-router-dom';
-import { NOTIFICATIONS } from "../helpers/routes"
+import { NOTIFICATIONS } from "../../helpers/routes"
 
 type Props = {
 	notifications: Array<Notification> | undefined | null

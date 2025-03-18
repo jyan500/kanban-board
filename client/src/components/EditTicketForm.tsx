@@ -26,7 +26,7 @@ import { TicketCommentForm } from "./TicketCommentForm"
 import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
 import { priorityIconMap, TicketTypeIcon , colorMap } from "./Ticket"
-import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown" 
+import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown" 
 import { ImTree as AddToEpicIcon } from "react-icons/im";
 import { Badge } from "./page-elements/Badge"
 import { PaginationRow } from "./page-elements/PaginationRow"

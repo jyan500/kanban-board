@@ -3,15 +3,16 @@ import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { IoMdClose } from "react-icons/io";
 
 type Props = {
-	applyActionToAll: (ids: Array<number>) => void
+	applyActionToAll?: (ids: Array<number>) => void
 	applyRemoveToAll?: (ids: Array<number>) => void
 	updateIds: (ids: Array<number>) => void
-	actionText: string
+	actionText?: string
 	removeText?: string
 	itemIds: Array<number>
+	children?: React.ReactNode
 }
 
-export const BulkEditToolbar = ({itemIds, applyActionToAll, applyRemoveToAll, actionText, removeText, updateIds}: Props) => {
+export const BulkEditToolbar = ({itemIds, applyActionToAll, applyRemoveToAll, actionText, removeText, updateIds, children}: Props) => {
 	return (
 		itemIds.length > 0 ? 
 		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center tw-relative tw-border tw-w-full tw-gap-x-2 tw-p-4 tw-rounded-md tw-shadow">
@@ -23,8 +24,13 @@ export const BulkEditToolbar = ({itemIds, applyActionToAll, applyRemoveToAll, ac
 			</button>
 			<div><p className = "tw-font-bold tw-text-lg">{itemIds.length} Selected</p></div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<button onClick={(e) => updateIds([])} className = "button !tw-bg-secondary">Unselect All</button>
-				<button onClick={(e) => applyActionToAll(itemIds)} className = "button">{actionText}</button>
+				{children}
+				<button onClick={(e) => updateIds([])} className = "button --secondary">Unselect All</button>
+				{
+					applyActionToAll && actionText ? 
+						<button onClick={(e) => applyActionToAll(itemIds)} className = "button">{actionText}</button>
+					: null
+				}
 				{
 					applyRemoveToAll && removeText ? 
 						<button onClick={(e) => applyRemoveToAll(itemIds)} className = "button --alert">{removeText}</button>

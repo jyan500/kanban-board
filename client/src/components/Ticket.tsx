@@ -19,7 +19,7 @@ import { useGetUserQuery } from "../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSpinner } from "./LoadingSpinner"
 import { BsThreeDots as MenuIcon } from "react-icons/bs";
-import { EditTicketFormMenuDropdown } from "./EditTicketFormMenuDropdown"
+import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown"
 import { useClickOutside } from "../hooks/useClickOutside" 
 import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../helpers/constants"
@@ -68,7 +68,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: 
 	const {priorities} = useAppSelector((state) => state.priority)
 	const {statuses} = useAppSelector((state) => state.status)
 	const {ticketTypes} = useAppSelector((state) => state.ticketType)
-	const { data, isFetching } = useGetUserQuery(ticket?.assignees?.[0] ?? skipToken)
+	const { data, isFetching } = useGetUserQuery(ticket?.assignees?.[0].id ?? skipToken)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef(null)
 	const [showDropdown, setShowDropdown] = useState(false)
@@ -78,7 +78,6 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: 
 	const { width, height } = useScreenSize()
 
 	const onClickOutside = () => {
-		console.log("dropdownAlignLeft: ", dropdownAlignLeft)
 		setShowDropdown(false)	
 	}
 

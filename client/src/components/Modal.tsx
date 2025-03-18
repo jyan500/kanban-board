@@ -10,6 +10,7 @@ import { EditUserFormModal } from "./primary-modals/EditUserFormModal"
 import { BoardForm } from "./BoardForm" 
 import { BoardStatusModal } from "./primary-modals/BoardStatusModal"
 import { OrganizationStatusModal } from "./primary-modals/OrganizationStatusModal"
+import { BulkActionsModal } from "./primary-modals/BulkActionsModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { PRIMARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
 import { useScreenSize } from "../hooks/useScreenSize"
@@ -21,6 +22,7 @@ export const modalTypes = {
 	"ORGANIZATION_STATUS_FORM": OrganizationStatusModal,
 	"BOARD_FORM": BoardForm,
 	"USER_FORM": EditUserFormModal,
+	"BULK_ACTIONS_MODAL": BulkActionsModal,
 }
 
 export const modalClassNames = {
@@ -31,6 +33,7 @@ export const modalClassNames = {
 	"EDIT_TICKET_FORM": "--l-modal-height tw-top-[50%]",
 	"ORGANIZATION_STATUS_FORM": "--l-modal-height tw-top-[50%]",
 	"BOARD_FORM": "--l-modal-height tw-top-[50%]",
+	"BULK_ACTIONS_MODAL": "--l-modal-height tw-top-[50%]",
 }
 
 // type for partial subset of keys

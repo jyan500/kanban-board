@@ -20,7 +20,7 @@ const ticketValidator = (actionType) => {
 			], "tickets"))
 		]
 	}
-	if (actionType !== "delete" && actionType !== "get"){
+	if (actionType === "create" || actionType === "update"){
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required"),
@@ -34,6 +34,70 @@ const ticketValidator = (actionType) => {
 			body("ticket_type_id").notEmpty().withMessage("ticket_type_id is required").custom(async (value, {req}) => await checkEntityExistsIn("ticket type", value, [{col: "id", value: value}], "ticket_types")),
 			body("status_id").notEmpty().withMessage("status_id is required").custom(async (value, {req}) => await checkEntityExistsIn("status", value, [{"col": "id", "value": value}], "statuses")),
 			body("priority_id").notEmpty().withMessage("priority_id is required").custom(async (value, {req}) => await checkEntityExistsIn("priority", value, [{"col": "id", "value": value}], "priorities")),
+		]
+	}
+	if (actionType === "bulk-edit"){
+		validationRules = [
+			...validationRules,
+			body("status_id").if((value, {req}) => {
+				return req.body.status_id
+			}).custom(async (value, {req}) => await checkEntityExistsIn("status", value, [{"col": "id", "value": value}], "statuses")),
+			body("priority_id").if((value, {req}) => {
+				return req.body.priority_id	
+			}).custom(async (value, {req}) => await checkEntityExistsIn("priority", value, [{"col": "id", "value": value}], "priorities")),
+			body("user_ids").if((value, {req}) => {
+				return req.body.user_ids
+			})
+			.isArray({min: 0, max: BULK_INSERT_LIMIT})
+			.withMessage("user_ids must be an array")
+			.withMessage(`user_ids cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			body("user_ids.*").custom(async (value, {req}) => await checkEntityExistsIn("user", value, [{
+				col: "user_id",
+				value: value	
+			},
+			{
+				col: "organization_id",
+				value: req.user.organization
+			}], "organization_user_roles")),
+			body("ticket_ids")
+			.isArray({min: 0, max: BULK_INSERT_LIMIT})
+			.withMessage("ticket_ids must be an array")
+			.withMessage(`ticket_ids cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			body("ticket_ids.*").custom(async (value, {req}) => await checkEntityExistsIn("ticket", value, [{
+				col: "id",	
+				value: value,
+			},
+			{
+				col: "organization_id",	
+				value: req.user.organization
+			}], "tickets"))
+		]
+	}
+	if (actionType === "bulk-watch"){
+		validationRules = [
+			...validationRules,
+			body("to_add").notEmpty().withMessage("to add is required"),
+			body("user_id").custom(async (value, {req}) => await checkEntityExistsIn("user", value, [{
+				col: "user_id",
+				value: value,
+			},
+			{
+				col: "organization_id",
+				value: req.user.organization,
+			}
+			], "organization_user_roles")),
+			body("ticket_ids")
+			.isArray({min: 0, max: BULK_INSERT_LIMIT})
+			.withMessage("ticket_ids must be an array")
+			.withMessage(`ticket_ids cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			body("ticket_ids.*").custom(async (value, {req}) => await checkEntityExistsIn("ticket", value, [{
+				col: "id",	
+				value: value,
+			},
+			{
+				col: "organization_id",	
+				value: req.user.organization
+			}], "tickets"))	
 		]
 	}
 	return validationRules
@@ -130,6 +194,7 @@ const ticketUserValidator = (actionType) => {
 			]
 		}
 	}
+
 	return validationRules
 }
 
@@ -228,6 +293,8 @@ module.exports = {
 	validateCreate: ticketValidator("create"),
 	validateUpdate: ticketValidator("update"),
 	validateDelete: ticketValidator("delete"),
+	validateBulkEdit: ticketValidator("bulk-edit"),
+	validateBulkWatch: ticketValidator("bulk-watch"),
 	validateTicketUserGet: ticketUserValidator("get"),
 	validateTicketUserCreate: ticketUserValidator("create"),
 	validateTicketUserDelete: ticketUserValidator("delete"),

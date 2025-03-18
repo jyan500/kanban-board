@@ -62,7 +62,7 @@ export const boardApi = privateApi.injectEndpoints({
 		addBoard: builder.mutation<BoardResponse, BoardRequest>({
 			query: (board: BoardRequest) => ({
 				url: BOARD_URL,
-				body: {name: board.name},
+				body: {name: board.name, ticket_limit: board.ticketLimit},
 				method: "POST",
 			}),
 			invalidatesTags: ["Boards"]
@@ -82,7 +82,7 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Boards"]
 		}),
-		getBoardTickets: builder.query<Array<Ticket>, {id: number, urlParams: Record<string, any>}>({
+		getBoardTickets: builder.query<ListResponse<Ticket>, {id: number, urlParams: Record<string, any>}>({
 			query: ({id, urlParams}) => ({
 				url: BOARD_TICKET_URL(id, ""),
 				method: "GET",
@@ -90,8 +90,14 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["BoardTickets"],
 			// sort by ticket name
-			transformResponse: (response: Array<Ticket>) => {
-				return response.sort((a,b) => a.name.localeCompare(b.name))
+			transformResponse: (response: ListResponse<Ticket>, meta: unknown, arg: Record<string, any>) => {
+				if (!arg.urlParams.sortByCreatedAt){
+					return {
+						data: response.data.sort((a,b) => a.name.localeCompare(b.name)),
+						pagination: response.pagination
+					}
+				}
+				return response
 			}
 		}),
 		getBoardStatuses: builder.query<Array<Status>, Record<string, any>>({
@@ -146,6 +152,16 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Boards", "BoardTickets"]	
 		}),
+		deleteBoardTickets: builder.mutation<BoardTicketResponse, {boardId: number, ticketIds: Array<number>}>({
+			query: ({boardId, ticketIds}) => ({
+				url: BOARD_TICKET_URL(boardId, ""),
+				body: {
+					ticket_ids: ticketIds
+				},
+				method: "DELETE"
+			}),
+			invalidatesTags: ["Boards", "BoardTickets"]
+		}),
 		deleteBoardStatus: builder.mutation<BoardStatusResponse, {boardId: number, statusId: number}>({
 			query: ({boardId, statusId}) => ({
 				url: BOARD_STATUS_URL(boardId, statusId),	
@@ -177,6 +193,7 @@ export const {
 	useAddBoardTicketsMutation,
 	useAddBoardStatusesMutation,
 	useDeleteBoardTicketMutation,
+	useDeleteBoardTicketsMutation,
 	useDeleteBoardStatusMutation,
 	useUpdateBoardStatusMutation,
 	useBulkEditBoardStatusesMutation,

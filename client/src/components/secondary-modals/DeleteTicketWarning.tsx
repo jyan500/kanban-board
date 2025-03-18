@@ -65,7 +65,7 @@ export const DeleteTicketWarning = () => {
 			<Warning onSubmit={onDelete} onCancel={onCancel} title={"Delete Ticket"} submitText={"Delete"} cancelText={"Cancel"}>
 				<div className = "tw-py-4">
 					<strong>You're about to permanently delete this issue, its comments, and all of its data.</strong>
-					<p>If you're not sure, you can resolve or close this issue instead.</p>
+					<p>If you're not sure, you can change the status of the issue instead.</p>
 				</div>
 			</Warning>
 		</div>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react"
+import React, {useState, useEffect, useRef} from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { SearchBar } from "../SearchBar" 
 import "../../styles/toolbar.css"
@@ -12,7 +12,11 @@ import { Board, GroupByOptionsKey } from "../../types/common"
 import { useGetUserProfilesQuery } from "../../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useScreenSize } from "../../hooks/useScreenSize"
+import { useClickOutside } from "../../hooks/useClickOutside" 
 import { MD_BREAKPOINT, GROUP_BY_OPTIONS } from "../../helpers/constants"
+import { IconButton } from "../page-elements/IconButton"
+import { IconGear } from "../icons/IconGear"
+import { BoardToolbarDropdown } from "../dropdowns/BoardToolbarDropdown"
 
 type FormValues = {
 	query: string	
@@ -21,10 +25,14 @@ type FormValues = {
 export const ToolBar = () => {
 	const dispatch = useAppDispatch()
 	const { board, boardInfo: primaryBoardInfo, tickets, statusesToDisplay, groupBy } = useAppSelector((state) => state.board)
+	const { showModal } = useAppSelector((state) => state.modal)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { width, height } = useScreenSize()
+	const [showDropdown, setShowDropdown] = useState(false)
+	const buttonRef = useRef(null)
+	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { data, isFetching} = useGetUserProfilesQuery(primaryBoardInfo?.assignees ? {userIds: primaryBoardInfo?.assignees} : skipToken)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
@@ -50,6 +58,18 @@ export const ToolBar = () => {
 	// 		dispatch(setFilteredTickets(filtered))
 	// 	}	
 	// }, [debouncedSearchTerm])
+
+	const onClickOutside = () => {
+		setShowDropdown(false)	
+	}
+
+	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
+
+	useEffect(() => {
+		if (!showModal){
+			setShowDropdown(false)
+		}
+	}, [showModal])
 
 	const onSubmit = (values: FormValues) => {
 		if (values.query === ""){
@@ -123,6 +143,19 @@ export const ToolBar = () => {
 							))
 						}
 					</select>
+				</div>
+				<div className = "tw-relative tw-inline-block">
+					<button ref = {buttonRef} onClick={(e) => {
+						setShowDropdown(!showDropdown)
+					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconGear className = "tw-w-6 tw-h-6"/></button>
+					{
+						showDropdown ? <BoardToolbarDropdown
+							ref={menuDropdownRef}
+							closeDropdown={onClickOutside}
+							boardId={primaryBoardInfo?.id}
+							statusesToDisplay={statusesToDisplay}
+						/> : null
+					}
 				</div>
 			</div>
 		</div>

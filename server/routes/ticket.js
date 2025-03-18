@@ -5,6 +5,8 @@ const {
 	validateCreate, 
 	validateUpdate, 
 	validateDelete,
+	validateBulkEdit,
+	validateBulkWatch,
 	validateTicketUserGet,
 	validateTicketUserCreate,
 	validateTicketUserDelete,
@@ -127,12 +129,18 @@ router.get("/", async (req, res, next) => {
 		if (req.query.includeAssignees){
 			tickets = {...tickets, data: await Promise.all(
 				tickets.data.map(async (ticket) => {
-					const assignees = await db("tickets_to_users").where("ticket_id", ticket.id).where("is_watcher", false).where("is_mention", false).select(
-						"user_id as userId",
+					const assignees = await db("tickets_to_users").join("users", "users.id", "=", "tickets_to_users.user_id").where("ticket_id", ticket.id).where("is_watcher", false).where("is_mention", false).select(
+						"users.id as id",
+						"users.first_name as firstName",
+						"users.last_name as lastName",
 					)
 					return {
 						...ticket,
-						assignees: assignees.map((assignee) => assignee.userId)
+						assignees: assignees.map((assignee) => ({
+							id: assignee.id,
+							firstName: assignee.firstName,
+							lastName: assignee.lastName
+						}))
 					}					
 				})
 			)}
@@ -182,6 +190,71 @@ router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, n
 	}	
 	catch (err) {
 		console.log(`Error while getting tickets: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, res, next) => {
+	try {
+		const updateBody = {
+			...(req.body.status_id ? {status_id: req.body.status_id} : {}),
+			...(req.body.priority_id ? {priority_id: req.body.priority_id} : {})
+		}
+		if (Object.keys(updateBody).length){
+			await db("tickets").whereIn("id", req.body.ticket_ids).update(updateBody)
+		}
+		// re-assign user
+		if (req.body.user_ids.length){
+			const ticketUserBody = req.body.ticket_ids.map((id) => ({
+				ticket_id: id,
+				user_id: req.body.user_ids[0]
+			}))
+			// delete all existing assignees
+			await db("tickets_to_users").where("is_watcher", false).where("is_mention", false).whereIn("ticket_id", req.body.ticket_ids).del()
+			// re-insert new assignee for each ticket
+			await db("tickets_to_users").insert(ticketUserBody)
+		}
+		res.json({message: "Tickets updated successfully!"})
+	}	
+	catch (err) {
+		console.error(`Error while updating ticket: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.post("/bulk-watch", validateBulkWatch, handleValidationResult, async (req, res, next) => {
+	try {
+		if (req.body.to_add){
+			let ticketIdsToWatch = await Promise.all(req.body.ticket_ids.map(async (id) => {
+				// if the user is not a watcher for this ticket, add them to a list of ticket ids
+				const watcher = await db("tickets_to_users").where("ticket_id", id).where("user_id", req.body.user_id).where("is_watcher", true).where("is_mention", false).first()
+				if (!watcher){
+					return id
+				}
+			}))
+			// filter out null values
+			const body = ticketIdsToWatch.filter((id) => id).map((id) => ({
+				ticket_id: id,
+				user_id: req.body.user_id,
+				is_watcher: true
+			}))
+			await db("tickets_to_users").insert(body)
+			res.json({message: "Watcher has been added to tickets successfully!"})
+		}
+		else {
+			let ticketsToUsersIds = await Promise.all(req.body.ticket_ids.map(async (id) => {
+				const watcher = await db("tickets_to_users").where("ticket_id", id).where("user_id", req.body.user_id).where("is_watcher", true).where("is_mention", false).first()	
+				if (watcher){
+					return watcher.id
+				}
+			}))
+			// delete all the ticket to users rows where the user is a watcher
+			await db("tickets_to_users").whereIn("id", ticketsToUsersIds.filter(id => id)).del()
+			res.json({message: "Watcher has been removed from tickets successfully!"})
+		}
+	}	
+	catch (err){
+		console.error(`Error while editing watchers on ticket: ${err.message}`)	
 		next(err)
 	}
 })
@@ -304,6 +377,7 @@ router.delete("/:ticketId/user/:userId", validateTicketUserGet, handleValidation
 		.where("ticket_id", req.params.ticketId)
 		.where("user_id", req.params.userId)
 		.where("is_watcher", true)
+		.where("is_mention", false)
 		.del()
 		res.json({"message": "user unassigned from ticket successfully!"})
 	}	

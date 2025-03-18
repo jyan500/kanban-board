@@ -12,7 +12,8 @@ module.exports = {
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       charset: 'utf8mb4',
-      collate: 'utf8mb4_unicode_ci',
+      // causes warning issues on mysql2 client
+      // collate: 'utf8mb4_unicode_ci',
     },
     seeds: {
     	directory: "./db/seeds"

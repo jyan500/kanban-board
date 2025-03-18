@@ -1,5 +1,5 @@
 import { GROUP_BY_OPTIONS } from "./constants"
-import { Ticket, Status, GroupByOptionsKey, GroupedTickets } from "../types/common"
+import { Ticket, Status, GroupByOptionsKey, GroupedTickets, UserProfile } from "../types/common"
 
 type GroupByModifier = {
 	[key in GroupByOptionsKey]: (tickets: Array<Ticket>) => Record<string, Array<Ticket>>
@@ -38,12 +38,12 @@ const groupByModifierMap: GroupByModifier = {
 	},
 	"ASSIGNEE": (tickets: Array<Ticket>) => {
 		return tickets.reduce((acc: Record<string, Array<Ticket>>, ticket: Ticket) => {
-			ticket.assignees?.forEach((userId: number) => {
-				if (userId in acc){
-					acc[userId].push(ticket)
+			ticket.assignees?.forEach((user: Pick<UserProfile, "id" | "firstName" | "lastName">) => {
+				if (user.id in acc){
+					acc[user.id].push(ticket)
 				}	
 				else {
-					acc[userId] = [ticket]
+					acc[user.id] = [ticket]
 				}
 			})
 			return acc
