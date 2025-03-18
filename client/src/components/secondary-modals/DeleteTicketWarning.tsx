@@ -10,7 +10,6 @@ import { Warning } from "./Warning"
 import { IconContext } from "react-icons"
 import { Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
-import { DeleteTicketWarningText } from "../page-elements/DeleteTicketWarningText"
 
 export const DeleteTicketWarning = () => {
 	const {
@@ -65,7 +64,8 @@ export const DeleteTicketWarning = () => {
 		<div>
 			<Warning onSubmit={onDelete} onCancel={onCancel} title={"Delete Ticket"} submitText={"Delete"} cancelText={"Cancel"}>
 				<div className = "tw-py-4">
-					<DeleteTicketWarningText/>
+					<strong>You're about to permanently delete this issue, its comments, and all of its data.</strong>
+					<p>If you're not sure, you can change the status of the issue instead.</p>
 				</div>
 			</Warning>
 		</div>

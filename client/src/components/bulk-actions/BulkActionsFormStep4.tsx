@@ -6,7 +6,6 @@ import { BulkEditFormValues, BulkEditOperation, BulkEditOperationKey } from "./B
 import { useBoardTicketConfig } from "../../helpers/table-config/useBoardTicketConfig"
 import { PaginationRow } from "../page-elements/PaginationRow"
 import { LoadingSpinner } from "../LoadingSpinner"
-import { DeleteTicketWarningText } from "../page-elements/DeleteTicketWarningText"
 import { IconWarning } from "../icons/IconWarning"
 
 interface Props {
@@ -46,11 +45,12 @@ export const BulkActionsFormStep4 = ({selectedIds, skipStep3, step, setStep, for
 					/>
 				) : null
 			}
-			{operation === "delete-issues" ? (
+			{operation === "remove-issues" ? (
 				<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
 					<IconWarning className = "tw-w-8 tw-h-8"/>
 					<div>
-						<DeleteTicketWarningText/>
+						<strong>You're about to remove the selected issues from the board.</strong>
+						<p>Note this does not <span>permanently</span> delete the ticket.</p>
 					</div>
 				</div>
 			) : null}

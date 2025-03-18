@@ -69,9 +69,6 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 			description: "",
 			name: "",
 		}} title={"Edit Issues"} onSubmit={editTicketSubmit} buttonBar={buttonBar()} boardId={boardId} isBulkAction={true} statusesToDisplay={statuses}/>,
-		"delete-issues": "",
-		"watch-issues": "",
-		"stop-watching-issues": "",
 	}
 
 	return (

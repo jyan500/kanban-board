@@ -19,7 +19,7 @@ export const BulkActionsFormStep2 = ({step, setStep, skipStep3, numSelectedIssue
 			<p>Choose the operation you wish to perform on <span className = "tw-font-semibold">{numSelectedIssues}</span> issues</p>
 			<div>
 				{operations.map((operation, index) => {
-					if (operation.key === "delete-issues" && !isAdminOrBoardAdmin){
+					if (operation.key === "remove-issues" && !isAdminOrBoardAdmin){
 						return <></>
 					}
 					return (

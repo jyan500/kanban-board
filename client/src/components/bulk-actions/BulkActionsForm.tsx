@@ -24,7 +24,7 @@ export interface BulkEditOperation {
 	description: string
 }
 
-export type BulkEditOperationKey = "move-issues" | "edit-issues" | "delete-issues" | "watch-issues" | "stop-watching-issues"
+export type BulkEditOperationKey = "move-issues" | "edit-issues" | "remove-issues" | "watch-issues" | "stop-watching-issues"
 
 export interface BulkEditFormValues {
 	selectedTicketIds?: Array<number>
@@ -52,7 +52,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		{step: 3, text: "Operation Details"},
 		{step: 4, text: "Confirmation"},
 	]
-	const skipStep3 = operation === "delete-issues" || operation === "watch-issues" || operation === "stop-watching-issues"
+	const skipStep3 = operation === "remove-issues" || operation === "watch-issues" || operation === "stop-watching-issues"
 
 	const operations: Array<BulkEditOperation> = [
 		{
@@ -66,9 +66,9 @@ export const BulkActionsForm = ({boardId}: Props) => {
 			description: "Move issues to new boards",
 		},
 		{
-			key: "delete-issues",
-			text: "Delete Issues",
-			description: "Permanently delete issues",
+			key: "remove-issues",
+			text: "Remove Issues",
+			description: "Remove issues from the board",
 		},
 		{
 			key: "watch-issues",
@@ -126,8 +126,29 @@ export const BulkActionsForm = ({boardId}: Props) => {
     	}
 	}
 
-	const deleteIssues = async () => {
-
+	const removeIssues = async () => {
+		let defaultToast: Toast = {
+			id: uuidv4(),
+			message: "Something went wrong while moving tickets.",
+			animationType: "animation-in",
+			type: "failure"
+		}
+		if (boardId){
+			try {
+				await deleteBoardTickets({boardId: boardId, ticketIds: selectedIds}).unwrap()
+				dispatch(addToast({
+					...defaultToast,
+					message: `${selectedIds.length} tickets removed from board successfully!`,
+					type: "success"
+				}))
+			}
+			catch (e){
+				dispatch(addToast(defaultToast))	
+			}
+		}
+		else {
+			dispatch(addToast(defaultToast))	
+		}
 	}
 
 	const watchIssues = async () => {
@@ -146,7 +167,8 @@ export const BulkActionsForm = ({boardId}: Props) => {
 			case "move-issues":
 				moveIssues()
 				break
-			case "delete-issues":
+			case "remove-issues":
+				removeIssues()
 				break
 			case "watch-issues":
 				break
