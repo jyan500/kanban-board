@@ -41,42 +41,22 @@ export const TopNav = () => {
 	const [lastId, setLastId] = useState(0)
 	const [currentNotifications, setCurrentNotifications] = useState<Array<Notification>>([])
 
-	const { data: notifications, isLoading: isGetNotificationsLoading } = useGetNotificationsQuery({}, {
-		pollingInterval: 30000,
-		skipPollingIfUnfocused: true
-	}) 
 	// TODO: need to figure out why this causes other cache invalidation requests to lag (i.e add/remove ticket watchers)
-	// const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery(lastId !== 0 ? {lastId: lastId} : skipToken, {
-	// 	pollingInterval: 31000,
-	// 	// skipPollingIfUnfocused: true
-	// })
-
-    const [ updateNotification, { error: updateNotificationError, isLoading: isUpdateNotificationLoading} ] = useUpdateNotificationMutation();
-    const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
+	const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery(lastId !== 0 ? {lastId: lastId} : skipToken, {
+		pollingInterval: 31000,
+		// skipPollingIfUnfocused: true
+	})
 
 	useEffect(() => {
-		if (notifications?.data && notifications?.data.length > 0){
-			const unreadMessages = notifications.data.filter(n => !n.isRead)
+		if (newNotifications && newNotifications?.length > 0){
+			const unreadMessages = newNotifications.filter(n => !n.isRead)
 			const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
 			if (lastId < newLastUnreadId){
-				setLastId(Math.max(...notifications.data.map(n => n.id)))
+				setLastId(Math.max(...newNotifications.map(n => n.id)))
 			}
 			setShowIndicator(unreadMessages.length > 0)
-			setCurrentNotifications(notifications.data)
 		}
-	}, [notifications])
-
-	// useEffect(() => {
-	// 	if (newNotifications && newNotifications?.length > 0){
-	// 		const unreadMessages = newNotifications.filter(n => !n.isRead)
-	// 		const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
-	// 		if (lastId < newLastUnreadId){
-	// 			setLastId(Math.max(...newNotifications.map(n => n.id)))
-	// 		}
-	// 		setShowIndicator(unreadMessages.length > 0)
-	// 		setCurrentNotifications([...newNotifications, ...currentNotifications])
-	// 	}
-	// }, [newNotifications])
+	}, [newNotifications])
 
 	useEffect(() => {
 		if (userProfile && Object.keys(userProfile).length){
@@ -93,22 +73,22 @@ export const TopNav = () => {
 		dispatch(privateApi.util.resetApiState())
 	}
 
-	const markMessagesRead = async () => {
-		const unreadMessages = currentNotifications.filter(n => !n.isRead)
-		if (unreadMessages.length){
-			try {
-				await bulkEditNotifications({isRead: true, ids: currentNotifications.map((n) => n.id) ?? []}).unwrap()
-			}
-			catch (err){
-				dispatch(addToast({
-					id: uuidv4(),
-					message: "Failed to mark notifications as read.",
-					animationType: "animation-in",
-					type: "failure"
-				}))
-			}
-		}		
-	}
+	// const markMessagesRead = async () => {
+	// 	const unreadMessages = currentNotifications.filter(n => !n.isRead)
+	// 	if (unreadMessages.length){
+	// 		try {
+	// 			await bulkEditNotifications({isRead: true, ids: currentNotifications.map((n) => n.id) ?? []}).unwrap()
+	// 		}
+	// 		catch (err){
+	// 			dispatch(addToast({
+	// 				id: uuidv4(),
+	// 				message: "Failed to mark notifications as read.",
+	// 				animationType: "animation-in",
+	// 				type: "failure"
+	// 			}))
+	// 		}
+	// 	}		
+	// }
 
 	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
 
@@ -171,14 +151,15 @@ export const TopNav = () => {
 				</div>
 			) : (
 				/* On the mobile version, only display the bell icon, and tapping it will link to the notifications page */
-				<div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
-					<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
-						<Link to={NOTIFICATIONS} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
-							<FaRegBell className = "--l-icon"/>
-							<Indicator showIndicator={showIndicator}/>
-						</Link>
-					</IconContext.Provider>
-				</div>
+				// <div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
+				// 	<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
+				// 		<Link to={NOTIFICATIONS} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
+				// 			<FaRegBell className = "--l-icon"/>
+				// 			<Indicator showIndicator={showIndicator}/>
+				// 		</Link>
+				// 	</IconContext.Provider>
+				// </div>
+				<></>
 			)}
 		</div>
 	)

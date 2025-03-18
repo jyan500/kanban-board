@@ -28,6 +28,7 @@ export const notificationApi = privateApi.injectEndpoints({
 				method: "GET",
 				params: urlParams
 			}),
+			providesTags: ["PollNotifications"]
 		}),
 		addNotification: builder.mutation<{message: string}, NotificationRequest>({
 			query: ({notificationTypeId, ticketId, objectLink, recipientId, senderId}) => ({
