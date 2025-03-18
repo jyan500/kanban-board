@@ -6,6 +6,7 @@ const {
 	validateUpdate, 
 	validateDelete,
 	validateBulkEdit,
+	validateBulkWatch,
 	validateTicketUserGet,
 	validateTicketUserCreate,
 	validateTicketUserDelete,
@@ -221,6 +222,44 @@ router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, 
 	}
 })
 
+router.post("/bulk-watch", validateBulkWatch, handleValidationResult, async (req, res, next) => {
+	try {
+		console.log(req.body.to_add)
+		if (req.body.to_add){
+			let ticketIdsToWatch = await Promise.all(req.body.ticket_ids.map(async (id) => {
+				// if the user is not a watcher for this ticket, add them to a list of ticket ids
+				const watcher = await db("tickets_to_users").where("ticket_id", id).where("user_id", req.body.user_id).where("is_watcher", true).where("is_mention", false).first()
+				if (!watcher){
+					return id
+				}
+			}))
+			// filter out null values
+			const body = ticketIdsToWatch.filter((id) => id).map((id) => ({
+				ticket_id: id,
+				user_id: req.body.user_id,
+				is_watcher: true
+			}))
+			await db("tickets_to_users").insert(body)
+			res.json({message: "Watcher has been added to tickets successfully!"})
+		}
+		else {
+			let ticketsToUsersIds = await Promise.all(req.body.ticket_ids.map(async (id) => {
+				const watcher = await db("tickets_to_users").where("ticket_id", id).where("user_id", req.body.user_id).where("is_watcher", true).where("is_mention", false).first()	
+				if (watcher){
+					return watcher.id
+				}
+			}))
+			// delete all the ticket to users rows where the user is a watcher
+			await db("tickets_to_users").whereIn("id", ticketsToUsersIds.filter(id => id)).del()
+			res.json({message: "Watcher has been removed from tickets successfully!"})
+		}
+	}	
+	catch (err){
+		console.error(`Error while editing watchers on ticket: ${err.message}`)	
+		next(err)
+	}
+})
+
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
 		const body = {...req.body, organization_id: req.user.organization}
@@ -339,6 +378,7 @@ router.delete("/:ticketId/user/:userId", validateTicketUserGet, handleValidation
 		.where("ticket_id", req.params.ticketId)
 		.where("user_id", req.params.userId)
 		.where("is_watcher", true)
+		.where("is_mention", false)
 		.del()
 		res.json({"message": "user unassigned from ticket successfully!"})
 	}	

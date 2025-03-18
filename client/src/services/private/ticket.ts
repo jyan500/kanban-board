@@ -210,6 +210,18 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Tickets", "BoardTickets"]
 		}),
+		bulkWatchTickets: builder.mutation<{message: string}, {toAdd: boolean, ticketIds: Array<number>, userId: number}>({
+			query: ({ticketIds, userId, toAdd}) => ({
+				url: `${TICKET_URL}/bulk-watch`,	
+				method: "POST",
+				body: {
+					ticket_ids: ticketIds,
+					user_id: userId,
+					to_add: toAdd,
+				}
+			}),
+			invalidatesTags: ["Tickets", "BoardTickets"]
+		}),
 		deleteTicket: builder.mutation<{message: string}, number>({
 			query: (ticketId) => ({
 				url: `${TICKET_URL}/${ticketId}`,
@@ -308,6 +320,7 @@ export const {
 	useLazyGetTicketsQuery,
 	useAddTicketMutation, 
 	useBulkEditTicketsMutation,
+	useBulkWatchTicketsMutation,
 	useUpdateTicketMutation,
 	useUpdateTicketStatusMutation,
 	useDeleteTicketMutation,

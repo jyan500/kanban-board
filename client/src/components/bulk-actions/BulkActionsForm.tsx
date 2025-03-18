@@ -9,7 +9,7 @@ import { BulkActionsFormStepIndicator } from "./BulkActionsFormStepIndicator"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketsMutation } from "../../services/private/board"
-import { useBulkEditTicketsMutation } from "../../services/private/ticket"
+import { useBulkEditTicketsMutation, useBulkWatchTicketsMutation } from "../../services/private/ticket"
 import { OptionType, Toast } from "../../types/common"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
@@ -46,6 +46,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 	const [addBoardTickets, {isLoading: addBoardTicketsLoading, error: addBoardTicketsErrors}] = useAddBoardTicketsMutation()
 	const [deleteBoardTickets, {isLoading: deleteBoardTicketsLoading, error: deleteBoardTicketsErrors}] = useDeleteBoardTicketsMutation()
 	const [bulkEditTickets, {isLoading: bulkEditTicketsLoading, error: bulkEditTicketsError}] = useBulkEditTicketsMutation()
+	const [bulkWatchTickets, {isLoading: bulkWatchTicketsLoading, error: bulkWatchTicketsError}] = useBulkWatchTicketsMutation()
 	const steps = [
 		{step: 1, text: "Choose Issues"},
 		{step: 2, text: "Choose Operation"},
@@ -152,11 +153,53 @@ export const BulkActionsForm = ({boardId}: Props) => {
 	}
 
 	const watchIssues = async () => {
-
+		let defaultToast: Toast = {
+			id: uuidv4(),
+			message: "Something went wrong while watching tickets.",
+			animationType: "animation-in",
+			type: "failure"
+		}
+		if (userProfile && selectedIds.length){
+			try {
+				await bulkWatchTickets({userId: userProfile.id, ticketIds: selectedIds, toAdd: true}).unwrap()
+				dispatch(addToast({
+					...defaultToast,
+					message: `You are now watching ${selectedIds.length} tickets!`,
+					type: "success"
+				}))
+			}
+			catch (e){
+				dispatch(addToast(defaultToast))	
+			}
+		}
+		else {
+			dispatch(addToast(defaultToast))	
+		}
 	}
 
 	const stopWatchingIssues = async () => {
-
+		let defaultToast: Toast = {
+			id: uuidv4(),
+			message: "Something went wrong while un-watching tickets.",
+			animationType: "animation-in",
+			type: "failure"
+		}
+		if (userProfile && selectedIds.length){
+			try {
+				await bulkWatchTickets({userId: userProfile.id, ticketIds: selectedIds, toAdd: false}).unwrap()
+				dispatch(addToast({
+					...defaultToast,
+					message: `You have stopped watching ${selectedIds.length} tickets!`,
+					type: "success"
+				}))
+			}
+			catch (e){
+				dispatch(addToast(defaultToast))	
+			}
+		}
+		else {
+			dispatch(addToast(defaultToast))	
+		}
 	}
 
 	const onSubmit = () => {
@@ -171,8 +214,10 @@ export const BulkActionsForm = ({boardId}: Props) => {
 				removeIssues()
 				break
 			case "watch-issues":
+				watchIssues()
 				break
 			case "stop-watching-issues":
+				stopWatchingIssues()
 				break
 		}
 		closeModal()

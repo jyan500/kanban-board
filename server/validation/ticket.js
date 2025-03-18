@@ -73,6 +73,33 @@ const ticketValidator = (actionType) => {
 			}], "tickets"))
 		]
 	}
+	if (actionType === "bulk-watch"){
+		validationRules = [
+			...validationRules,
+			body("to_add").notEmpty().withMessage("to add is required"),
+			body("user_id").custom(async (value, {req}) => await checkEntityExistsIn("user", value, [{
+				col: "user_id",
+				value: value,
+			},
+			{
+				col: "organization_id",
+				value: req.user.organization,
+			}
+			], "organization_user_roles")),
+			body("ticket_ids")
+			.isArray({min: 0, max: BULK_INSERT_LIMIT})
+			.withMessage("ticket_ids must be an array")
+			.withMessage(`ticket_ids cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			body("ticket_ids.*").custom(async (value, {req}) => await checkEntityExistsIn("ticket", value, [{
+				col: "id",	
+				value: value,
+			},
+			{
+				col: "organization_id",	
+				value: req.user.organization
+			}], "tickets"))	
+		]
+	}
 	return validationRules
 }
 
@@ -167,6 +194,7 @@ const ticketUserValidator = (actionType) => {
 			]
 		}
 	}
+
 	return validationRules
 }
 
@@ -266,6 +294,7 @@ module.exports = {
 	validateUpdate: ticketValidator("update"),
 	validateDelete: ticketValidator("delete"),
 	validateBulkEdit: ticketValidator("bulk-edit"),
+	validateBulkWatch: ticketValidator("bulk-watch"),
 	validateTicketUserGet: ticketUserValidator("get"),
 	validateTicketUserCreate: ticketUserValidator("create"),
 	validateTicketUserDelete: ticketUserValidator("delete"),
