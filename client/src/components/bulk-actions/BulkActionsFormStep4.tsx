@@ -6,6 +6,8 @@ import { BulkEditFormValues, BulkEditOperation, BulkEditOperationKey } from "./B
 import { useBoardTicketConfig } from "../../helpers/table-config/useBoardTicketConfig"
 import { PaginationRow } from "../page-elements/PaginationRow"
 import { LoadingSpinner } from "../LoadingSpinner"
+import { DeleteTicketWarningText } from "../page-elements/DeleteTicketWarningText"
+import { IconWarning } from "../icons/IconWarning"
 
 interface Props {
 	selectedIds: Array<number>
@@ -16,9 +18,10 @@ interface Props {
 	operation: BulkEditOperationKey | null | undefined
 	operations: Array<BulkEditOperation>
 	onSubmit: () => void
+	skipStep3: boolean
 }
 
-export const BulkActionsFormStep4 = ({selectedIds, step, setStep, formValues, setSelectedIds, operation, operations, onSubmit}: Props) => {
+export const BulkActionsFormStep4 = ({selectedIds, skipStep3, step, setStep, formValues, setSelectedIds, operation, operations, onSubmit}: Props) => {
 	const [page, setPage] = useState(1)
 	const { data, isLoading, isFetching, isError } = useGetTicketsQuery({
 		page: page,
@@ -43,6 +46,15 @@ export const BulkActionsFormStep4 = ({selectedIds, step, setStep, formValues, se
 					/>
 				) : null
 			}
+			{operation === "delete-issues" ? (
+				<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+					<IconWarning className = "tw-w-8 tw-h-8"/>
+					<div>
+						<DeleteTicketWarningText/>
+					</div>
+				</div>
+			) : null}
+			<div></div>
 			<div className = "tw-h-96 tw-overflow-y-auto">
 				{
 					!isLoading && data?.data ? (
@@ -60,7 +72,12 @@ export const BulkActionsFormStep4 = ({selectedIds, step, setStep, formValues, se
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<button onClick={onSubmit} className = "button">Confirm</button>
 				<button onClick={() => {
-					setStep(step-1)
+					if (step-1 === 3 && skipStep3){
+						setStep(step-2)
+					}
+					else {
+						setStep(step-1)
+					}
 				}} className = "button --secondary">Cancel</button>
 			</div>
 		</div>

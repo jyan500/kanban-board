@@ -52,6 +52,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		{step: 3, text: "Operation Details"},
 		{step: 4, text: "Confirmation"},
 	]
+	const skipStep3 = operation === "delete-issues" || operation === "watch-issues" || operation === "stop-watching-issues"
 
 	const operations: Array<BulkEditOperation> = [
 		{
@@ -182,6 +183,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 					setOperation={setOperation}
 					operation={operation}
 					operations={operations}
+					skipStep3={skipStep3}
 				/>
 			case 3:
 				return <BulkActionsFormStep3 
@@ -195,6 +197,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 				/>
 			case 4:
 				return <BulkActionsFormStep4 
+					skipStep3={skipStep3}
 					onSubmit={onSubmit} 
 					operation={operation} 
 					operations={operations} 
@@ -215,7 +218,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 				<div className = "lg:tw-w-1/4">
 					<ol>
 						{steps.map((s) => 
-							<BulkActionsFormStepIndicator key={s.step} Icon={<IconCircleCheckmark color={step > s.step ? "var(--bs-success)" : ""}/>} step = {s.step} setStep={setStep} currentStep = {step} text = {s.text}/>
+							<BulkActionsFormStepIndicator disabled={s.step === 3 && skipStep3} key={s.step} Icon={<IconCircleCheckmark color={step > s.step ? "var(--bs-success)" : ""}/>} step = {s.step} setStep={setStep} currentStep = {step} text = {s.text}/>
 						)}
 					</ol>
 				</div>

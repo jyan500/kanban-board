@@ -1,6 +1,5 @@
 import React from "react"
-import { IconContext } from "react-icons"
-import { IoIosWarning as WarningIcon } from "react-icons/io"
+import { IconWarning } from "../icons/IconWarning"
 import { LoadingButton } from "../page-elements/LoadingButton"
 
 type WarningProps = {
@@ -16,9 +15,7 @@ export const Warning = ({isLoading, title, submitText, cancelText, onSubmit, onC
 	return (
 		<div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
-				<IconContext.Provider value={{color: "var(--bs-danger)"}}>
-					<WarningIcon className = "--l-icon"/>
-				</IconContext.Provider>
+				<IconWarning className = "--l-icon"/>
 				<strong>{title}</strong>
 			</div>
 			{children}
