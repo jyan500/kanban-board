@@ -224,7 +224,6 @@ router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, 
 
 router.post("/bulk-watch", validateBulkWatch, handleValidationResult, async (req, res, next) => {
 	try {
-		console.log(req.body.to_add)
 		if (req.body.to_add){
 			let ticketIdsToWatch = await Promise.all(req.body.ticket_ids.map(async (id) => {
 				// if the user is not a watcher for this ticket, add them to a list of ticket ids

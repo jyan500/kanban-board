@@ -48,7 +48,6 @@ export const MoveTicketForm = ({step, title, boardId: currentBoardId, ticketId, 
 
 	useEffect(() => {
 		if (step && formValues){
-			console.log("formValues: ", formValues)
 			reset(formValues)
 		}
 	}, [step, formValues])
