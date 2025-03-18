@@ -11,6 +11,7 @@ import { FaRegBell } from "react-icons/fa";
 import { IconContext } from "react-icons"
 import { Indicator } from "../../components/page-elements/Indicator"
 import { NotificationDropdown } from "../dropdowns/NotificationDropdown"
+import { AccountDropdown } from "../dropdowns/AccountDropdown"
 import { 
 	useGetNotificationsQuery, 
 	usePollNotificationsQuery,
@@ -119,6 +120,7 @@ export const TopNav = () => {
 				<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 					{!isLoading ? (
 						<>
+							{/*
 							<div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
 								<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
 									<button ref = {buttonRef} onClick={(e) => {
@@ -138,7 +140,20 @@ export const TopNav = () => {
 									}
 								</IconContext.Provider>
 							</div>
-							<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
+							*/}
+							<div className = "tw-relative tw-mt-1">
+								<button ref = {buttonRef} onClick={(e) => {
+									e.preventDefault()
+									setShowDropdown(!showDropdown)
+								}}>
+									<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
+								</button>
+								{
+									showDropdown ? (
+										<AccountDropdown ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
+									) : null
+								}
+							</div>
 							<div>
 								<span>{displayUser(userProfile)}</span>
 							</div>
@@ -146,9 +161,13 @@ export const TopNav = () => {
 					) : (
 						<LoadingSpinner/>
 					)}
-					<div>
-						<button onClick={onLogout}>Logout</button>
-					</div>
+					{
+						/*
+						<div>
+							<button onClick={onLogout}>Logout</button>
+						</div>
+						*/
+					}
 				</div>
 			) : (
 				/* On the mobile version, only display the bell icon, and tapping it will link to the notifications page */
