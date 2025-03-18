@@ -11,10 +11,11 @@ import { IconContext } from "react-icons"
 import { Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 
-export const DeleteTicketWarning = () => {
-	const {
-		currentTicketId,
-	} = useAppSelector((state) => state.board)
+interface Props {
+	currentTicketId: number | null | undefined
+}
+
+export const DeleteTicketWarning = ({currentTicketId}: Props) => {
 	const { showModal } = useAppSelector((state) => state.modal)
 	const dispatch = useAppDispatch()
 	const [deleteTicket, {isLoading: isDeleteTicketLoading, error: isDeleteTicketError}] = useDeleteTicketMutation()
