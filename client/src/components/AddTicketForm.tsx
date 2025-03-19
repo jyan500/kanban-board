@@ -73,6 +73,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
 	const [ deleteBoardTicket, {isLoading: isDeleteBoardTicketLoading, error: isDeleteBoardTicketError}] = useDeleteBoardTicketMutation()
 	const [ bulkCreateNotifications, {isLoading: isBulkCreateNotificationLoading}] = useBulkCreateNotificationsMutation()
+	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
 	const defaultForm: AddTicketFormValues = {
 		id: undefined,
 		name: "",
@@ -92,6 +93,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
 	const epicTicketType = ticketTypes?.find((ticketType) => ticketType?.name === "Epic")
 	const mentionNotificationType = notificationTypes?.find((notificationType) => notificationType?.name === "Mention")
+	const assigneeNotificationType = notificationTypes?.find((notificationType) => notificationType?.name === "Ticket Assigned")
 
 	const registerOptions = {
 		...(!isBulkAction ? {
@@ -144,6 +146,17 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 					}
     			})
 				await bulkCreateNotifications(notifications).unwrap()
+			}
+			// only give notification when assigning the ticket to someone
+			// other than the logged in user
+			if (assigneeId && userProfile && userProfile.id !== assigneeId && assigneeNotificationType){
+				await addNotification({
+					recipientId: assigneeId,
+					senderId: userProfile.id,
+					ticketId: insertedTicketId,
+					objectLink: `${TICKETS}/${insertedTicketId}`,
+					notificationTypeId: assigneeNotificationType.id,
+				}).unwrap()	
 			}
 	    	if (boardId){
 		    	await addBoardTickets({boardId: boardId, ticketIds: [insertedTicketId]}).unwrap()

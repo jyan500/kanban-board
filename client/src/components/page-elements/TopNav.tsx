@@ -39,24 +39,18 @@ export const TopNav = () => {
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef(null)
 	const [lastId, setLastId] = useState(0)
-	const [currentNotifications, setCurrentNotifications] = useState<Array<Notification>>([])
 
 	// TODO: need to figure out why this causes other cache invalidation requests to lag (i.e add/remove ticket watchers)
-	const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery(lastId !== 0 ? {lastId: lastId} : skipToken, {
-		pollingInterval: 31000,
+	const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery({}, {
+		pollingInterval: 30000,
 		// skipPollingIfUnfocused: true
 	})
 
-	useEffect(() => {
-		if (newNotifications && newNotifications?.length > 0){
-			const unreadMessages = newNotifications.filter(n => !n.isRead)
-			const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
-			if (lastId < newLastUnreadId){
-				setLastId(Math.max(...newNotifications.map(n => n.id)))
-			}
-			setShowIndicator(unreadMessages.length > 0)
-		}
-	}, [newNotifications])
+	// useEffect(() => {
+	// 	if (newNotifications && newNotifications?.length > 0){
+	// 		setShowIndicator(newNotifications?.length > 0)
+	// 	}
+	// }, [newNotifications])
 
 	useEffect(() => {
 		if (userProfile && Object.keys(userProfile).length){
@@ -97,7 +91,7 @@ export const TopNav = () => {
 			<HamburgerButton/>	
 			{
 				width >= SM_BREAKPOINT ? (
-				<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
+				<div className = "tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 					{!isLoading ? (
 						<>
 							{/*
@@ -121,16 +115,21 @@ export const TopNav = () => {
 								</IconContext.Provider>
 							</div>
 							*/}
-							<div className = "tw-relative tw-mt-1">
-								<button ref = {buttonRef} onClick={(e) => {
+							<div className = "tw-mt-1">
+								<button className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative" ref = {buttonRef} onClick={(e) => {
 									e.preventDefault()
 									setShowDropdown(!showDropdown)
 								}}>
 									<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
+									{
+										!isGetNewNotificationsLoading && newNotifications ? (
+											<Indicator showIndicator={newNotifications.length > 0} className = "tw-h-3 tw-w-3 -tw-bottom-0.5 -tw-right-0.5 tw-bg-red-500"/>
+										) : null
+									}
 								</button>
 								{
 									showDropdown ? (
-										<AccountDropdown ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
+										<AccountDropdown numNotifications={!isGetNewNotificationsLoading && newNotifications ? newNotifications.length : 0} ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
 									) : null
 								}
 							</div>

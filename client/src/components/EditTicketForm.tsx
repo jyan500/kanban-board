@@ -111,6 +111,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const isCompletedStatusIds = statuses.filter((status) => status.isCompleted).map((status) => status.id)
 	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
 	const mentionNotificationType = notificationTypes?.find((notif) => notif.name === "Mention")
+	const assigneeNotificationType = notificationTypes?.find((notif) => notif.name === "Ticket Assigned")
 
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
 		"name": false,
@@ -219,6 +220,16 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			// assignees per ticket
     			if (values.userId){
 	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [values.userId], isWatcher: false}).unwrap()
+    			}
+    			if (values.userId && userProfile && values.userId !== userProfile.id && assigneeNotificationType){
+    				await addNotification({
+    					recipientId: values.userId,
+    					senderId: userProfile.id,
+    					ticketId: values.id,
+    					objectLink: `${TICKETS}/${values.id}`,
+    					notificationTypeId: assigneeNotificationType.id,
+
+    				}).unwrap()
     			}
     			const { mentions } = await updateTicket({
     				...values, 

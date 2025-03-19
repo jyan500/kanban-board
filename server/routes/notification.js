@@ -105,46 +105,62 @@ router.post("/bulk-create", validateBulkCreate, handleValidationResult, async (r
 router.get("/poll", async (req, res, next) => {
 	try {
 		const userId = req.user.id
-		const timeout = 30000
-		const pollInterval = 1000
+		// check only for new unread notifications
+		const notifications = await db("notifications")
+		.where("recipient_id", userId)
+		.where("organization_id", req.user.organization)
+		.where("is_read", false)
+		.select(
+			"id as id", 
+			"body as body", 
+			"notification_type_id as notificationTypeId",
+			"is_read as isRead",
+			"sender_id as senderId",
+			"object_link as objectLink",
+			"recipient_id as recipientId",
+			"created_at as createdAt",
+		).orderBy("created_at", "desc")
+		res.status(200).json(notifications)
+	// 	const timeout = 30000
+	// 	const pollInterval = 1000
 
-		let hasNewNotifications = false
-		// poll the database based on the pollInterval  
-		const interval = setInterval(async () => {
-			const notifications = await db("notifications")
-			.where("recipient_id", userId)
-			.where("organization_id", req.user.organization)
-			.where("is_read", false)
-			.modify((queryBuilder) => {
-				if (!isNaN(Number(req.query.lastId))){
-					queryBuilder.where("id", ">", Number(req.query.lastId))
-				}
-			})
-			.select(
-				"id as id", 
-				"body as body", 
-				"notification_type_id as notificationTypeId",
-				"is_read as isRead",
-				"sender_id as senderId",
-				"object_link as objectLink",
-				"recipient_id as recipientId",
-				"created_at as createdAt",
-			).orderBy("created_at", "desc")
-			if (notifications?.length){
-				hasNewNotifications = true
-				clearInterval(interval)
-				res.status(200).json(notifications)
-			}
-		}, pollInterval)
+	// 	let hasNewNotifications = false
+	// 	// poll the database based on the pollInterval  
+	// 	const interval = setInterval(async () => {
+	// 		const notifications = await db("notifications")
+	// 		.where("recipient_id", userId)
+	// 		.where("organization_id", req.user.organization)
+	// 		.where("is_read", false)
+	// 		.modify((queryBuilder) => {
+	// 			if (!isNaN(Number(req.query.lastId))){
+	// 				queryBuilder.where("id", ">", Number(req.query.lastId))
+	// 			}
+	// 		})
+	// 		.select(
+	// 			"id as id", 
+	// 			"body as body", 
+	// 			"notification_type_id as notificationTypeId",
+	// 			"is_read as isRead",
+	// 			"sender_id as senderId",
+	// 			"object_link as objectLink",
+	// 			"recipient_id as recipientId",
+	// 			"created_at as createdAt",
+	// 		).orderBy("created_at", "desc")
+	// 		if (notifications?.length){
+	// 			hasNewNotifications = true
+	// // 			clearInterval(interval)
+	// 			res.status(200).json(notifications)
+	// 		}
+	// 	}, pollInterval)
 
-		// if there are no new notifications after the timeout threshold,
-		// timeout and send no content
-		setTimeout(() => {
-			if (!hasNewNotifications){
-				clearInterval(interval)
-				res.status(204).send()
-			}	
-		}, timeout)
+	// 	// if there are no new notifications after the timeout threshold,
+	// 	// timeout and send no content
+	// 	setTimeout(() => {
+	// 		if (!hasNewNotifications){
+	// 			clearInterval(interval)
+	// 			res.status(204).send()
+	// 		}	
+	// 	}, timeout)
 	}
 	catch (err){
 		console.error(`There was an error while getting notifications: ${err}`)

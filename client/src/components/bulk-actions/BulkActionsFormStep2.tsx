@@ -19,9 +19,6 @@ export const BulkActionsFormStep2 = ({step, setStep, skipStep3, numSelectedIssue
 			<p>Choose the operation you wish to perform on <span className = "tw-font-semibold">{numSelectedIssues}</span> issues</p>
 			<div>
 				{operations.map((operation, index) => {
-					if (operation.key === "remove-issues" && !isAdminOrBoardAdmin){
-						return <></>
-					}
 					return (
 						<div key={operation.key} className = {`${index === 0 ? "tw-border-y" : "tw-border-b"} tw-flex tw-flex-row tw-py-2 tw-gap-x-4 tw-border-gray-300`} >
 							<div>

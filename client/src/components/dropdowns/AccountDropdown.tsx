@@ -11,13 +11,15 @@ import { SetColumnLimitModalProps } from "../secondary-modals/SetColumnLimitModa
 import { Avatar } from "../page-elements/Avatar"
 import { displayUser } from "../../helpers/functions"
 import { useNavigate } from "react-router-dom"
+import { Badge } from "../page-elements/Badge"
 
 type Props = {
+	numNotifications: number
 	closeDropdown: () => void
 	onLogout: () => void
 }
 
-export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({closeDropdown, onLogout}: Props, ref) => {
+export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNotifications, closeDropdown, onLogout}: Props, ref) => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -47,22 +49,34 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({closeDr
 						<p className = "tw-text-gray-700">{userProfile?.email}</p>
 					</div>
 				</li>
-				{Object.keys(options).map((option) => (
-					<li
-						key={option}
-						onClick={(e) => {
-							if (e.defaultPrevented){
-								return 
-							}
-							options[option as keyof typeof options]?.()
-							closeDropdown()
-						}}
-						className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
-						role="menuitem"
-					>
-						{option}
-					</li>
-				))}			
+				{Object.keys(options).map((option) => {
+					return (
+						<li
+							key={option}
+							onClick={(e) => {
+								if (e.defaultPrevented){
+									return 
+								}
+								options[option as keyof typeof options]?.()
+								closeDropdown()
+							}}
+							className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+							role="menuitem"
+						>
+						{
+							option === "Notifications" ? 
+							(
+								<div className = "tw-flex tw-flex-row tw-items-center tw-justify-between">
+									<span>{option}</span>	
+									<div className = "tw-px-1 tw-bg-red-500 tw-rounded-full">
+										<span className = "tw-text-white">{numNotifications}</span>
+									</div>
+								</div>
+							) : <span>{option}</span> 
+						}
+						</li>
+					)
+				})}			
 			</ul>
 		</Dropdown>
 	)	
