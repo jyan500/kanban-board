@@ -28,6 +28,9 @@ router.get("/", validateGet, handleValidationResult, async (req, res, next) => {
 			if (req.query.notificationType){
 				queryBuilder.where("notification_type_id", req.query.notificationType)
 			}
+			if (req.query.isUnread === "true"){
+				queryBuilder.where("is_read", false)
+			}
 		})
 		.select(
 			"id as id", 

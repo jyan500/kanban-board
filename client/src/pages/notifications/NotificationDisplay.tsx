@@ -25,6 +25,7 @@ export type Filters = {
 	user: string
 	dateFrom: string 
 	dateTo: string
+	isUnread: string
 }
 
 export type FormValues = Filters & {
@@ -47,6 +48,7 @@ export const NotificationDisplay = () => {
 		"user": searchParams.get("user") ?? "",
 		"dateFrom": searchParams.get("dateFrom") ?? "",
 		"dateTo": searchParams.get("dateTo") ?? "",
+		"isUnread": searchParams.get("isUnread") ?? "",
 	}
 	const {data: data, isFetching } = useGetNotificationsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
@@ -126,6 +128,7 @@ export const NotificationDisplay = () => {
 		// reset back to page 1 if modifying search results
 		// setting the search params 
 		// modifying the search params will then retrigger the useGetTicketsQuery
+		console.log("values: ", values)
 		setSearchParams({
 			page: "1",
 			...values
