@@ -207,6 +207,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 
 	useEffect(() => {
 		if (!isTicketAssigneesLoading){
+			console.log("ticketAssignees: ", ticketAssignees)
 			setValue("userId", ticketAssignees?.length ? ticketAssignees[0].id : 0, { shouldDirty: true })
 		}
 	}, [ticketAssignees])
@@ -279,7 +280,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
                 	clearable={false}
                 	onBlur={(e) => toggleFieldVisibility("assignees", false)}
                 	defaultValue={{value: ticketAssignees?.[0]?.id.toString() ?? "", label: displayUser(ticketAssignees?.[0]) ?? ""}}
-                	urlParams={{forSelect: true, filterOnUserRole: true}} 
+                	urlParams={{forSelect: true, /*filterOnUserRole: true*/}} 
                 	onSelect={async (selectedOption: {label: string, value: string} | null) => {
                 		const val = selectedOption?.value ?? ""
                 		if (!isNaN(Number(val))){

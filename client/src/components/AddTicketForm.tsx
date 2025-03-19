@@ -147,6 +147,15 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
     			})
 				await bulkCreateNotifications(notifications).unwrap()
 			}
+
+	    	if (boardId){
+		    	await addBoardTickets({boardId: boardId, ticketIds: [insertedTicketId]}).unwrap()
+	    	}
+	    	
+	    	// update ticket assignees
+	    	if (assigneeId){
+	    		await bulkEditTicketAssignees({ticketId: insertedTicketId, isWatcher: false, userIds: [assigneeId]}).unwrap()
+	    	}
 			// only give notification when assigning the ticket to someone
 			// other than the logged in user
 			if (assigneeId && userProfile && userProfile.id !== assigneeId && assigneeNotificationType){
@@ -158,13 +167,6 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 					notificationTypeId: assigneeNotificationType.id,
 				}).unwrap()	
 			}
-	    	if (boardId){
-		    	await addBoardTickets({boardId: boardId, ticketIds: [insertedTicketId]}).unwrap()
-	    	}
-	    	// update ticket assignees
-	    	if (assigneeId){
-	    		await bulkEditTicketAssignees({ticketId: insertedTicketId, isWatcher: false, userIds: [assigneeId]}).unwrap()
-	    	}
 			dispatch(toggleShowModal(false))
 			dispatch(setModalType(undefined))
 			dispatch(setModalProps({}))

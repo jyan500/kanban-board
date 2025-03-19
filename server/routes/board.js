@@ -114,7 +114,8 @@ router.get("/", async (req, res, next) => {
 				const allTickets = boardsToAssignedTickets[boardId].length
 				const percentComplete = Math.floor((numTicketsCompletedByUser/allTickets) * 100)
 				const totalMinutesSpent = boardsToAssignedTickets[boardId].reduce((acc, obj) => {
-					return acc + parseInt(obj.minutesSpent)
+					const minutesSpent = !isNaN(Number(obj.minutesSpent)) ? Number(obj.minutesSpent) : 0 
+					return acc + parseInt(minutesSpent)
 				}, 0)
 				dashboardInfoMap[boardId] = {minutesSpent: totalMinutesSpent, percentComplete: percentComplete}
 			})

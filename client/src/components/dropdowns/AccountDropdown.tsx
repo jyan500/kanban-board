@@ -68,9 +68,13 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNoti
 							(
 								<div className = "tw-flex tw-flex-row tw-items-center tw-justify-between">
 									<span>{option}</span>	
-									<div className = "tw-px-1 tw-bg-red-500 tw-rounded-full">
-										<span className = "tw-text-white">{numNotifications}</span>
-									</div>
+									{
+										numNotifications > 0 ? (
+											<div className = "tw-px-2 tw-bg-red-500 tw-rounded-full">
+												<span className = "tw-text-white">{numNotifications}</span>
+											</div>
+										) : null
+									}
 								</div>
 							) : <span>{option}</span> 
 						}

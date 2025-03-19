@@ -10,6 +10,7 @@ import { toggleShowModal, setModalType, setModalProps } from "../../slices/modal
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketsMutation } from "../../services/private/board"
 import { useBulkEditTicketsMutation, useBulkWatchTicketsMutation } from "../../services/private/ticket"
+import { useAddNotificationMutation } from "../../services/private/notification"
 import { OptionType, Toast } from "../../types/common"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
@@ -36,6 +37,7 @@ export interface BulkEditFormValues {
 export const BulkActionsForm = ({boardId}: Props) => {
 	const [step, setStep] = useState(1)
 	const dispatch = useAppDispatch()
+	const { notificationTypes } = useAppSelector((state) => state.notificationType)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const [selectedIds, setSelectedIds] = useState<Array<number>>([])
@@ -47,6 +49,9 @@ export const BulkActionsForm = ({boardId}: Props) => {
 	const [deleteBoardTickets, {isLoading: deleteBoardTicketsLoading, error: deleteBoardTicketsErrors}] = useDeleteBoardTicketsMutation()
 	const [bulkEditTickets, {isLoading: bulkEditTicketsLoading, error: bulkEditTicketsError}] = useBulkEditTicketsMutation()
 	const [bulkWatchTickets, {isLoading: bulkWatchTicketsLoading, error: bulkWatchTicketsError}] = useBulkWatchTicketsMutation()
+	const [addNotification, {isLoading: addNotificationLoading, error: addNotificationError}] = useAddNotificationMutation()
+	const bulkWatchNotificationType = notificationTypes?.find((type) => type.name === "Bulk Watching")
+	const bulkAssignNotificationType = notificationTypes?.find((type) => type.name === "Bulk Assigned")
 	const steps = [
 		{step: 1, text: "Choose Issues"},
 		{step: 2, text: "Choose Operation"},
@@ -92,7 +97,17 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		}	
 		const { priorityId, statusId, userIdOption } = formValues
 		try {
-			await bulkEditTickets({ticketIds: selectedIds, priorityId, statusId, userIds: userIdOption.value !== "" ? [userIdOption.value] : []}).unwrap()
+			const assigneeId = !isNaN(Number(userIdOption.value)) ? Number(userIdOption.value) : 0
+			await bulkEditTickets({ticketIds: selectedIds, priorityId, statusId, userIds: assigneeId ? [assigneeId] : []}).unwrap()
+			// no need to send the notification if you're assigning the tickets to yourself
+			if (userProfile && assigneeId && assigneeId !== userProfile.id && bulkAssignNotificationType){
+				await addNotification({
+					senderId: userProfile.id,
+					recipientId: assigneeId,
+					numTickets: selectedIds.length,
+					notificationTypeId: bulkAssignNotificationType.id,	
+				}).unwrap()
+			}
 			dispatch(addToast({
 				...defaultToast,
 				message: `${selectedIds.length} tickets edited successfully!`,
@@ -162,6 +177,14 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		if (userProfile && selectedIds.length){
 			try {
 				await bulkWatchTickets({userId: userProfile.id, ticketIds: selectedIds, toAdd: true}).unwrap()
+				if (bulkWatchNotificationType){
+					await addNotification({
+						senderId: userProfile.id,
+						recipientId: userProfile.id,
+						numTickets: selectedIds.length,
+						notificationTypeId: bulkWatchNotificationType.id,	
+					}).unwrap()
+				}
 				dispatch(addToast({
 					...defaultToast,
 					message: `You are now watching ${selectedIds.length} tickets!`,

@@ -13,6 +13,7 @@ import { Indicator } from "../../components/page-elements/Indicator"
 import { NotificationDropdown } from "../dropdowns/NotificationDropdown"
 import { AccountDropdown } from "../dropdowns/AccountDropdown"
 import { 
+	notificationApi,
 	useGetNotificationsQuery, 
 	usePollNotificationsQuery,
 	useBulkEditNotificationsMutation, 
@@ -39,18 +40,24 @@ export const TopNav = () => {
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef(null)
 	const [lastId, setLastId] = useState(0)
+	const [newNotifications, setNewNotifications] = useState<Array<Notification>>([])
+	console.log("newNotifications: ", newNotifications)
 
 	// TODO: need to figure out why this causes other cache invalidation requests to lag (i.e add/remove ticket watchers)
-	const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery({}, {
+	const { data: polledNotifications, isLoading: isGetPolledNotificationsLoading } = usePollNotificationsQuery({lastId: lastId}, {
 		pollingInterval: 30000,
 		// skipPollingIfUnfocused: true
 	})
 
-	// useEffect(() => {
-	// 	if (newNotifications && newNotifications?.length > 0){
-	// 		setShowIndicator(newNotifications?.length > 0)
-	// 	}
-	// }, [newNotifications])
+	useEffect(() => {
+		if (polledNotifications && polledNotifications?.length > 0){
+			// replace with the newest unread notifications
+			setNewNotifications(polledNotifications)
+			setLastId(Math.max(...polledNotifications.map(notification=>notification.id)))
+			// if there are new notifications, cause a re-fetch for notifications
+			dispatch(notificationApi.util.invalidateTags(["Notifications"]))
+		}
+	}, [polledNotifications])
 
 	useEffect(() => {
 		if (userProfile && Object.keys(userProfile).length){
@@ -89,77 +96,38 @@ export const TopNav = () => {
 	return (
 		<div className = "tw-my-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
 			<HamburgerButton/>	
-			{
-				width >= SM_BREAKPOINT ? (
-				<div className = "tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
-					{!isLoading ? (
-						<>
-							{/*
-							<div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
-								<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
-									<button ref = {buttonRef} onClick={(e) => {
-										e.preventDefault()
-										setShowDropdown(!showDropdown)
-									}} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
-										<FaRegBell className = "--l-icon"/>
-										<Indicator showIndicator={showIndicator}/>
-									</button>
-									{
-										showDropdown ? (
-											<NotificationDropdown 
-												notifications={currentNotifications ?? []}
-												closeDropdown={onClickOutside} 
-												ref = {menuDropdownRef}/>
-										) : null
-									}
-								</IconContext.Provider>
-							</div>
-							*/}
-							<div className = "tw-mt-1">
-								<button className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative" ref = {buttonRef} onClick={(e) => {
-									e.preventDefault()
-									setShowDropdown(!showDropdown)
-								}}>
-									<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
-									{
-										!isGetNewNotificationsLoading && newNotifications ? (
-											<Indicator showIndicator={newNotifications.length > 0} className = "tw-h-3 tw-w-3 -tw-bottom-0.5 -tw-right-0.5 tw-bg-red-500"/>
-										) : null
-									}
-								</button>
+			<div className = "tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
+				{!isLoading ? (
+					<>
+						<div className = "tw-mt-1">
+							<button className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative" ref = {buttonRef} onClick={(e) => {
+								e.preventDefault()
+								setShowDropdown(!showDropdown)
+							}}>
+								<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
 								{
-									showDropdown ? (
-										<AccountDropdown numNotifications={!isGetNewNotificationsLoading && newNotifications ? newNotifications.length : 0} ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
-									) : null
+									<Indicator showIndicator={newNotifications.length > 0} className = "tw-h-3 tw-w-3 -tw-bottom-0.5 -tw-right-0.5 tw-bg-red-500"/>
 								}
-							</div>
-							<div>
-								<span>{displayUser(userProfile)}</span>
-							</div>
-						</>
-					) : (
-						<LoadingSpinner/>
-					)}
-					{
-						/*
-						<div>
-							<button onClick={onLogout}>Logout</button>
+							</button>
+							{
+								showDropdown ? (
+									<AccountDropdown numNotifications={newNotifications.length} ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
+								) : null
+							}
 						</div>
-						*/
-					}
-				</div>
-			) : (
-				/* On the mobile version, only display the bell icon, and tapping it will link to the notifications page */
-				// <div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
-				// 	<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
-				// 		<Link to={NOTIFICATIONS} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
-				// 			<FaRegBell className = "--l-icon"/>
-				// 			<Indicator showIndicator={showIndicator}/>
-				// 		</Link>
-				// 	</IconContext.Provider>
-				// </div>
-				<></>
-			)}
+						{
+							width >= SM_BREAKPOINT ? (
+								<div>
+									<span>{displayUser(userProfile)}</span>
+								</div>
+							) : null
+						}
+					</>
+				) : (
+					<LoadingSpinner/>
+				)
+			}
+			</div>
 		</div>
 	)
 }
