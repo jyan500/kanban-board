@@ -59,6 +59,12 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 			user_id: user[0],
 			organization_id: req.body.organization_id
 		})
+
+		// insert all notification types by default for a user
+		const notificationTypes = await db("notification_types")
+		const userToNotificationTypes = notificationTypes.map((notification) => ({user_id: user[0], notification_type_id: notification.id}))	
+		await db("users_to_notification_types").insert(userToNotificationTypes)
+
 		const organization = await db("organizations").where("id", req.body.organization_id).first()
 
 		// TODO: send this to an async queue so the request isn't held up by email sending
