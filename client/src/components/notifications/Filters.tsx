@@ -8,12 +8,13 @@ import { AsyncSelect, LoadOptionsType } from "../../components/AsyncSelect"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useGetUserQuery } from "../../services/private/userProfile"
 import { displayUser } from "../../helpers/functions"
+import { Switch } from "../page-elements/Switch"
 
 export const Filters = () => {
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
 	const methods = useFormContext()
 	const { register, getValues, control } = methods
-	const { data: user, isLoading} = useGetUserQuery(Number(getValues("user")) ?? skipToken)
+	const { data: user, isLoading} = useGetUserQuery(!isNaN(Number(getValues("user"))) ? Number(getValues("user")) : skipToken)
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 			<div className = "tw-flex tw-flex-col">
@@ -54,9 +55,22 @@ export const Filters = () => {
 					/> : null
 				}
 			</div>
-			<div>
+			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-noti-is-unread">Unread</label>
-				<input {...register("isUnread")} id = "filters-noti-is-unread" type = "checkbox"/>
+				<div className = "tw-flex tw-flex-col tw-items-center">
+					<Controller
+						name="isUnread"
+						control={control}
+						render={({field: {onChange, value}}) => (
+							<Switch
+								onChange={(e) => {
+									onChange(e.target.checked)
+								}}
+								checked={value}
+							/>
+						)}	
+					/>
+				</div>
 			</div>
 		</div>
 	)
