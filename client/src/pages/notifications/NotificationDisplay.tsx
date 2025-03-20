@@ -206,7 +206,7 @@ export const NotificationDisplay = () => {
 										{
 											value.map((notification) => {
 												return (
-													<div className = "tw-flex tw-flex-row tw-gap-x-4">
+													<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-4">
 														<input checked={selectedIds.includes(notification.id)} onClick={() => setSelectedId(notification.id)} type="checkbox"/>
 														<Link 
 															className = "tw-w-full"
