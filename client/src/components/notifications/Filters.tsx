@@ -8,6 +8,7 @@ import { AsyncSelect, LoadOptionsType } from "../../components/AsyncSelect"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useGetUserQuery } from "../../services/private/userProfile"
 import { displayUser } from "../../helpers/functions"
+import { Switch } from "../page-elements/Switch"
 
 export const Filters = () => {
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
@@ -56,7 +57,9 @@ export const Filters = () => {
 			</div>
 			<div>
 				<label className = "label" htmlFor = "filters-noti-is-unread">Unread</label>
-				<input {...register("isUnread")} id = "filters-noti-is-unread" type = "checkbox"/>
+				{/* <input {...register("isUnread")} id = "filters-noti-is-unread" type = "checkbox"/> */}
+				<Switch/>
+
 			</div>
 		</div>
 	)
