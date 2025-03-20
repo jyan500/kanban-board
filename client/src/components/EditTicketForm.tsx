@@ -207,7 +207,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 
 	useEffect(() => {
 		if (!isTicketAssigneesLoading){
-			console.log("ticketAssignees: ", ticketAssignees)
 			setValue("userId", ticketAssignees?.length ? ticketAssignees[0].id : 0, { shouldDirty: true })
 		}
 	}, [ticketAssignees])

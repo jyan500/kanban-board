@@ -56,11 +56,8 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 		const notificationType = await db("notification_types").where("id", req.body.notification_type_id).first()
 		// check if recipient user has the notification type on their settings
 		const userNotificationType = await db("users_to_notification_types").where("notification_type_id", notificationType?.id).where("user_id", req.body.recipient_id).first()
-		console.log("userNotificationType: ", userNotificationType)
 		if (userNotificationType){
 			const body = await getNotificationBody(notificationType, req.body)
-			console.log("**********")
-			console.log("body: ", body)
 			await db("notifications").insert({
 				recipient_id: req.body.recipient_id,
 				sender_id: req.body.sender_id,

@@ -14,7 +14,6 @@ export const Filters = () => {
 	const methods = useFormContext()
 	const { register, getValues, control } = methods
 	const { data: user, isLoading} = useGetUserQuery(Number(getValues("user")) ?? skipToken)
-	console.log("user: ", user)
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 			<div className = "tw-flex tw-flex-col">
