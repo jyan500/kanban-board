@@ -40,21 +40,16 @@ export const TopNav = () => {
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef(null)
 	const [lastId, setLastId] = useState(0)
-	const [newNotifications, setNewNotifications] = useState<Array<Notification>>([])
-	console.log("newNotifications: ", newNotifications)
 
 	// TODO: need to figure out why this causes other cache invalidation requests to lag (i.e add/remove ticket watchers)
-	const { data: polledNotifications, isLoading: isGetPolledNotificationsLoading } = usePollNotificationsQuery({lastId: lastId}, {
+	const { data: polledNotifications, isLoading: isGetPolledNotificationsLoading } = useGetNotificationsQuery({isUnread: true}, {
 		pollingInterval: 30000,
 		// skipPollingIfUnfocused: true
 	})
 
 	useEffect(() => {
-		if (polledNotifications && polledNotifications?.length > 0){
-			// replace with the newest unread notifications
-			setNewNotifications(polledNotifications)
-			setLastId(Math.max(...polledNotifications.map(notification=>notification.id)))
-			// if there are new notifications, cause a re-fetch for notifications
+		/* If there are new notifications, have to manually re-fetch notifications for the notifications page */
+		if (polledNotifications && polledNotifications?.data.length > 0){
 			dispatch(notificationApi.util.invalidateTags(["Notifications"]))
 		}
 	}, [polledNotifications])
@@ -106,12 +101,12 @@ export const TopNav = () => {
 							}}>
 								<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
 								{
-									<Indicator showIndicator={newNotifications.length > 0} className = "tw-h-3 tw-w-3 -tw-bottom-0.5 -tw-right-0.5 tw-bg-red-500"/>
+									<Indicator showIndicator={polledNotifications?.data ? polledNotifications?.data.length > 0 : false} className = "tw-h-3 tw-w-3 -tw-bottom-0.5 -tw-right-0.5 tw-bg-red-500"/>
 								}
 							</button>
 							{
 								showDropdown ? (
-									<AccountDropdown numNotifications={newNotifications.length} ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
+									<AccountDropdown numNotifications={polledNotifications?.data ? polledNotifications?.data.length : 0} ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
 								) : null
 							}
 						</div>
