@@ -130,7 +130,7 @@ export const ToolBar = () => {
 						id = "board-group-by" 
 						/* TODO: the margin top is coming from label CSS, need to refactor to make separate horizontal label class rather than
 						forcing the margin top to 0 here */
-						className = "__custom-select tw-bg-primary tw-w-full !tw-mt-0 lg:tw-w-auto" 
+						className = "__custom-select tw-bg-primary tw-border-primary tw-w-full !tw-mt-0 lg:tw-w-auto" 
 						value={groupBy}
 						onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
 						{
