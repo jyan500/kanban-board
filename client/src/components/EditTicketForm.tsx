@@ -221,7 +221,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			if (values.userId){
 	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [values.userId], isWatcher: false}).unwrap()
     			}
-    			if (values.userId && userProfile && values.userId !== userProfile.id && assigneeNotificationType){
+    			// if the assignee id was changed from its previous value, and it's not equal to the logged in user,
+    			// send notification
+    			if (values.userId && values.userId !== ticketAssignees?.[0]?.id && userProfile && values.userId !== userProfile.id && assigneeNotificationType){
     				await addNotification({
     					recipientId: values.userId,
     					senderId: userProfile.id,
