@@ -4,6 +4,7 @@ const db = require("../db/db")
 const { validateGet, validateCreate, validateBulkCreate, validateBulkEdit } = require("../validation/notification")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { getNotificationBody } = require("../helpers/functions")
+const { DEFAULT_PER_PAGE } = require("../constants")
 
 // get all notifications for the logged in user
 router.get("/", validateGet, handleValidationResult, async (req, res, next) => {
@@ -42,7 +43,7 @@ router.get("/", validateGet, handleValidationResult, async (req, res, next) => {
 			"is_read as isRead",
 			"created_at as createdAt",
 		).orderBy("created_at", "desc")
-		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		.paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(notifications)
 	}
 	catch (err){
