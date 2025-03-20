@@ -57,7 +57,7 @@ export const Filters = () => {
 			</div>
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-noti-is-unread">Unread</label>
-				<div className = "tw-flex tw-flex-col tw-items-center">
+				<div>
 					<Controller
 						name="isUnread"
 						control={control}

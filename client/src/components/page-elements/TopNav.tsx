@@ -44,7 +44,7 @@ export const TopNav = () => {
 	// TODO: need to figure out why this causes other cache invalidation requests to lag (i.e add/remove ticket watchers)
 	const { data: polledNotifications, isLoading: isGetPolledNotificationsLoading } = useGetNotificationsQuery({isUnread: true}, {
 		pollingInterval: 30000,
-		// skipPollingIfUnfocused: true
+		skipPollingIfUnfocused: true
 	})
 
 	useEffect(() => {

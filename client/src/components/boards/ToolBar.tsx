@@ -127,14 +127,10 @@ export const ToolBar = () => {
 				<div className = "tw-flex tw-flex-col lg:tw-flex-row lg:tw-items-center tw-gap-y-2 lg:tw-gap-x-2">
 					<label className = "label" htmlFor="board-group-by">Group By</label>
 					<select 
-						style={{
-							background: "var(--bs-primary)",
-							borderColor: "var(--bs-primary)"
-						}}
 						id = "board-group-by" 
 						/* TODO: the margin top is coming from label CSS, need to refactor to make separate horizontal label class rather than
 						forcing the margin top to 0 here */
-						className = "__custom-select tw-w-full !tw-mt-0 lg:tw-w-auto" 
+						className = "__custom-select tw-bg-primary tw-border-primary tw-w-full !tw-mt-0 lg:tw-w-auto" 
 						value={groupBy}
 						onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
 						{

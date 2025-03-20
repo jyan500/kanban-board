@@ -337,11 +337,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						setValue("statusId", parseInt(e.target.value))
 					    handleSubmit(onSubmit)()
 					}}
-					style={{
-						background: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)",
-						borderColor: ticket && isCompletedStatusIds.includes(ticket.statusId) ? "var(--bs-success)" : "var(--bs-primary)"
-					}}
-					className = "tw-w-full __custom-select">
+					className = {`${ticket && isCompletedStatusIds.includes(ticket.statusId) ? "tw-bg-success tw-border-success" : "tw-bg-primary tw-border-primary"} tw-w-full __custom-select`}>
 						{statuses.map((status) => {
 								return (
 									<option key = {status.id} value = {status.id}>{status.name}</option>
