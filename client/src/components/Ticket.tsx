@@ -68,7 +68,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: 
 	const {priorities} = useAppSelector((state) => state.priority)
 	const {statuses} = useAppSelector((state) => state.status)
 	const {ticketTypes} = useAppSelector((state) => state.ticketType)
-	const { data, isFetching } = useGetUserQuery(ticket?.assignees?.[0].id ?? skipToken)
+	const { data, isFetching } = useGetUserQuery(ticket?.assignees?.[0]?.id ?? skipToken)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef(null)
 	const [showDropdown, setShowDropdown] = useState(false)

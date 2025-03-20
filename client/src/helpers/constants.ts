@@ -51,6 +51,7 @@ export const TAG_TYPES = [
 	"RegistrationRequests",
 	"UserProfiles",
 	"Notifications",
+	"PollNotifications",
 	"UserNotificationTypes",
 	"UserOrganizations",
 ]

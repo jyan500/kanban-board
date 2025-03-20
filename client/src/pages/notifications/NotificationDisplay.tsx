@@ -19,12 +19,14 @@ import {
 	useUpdateNotificationMutation,
 	useBulkEditNotificationsMutation, 
 } from "../../services/private/notification"
+import { BulkEditToolbar } from "../../components/page-elements/BulkEditToolbar"
 
 export type Filters = {
 	notificationType: string
 	user: string
 	dateFrom: string 
 	dateTo: string
+	isUnread: string
 }
 
 export type FormValues = Filters & {
@@ -40,6 +42,7 @@ export const NotificationDisplay = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
+	const [ selectedIds, setSelectedIds ] = useState<Array<number>>([])
 	const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
     const [ updateNotification, {error: updateNotificationError, isLoading: isUpdateNotificationLoading}] = useUpdateNotificationMutation()
 	const filters: Filters = {
@@ -47,11 +50,13 @@ export const NotificationDisplay = () => {
 		"user": searchParams.get("user") ?? "",
 		"dateFrom": searchParams.get("dateFrom") ?? "",
 		"dateTo": searchParams.get("dateTo") ?? "",
+		"isUnread": searchParams.get("isUnread") ?? "",
 	}
-	const {data: data, isFetching } = useGetNotificationsQuery({
+	const {data: data, isFetching, isLoading } = useGetNotificationsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
 		query: searchParams.get("query") ?? "",
 		page: searchParams.get("page") ?? 1,
+		perPage: 30,
 		...filters
 	})
 	const pageParam = (searchParams.get("page") != null && searchParams.get("page") !== "" ? searchParams.get("page") : "") as string
@@ -77,21 +82,28 @@ export const NotificationDisplay = () => {
 	}
 
 	// TODO: unsure if this functionality should be on this page
-	// const markMessagesRead = async (messages: Array<Notification>) => {
-	// 	if (messages?.length){
-	// 		try {
-	// 			await bulkEditNotifications({isRead: true, ids: messages?.map((n) => n.id) ?? []}).unwrap()
-	// 		}
-	// 		catch (err){
-	// 			dispatch(addToast({
-	// 				id: uuidv4(),
-	// 				message: "Failed to mark notifications as read.",
-	// 				animationType: "animation-in",
-	// 				type: "failure"
-	// 			}))
-	// 		}
-	// 	}		
-	// }
+	const markMessagesRead = async (notificationIds: Array<number>) => {
+		const defaultToast: Toast  = {
+			id: uuidv4(),	
+			message: "Failed to mark notifications as read.",
+			animationType: "animation-in",
+			type: "failure"
+		}
+		if (notificationIds?.length){
+			try {
+				await bulkEditNotifications({isRead: true, ids: notificationIds}).unwrap()
+				dispatch(addToast({
+					...defaultToast, 
+					message: `${selectedIds.length} notifications marked as read!`,
+					type: "success"
+				}))
+
+			}
+			catch (err){
+				dispatch(addToast(defaultToast))
+			}
+		}		
+	}
 
 	const markMessageRead = async (message: Notification) => {
 		try {
@@ -144,6 +156,15 @@ export const NotificationDisplay = () => {
 		)
 	}
 
+	const setSelectedId = (selectedId: number) => {
+		if (selectedIds.includes(selectedId)){
+			setSelectedIds(selectedIds.filter(id => id !== selectedId))	
+		}
+		else {
+			setSelectedIds([...selectedIds, selectedId])
+		}
+	}
+
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			<h1>Notifications</h1>
@@ -159,10 +180,23 @@ export const NotificationDisplay = () => {
 					renderFilter={renderFilter}
 					showFilters={!(Object.values(filters).every((val: string) => val === "" || val == null))}
 					filters={Object.keys(filters)}
+					hidePagination={true}
 				/>
 			</FormProvider>
-			{isFetching ? <LoadingSpinner/> : (
+			{isLoading ? <LoadingSpinner/> : (
 				<>
+					{
+						selectedIds.length > 0 ? 	
+						<BulkEditToolbar
+							applyActionToAll={async () => {
+								await markMessagesRead(selectedIds)
+								setSelectedIds([])
+							}}
+							updateIds={setSelectedIds}
+							actionText={"Mark as Read"}
+							itemIds={selectedIds}
+						/> : null
+					}
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						{Object.entries(groupedByDate(data?.data)).map(([key, value]) => {
 							return (
@@ -172,13 +206,17 @@ export const NotificationDisplay = () => {
 										{
 											value.map((notification) => {
 												return (
-													<Link 
-														onClick={async () => {
-															if (!notification.isRead){
-																await markMessageRead(notification)}
+													<div className = "tw-flex tw-flex-row tw-gap-x-4">
+														<input checked={selectedIds.includes(notification.id)} onClick={() => setSelectedId(notification.id)} type="checkbox"/>
+														<Link 
+															className = "tw-w-full"
+															onClick={async () => {
+																if (!notification.isRead){
+																	await markMessageRead(notification)}
+																}
 															}
-														}
-														to = {notification.objectLink} key = {`notification_${notification.id}`}><NotificationRow notification={notification}/></Link>
+															to = {notification.objectLink} key = {`notification_${notification.id}`}><NotificationRow notification={notification}/></Link>
+													</div>
 												)
 											})
 										}

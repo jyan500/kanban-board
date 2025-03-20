@@ -90,7 +90,9 @@ router.get("/", async (req, res, next) => {
 			.join("tickets", "tickets_to_boards.ticket_id", "=", "tickets.id")
 			.leftJoin("ticket_activity", "tickets_to_boards.ticket_id", "=", "ticket_activity.ticket_id")
 			.sum("ticket_activity.minutes_spent as minutesSpent")
+			.groupBy("boards.id")
 			.groupBy("tickets.id")
+			.groupBy("tickets.status_id")
 			.where("tickets_to_users.user_id", "=", req.user.id)
 			.where("tickets_to_users.is_watcher", false)
 			.where("tickets_to_users.is_mention", false)
@@ -112,7 +114,8 @@ router.get("/", async (req, res, next) => {
 				const allTickets = boardsToAssignedTickets[boardId].length
 				const percentComplete = Math.floor((numTicketsCompletedByUser/allTickets) * 100)
 				const totalMinutesSpent = boardsToAssignedTickets[boardId].reduce((acc, obj) => {
-					return acc + obj.minutesSpent
+					const minutesSpent = !isNaN(Number(obj.minutesSpent)) ? Number(obj.minutesSpent) : 0 
+					return acc + parseInt(minutesSpent)
 				}, 0)
 				dashboardInfoMap[boardId] = {minutesSpent: totalMinutesSpent, percentComplete: percentComplete}
 			})
@@ -133,8 +136,8 @@ router.get("/", async (req, res, next) => {
 				}
 				if (req.query.includeUserDashboardInfo){
 					boardRes = {...boardRes,
-						percentComplete: dashboardInfoMap[board.id].percentComplete ?? 0,
-						minutesSpent: dashboardInfoMap[board.id].minutesSpent ?? 0
+						percentComplete: dashboardInfoMap[board.id]?.percentComplete ?? 0,
+						minutesSpent: dashboardInfoMap[board.id]?.minutesSpent ?? 0
 					}
 				}
 				if (req.query.assignees === "true" && board.id in boardAssigneesRes){

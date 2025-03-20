@@ -11,7 +11,9 @@ import { FaRegBell } from "react-icons/fa";
 import { IconContext } from "react-icons"
 import { Indicator } from "../../components/page-elements/Indicator"
 import { NotificationDropdown } from "../dropdowns/NotificationDropdown"
+import { AccountDropdown } from "../dropdowns/AccountDropdown"
 import { 
+	notificationApi,
 	useGetNotificationsQuery, 
 	usePollNotificationsQuery,
 	useBulkEditNotificationsMutation, 
@@ -38,44 +40,24 @@ export const TopNav = () => {
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef(null)
 	const [lastId, setLastId] = useState(0)
-	const [currentNotifications, setCurrentNotifications] = useState<Array<Notification>>([])
+	const [newNotifications, setNewNotifications] = useState<Array<Notification>>([])
+	console.log("newNotifications: ", newNotifications)
 
-	const { data: notifications, isLoading: isGetNotificationsLoading } = useGetNotificationsQuery({}, {
-		pollingInterval: 30000,
-		skipPollingIfUnfocused: true
-	}) 
 	// TODO: need to figure out why this causes other cache invalidation requests to lag (i.e add/remove ticket watchers)
-	// const { data: newNotifications, isLoading: isGetNewNotificationsLoading } = usePollNotificationsQuery(lastId !== 0 ? {lastId: lastId} : skipToken, {
-	// 	pollingInterval: 31000,
-	// 	// skipPollingIfUnfocused: true
-	// })
-
-    const [ updateNotification, { error: updateNotificationError, isLoading: isUpdateNotificationLoading} ] = useUpdateNotificationMutation();
-    const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
+	const { data: polledNotifications, isLoading: isGetPolledNotificationsLoading } = usePollNotificationsQuery({lastId: lastId}, {
+		pollingInterval: 30000,
+		// skipPollingIfUnfocused: true
+	})
 
 	useEffect(() => {
-		if (notifications?.data && notifications?.data.length > 0){
-			const unreadMessages = notifications.data.filter(n => !n.isRead)
-			const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
-			if (lastId < newLastUnreadId){
-				setLastId(Math.max(...notifications.data.map(n => n.id)))
-			}
-			setShowIndicator(unreadMessages.length > 0)
-			setCurrentNotifications(notifications.data)
+		if (polledNotifications && polledNotifications?.length > 0){
+			// replace with the newest unread notifications
+			setNewNotifications(polledNotifications)
+			setLastId(Math.max(...polledNotifications.map(notification=>notification.id)))
+			// if there are new notifications, cause a re-fetch for notifications
+			dispatch(notificationApi.util.invalidateTags(["Notifications"]))
 		}
-	}, [notifications])
-
-	// useEffect(() => {
-	// 	if (newNotifications && newNotifications?.length > 0){
-	// 		const unreadMessages = newNotifications.filter(n => !n.isRead)
-	// 		const newLastUnreadId = Math.max(...unreadMessages.map(n => n.id))
-	// 		if (lastId < newLastUnreadId){
-	// 			setLastId(Math.max(...newNotifications.map(n => n.id)))
-	// 		}
-	// 		setShowIndicator(unreadMessages.length > 0)
-	// 		setCurrentNotifications([...newNotifications, ...currentNotifications])
-	// 	}
-	// }, [newNotifications])
+	}, [polledNotifications])
 
 	useEffect(() => {
 		if (userProfile && Object.keys(userProfile).length){
@@ -92,75 +74,60 @@ export const TopNav = () => {
 		dispatch(privateApi.util.resetApiState())
 	}
 
-	const markMessagesRead = async () => {
-		const unreadMessages = currentNotifications.filter(n => !n.isRead)
-		if (unreadMessages.length){
-			try {
-				await bulkEditNotifications({isRead: true, ids: currentNotifications.map((n) => n.id) ?? []}).unwrap()
-			}
-			catch (err){
-				dispatch(addToast({
-					id: uuidv4(),
-					message: "Failed to mark notifications as read.",
-					animationType: "animation-in",
-					type: "failure"
-				}))
-			}
-		}		
-	}
+	// const markMessagesRead = async () => {
+	// 	const unreadMessages = currentNotifications.filter(n => !n.isRead)
+	// 	if (unreadMessages.length){
+	// 		try {
+	// 			await bulkEditNotifications({isRead: true, ids: currentNotifications.map((n) => n.id) ?? []}).unwrap()
+	// 		}
+	// 		catch (err){
+	// 			dispatch(addToast({
+	// 				id: uuidv4(),
+	// 				message: "Failed to mark notifications as read.",
+	// 				animationType: "animation-in",
+	// 				type: "failure"
+	// 			}))
+	// 		}
+	// 	}		
+	// }
 
 	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
 
 	return (
 		<div className = "tw-my-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
 			<HamburgerButton/>	
-			{
-				width >= SM_BREAKPOINT ? (
-				<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
-					{!isLoading ? (
-						<>
-							<div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
-								<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
-									<button ref = {buttonRef} onClick={(e) => {
-										e.preventDefault()
-										setShowDropdown(!showDropdown)
-									}} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
-										<FaRegBell className = "--l-icon"/>
-										<Indicator showIndicator={showIndicator}/>
-									</button>
-									{
-										showDropdown ? (
-											<NotificationDropdown 
-												notifications={currentNotifications ?? []}
-												closeDropdown={onClickOutside} 
-												ref = {menuDropdownRef}/>
-										) : null
-									}
-								</IconContext.Provider>
-							</div>
-							<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
-							<div>
-								<span>{displayUser(userProfile)}</span>
-							</div>
-						</>
-					) : (
-						<LoadingSpinner/>
-					)}
-					<div>
-						<button onClick={onLogout}>Logout</button>
-					</div>
-				</div>
-			) : (
-				/* On the mobile version, only display the bell icon, and tapping it will link to the notifications page */
-				<div className = "tw-mt-1 tw-relative tw-inline-block tw-text-left">
-					<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
-						<Link to={NOTIFICATIONS} className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative">
-							<FaRegBell className = "--l-icon"/>
-							<Indicator showIndicator={showIndicator}/>
-						</Link>
-					</IconContext.Provider>
-				</div>
-			)}
+			<div className = "tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
+				{!isLoading ? (
+					<>
+						<div className = "tw-mt-1">
+							<button className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative" ref = {buttonRef} onClick={(e) => {
+								e.preventDefault()
+								setShowDropdown(!showDropdown)
+							}}>
+								<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
+								{
+									<Indicator showIndicator={newNotifications.length > 0} className = "tw-h-3 tw-w-3 -tw-bottom-0.5 -tw-right-0.5 tw-bg-red-500"/>
+								}
+							</button>
+							{
+								showDropdown ? (
+									<AccountDropdown numNotifications={newNotifications.length} ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
+								) : null
+							}
+						</div>
+						{
+							width >= SM_BREAKPOINT ? (
+								<div>
+									<span>{displayUser(userProfile)}</span>
+								</div>
+							) : null
+						}
+					</>
+				) : (
+					<LoadingSpinner/>
+				)
+			}
+			</div>
 		</div>
 	)
 }

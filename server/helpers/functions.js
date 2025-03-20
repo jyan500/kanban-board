@@ -75,7 +75,10 @@ const mapIdToRowObject = (dbObjArray) => {
 /* Parses the notification type template using mustache.js */
 const getNotificationBody = async (notificationType, obj) => {
 	let fields = {} 
-	const ticket = await db("tickets").where("id", obj.ticket_id).first()
+	let ticket;
+	if (obj.ticket_id){
+		ticket = await db("tickets").where("id", obj.ticket_id).first()
+	}
 	let recipient;
 	let sender
 	if (obj.recipient_id){
@@ -115,6 +118,21 @@ const getNotificationBody = async (notificationType, obj) => {
 					ticket_name: ticket?.name, 	
 					sender_name: `${sender?.first_name} ${sender?.last_name}`,
 				}
+			}
+			break
+		case "Bulk Watching":
+			if (sender && obj.num_tickets){
+				fields = {
+					num_tickets: obj.num_tickets,
+				}	
+			}
+			break
+		case "Bulk Assigned":
+			if (sender && obj.num_tickets){
+				fields = {
+					num_tickets: obj.num_tickets,
+					sender_name: `${sender?.first_name} ${sender?.last_name}`
+				}	
 			}
 			break
 	}

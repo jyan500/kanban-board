@@ -7,7 +7,8 @@ type NotificationRequest = {
 	recipientId: number
 	senderId: number
 	ticketId?: number
-	objectLink: string
+	numTickets?: number
+	objectLink?: string
 	notificationTypeId: number
 }
 
@@ -26,11 +27,11 @@ export const notificationApi = privateApi.injectEndpoints({
 			query: (urlParams) => ({
 				url: `${NOTIFICATION_URL}/poll`,	
 				method: "GET",
-				params: urlParams
+				params: urlParams,
 			}),
 		}),
 		addNotification: builder.mutation<{message: string}, NotificationRequest>({
-			query: ({notificationTypeId, ticketId, objectLink, recipientId, senderId}) => ({
+			query: ({notificationTypeId, ticketId, objectLink, recipientId, senderId, numTickets}) => ({
 				url: `${NOTIFICATION_URL}`,
 				method: "POST",
 				body: {
@@ -38,6 +39,7 @@ export const notificationApi = privateApi.injectEndpoints({
 					sender_id: senderId,
 					ticket_id: ticketId,
 					object_link: objectLink,
+					num_tickets: numTickets,
 					notification_type_id: notificationTypeId,
 				}
 			}),

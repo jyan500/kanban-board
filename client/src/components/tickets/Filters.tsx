@@ -47,7 +47,7 @@ export const Filters = () => {
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-ticket-board">Board</label>
 				{
-					!getValues("board") || !isLoading ? (
+					!isLoading ? (
 						<Controller
 							name={"board"}
 							control={control}

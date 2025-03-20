@@ -290,7 +290,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					description: body.description,
 				}
 			}),
-			invalidatesTags: ["TicketActivity"]
+			invalidatesTags: ["TicketActivity", "Boards"]
 		}),
 		updateTicketActivity: builder.mutation<{message: string}, {ticketId: number, body: Omit<TicketActivity, "ticketId" | "createdAt" | "userId">}>({
 			query: ({ticketId, body}) => ({
@@ -302,14 +302,14 @@ export const ticketApi = privateApi.injectEndpoints({
 					description: body.description,
 				}
 			}),
-			invalidatesTags: ["TicketActivity"]
+			invalidatesTags: ["TicketActivity", "Boards"]
 		}),
 		deleteTicketActivity: builder.mutation<{message: string}, {ticketId: number, activityId: number}>({
 			query: ({ticketId, activityId}) => ({
 				url: TICKET_ACTIVITY_URL(ticketId, activityId),
 				method: "DELETE",
 			}),
-			invalidatesTags: ["TicketActivity"]
+			invalidatesTags: ["TicketActivity", "Boards"]
 		}),
 	}),
 })
