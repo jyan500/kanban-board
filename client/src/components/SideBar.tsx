@@ -11,6 +11,7 @@ import { Logo } from "../components/page-elements/Logo"
 import { useGetUserRolesQuery } from "../services/private/userRole"
 import { useGetUserProfileQuery } from "../services/private/userProfile"
 import { Avatar } from "./page-elements/Avatar"
+import { NavLink } from "./page-elements/NavLink"
 
 export const SideBar = () => {
 	const sideBar = useAppSelector((state) => state.nav)
@@ -83,9 +84,10 @@ export const SideBar = () => {
 									// <li key = {link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`} >
 									// 	<Link to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>{link.text}</Link>
 									// </li>
-									<Link key={link.pathname} onClick={(e) => dispatch(toggleSideBar(false))} to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>
-										{link.text}
-									</Link>
+									// <Link key={link.pathname} onClick={(e) => dispatch(toggleSideBar(false))} to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>
+									// 	{link.text}
+									// </Link>
+									<NavLink text={link.text} url={link.pathname} onClick={() => dispatch(toggleSideBar(false))}/>
 								)
 							}
 						</div>

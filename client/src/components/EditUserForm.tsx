@@ -114,66 +114,71 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 			{ownUserError && "status" in ownUserError ? (ownUserError.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
 			{userError && "status" in userError ? (userError.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
-				<div>
-				    <label className = "label" htmlFor = "edit-user-firstname">
-				    	First Name: <span className = "tw-font-bold tw-text-red-500">*</span>
-				    </label>
-					<input 
-					id = "edit-user-firstname"
-					type="text"
-					className = "tw-w-full"
-					{...register("firstName", registerOptions.firstName)}
-					/>
-			        {errors?.firstName && <small className = "--text-alert">{errors.firstName.message}</small>}
-		        </div>
-		    	<div>
-				    <label className = "label" htmlFor = "edit-user-lastname">
-				    	Last Name: <span className = "tw-font-bold tw-text-red-500">*</span>
-				    </label>
-					<input 
-					id = "edit-user-lastname"
-					type="text"
-					className = "tw-w-full"
-					{...register("lastName", registerOptions.lastName)}
-					/>
-			        {errors?.lastName && <small className = "--text-alert">{errors.lastName.message}</small>}
-		        </div>
-		    	<div>
-				    <label className = "label" htmlFor = "edit-user-email">
-				    	Email: <span className = "tw-font-bold tw-text-red-500">*</span>
-				    </label>
-					<input 
-					id = "edit-user-email"
-					type="text"
-					className = "tw-w-full"
-					{...register("email", registerOptions.email)}
-					/>
-			        {errors?.email && <small className = "--text-alert">{errors.email.message}</small>}
-			 	</div>
-		    	<div>
-		    		{!isAccountsPage ? (
-		    			<>
-						    <label className = "label" htmlFor = "edit-user-role">
-						    	User Role: <span className = "tw-font-bold tw-text-red-500">*</span>
-						    </label>
-							<select 
-							id = "edit-user-role"
-							className = "tw-w-full"
-							{...register("userRoleId", registerOptions.userRoleId)}
-							>
-								<option value = "" disabled></option>
-								{
-									userRoles.map((userRole) => {
-										return (
-											<option key={`user-role-${userRole.id}`} value = {userRole.id}>{parseDelimitedWord(userRole.name, "_")}</option>
-										)
-									})
-								}
-							</select>
-					        {errors?.userRoleId && <small className = "--text-alert">{errors.userRoleId.message}</small>}
-				        </>
-	    			) : null}
-		        </div>
+				{!isChangePassword ? 
+				(
+				<>
+					<div>
+					    <label className = "label" htmlFor = "edit-user-firstname">
+					    	First Name: <span className = "tw-font-bold tw-text-red-500">*</span>
+					    </label>
+						<input 
+						id = "edit-user-firstname"
+						type="text"
+						className = "tw-w-full"
+						{...register("firstName", registerOptions.firstName)}
+						/>
+				        {errors?.firstName && <small className = "--text-alert">{errors.firstName.message}</small>}
+			        </div>
+			    	<div>
+					    <label className = "label" htmlFor = "edit-user-lastname">
+					    	Last Name: <span className = "tw-font-bold tw-text-red-500">*</span>
+					    </label>
+						<input 
+						id = "edit-user-lastname"
+						type="text"
+						className = "tw-w-full"
+						{...register("lastName", registerOptions.lastName)}
+						/>
+				        {errors?.lastName && <small className = "--text-alert">{errors.lastName.message}</small>}
+			        </div>
+			    	<div>
+					    <label className = "label" htmlFor = "edit-user-email">
+					    	Email: <span className = "tw-font-bold tw-text-red-500">*</span>
+					    </label>
+						<input 
+						id = "edit-user-email"
+						type="text"
+						className = "tw-w-full"
+						{...register("email", registerOptions.email)}
+						/>
+				        {errors?.email && <small className = "--text-alert">{errors.email.message}</small>}
+				 	</div>
+			    	<div>
+			    		{!isAccountsPage ? (
+			    			<>
+							    <label className = "label" htmlFor = "edit-user-role">
+							    	User Role: <span className = "tw-font-bold tw-text-red-500">*</span>
+							    </label>
+								<select 
+								id = "edit-user-role"
+								className = "tw-w-full"
+								{...register("userRoleId", registerOptions.userRoleId)}
+								>
+									<option value = "" disabled></option>
+									{
+										userRoles.map((userRole) => {
+											return (
+												<option key={`user-role-${userRole.id}`} value = {userRole.id}>{parseDelimitedWord(userRole.name, "_")}</option>
+											)
+										})
+									}
+								</select>
+						        {errors?.userRoleId && <small className = "--text-alert">{errors.userRoleId.message}</small>}
+					        </>
+		    			) : null}
+			        </div>
+		        </>
+		        ) : null}
 		        {
 			        isAccountsPage && isChangePassword ? (
 			        <>

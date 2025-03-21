@@ -103,12 +103,10 @@ export const TicketDisplay = () => {
 
 	const additionalButtons = () => {
 		return (
-			<>
-				<button className="button" onClick={(e) => {
-				e.preventDefault()
-				showAddTicketModal()
-				}}>Add Ticket</button>
-			</>
+			<button className="button" onClick={(e) => {
+			e.preventDefault()
+			showAddTicketModal()
+			}}>Add Ticket</button>
 		)
 	}
 

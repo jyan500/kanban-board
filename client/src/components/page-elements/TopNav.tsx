@@ -91,11 +91,11 @@ export const TopNav = () => {
 	return (
 		<div className = "tw-my-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
 			<HamburgerButton/>	
-			<div className = "tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
+			<div className = "tw-inline-block tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 				{!isLoading ? (
 					<>
 						<div className = "tw-mt-1">
-							<button className = "--transparent tw-p-0 hover:tw-opacity-60 tw-relative" ref = {buttonRef} onClick={(e) => {
+							<button className = "--transparent tw-p-0 hover:tw-opacity-60 tw-inline-block tw-relative" ref = {buttonRef} onClick={(e) => {
 								e.preventDefault()
 								setShowDropdown(!showDropdown)
 							}}>
