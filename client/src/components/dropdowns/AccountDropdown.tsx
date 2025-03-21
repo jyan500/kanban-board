@@ -6,7 +6,7 @@ import { addToast } from "../../slices/toastSlice"
 import { Toast, Notification } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { Link, useLocation } from 'react-router-dom';
-import { NOTIFICATIONS, ACCOUNT } from "../../helpers/routes"
+import { NOTIFICATIONS, ACCOUNT, ACCOUNT_SWITCH_ORGANIZATION } from "../../helpers/routes"
 import { SetColumnLimitModalProps } from "../secondary-modals/SetColumnLimitModal"
 import { Avatar } from "../page-elements/Avatar"
 import { displayUser } from "../../helpers/functions"
@@ -34,9 +34,12 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNoti
 		"Notifications": () => {
 			navigate(NOTIFICATIONS)
 		},
+		"Switch Organization": () => {
+			navigate(ACCOUNT_SWITCH_ORGANIZATION)	
+		},
 		"Logout": () => {
 			onLogout()
-		}
+		},
 	}
 
 	return (

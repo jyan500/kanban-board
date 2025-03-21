@@ -27,6 +27,7 @@ import { BsFillFileBarGraphFill as BarsIcon } from "react-icons/bs";
 import { IconContext } from "react-icons"
 import { FaRegBuilding } from "react-icons/fa";
 import { convertMinutesToTimeDisplay } from "../helpers/functions"
+import { SwitchOrganizationForm } from "./forms/SwitchOrganizationForm"
 
 type DashboardSectionProps = {
 	title: string
@@ -56,15 +57,11 @@ export const Dashboard = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
-	const [switchOrgId, setSwitchOrgId] = useState<number | null>(null)
-	const [cacheKey, setCacheKey] = useState(uuidv4())
-	const [switchUserOrganization, {isLoading, error}] = useSwitchUserOrganizationMutation()
 	const [assignedSearchParams, setAssignedSearchParams] = useState<Record<string, any>>({})
 	const [watchSearchParams, setWatchSearchParams] = useState<Record<string, any>>({})
 	const {data: assignedTickets, isLoading: isAssignedTicketsLoading} = useGetTicketsQuery(Object.keys(assignedSearchParams).length > 0 ? assignedSearchParams : skipToken)
 	const {data: watchedTickets, isLoading: isWatchedTicketsLoading} = useGetTicketsQuery(Object.keys(watchSearchParams).length > 0 ? watchSearchParams : skipToken)
 	const {data: boards, isLoading: isBoardsLoading} = useGetBoardsQuery({includeUserDashboardInfo: true, perPage: 5})
-	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
 
 	// extract the remaining dashboard info into separate array of objects for
 	// easier display on the dashboard
@@ -98,27 +95,6 @@ export const Dashboard = () => {
 			setWatchSearchParams({...params, isWatching: true})
 		}
 	}, [userProfile])
-
-	const switchOrganization = async () => {
-		if (switchOrgId){
-			try {
-				const data = await switchUserOrganization({organizationId: switchOrgId}).unwrap()
-				dispatch(setCredentials(data))
-				dispatch(privateApi.util.resetApiState())
-	    		navigate("/", {state: {type: "success", alert: "You have switched organizations!"}, replace: true})
-			}
-			catch (e){
-				dispatch(addToast({
-	    			id: uuidv4(),
-	    			type: "failure",
-	    			animationType: "animation-in",
-	    			message: "Failed to switch organization.",
-	    		}))
-			}
-		}
-		selectRef?.current?.clearValue()
-		setCacheKey(uuidv4())
-	}
 
 	const setWatchFilter = (filterById: number | undefined) => {
 		setWatchSearchParams({
@@ -155,24 +131,7 @@ export const Dashboard = () => {
 				<h2>Dashboard</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
 					<DashboardSection title={"Organization"} icon={<FaRegBuilding/>}>
-						<>
-							<p className = "tw-font-medium">{userProfile?.organizationName}</p>
-							<div className = "tw-flex tw-flex-col tw-gap-y-2">
-								<AsyncSelect 
-									ref={selectRef}
-									cacheKey={cacheKey} 
-									urlParams={{excludeOwn: true}} 
-									onSelect={(selectedOption: OptionType | null) => {
-										if (selectedOption){
-											setSwitchOrgId(Number(selectedOption.value))
-										}
-									}} 
-									endpoint={USER_PROFILE_ORG_URL} 
-									className = "tw-w-full"
-								/>
-								<button onClick={switchOrganization} className = "button">Switch Organization</button>
-							</div>
-						</>
+						<SwitchOrganizationForm/>	
 					</DashboardSection>
 					<DashboardSection iconColor={"var(--bs-primary)"} icon={<BoardIcon/>} title={"Boards"}>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">

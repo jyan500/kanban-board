@@ -20,6 +20,7 @@ import { Account } from "./pages/account/Account"
 import { AccountOrganization } from "./pages/account/AccountOrganization"
 import { ChangePassword } from "./pages/account/ChangePassword"
 import { JoinOrganization } from "./pages/account/JoinOrganization"
+import { SwitchOrganization } from "./pages/account/SwitchOrganization"
 import { NotificationSettings } from "./pages/account/NotificationSettings"
 import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
 import DefaultLayout from "./layouts/DefaultLayout"
@@ -34,6 +35,7 @@ import {
 	REGISTER_ORG, 
 	ACCOUNT_CREATE_ORG, 
 	ACCOUNT_JOIN_ORGANIZATION, 
+	ACCOUNT_SWITCH_ORGANIZATION, 
 	ACCOUNT_CHANGE_PASSWORD, 
 	ACCOUNT_NOTIFICATION_SETTINGS, 
 	HOME,
@@ -155,6 +157,10 @@ const router = createBrowserRouter([
 					{
 						path: ACCOUNT_JOIN_ORGANIZATION,
 						element: <JoinOrganization/>
+					},
+					{
+						path: ACCOUNT_SWITCH_ORGANIZATION,
+						element: <SwitchOrganization/>
 					},
 				]
 			},

@@ -26,7 +26,7 @@ export const Account = () => {
 
 	return (
 		<div>
-			<h1>Account</h1>
+			<h1>Profile</h1>
 			{userProfile ? 
 				<EditUserForm isAccountsPage={true} isChangePassword={false} userId={userProfile.id}/>
 			: null}
