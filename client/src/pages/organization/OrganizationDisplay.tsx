@@ -50,7 +50,7 @@ export const OrganizationDisplay = () => {
 				{organization ? 
 					<>
 						<div className = "lg:tw-w-1/4 tw-flex tw-flex-col tw-gap-y-4">
-							<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
+							<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
 								<>
 									<ProfileCard entityId={organization.id} imageUploadUrl={`${ORGANIZATION_URL}/image`} imageUrl={organization.imageUrl} invalidatesTags={["Organizations"]}>
 									<>

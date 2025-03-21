@@ -11,15 +11,6 @@
 		padding: 8px;
 		margin-bottom: 8px;
 		border-radius: var(--radius-inputs);
-		&:hover {
-			background-color: var(--bs-primary);
-			transition: var(--input-transition-inputs);
-			color: white;
-		}
-		&.active {
-			background-color: var(--bs-primary);
-			color: white;
-		}
 	}
 }
 
