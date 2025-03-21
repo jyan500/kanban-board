@@ -32,12 +32,12 @@ export const OrganizationDisplay = () => {
 			<div className = "tw-flex tw-flex-col tw-gap-y-6 lg:tw-flex-row lg:tw-gap-x-6">
 				{organization ? 
 					<>
-						<div className = "tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center tw-gap-y-2">
+						<div className = "lg:tw-w-1/4 tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center">
 							<EditImageIndicator setUploadImage={setUploadImage} uploadImage={uploadImage} imageUrl={organization?.imageUrl ?? ""}/>
-							{uploadImage ? (
-								<UploadImageForm id={organization.id} endpoint={`${ORGANIZATION_URL}/image`} imageUrl={organization.imageUrl} invalidatesTags={["Organizations"]}/> 
-							) : null}
-							<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
+								{uploadImage ? (
+									<UploadImageForm id={organization.id} endpoint={`${ORGANIZATION_URL}/image`} imageUrl={organization.imageUrl} invalidatesTags={["Organizations"]}/> 
+								) : null}
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 									<FaBuilding className = "--icon tw-mt-1"/>
 									<div>{organization?.name}</div>	

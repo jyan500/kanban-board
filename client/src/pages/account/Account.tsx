@@ -70,18 +70,12 @@ export const Account = () => {
 			<div className = "tw-flex tw-flex-col tw-gap-y-6 lg:tw-flex-row lg:tw-gap-x-6">
 				{userProfile ? 
 					<>
-						<div className = "tw-space-y-4 tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center">
-							{/* 
-								<div className = "tw-relative tw-rounded-full">
-									<Avatar className = "tw-rounded-full" imageUrl={userProfile.imageUrl} size="l"/>
-									<button onClick={() => setUploadImage(!uploadImage)} className = "hover:tw-opacity-80 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-8 tw-h-8 tw-bg-gray-800 tw-absolute tw-right-0 tw-bottom-0"><IconEdit color="white"/></button>
-								</div>
-							*/}
+						<div className = "lg:tw-w-1/4 tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center">
 							<EditImageIndicator setUploadImage={setUploadImage} uploadImage={uploadImage} imageUrl={userProfile?.imageUrl ?? ""}/>
-							{
-								uploadImage ? <UploadImageForm id={userProfile.id} imageUrl={userProfile.imageUrl} endpoint={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]}/> : null
-							}
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
+								{
+									uploadImage ? <UploadImageForm id={userProfile.id} imageUrl={userProfile.imageUrl} endpoint={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]}/> : null
+								}
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 									<div><FaUser className = "--icon tw-mt-1"/></div>
 									<div>{displayUser(userProfile)}</div>	
@@ -96,7 +90,8 @@ export const Account = () => {
 								</div>
 								{/* TODO: redo this section to improve the UI */}
 								<div className="tw-grid tw-grid-cols-2 tw-gap-2 tw-mt-4">
-								    <button className = "button" onClick={() => setChangePassword(!changePassword)}>{changePassword ? "Hide Change" : "Change "} Password</button>
+								    <button className = "button" onClick={() => setChangePassword(!changePassword)}>{changePassword ? "Hide Change " : "Change "} Password</button>
+								    <button className = "button" onClick={() => setNotificationSettings(!notificationSettings)}>{notificationSettings ? "Hide " : "Change "} Notification Settings</button>
 									<Link className = "tw-text-center button" to = {ACCOUNT_CREATE_ORG}>Create Organization</Link>
 									<Link className = "tw-text-center button" to = {NOTIFICATIONS}>Notifications</Link>
 								</div>
@@ -139,7 +134,10 @@ export const Account = () => {
 									</form>
 								</div>
 							}
-							<UserNotificationTypeForm/>
+							{
+								notificationSettings ? 
+								<UserNotificationTypeForm/> : null
+							}
 						</div>
 					</>
 				: null
