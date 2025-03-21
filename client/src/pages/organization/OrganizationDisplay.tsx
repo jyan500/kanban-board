@@ -20,6 +20,7 @@ import { UploadImageForm } from "../../components/UploadImageForm"
 import { ORGANIZATION_URL } from "../../helpers/urls"
 import { Avatar } from "../../components/page-elements/Avatar"
 import { toggleShowModal, setModalType } from "../../slices/modalSlice"
+import { EditImageIndicator } from "../../components/page-elements/EditImageIndicator"
 
 export const OrganizationDisplay = () => {
 	const dispatch = useAppDispatch()
@@ -32,7 +33,10 @@ export const OrganizationDisplay = () => {
 				{organization ? 
 					<>
 						<div className = "tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center tw-gap-y-2">
-							<Avatar className = "tw-rounded-full" size = "l" imageUrl={organization.imageUrl}/>
+							<EditImageIndicator setUploadImage={setUploadImage} uploadImage={uploadImage} imageUrl={organization?.imageUrl ?? ""}/>
+							{uploadImage ? (
+								<UploadImageForm id={organization.id} endpoint={`${ORGANIZATION_URL}/image`} imageUrl={organization.imageUrl} invalidatesTags={["Organizations"]}/> 
+							) : null}
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 									<FaBuilding className = "--icon tw-mt-1"/>
@@ -54,10 +58,7 @@ export const OrganizationDisplay = () => {
 									<MdFactory className = "--icon tw-mt-1"/>
 									<div>{organization?.industry}</div>	
 								</div>
-								<button className = "button" onClick={() => setUploadImage(!uploadImage)}>{uploadImage ? "Hide " : ""}{organization.imageUrl ? "Change " : "Upload "}Image</button>
-								{uploadImage ? (
-									<UploadImageForm id={organization.id} endpoint={`${ORGANIZATION_URL}/image`} imageUrl={organization.imageUrl} invalidatesTags={["Organizations"]}/> 
-								) : null}
+
 								<button onClick={() => {
 									dispatch(toggleShowModal(true))
 									dispatch(setModalType("ORGANIZATION_STATUS_FORM"))

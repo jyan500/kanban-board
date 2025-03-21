@@ -18,7 +18,7 @@ import { useAddRegistrationRequestMutation } from "../../services/private/organi
 import { UploadImageForm } from "../../components/UploadImageForm" 
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4} from "uuid"
-import { Avatar } from "../../components/page-elements/Avatar"
+import { EditImageIndicator } from "../../components/page-elements/EditImageIndicator"
 
 type FormValues = {
 	organizationId: string | number 
@@ -71,7 +71,16 @@ export const Account = () => {
 				{userProfile ? 
 					<>
 						<div className = "tw-space-y-4 tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-items-center">
-							<Avatar className = "tw-rounded-full" imageUrl={userProfile.imageUrl} size="l"/>
+							{/* 
+								<div className = "tw-relative tw-rounded-full">
+									<Avatar className = "tw-rounded-full" imageUrl={userProfile.imageUrl} size="l"/>
+									<button onClick={() => setUploadImage(!uploadImage)} className = "hover:tw-opacity-80 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-8 tw-h-8 tw-bg-gray-800 tw-absolute tw-right-0 tw-bottom-0"><IconEdit color="white"/></button>
+								</div>
+							*/}
+							<EditImageIndicator setUploadImage={setUploadImage} uploadImage={uploadImage} imageUrl={userProfile?.imageUrl ?? ""}/>
+							{
+								uploadImage ? <UploadImageForm id={userProfile.id} imageUrl={userProfile.imageUrl} endpoint={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]}/> : null
+							}
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 									<div><FaUser className = "--icon tw-mt-1"/></div>
@@ -86,15 +95,11 @@ export const Account = () => {
 									<div className = "tw-w-full">{userProfile?.organizationName}</div>	
 								</div>
 								{/* TODO: redo this section to improve the UI */}
-								<button className = "button" onClick={() => setChangePassword(!changePassword)}>{changePassword ? "Hide Change" : "Change "} Password</button>
-								<button className = "button" onClick={() => setJoinOrganization(!joinOrganization)}>{joinOrganization ? "Hide Join" : "Join "} Organization</button>
-								<button className = "button" onClick={() => setUploadImage(!uploadImage)}>{uploadImage ? "Hide " : ""}{userProfile.imageUrl ? "Change " : "Upload "}Image</button>
-								<button className = "button" onClick={() => setNotificationSettings(!notificationSettings)}>{notificationSettings ? "Hide " : ""} Notification Settings</button>
-								{
-									uploadImage ? <UploadImageForm id={userProfile.id} imageUrl={userProfile.imageUrl} endpoint={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]}/> : null
-								}
-								<Link className = "tw-text-center button" to = {ACCOUNT_CREATE_ORG}>Create Organization</Link>
-								<Link className = "tw-text-center button" to = {NOTIFICATIONS}>Notifications</Link>
+								<div className="tw-grid tw-grid-cols-2 tw-gap-2 tw-mt-4">
+								    <button className = "button" onClick={() => setChangePassword(!changePassword)}>{changePassword ? "Hide Change" : "Change "} Password</button>
+									<Link className = "tw-text-center button" to = {ACCOUNT_CREATE_ORG}>Create Organization</Link>
+									<Link className = "tw-text-center button" to = {NOTIFICATIONS}>Notifications</Link>
+								</div>
 							</div>
 						</div>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
@@ -103,46 +108,38 @@ export const Account = () => {
 								<EditUserForm isAccountsPage={true} isChangePassword={changePassword} userId={userProfile.id}/>
 							</div>
 							{
-								joinOrganization ? 
-								(
-									<div className = "tw-w-1/2">
-										<h1>Join Organization</h1>	
-										<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
-											 <div>
-											    <label className = "label" htmlFor = "join-organization">
-											    	Organization:
-											    </label>
-												<Controller
-													name={"organizationId"}
-													control={control}
-													rules={registerOptions.organizationId}
-													render={({field: {onChange, value, name, ref}}) => (
-														<AsyncSelect 
-															urlParams={{getJoinedOrgs: false}} 
-															onSelect={(selectedOption: OptionType | null) => {
-										                		const val = selectedOption?.value ?? ""
-																setValue("organizationId", Number(val))
-															}} 
-															endpoint={USER_PROFILE_ORG_URL} 
-															className = "tw-w-full"
-														/>
-													)}
-												/>
-										        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
-										    </div>	
-										    <div>
-										    	<button className = "button" type="submit">Send Request</button>
-										    </div>
-										</form>
-									</div>
-								) : null
+								<div className = "tw-w-1/2">
+									<h1>Join Organization</h1>	
+									<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
+										 <div>
+										    <label className = "label" htmlFor = "join-organization">
+										    	Organization:
+										    </label>
+											<Controller
+												name={"organizationId"}
+												control={control}
+												rules={registerOptions.organizationId}
+												render={({field: {onChange, value, name, ref}}) => (
+													<AsyncSelect 
+														urlParams={{getJoinedOrgs: false}} 
+														onSelect={(selectedOption: OptionType | null) => {
+									                		const val = selectedOption?.value ?? ""
+															setValue("organizationId", Number(val))
+														}} 
+														endpoint={USER_PROFILE_ORG_URL} 
+														className = "tw-w-full"
+													/>
+												)}
+											/>
+									        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
+									    </div>	
+									    <div>
+									    	<button className = "button" type="submit">Send Request</button>
+									    </div>
+									</form>
+								</div>
 							}
-							{
-								notificationSettings ? (
-									<UserNotificationTypeForm/>
-								) : null	
-							}
-						
+							<UserNotificationTypeForm/>
 						</div>
 					</>
 				: null
