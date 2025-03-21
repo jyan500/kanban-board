@@ -167,6 +167,7 @@ input[type="date"]{
 }
 
 .button {
+	white-space: nowrap;
 	padding: var(--padding-btn);
 	border: none;
 	background-color: var(--bs-primary);
