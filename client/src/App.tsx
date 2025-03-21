@@ -18,6 +18,9 @@ import { OrganizationRegister } from "./pages/register/OrganizationRegister"
 import { AccountDisplay } from "./pages/account/AccountDisplay"
 import { Account } from "./pages/account/Account"
 import { AccountOrganization } from "./pages/account/AccountOrganization"
+import { ChangePassword } from "./pages/account/ChangePassword"
+import { JoinOrganization } from "./pages/account/JoinOrganization"
+import { NotificationSettings } from "./pages/account/NotificationSettings"
 import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
@@ -25,7 +28,26 @@ import UserRoleProtectedLayout from "./layouts/UserRoleProtectedLayout"
 import { useAppSelector, useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
 import { ToastList } from "./components/ToastList" 
-import { ACCOUNT, REGISTER_USER, REGISTER_ORG, ACCOUNT_CREATE_ORG, HOME, LOGIN, REGISTER, BOARDS, BOARD_ID, TICKETS, TICKET_ID, USER, USERS, ORGANIZATION, NOTIFICATIONS } from "./helpers/routes"
+import { 
+	ACCOUNT, 
+	REGISTER_USER, 
+	REGISTER_ORG, 
+	ACCOUNT_CREATE_ORG, 
+	ACCOUNT_JOIN_ORGANIZATION, 
+	ACCOUNT_CHANGE_PASSWORD, 
+	ACCOUNT_NOTIFICATION_SETTINGS, 
+	HOME,
+	LOGIN, 
+	REGISTER, 
+	BOARDS, 
+	BOARD_ID, 
+	TICKETS, 
+	TICKET_ID, 
+	USER, 
+	USERS, 
+	ORGANIZATION, 
+	NOTIFICATIONS 
+} from "./helpers/routes"
 
 // Define routes using createBrowserRouter
 const router = createBrowserRouter([
@@ -121,7 +143,19 @@ const router = createBrowserRouter([
 					{
 						path: ACCOUNT_CREATE_ORG,
 						element: <AccountOrganization/>
-					}
+					},
+					{
+						path: ACCOUNT_NOTIFICATION_SETTINGS,
+						element: <NotificationSettings/>
+					},
+					{
+						path: ACCOUNT_CHANGE_PASSWORD,
+						element: <ChangePassword/>
+					},
+					{
+						path: ACCOUNT_JOIN_ORGANIZATION,
+						element: <JoinOrganization/>
+					},
 				]
 			},
 			{
