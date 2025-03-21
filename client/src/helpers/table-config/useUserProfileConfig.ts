@@ -6,10 +6,12 @@ import { Toast, UserRegistrationRequest } from "../../types/common"
 import { useBulkEditRegistrationRequestsMutation, useUpdateRegistrationRequestMutation } from "../../services/private/organization"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
+import { Avatar } from "../../components/page-elements/Avatar"
 
 export type useUserProfileConfigType = {
-	headers: Record<string, any>,
+	headers: Record<string, any>
 	modifiers: Record<string, any>
+	renderers: Record<string, any>
 	bulkEdit: Record<string, any>
 	editCol: Record<string, any>
 }
@@ -21,6 +23,7 @@ export const useUserProfileConfig = () => {
 	const isAdminOrBoardAdmin = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	return {
 		headers: {
+			"imageUrl": "",
 			"firstName": "First Name", 
 			"lastName": "Last Name", 
 			"email": "Email", 
@@ -29,6 +32,18 @@ export const useUserProfileConfig = () => {
 		},
 		modifiers: {
 			"userRoleId": { modifier: userRoleModifier, lookup: userRoleLookup },
+		},
+		renderers: {
+			imageUrl: (url: string) => {
+				return {
+					component: Avatar,
+					props: {
+						imageUrl: url,
+						size: "m",	
+						className: "tw-rounded-full",
+					}
+				}
+			}
 		},
 		editCol: {
 			col: "edit", 
