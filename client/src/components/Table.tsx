@@ -80,6 +80,16 @@ export const Table = ({config, data, itemIds, tableKey: tKey, hideCheckAllBox}: 
 												</td>
 											)
 										}
+										else if (config.renderers && headerKey in config.renderers){
+											const {component: Component, props} = config.renderers[headerKey](row[headerKey])
+											return (
+												<td key = {`${tableKey}-${row.id}-${headerKey}`}>
+													<div className = "tw-flex tw-justify-center">
+														<Component {...props}/>
+													</div>
+												</td>
+											)
+										}
 										else if (headerKey in config.modifiers){
 											const {modifier, lookup} = config.modifiers[headerKey]
 											return (
