@@ -7,7 +7,6 @@ import { privateApi } from "../../services/private"
 import { displayUser } from "../../helpers/functions"
 import { Avatar } from "./Avatar"
 import { useClickOutside } from "../../hooks/useClickOutside" 
-import { FaRegBell } from "react-icons/fa";
 import { IconContext } from "react-icons"
 import { Indicator } from "../../components/page-elements/Indicator"
 import { NotificationDropdown } from "../dropdowns/NotificationDropdown"

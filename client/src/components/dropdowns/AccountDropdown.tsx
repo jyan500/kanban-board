@@ -12,12 +12,18 @@ import { Avatar } from "../page-elements/Avatar"
 import { displayUser } from "../../helpers/functions"
 import { useNavigate } from "react-router-dom"
 import { Badge } from "../page-elements/Badge"
+import { IconBell } from "../icons/IconBell"
+import { IconAccount } from "../icons/IconAccount"
+import { IconBuilding } from "../icons/IconBuilding"
+import { IconLogout } from "../icons/IconLogout"
+import { TextIconRow } from "../page-elements/TextIconRow"
 
 type Props = {
 	numNotifications: number
 	closeDropdown: () => void
 	onLogout: () => void
 }
+
 
 export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNotifications, closeDropdown, onLogout}: Props, ref) => {
 	const dispatch = useAppDispatch()
@@ -28,19 +34,37 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNoti
 	const isAdminOrBoardAdmin = userRole && (userRole === "ADMIN" || userRole === "BOARD_ADMIN")
 
 	const options = {
-		"Account": () => {
-			navigate(ACCOUNT)
+		"Account": {
+			text: "Account",
+			icon: <IconAccount/>,
+			onClick: () => {
+				navigate(ACCOUNT)
+			}
 		},
-		"Notifications": () => {
-			navigate(NOTIFICATIONS)
+		"Notifications": {
+			text: "Notifications",
+			icon: <IconBell/>,
+			onClick: () => {
+				navigate(NOTIFICATIONS)
+			}
 		},
-		"Switch Organization": () => {
-			navigate(ACCOUNT_SWITCH_ORGANIZATION)	
+		"Switch Organization": { 
+			text: "Switch Organization",
+			icon: <IconBuilding/>,
+			onClick: () => {
+				navigate(ACCOUNT_SWITCH_ORGANIZATION)	
+			}
 		},
-		"Logout": () => {
-			onLogout()
+		"Logout": {
+			text: "Logout",
+			icon: <IconLogout/>,
+			onClick: () => {
+				onLogout()
+			}
 		},
 	}
+
+
 
 	return (
 		<Dropdown closeDropdown={closeDropdown} ref = {ref} className = "!tw-w-96">
@@ -52,25 +76,25 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNoti
 						<p className = "tw-text-gray-700">{userProfile?.email}</p>
 					</div>
 				</li>
-				{Object.keys(options).map((option) => {
+				{Object.values(options).map((option) => {
 					return (
 						<li
-							key={option}
+							key={option.text}
 							onClick={(e) => {
 								if (e.defaultPrevented){
 									return 
 								}
-								options[option as keyof typeof options]?.()
+								option.onClick()
 								closeDropdown()
 							}}
 							className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
 							role="menuitem"
 						>
 						{
-							option === "Notifications" ? 
+							option.text === "Notifications" ? 
 							(
 								<div className = "tw-flex tw-flex-row tw-items-center tw-justify-between">
-									<span>{option}</span>	
+									<TextIconRow text={option.text} icon={option.icon}/>
 									{
 										numNotifications > 0 ? (
 											<div className = "tw-px-2 tw-bg-red-500 tw-rounded-full">
@@ -79,7 +103,8 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNoti
 										) : null
 									}
 								</div>
-							) : <span>{option}</span> 
+							) : 
+							<TextIconRow text={option.text} icon={option.icon}/>
 						}
 						</li>
 					)

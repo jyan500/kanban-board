@@ -5,6 +5,7 @@ import { toggleShowModal, setModalProps, setModalType } from "../../slices/modal
 import { Ticket, Status } from "../../types/common"
 import { IconEdit } from "../icons/IconEdit"
 import { IconBulkAction } from "../icons/IconBulkAction"
+import { TextIconRow } from "../page-elements/TextIconRow"
 
 type Props = {
 	boardId: string | number | null | undefined
@@ -57,8 +58,8 @@ export const BoardToolbarDropdown = React.forwardRef<HTMLDivElement, Props>(({
 						className="tw-flex tw-flex-row tw-items-center tw-gap-x-2 tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
 						role="menuitem"
 					>
-						<span className = "tw-mb-0.5">{optionIcons[option as keyof typeof optionIcons]}</span>
-						<span>{option}</span>
+
+						<TextIconRow icon={optionIcons[option as keyof typeof optionIcons]} text={option}/>
 					</li>
 				))}
 			</ul>
