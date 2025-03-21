@@ -11,6 +11,7 @@ export const ORGANIZATION = "/organization"
 export const ACCOUNT = "/account"
 export const REGISTER_USER = `${REGISTER}${USER}`
 export const REGISTER_ORG = `${REGISTER}/${ORGANIZATION}`
+export const ORGANIZATION_ADD_EDIT_STATUSES = `${ORGANIZATION}/add-edit-status`
 export const ACCOUNT_CREATE_ORG = `${ACCOUNT}${ORGANIZATION}`
 export const ACCOUNT_CHANGE_PASSWORD = `${ACCOUNT}/change-password`
 export const ACCOUNT_JOIN_ORGANIZATION = `${ACCOUNT}/join-organization`

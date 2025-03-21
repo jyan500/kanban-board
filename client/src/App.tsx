@@ -11,6 +11,8 @@ import { Ticket as TicketPage } from "./pages/tickets/Ticket"
 import { Boards } from "./pages/boards/Boards"
 import { Board } from "./pages/boards/Board" 
 import { OrganizationDisplay } from "./pages/organization/OrganizationDisplay"
+import { Organization } from "./pages/organization/Organization"
+import { OrganizationAddEditStatuses } from "./pages/organization/OrganizationAddEditStatuses"
 import { UsersDisplay } from "./pages/users/UsersDisplay"
 import { RegisterDisplay } from "./pages/register/RegisterDisplay"
 import { RegisterSelection } from "./pages/register/RegisterSelection"
@@ -48,6 +50,7 @@ import {
 	USER, 
 	USERS, 
 	ORGANIZATION, 
+	ORGANIZATION_ADD_EDIT_STATUSES,
 	NOTIFICATIONS 
 } from "./helpers/routes"
 
@@ -182,7 +185,18 @@ const router = createBrowserRouter([
 					element: <>
 						<ScrollRestoration/>
 						<OrganizationDisplay/>
-					</>
+					</>,
+					children: [
+						{
+
+							index: true,
+							element: <Organization/>
+						},
+						{
+							path: ORGANIZATION_ADD_EDIT_STATUSES,		
+							element: <OrganizationAddEditStatuses/>
+						}
+					]
 				}
 				]
 			},
