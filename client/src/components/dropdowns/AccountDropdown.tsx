@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom"
 import { Badge } from "../page-elements/Badge"
 import { IconBell } from "../icons/IconBell"
 import { IconAccount } from "../icons/IconAccount"
-import { IconBuilding } from "../icons/IconBuilding"
+import { IconBuildingUser } from "../icons/IconBuildingUser"
 import { IconLogout } from "../icons/IconLogout"
 import { TextIconRow } from "../page-elements/TextIconRow"
 
@@ -50,7 +50,7 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNoti
 		},
 		"Switch Organization": { 
 			text: "Switch Organization",
-			icon: <IconBuilding/>,
+			icon: <IconBuildingUser/>,
 			onClick: () => {
 				navigate(ACCOUNT_SWITCH_ORGANIZATION)	
 			}

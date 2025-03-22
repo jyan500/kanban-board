@@ -21,11 +21,11 @@ import { Banner } from "./page-elements/Banner"
 import { TicketsContainer } from "./tickets/TicketsContainer"
 import { useGetBoardsQuery } from "../services/private/board"
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { MdOutlineViewKanban as BoardIcon } from "react-icons/md";
-import { LuClock as ClockIcon } from "react-icons/lu";
-import { BsFillFileBarGraphFill as BarsIcon } from "react-icons/bs";
+import { IconBars } from "./icons/IconBars"
+import { IconClock } from "./icons/IconClock"
+import { IconBuilding } from "./icons/IconBuilding"
+import { IconBoard } from "./icons/IconBoard"
 import { IconContext } from "react-icons"
-import { FaRegBuilding } from "react-icons/fa";
 import { convertMinutesToTimeDisplay } from "../helpers/functions"
 import { SwitchOrganizationForm } from "./forms/SwitchOrganizationForm"
 
@@ -41,10 +41,7 @@ const DashboardSection = ({title, iconColor, iconClassname, icon, children}: Das
 	return (
 		<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-				<IconContext.Provider value={{color: iconColor ?? "var(--bs-primary)", className: `${iconClassname ?? "tw-w-4 tw-h-4"}`}}>
-					{/* icon */}	
-					{icon}
-				</IconContext.Provider>
+				{icon}
 				<h3>{title}</h3>
 			</div>
 			{children}
@@ -130,10 +127,10 @@ export const Dashboard = () => {
 			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
 				<h2>Dashboard</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
-					<DashboardSection title={"Organization"} icon={<FaRegBuilding/>}>
+					<DashboardSection title={"Organization"} icon={<IconBuilding/>}>
 						<SwitchOrganizationForm/>	
 					</DashboardSection>
-					<DashboardSection iconColor={"var(--bs-primary)"} icon={<BoardIcon/>} title={"Boards"}>
+					<DashboardSection iconColor={"var(--bs-primary)"} icon={<IconBoard color = {"var(--bs-primary)"}/>} title={"Boards"}>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							{boards?.data?.map((board) => (
 								<div>
@@ -145,7 +142,7 @@ export const Dashboard = () => {
 							</div>
 						</div>	
 					</DashboardSection>
-					<DashboardSection iconColor={"var(--bs-warning)"} icon={<BarsIcon/>} title={"Progress"}>
+					<DashboardSection iconColor={"var(--bs-warning)"} icon={<IconBars color={"var(--bs-warning)"}/>} title={"Progress"}>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							{
 								percentageCompletePerBoard?.map((board) => (
@@ -156,7 +153,7 @@ export const Dashboard = () => {
 							}	
 						</div>
 					</DashboardSection>
-					<DashboardSection iconColor={"var(--bs-success)"} icon={<ClockIcon/>} title={"Time Spent"}>
+					<DashboardSection iconColor={"var(--bs-success)"} icon={<IconClock color={"var(--bs-success)"}/>} title={"Time Spent"}>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							{
 								timeSpentPerBoard?.map((board) => (
