@@ -25,7 +25,7 @@ import { displayUser } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
 import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
-import { priorityIconMap, TicketTypeIcon , colorMap } from "./Ticket"
+import { priorityIconMap, PriorityIcon, TicketTypeIcon , colorMap } from "./Ticket"
 import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown" 
 import { ImTree as AddToEpicIcon } from "react-icons/im";
 import { Badge } from "./page-elements/Badge"
@@ -367,9 +367,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						</RightSectionRow>
 						<RightSectionRow title={"Priority"}>
 							<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
-								<IconContext.Provider value = {{color: priorityName && priorityName in colorMap ? colorMap[priorityName] : "", className: "tw-shrink-0 tw-w-8 tw-h-8"}}>
-									{priorityName && priorityName in priorityIconMap ? priorityIconMap[priorityName] : null}	
-								</IconContext.Provider>	
+								{priorityName ? <PriorityIcon type = {priorityName} color = {priorityName in colorMap ? colorMap[priorityName] : ""} className = "tw-shrink-0 tw-w-8 tw-h-8"/> : <></>}
 								{prioritySelect}
 							</button>
 						</RightSectionRow>

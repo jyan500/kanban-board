@@ -15,6 +15,7 @@ import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../../helpers/functions"
 import { FiPlus as PlusIcon } from "react-icons/fi";
+import { IconPlus } from "../icons/IconPlus"
 import { TICKETS } from "../../helpers/routes"
 
 type Props = {
@@ -173,7 +174,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 							options["Add Watchers"]?.()					
 						}}>
 							<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-								<PlusIcon className = "tw-h-6 tw-w-6"/>
+								<IconPlus className = "tw-w-6 tw-h-6"/>
 								<p>Add Watchers</p>
 							</div>
 						</button>

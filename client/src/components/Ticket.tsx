@@ -5,6 +5,9 @@ import { useAppSelector } from "../hooks/redux-hooks"
 import { IoReorderTwoOutline as MediumPriorityIcon } from "react-icons/io5";
 import { HiChevronDoubleUp as HighPriorityIcon } from "react-icons/hi2";
 import { HiChevronDown as LowPriorityIcon } from "react-icons/hi2";
+import { IconLowPriority } from "./icons/IconLowPriority"
+import { IconMediumPriority } from "./icons/IconMediumPriority"
+import { IconHighPriority } from "./icons/IconHighPriority"
 import { IconContext } from "react-icons"
 import { BugIcon } from "../assets/icons/BugIcon"
 import { ModificationIcon } from "../assets/icons/ModificationIcon"
@@ -28,6 +31,24 @@ export const priorityIconMap: {[key: string]: ReactNode} = {
 	"Low": <LowPriorityIcon/>,	
 	"Medium": <MediumPriorityIcon/>,
 	"High": <HighPriorityIcon/>,
+}
+
+interface PriorityIconProps {
+	type: string
+	color?: string
+	className?: string
+}
+
+export const PriorityIcon = ({type, color, className}: PriorityIconProps) => {
+	switch (type){
+		case "Low":
+			return <IconLowPriority className={className} color={color}/>
+		case "Medium":
+			return <IconMediumPriority className={className} color={color}/>
+		case "High":
+			return <IconHighPriority className={className} color={color}/>
+	}
+	return <div></div>
 }
 
 type TicketTypeIconProps = {
@@ -106,16 +127,9 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: 
 					{ticketType ? (
 						<TicketTypeIcon type = {ticketType} className = {"tw-shrink-0 tw-w-5 tw-h-5"}/>
 					) : <></>}
-					{priority && priority in priorityIconMap ? 
-					(
-						<IconContext.Provider value = {{color: priority && priority in colorMap ? colorMap[priority] : "", className: "tw-shrink-0 tw-w-5 tw-h-5"}}>
-							{priority && priority in priorityIconMap && (
-								<>
-									{priorityIconMap[priority]}
-								</>)}
-						</IconContext.Provider>
-					)
-					: <></>}
+					{
+						priority ? (<PriorityIcon type={priority} color={priority in colorMap ? colorMap[priority] : ""} className={"tw-shrink-0 tw-w-5 tw-h-5"}/>) : <></>
+					}
 				</div>
 				<div className = {"tw-inline-block tw-text-left"}>
 					<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>

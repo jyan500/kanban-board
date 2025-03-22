@@ -3,6 +3,7 @@ import { KanbanBoard, Status } from "../../types/common"
 import { useAppDispatch } from "../../hooks/redux-hooks"
 import { IconButton } from "../page-elements/IconButton"
 import { BsThreeDots as MenuIcon } from "react-icons/bs";
+import { IconMenu } from "../icons/IconMenu"
 import { useClickOutside } from "../../hooks/useClickOutside" 
 import { IconContext } from "react-icons"
 import { StatusHeaderDropdown } from "../dropdowns/StatusHeaderDropdown"
@@ -51,17 +52,17 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 					: null
 				}
 				<div className = "tw-inline-block tw-text-left tw-pr-2">
-					<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
-						<button ref = {buttonRef} onClick={(e) => {
-							e.preventDefault()
-							setShowDropdown(!showDropdown)
-						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-w-6 tw-h-6"/></button>
-						{
-							showDropdown ? (
-								<StatusHeaderDropdown dropdownAlignLeft={dropdownAlignLeft} boardId = {boardId} statusId={status.id} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>
-							) : null
-						}
-					</IconContext.Provider>
+					<button ref = {buttonRef} onClick={(e) => {
+						console.log("test")
+						console.log("showDropdown: ", showDropdown)
+						e.preventDefault()
+						setShowDropdown(!showDropdown)
+					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu color={"var(--bs-dark-grey)"} className = "tw-w-6 tw-h-6"/></button>
+					{
+						showDropdown ? (
+							<StatusHeaderDropdown dropdownAlignLeft={dropdownAlignLeft} boardId = {boardId} statusId={status.id} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>
+						) : null
+					}
 				</div>
 			</div>
 			{
