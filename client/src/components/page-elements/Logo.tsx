@@ -1,5 +1,5 @@
 import React from "react"
-import LogoIcon from "../../assets/images/jira-icon.png"
+import LogoIcon from "../../assets/images/logo.png"
 
 type Props = {
 	isLandingPage: boolean 
@@ -8,7 +8,7 @@ type Props = {
 export const Logo = ({isLandingPage}: Props) => {
 	return (
 		isLandingPage ? (
-			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center tw-text-center tw-bg-gradient-to-r tw-from-cyan-500 tw-to-primary tw-from-50%  tw-rounded-md tw-p-4">
+			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center tw-text-center tw-to-primary tw-from-50%  tw-rounded-md tw-p-4">
 				<img className = "tw-w-32 tw-h-32" src = {LogoIcon}/>
 				<span className = "tw-text-white tw-font-mono tw-text-5xl">Kanban</span>
 			</div>
