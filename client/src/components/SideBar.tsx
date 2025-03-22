@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import "../styles/sidebar.css"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks"
 import { toggleSideBar } from "../slices/navSlice" 
-import { IoMdClose } from "react-icons/io";
+import { IconClose } from "./icons/IconClose";
 import { Link, useLocation } from 'react-router-dom';
 import { CgProfile } from "react-icons/cg";
 import { LoadingSpinner } from "./LoadingSpinner" 
@@ -75,9 +75,11 @@ export const SideBar = () => {
 							}
 						}
 						>
-					<IoMdClose className = "icon"/></button>	
-					<div className = "sidebar__container">
+					<IconClose color="white" className = "icon"/></button>	
+					<div className = "tw-p-4 tw-flex tw-items-center tw-h-20 tw-rounded-sm tw-bg-gradient-to-r tw-from-cyan-500 tw-to-primary">
 						<Logo isLandingPage={false}/>
+					</div>
+					<div className = "sidebar__container">
 						<div className = "sidebar__links">
 							{ 
 								links.map((link) => 
@@ -91,7 +93,7 @@ export const SideBar = () => {
 								)
 							}
 						</div>
-						<div className = "sidebar__bottom-bar">
+						<div className = "tw-h-20 sidebar__bottom-bar tw-bg-gradient-to-r tw-from-cyan-500 tw-to-primary">
 							<div className = "sidebar__bottom-bar__content">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
 									<Avatar imageUrl={userProfile?.imageUrl} className = "tw-rounded-full"/>
