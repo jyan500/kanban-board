@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
+import { Link } from "react-router-dom"
 import { 
 	useUpdateOrganizationMutation
 } from "../services/private/organization" 
@@ -101,7 +102,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
     }
 
 	return (
-		<div className = "tw-flex tw-flex-col">
+		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			{error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`org_error_${i}`}>{errorMessage}</p>)) : null}
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(propsSubmit ?? onSubmit)}>
 				<div>
@@ -201,6 +202,15 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 					<button type = "submit" className = "button">{isOrgRegister ? "Next" : "Submit"}</button>
 				</div>
 			</form>
+			{
+				isOrgRegister ? (
+				<div>
+					<div>
+						<small>Already have an account? Click <Link className = "hover:tw-opacity-1 tw-text-sky-500" to={"/login"}>Here</Link> to login</small>
+					</div>
+				</div>
+				) : null
+			}
 		</div>
 	)	
 }
