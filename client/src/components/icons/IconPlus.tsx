@@ -1,4 +1,4 @@
-import { FaRegCopy } from "react-icons/fa";
+import { FiPlus as PlusIcon } from "react-icons/fi";
 import React from "react"
 import { BaseIcon } from "./BaseIcon"
 
@@ -7,10 +7,11 @@ interface Props {
 	className?: string
 }
 
-export const IconCopy = ({color, className}: Props) => {
+export const IconPlus = ({color, className}: Props) => {
 	return (
 		<BaseIcon color={color} className={className}>
-			<FaRegCopy/>
+			<PlusIcon/>
 		</BaseIcon>
 	)
 }
+

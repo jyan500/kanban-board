@@ -44,12 +44,6 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 				<div>
 					{priority && priority in priorityIconMap ? 
 					(
-						// <IconContext.Provider value = {{color: priority && priority in colorMap ? colorMap[priority] : "", className: "--l-icon"}}>
-						// 	{priority && priority in priorityIconMap && (
-						// 		<div className = {`--icon-thumb`}>
-						// 			{priorityIconMap[priority]}
-						// 		</div>)}
-						// </IconContext.Provider>
 						<PriorityIcon type={priority} color={priority in colorMap ? colorMap[priority] : ""} className = "--l-icon --icon-thumb"/>
 					)
 					: <></>}	

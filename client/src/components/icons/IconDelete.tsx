@@ -9,7 +9,7 @@ type Props = {
 
 export const IconDelete = ({color, className}: Props) => {
 	return (
-		<BaseIcon color = {color ?? "var(--bs-danger)"} className={className}>
+		<BaseIcon color = {color} className={className}>
 			<MdDelete/>
 		</BaseIcon>
 	)	

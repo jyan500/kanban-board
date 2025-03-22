@@ -1,4 +1,4 @@
-import { FaRegCopy } from "react-icons/fa";
+import { BsThreeDots as MenuIcon } from "react-icons/bs";
 import React from "react"
 import { BaseIcon } from "./BaseIcon"
 
@@ -7,10 +7,11 @@ interface Props {
 	className?: string
 }
 
-export const IconCopy = ({color, className}: Props) => {
+export const IconMenu = ({color, className}: Props) => {
 	return (
 		<BaseIcon color={color} className={className}>
-			<FaRegCopy/>
+			<MenuIcon/>
 		</BaseIcon>
 	)
 }
+

@@ -19,6 +19,8 @@ import { Ticket } from "../Ticket"
 import { IconButton } from "../page-elements/IconButton"
 import { IconContext } from "react-icons"
 import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icons/io";
+import { IconArrowDown } from "../icons/IconArrowDown"
+import { IconArrowUp } from "../icons/IconArrowUp"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
@@ -65,6 +67,8 @@ export const GroupedBoard = ({
 		acc[key] = false
 		return acc
 	}, {}))
+	// removing overflowX and maxWidth fixes an issue where the status header dropdowns were not showing
+	const { overflowX, maxWidth, ...groupedHeaderStyle } = boardStyle
 	const [updateTicketStatus] = useUpdateTicketStatusMutation() 
 	const { width, height } = useScreenSize()
 	const {data: groupByElements, isLoading, isError} = useGetGroupByElementsQuery({groupBy: groupBy, ids: Object.keys(groupedTickets)})  
@@ -103,7 +107,7 @@ export const GroupedBoard = ({
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			<div style={boardStyle}>
+			<div style={groupedHeaderStyle}>
 				{statusesToDisplay.map((status: Status, i: number) => {
 					return (
 						<div
@@ -145,8 +149,8 @@ export const GroupedBoard = ({
 								}}>
 							    	{
 							    		collapseArrows[groupById] ? 
-										<ArrowUp className = "tw-h-4 tw-w-4"/>
-										: <ArrowDown className = "tw-h-4 tw-w-4"/>
+										<IconArrowUp className = "tw-h-4 tw-w-4"/>
+										: <IconArrowDown className = "tw-h-4 tw-w-4"/>
 							    	}
 								</IconButton>
 							</div>
@@ -169,7 +173,10 @@ export const GroupedBoard = ({
 														const ticket = tickets.find((t: TicketType) => t.id === ticketId)
 														return (
 															<div 
-																onClick={() => {
+																onClick={(e) => {
+																	if (e.defaultPrevented){
+																		return
+																	}
 																	dispatch(toggleShowModal(true))
 																	dispatch(setModalType("EDIT_TICKET_FORM"))
 																	dispatch(selectCurrentTicketId(ticketId))	
