@@ -1,6 +1,9 @@
 export const API_VERSION = "api"
 export const BACKEND_BASE_URL = "http://localhost:8000"
 export const LOGIN_URL = `/${API_VERSION}/user/login`
+export const FORGOT_PASSWORD_URL = `/${API_VERSION}/user/forgot-password`
+export const RESET_PASSWORD_URL = `/${API_VERSION}/user/reset-password`
+export const VALIDATE_RESET_TOKEN = `/${API_VERSION}/user/validate-reset-token`
 export const ORG_LOGIN_URL = `/${API_VERSION}/user/org-login`
 export const REGISTER_URL = `/${API_VERSION}/user/register`
 export const REGISTER_ORGANIZATION_USER_URL = `/${API_VERSION}/user/register/organization`

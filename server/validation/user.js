@@ -101,7 +101,12 @@ const loginValidator = [
 ]
 
 const forgotPasswordValidator = [
-	validateUniqueUserEmail("email")
+	// validate whether the user with this email exists
+	validateUniqueUserEmail("email", "", true)
+]
+
+const resetPasswordValidator = [
+	validatePasswordAndConfirmation("password", "confirm_password")
 ]
 
 const editNotificationTypesValidator = [
@@ -122,6 +127,7 @@ module.exports = {
 	editUserValidator: editUserValidator("adminEditUser"),
 	editOwnUserValidator: editUserValidator("editOwnUser"),
 	forgotPasswordValidator,
+	resetPasswordValidator,
 	organizationUserRegisterValidator,
 	editNotificationTypesValidator,
 	editUserImageValidator,

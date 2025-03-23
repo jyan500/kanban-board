@@ -60,7 +60,7 @@ export const userRegisterApi = publicApi.injectEndpoints({
 					}
 				}
 			}
-		})
+		}),
 	}),
 })
 

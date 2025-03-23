@@ -6,7 +6,7 @@ import {v4 as uuidv4} from "uuid"
 import { useLocation, useNavigate, Link } from "react-router-dom" 
 import { Controller, useForm } from "react-hook-form"
 import { parseErrorResponse } from "../helpers/functions"
-import { REGISTER } from "../helpers/routes"
+import { REGISTER, FORGOT_PASSWORD } from "../helpers/routes"
 import { ORGANIZATION_URL } from "../helpers/urls"
 import { AsyncSelect } from "../components/AsyncSelect"
 import { OptionType } from "../types/common"
@@ -114,9 +114,12 @@ export const Login = () => {
 						<button className = "button" type = "submit">Submit</button>
 					</div>
 				</div>
-				<div>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
 					<div>
 						<small>Don't have an account? Click <Link className = "tw-text-sky-500" to={REGISTER}>Here</Link> to Register</small>
+					</div>
+					<div>
+						<small>Forgot Password? Click <Link className = "tw-text-sky-500" to={FORGOT_PASSWORD}>Here</Link></small>
 					</div>
 				</div>
 			</form>

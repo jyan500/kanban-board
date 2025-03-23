@@ -110,6 +110,51 @@ router.post("/forgot-password", userValidator.forgotPasswordValidator, handleVal
 	}
 })
 
+router.get("/validate-reset-token", async (req, res, next) => {
+	try {
+		// make sure the reset password token has not exceeded the current date and time
+		const user = await db("users")
+		.where("reset_token", req.query.token)
+		.andWhere("reset_token_expires", ">", new Date())
+		.first();
+		if (!user) return res.status(422).json({message: "Invalid or expired token"})
+		return res.json({token: user.token})
+	}	
+	catch (err){
+		console.error(`Something went wrong when validating reset token: ${err}`)
+	}
+})
+
+router.post("/reset-password", userValidator.resetPasswordValidator, handleValidationResult, async (req, res, next) => {
+	try {
+		const { token, password } = req.body
+		
+		// make sure the reset password token has not exceeded the current date and time
+		const user = await db("users")
+		.where("reset_token", token)
+		.andWhere("reset_token_expires", ">", new Date())
+		.first();
+
+		if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+
+		// Hash new password
+		const salt = await bcrypt.genSalt(config.saltRounds)
+		const hash = await bcrypt.hash(password, salt)
+
+		// Update user password and remove reset token
+		await db("users").where("id", user.id).update({
+			password: hash, 
+			reset_token: null,
+			reset_token_expires: null,
+		});
+
+		res.json({ message: "Password reset successful" });	
+	}	
+	catch (err){
+		console.error(`Something went wrong when resetting password: ${err}`)
+	}
+})
+
 router.post("/register/organization", userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const { first_name, last_name, password, email: user_email } = req.body.user

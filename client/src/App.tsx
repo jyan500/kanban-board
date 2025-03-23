@@ -5,6 +5,8 @@ import { Login } from "./pages/Login"
 import { Home } from "./pages/Home" 
 import { HamburgerButton } from "./components/HamburgerButton" 
 import { Register } from "./pages/Register" 
+import { ForgotPassword } from "./pages/ForgotPassword"
+import { ResetPassword } from "./pages/ResetPassword"
 import { BoardDisplay } from "./pages/boards/BoardDisplay" 
 import { TicketDisplay } from "./pages/tickets/TicketDisplay" 
 import { Ticket as TicketPage } from "./pages/tickets/Ticket"
@@ -51,7 +53,9 @@ import {
 	USERS, 
 	ORGANIZATION, 
 	ORGANIZATION_ADD_EDIT_STATUSES,
-	NOTIFICATIONS 
+	NOTIFICATIONS,
+	FORGOT_PASSWORD,
+	RESET_PASSWORD,
 } from "./helpers/routes"
 
 // Define routes using createBrowserRouter
@@ -85,6 +89,14 @@ const router = createBrowserRouter([
 						element: <OrganizationRegister/>
 					}
 				]
+			},
+			{
+				path: FORGOT_PASSWORD,
+				element: <ForgotPassword/>
+			},
+			{
+				path: RESET_PASSWORD,
+				element: <ResetPassword/>
 			},
 			{
 				path: "*",

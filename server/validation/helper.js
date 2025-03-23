@@ -70,7 +70,7 @@ const checkUniqueEntity = async (key, colValue, colValues, tableName) => {
 /* 
 	Return express validation for unique user email
 */
-const validateUniqueUserEmail = (emailField = "email", action = "") => {
+const validateUniqueUserEmail = (emailField = "email", action = "", validateExists = false) => {
 	return [
 		body(emailField).notEmpty().withMessage("User email is required")
 		.isEmail().withMessage("Invalid user email")
@@ -86,7 +86,9 @@ const validateUniqueUserEmail = (emailField = "email", action = "") => {
 						.whereNot("users.id", action === "adminEditUser" ? req.params.userId : req.user.id)
 					}
 				}).where("email", value).then((res) => {
-					if (res?.length > 0){
+					// test to see if the user already exists. If validate exists is true,
+					// we're checking to see if a user with this email exists
+					if (res?.length > 0 && !validateExists){
 						reject(new Error("User email already in use"))
 					}
 					resolve(true)
