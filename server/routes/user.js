@@ -2,6 +2,7 @@ require("dotenv").config()
 const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const crypto = require("crypto")
 const router = express.Router()
 const config = require("../config")
 const db = require("../db/db")
@@ -11,6 +12,7 @@ const { handleValidationResult }  = require("../middleware/validationMiddleware"
 const { body, validationResult } = require("express-validator")
 const { authenticateToken } = require("../middleware/authMiddleware")
 const registrationRequestTemplate = require("../email/templates/registration-request") 
+const passwordResetTemplate = require("../email/templates/password-reset")
 const sendEmail = require("../email/email")
 
 router.post("/login", userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
@@ -75,6 +77,36 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 	}
 	catch (err){
 		console.error(`Something went wrong when registering user: ${err}`)
+	}
+})
+
+router.post("/forgot-password", userValidator.forgotPasswordValidator, handleValidationResult, async (req, res, next) => {
+	try {
+		const email = req.body.email
+		// get user
+		const user = await db("users").where("email", email).first()
+		if (!user) return res.status(422).json({ message: "User not found" });
+
+		// Generate a secure reset token
+		const resetToken = crypto.randomBytes(32).toString("hex");
+		// Expires in 15 minutes
+		const expiresAt = new Date(Date.now() + 1000 * 60 * 15)
+		// Store in the database
+		await db("users").where("email", email).update({
+		    reset_token: resetToken,
+		    reset_token_expires: expiresAt,
+		})
+		// Generate reset link
+		const resetLink = `/reset-password?token=${resetToken}`;
+
+		// Send email
+		await sendEmail(email, "Password Reset", () => passwordResetTemplate(user.first_name, user.last_name, resetLink));
+
+		res.json({ message: "Password reset email sent" });
+
+	}	
+	catch (err){
+		console.error(`Something went wrong when generating forgot password link: ${err}`)
 	}
 })
 
