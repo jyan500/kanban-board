@@ -2,6 +2,7 @@ import React, {useState, useRef, useEffect} from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { useNavigate, useLocation, Link } from "react-router-dom" 
 import { useGetUserOrganizationsQuery, useSwitchUserOrganizationMutation } from "../../services/private/userProfile"
+import { useGetOrganizationQuery } from "../../services/private/organization"
 import { useGetTicketsQuery } from "../../services/private/ticket"
 import { Ticket, Organization, Toast, OptionType, ProgressBarPercentage } from "../../types/common"
 import { setCredentials } from "../../slices/authSlice"
@@ -13,12 +14,14 @@ import { v4 as uuidv4 } from "uuid"
 import { USER_PROFILE_ORG_URL } from "../../helpers/urls"
 import { AsyncSelect } from "../AsyncSelect"
 import { skipToken } from '@reduxjs/toolkit/query/react'
+import { Avatar } from "../page-elements/Avatar"
 
 export const SwitchOrganizationForm = () => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const location = useLocation()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
+	const { data: organization, isLoading: isOrganizationLoading} = useGetOrganizationQuery(userProfile?.organizationId ?? skipToken)
 	const [cacheKey, setCacheKey] = useState(uuidv4())
 	const [switchUserOrganization, {isLoading, error}] = useSwitchUserOrganizationMutation()
 	const [switchOrgId, setSwitchOrgId] = useState<number | null>(null)
@@ -46,7 +49,10 @@ export const SwitchOrganizationForm = () => {
 
 	return (
 		<>
-			<p className = "tw-font-medium">{userProfile?.organizationName}</p>
+			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+				{!isLoading && organization ? <Avatar isOrg={true} size = "s" className = {`${organization.imageUrl ? "tw-rounded-full" : ""}`} imageUrl={organization.imageUrl}/> : null}
+				<p className = "tw-font-medium">{userProfile?.organizationName}</p>
+			</div>
 			<div className = "tw-flex tw-flex-col tw-gap-y-2">
 				<AsyncSelect 
 					ref={selectRef}

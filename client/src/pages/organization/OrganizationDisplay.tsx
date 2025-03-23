@@ -52,7 +52,7 @@ export const OrganizationDisplay = () => {
 						<div className = "lg:tw-w-1/4 tw-flex tw-flex-col tw-gap-y-4">
 							<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
 								<>
-									<ProfileCard entityId={organization.id} imageUploadUrl={`${ORGANIZATION_URL}/image`} imageUrl={organization.imageUrl} invalidatesTags={["Organizations"]}>
+									<ProfileCard isOrg={true} entityId={organization.id} imageUploadUrl={`${ORGANIZATION_URL}/image`} imageUrl={organization.imageUrl} invalidatesTags={["Organizations"]}>
 									<>
 										<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 											<FaBuilding className = "--icon tw-mt-1"/>

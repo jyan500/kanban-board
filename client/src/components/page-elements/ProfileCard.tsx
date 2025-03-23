@@ -9,15 +9,16 @@ interface Props {
 	imageUploadUrl: string
 	invalidatesTags: Array<string>
 	children?: React.ReactNode
+	isOrg?: boolean
 }
 
-export const ProfileCard = ({entityId, imageUrl, imageUploadUrl, invalidatesTags, children}: Props) => {
+export const ProfileCard = ({entityId, imageUrl, imageUploadUrl, invalidatesTags, children, isOrg}: Props) => {
 
 	const [uploadImage, setUploadImage] = useState(false)
 	return (
 		<div className = "tw-w-full tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-flex tw-flex-row tw-justify-center">
-				<EditImageIndicator setUploadImage={setUploadImage} uploadImage={uploadImage} imageUrl={imageUrl ?? ""}/>
+				<EditImageIndicator isOrg={isOrg} setUploadImage={setUploadImage} uploadImage={uploadImage} imageUrl={imageUrl ?? ""}/>
 			</div>
 			<div className = "tw-flex tw-flex-col tw-gap-y-2">
 				{
