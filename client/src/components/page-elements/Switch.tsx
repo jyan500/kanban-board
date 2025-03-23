@@ -1,14 +1,16 @@
 import { useState } from "react";
 
 interface Props {
+    id?: string
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void 
     checked: boolean
 }
 
-export const Switch = ({onChange, checked}: Props) => {
+export const Switch = ({id, onChange, checked}: Props) => {
     return (
         <label className="tw-relative tw-inline-flex tw-items-center tw-cursor-pointer">
             <input
+                id={id}
                 type="checkbox"
                 /* sr-only hides element visually but not from screen readers */
                 className="tw-sr-only tw-peer"

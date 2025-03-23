@@ -11,12 +11,13 @@ import {
 } from "../../services/private/status"
 import { toggleShowModal } from "../../slices/modalSlice"
 import { sortStatusByOrder } from "../../helpers/functions" 
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icons/io";
 import { IconButton } from "../page-elements/IconButton"
 import { IoMdAdd as AddIcon } from "react-icons/io";
+import { Switch } from "../page-elements/Switch"
 
 type FormValues = {
 	id?: number
@@ -43,7 +44,7 @@ export const AddEditStatusForm = () => {
 		isCompleted: false,
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { register , handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
+	const { control, register, handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
 
@@ -64,19 +65,43 @@ export const AddEditStatusForm = () => {
 						<input id = "status-name" type = "text" {...register("name")}/>
 				        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 					</div>
-					<div className = "tw-flex tw-flex-row tw-gap-x-2">
-						<input id = "status-is-active" type = "checkbox" {...register("isActive")}/>
+					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+						<Controller
+							name={"isActive"}
+							control={control}
+							render={({field: {onChange, value}}) => (
+								<Switch
+									id={"status-is-active"}
+									onChange={(e) => {
+										onChange(e.target.checked)
+									}}
+									checked={value}
+								/>
+							)}	
+						/>
 						<label htmlFor = "status-is-active" className = "label">Is Active</label>	
 					</div>
 					<div>
-						<small><span className = "tw-font-bold">*</span>check this off to display this status across all boards in this organization</small>	
+						<small><span className = "tw-font-bold">*</span>display this status across all boards in this organization</small>	
 					</div>
-					<div className = "tw-flex tw-flex-row tw-gap-x-2">
-						<input id = "status-is-completed" type = "checkbox" {...register("isCompleted")}/>
+					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+						<Controller
+							name={"isCompleted"}
+							control={control}
+							render={({field: {onChange, value}}) => (
+								<Switch
+									id={"status-is-completed"}
+									onChange={(e) => {
+										onChange(e.target.checked)
+									}}
+									checked={value}
+								/>
+							)}	
+						/>
 						<label htmlFor = "status-is-completed" className = "label">Is Completed</label>	
 					</div>
 					<div>
-						<small><span className = "tw-font-bold">*</span>check this off so that all tickets in this status are considered "completed" for progress checking purposes</small>	
+						<small><span className = "tw-font-bold">*</span>all tickets in this status are considered "completed" for progress checking purposes</small>	
 					</div>
 					<div>
 						<button type = "submit" className = "button">Save</button>
@@ -204,6 +229,7 @@ export const AddEditStatusForm = () => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-6">
 			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<h1>Add/Edit Statuses</h1>
 				<p className = "tw-font-bold">Click on the buttons to edit the statuses, and arrows to change the order</p>
 				<div>
 					<button onClick={(e) => {
@@ -227,7 +253,7 @@ export const AddEditStatusForm = () => {
 						addUpdateForm("add") : null
 				}
 			</div>
-			<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-border tw-border-gray-50 tw-shadow-md tw-p-4">
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
 				{ !isStatusDataLoading && statusData?.length ? ([...statusData].sort(sortStatusByOrder).map((status, index) => (
 					<>
 						<div className = "tw-flex tw-flex-row tw-justify-between">
