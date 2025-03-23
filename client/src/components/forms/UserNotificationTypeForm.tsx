@@ -64,7 +64,6 @@ export const UserNotificationTypeForm = () => {
 				<div>
 				{ !isUserNotificationTypesLoading ? (notificationTypes.map((notificationType) => (
 					<div key = {`user_notification_type_${notificationType.id}`} className="tw-flex tw-flex-row tw-items-center tw-gap-x-2 tw-py-2">
-						{/* <input id = {`user-notification-type-${notificationType.id}`} checked = {notificationTypeIds.find((id)=> id === notificationType.id) != null} onChange={(e) => onCheck(notificationType.id)} type = "checkbox"/>*/}
 						<Switch id = {`user-notification-type-${notificationType.id}`} checked={notificationTypeIds.find((id) => id === notificationType.id) != null} onChange={(e) => onCheck(notificationType.id)}/>
 						<label htmlFor = {`user-notification-type-${notificationType.id}`}>{notificationType.name}</label>
 					</div>
