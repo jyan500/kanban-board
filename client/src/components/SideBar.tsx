@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import "../styles/sidebar.css"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks"
 import { toggleSideBar } from "../slices/navSlice" 
-import { IoMdClose } from "react-icons/io";
+import { IconClose } from "./icons/IconClose";
 import { Link, useLocation } from 'react-router-dom';
 import { CgProfile } from "react-icons/cg";
 import { LoadingSpinner } from "./LoadingSpinner" 
@@ -12,6 +12,7 @@ import { useGetUserRolesQuery } from "../services/private/userRole"
 import { useGetUserProfileQuery } from "../services/private/userProfile"
 import { Avatar } from "./page-elements/Avatar"
 import { NavLink } from "./page-elements/NavLink"
+import { GradientContainer } from "./page-elements/GradientContainer"
 
 export const SideBar = () => {
 	const sideBar = useAppSelector((state) => state.nav)
@@ -75,23 +76,19 @@ export const SideBar = () => {
 							}
 						}
 						>
-					<IoMdClose className = "icon"/></button>	
-					<div className = "sidebar__container">
+					<IconClose color="white" className = "icon"/></button>	
+					<GradientContainer className = "tw-p-4 tw-flex tw-items-center tw-h-20 tw-rounded-sm">
 						<Logo isLandingPage={false}/>
+					</GradientContainer>
+					<div className = "sidebar__container">
 						<div className = "sidebar__links">
 							{ 
 								links.map((link) => 
-									// <li key = {link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`} >
-									// 	<Link to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>{link.text}</Link>
-									// </li>
-									// <Link key={link.pathname} onClick={(e) => dispatch(toggleSideBar(false))} to={link.pathname} className = {`${pathname === link.pathname ? "active" : ""}`}>
-									// 	{link.text}
-									// </Link>
 									<NavLink text={link.text} url={link.pathname} onClick={() => dispatch(toggleSideBar(false))}/>
 								)
 							}
 						</div>
-						<div className = "sidebar__bottom-bar">
+						<GradientContainer className = "tw-h-20 sidebar__bottom-bar">
 							<div className = "sidebar__bottom-bar__content">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
 									<Avatar imageUrl={userProfile?.imageUrl} className = "tw-rounded-full"/>
@@ -101,7 +98,7 @@ export const SideBar = () => {
 									</div>
 								</div>
 							</div>
-						</div>
+						</GradientContainer>
 					</div>
 				</>
 			)}

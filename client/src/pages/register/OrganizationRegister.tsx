@@ -61,7 +61,7 @@ export const OrganizationRegister = () => {
     }
 
 	return (
-		<div className = "tw-w-full">
+		<div className = "tw-pt-4 tw-w-full">
 			{
 				currentIndex === 0 ? 	
 					(<ArrowButton text="Back" onClick={() => navigate(-1)}/>)

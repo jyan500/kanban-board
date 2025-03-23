@@ -81,17 +81,20 @@ export const Boards = () => {
 					</div>
 					{errors?.query ? <small className = "--text-alert">{errors?.query?.message}</small> : null}
 					<Table data={data?.data} config={config}/>
-					<div className = "tw-p-4 tw-border tw-border-gray-300">
-						<PaginationRow
-							showNumResults={true}
-							showPageNums={true}
-							setPage={setPage}	
-							paginationData={data?.pagination}
-							currentPage={currentPage}
-							urlParams={defaultForm}
-							url={BOARDS}	
-						/>
-					</div>
+					{
+						data?.pagination.nextPage || data?.pagination.prevPage ? 
+						<div className = "tw-p-4 tw-border tw-border-gray-300">
+							<PaginationRow
+								showNumResults={true}
+								showPageNums={true}
+								setPage={setPage}	
+								paginationData={data?.pagination}
+								currentPage={currentPage}
+								urlParams={defaultForm}
+								url={BOARDS}	
+							/>
+						</div> : null
+					}
 				</>
 			)}
 		</div>

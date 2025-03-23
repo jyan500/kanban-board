@@ -76,7 +76,8 @@ Matches the standard 10 digit phone:
 1    800    555-1234
 1----800----555-1234
 */
-export const PHONE_PATTERN = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
+// export const PHONE_PATTERN = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/
+export const PHONE_PATTERN = /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/
 export const TIME_DISPLAY_FORMAT = /^(\d{2})w (\d{1})d (\d{2})h (\d{2})m$/
 
 export const GROUP_BY_OPTIONS = {
