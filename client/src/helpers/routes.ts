@@ -10,6 +10,7 @@ export const USER = "/user"
 export const ORGANIZATION = "/organization"
 export const FORGOT_PASSWORD = "/forgot-password"
 export const RESET_PASSWORD = "/reset-password"
+export const ACTIVATION = "/activate"
 export const ACCOUNT = "/account"
 export const REGISTER_USER = `${REGISTER}${USER}`
 export const REGISTER_ORG = `${REGISTER}/${ORGANIZATION}`

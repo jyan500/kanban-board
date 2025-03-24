@@ -7,6 +7,7 @@ import { HamburgerButton } from "./components/HamburgerButton"
 import { Register } from "./pages/Register" 
 import { ForgotPassword } from "./pages/ForgotPassword"
 import { ResetPassword } from "./pages/ResetPassword"
+import { AccountActivation } from "./pages/AccountActivation"
 import { BoardDisplay } from "./pages/boards/BoardDisplay" 
 import { TicketDisplay } from "./pages/tickets/TicketDisplay" 
 import { Ticket as TicketPage } from "./pages/tickets/Ticket"
@@ -35,6 +36,7 @@ import "./styles/common.css"
 import { ToastList } from "./components/ToastList" 
 import { 
 	ACCOUNT, 
+	ACTIVATION,
 	REGISTER_USER, 
 	REGISTER_ORG, 
 	ACCOUNT_CREATE_ORG, 
@@ -97,6 +99,10 @@ const router = createBrowserRouter([
 			{
 				path: RESET_PASSWORD,
 				element: <ResetPassword/>
+			},
+			{
+				path: ACTIVATION,
+				element: <AccountActivation/>
 			},
 			{
 				path: "*",

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react"
-import { useResetPasswordMutation, useValidateResetTokenQuery } from "../services/public/auth"
+import { useResetPasswordMutation, useValidateTokenQuery } from "../services/public/auth"
 import { useAppDispatch } from "../hooks/redux-hooks"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { LoadingSpinner } from "../components/LoadingSpinner"
@@ -18,7 +18,7 @@ export const ResetPassword = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
-	const {data, isLoading, isError} = useValidateResetTokenQuery({token: searchParams.get("token") ?? ""})
+	const {data, isLoading, isError} = useValidateTokenQuery({type: "reset-password", token: searchParams.get("token") ?? ""})
 	const [resetPassword, {isLoading: isResetPasswordLoading, error}] = useResetPasswordMutation()
 	const [showPassword, setShowPassword] = useState(false)
 

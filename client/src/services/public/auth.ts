@@ -1,5 +1,5 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { BACKEND_BASE_URL, LOGIN_URL, RESET_PASSWORD_URL, FORGOT_PASSWORD_URL, VALIDATE_RESET_TOKEN } from "../../helpers/urls" 
+import { BACKEND_BASE_URL, LOGIN_URL, RESET_PASSWORD_URL, FORGOT_PASSWORD_URL, VALIDATE_TOKEN } from "../../helpers/urls" 
 import { CustomError } from "../../types/common" 
 import { publicApi } from "../public" 
 
@@ -51,13 +51,14 @@ export const authApi = publicApi.injectEndpoints({
 				}
 			}
 		}),
-		validateResetToken: builder.query<{token: string}, {token: string}>({
-			query: ({token}) => {
+		validateToken: builder.query<{token: string}, {token: string, type: string}>({
+			query: ({token, type}) => {
 				return {
-					url: VALIDATE_RESET_TOKEN,
+					url: VALIDATE_TOKEN,
 					method: "GET",
 					params: {
-						token
+						token,
+						type,
 					}
 				}	
 			}
@@ -72,6 +73,6 @@ export const {
 	useLoginMutation, 
 	useForgotPasswordMutation, 
 	useResetPasswordMutation, 
-	useValidateResetTokenQuery,
+	useValidateTokenQuery,
 	useProtectedMutation 
 } = authApi 

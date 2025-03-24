@@ -50,6 +50,7 @@ router.get("/", async (req, res, next) => {
 				"users.id as id", 
 				"users.first_name as firstName", 
 				"users.last_name as lastName",
+				"users.is_active as isActive",
 				"user_roles.id as userRoleId",
 				"users.image_url as imageUrl",
 				"users.email as email") 
@@ -98,6 +99,7 @@ router.get("/me", async (req, res, next) => {
 				"users.id as id", 
 				"users.first_name as firstName", 
 				"users.last_name as lastName", 
+				"users.is_active as isActive",
 				"users.image_url as imageUrl",
 				"users.email as email", 
 				"organizations.name as organizationName",
@@ -244,6 +246,7 @@ router.get("/:userId", getUserValidator, handleValidationResult, async (req, res
 				"users.first_name as firstName", 
 				"users.last_name as lastName", 
 				"users.email as email", 
+				"users.is_active as isActive",
 				"users.image_url as imageUrl",
 				"organization_user_roles.organization_id as organizationId", 
 				"organization_user_roles.user_role_id as userRoleId").first()

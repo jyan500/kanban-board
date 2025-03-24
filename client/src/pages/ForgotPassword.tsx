@@ -24,7 +24,6 @@ export const ForgotPassword = () => {
     }
 
     const onSubmit = async (values: UserFormValues) => {
-    	console.log("values: ", values)
     	try {
     		await forgotPassword(values).unwrap()
     		navigate(LOGIN, {state: {"alert": "Please check your email for the reset password link."}, replace: true})
