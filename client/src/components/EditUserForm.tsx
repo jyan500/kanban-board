@@ -53,7 +53,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 	}
 	const [ editUserProfile, {isLoading: isEditUserLoading, error: userError} ] = useEditUserProfileMutation() 
 	const [ editOwnUserProfile, {isLoading: isEditOwnUserLoading, error: ownUserError} ] = useEditOwnUserProfileMutation()
-	const { data: userInfo, isLoading: isUserDataLoading  } = useGetUserQuery(userId ? userId : skipToken)
+	const { data: userInfo, isLoading: isUserDataLoading, isFetching: isUserDataFetching  } = useGetUserQuery(userId ? userId : skipToken)
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const { register , handleSubmit, reset, watch, setValue, getValues, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
@@ -108,6 +108,10 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
     			message: `Failed to update user.`,
     		}))
     	}
+    }
+
+    if (isUserDataFetching){
+    	return <></>
     }
 
 	return (
