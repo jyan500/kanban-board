@@ -53,8 +53,6 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 				}
 				<div className = "tw-inline-block tw-text-left tw-pr-2">
 					<button ref = {buttonRef} onClick={(e) => {
-						console.log("test")
-						console.log("showDropdown: ", showDropdown)
 						e.preventDefault()
 						setShowDropdown(!showDropdown)
 					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu color={"var(--bs-dark-grey)"} className = "tw-w-6 tw-h-6"/></button>

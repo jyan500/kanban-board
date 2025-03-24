@@ -23,6 +23,7 @@ export interface UserProfile {
 	email: string
 	organizationId: number
 	userRoleId: number
+	isActive?: boolean
 	organizationName?: string
 	imageUrl?: string
 }

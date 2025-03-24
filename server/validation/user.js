@@ -100,6 +100,15 @@ const loginValidator = [
 	body("organization_id").notEmpty().withMessage("Organization is required").custom(async (value, {req}) => await checkEntityExistsIn("organization", value, [{col: "id", value: value}], "organizations"))
 ]
 
+const forgotPasswordValidator = [
+	// validate whether the user with this email exists
+	validateUniqueUserEmail("email", "", true)
+]
+
+const resetPasswordValidator = [
+	validatePasswordAndConfirmation("password", "confirm_password")
+]
+
 const editNotificationTypesValidator = [
 	body("ids")
 	.isArray({min: 0, max: BULK_INSERT_LIMIT})
@@ -117,6 +126,8 @@ module.exports = {
 	registerValidator: editUserValidator("register"),
 	editUserValidator: editUserValidator("adminEditUser"),
 	editOwnUserValidator: editUserValidator("editOwnUser"),
+	forgotPasswordValidator,
+	resetPasswordValidator,
 	organizationUserRegisterValidator,
 	editNotificationTypesValidator,
 	editUserImageValidator,

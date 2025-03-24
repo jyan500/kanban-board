@@ -14,7 +14,7 @@ export const Avatar = ({size, className, imageUrl, isOrg}: Props) => {
 	const sizes: {[k: string]: string} = {
 		"l": "tw-w-32 tw-h-32",
 		"m": "tw-w-16 tw-h-16",
-		"s": "tw-w-8 tw-h-8",
+		"s": "tw-w-6 tw-h-6",
 	}
 	const cName = `${size && size in sizes ? sizes[size] : sizes.s} ${className}` 
 	const defaultIcon = () => {

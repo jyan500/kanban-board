@@ -2,18 +2,35 @@ require("dotenv").config()
 const express = require("express")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const crypto = require("crypto")
 const router = express.Router()
 const config = require("../config")
 const db = require("../db/db")
-const { DEFAULT_STATUSES } = require("../constants")
 const userValidator = require("../validation/user")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { body, validationResult } = require("express-validator")
 const { authenticateToken } = require("../middleware/authMiddleware")
 const registrationRequestTemplate = require("../email/templates/registration-request") 
+const activateAccountTemplate = require("../email/templates/activate-account")
+const passwordResetTemplate = require("../email/templates/password-reset")
 const sendEmail = require("../email/email")
+const { EXCEEDED_MESSAGE, DEFAULT_STATUSES } = require("../constants")
+const rateLimit = require("express-rate-limit")
 
-router.post("/login", userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 max in the window,
+    handler: (req, res) => {
+	    res.status(429).json({
+		    status: 429,
+		    errors: ['Too many requests, please try again later.'],
+	    })
+	},
+	standardHeaders: true,
+	legacyHeaders: false,
+})
+
+router.post("/login", limiter, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const user = await db("users").where("email", req.body.email).first()
 		const error = "Failed to login: email, organization or password is incorrect."
@@ -21,15 +38,15 @@ router.post("/login", userValidator.loginValidator, handleValidationResult, asyn
 			res.status(400).json({errors: [error]})
 			return
 		}
-		const userInOrganization = await db("organization_user_roles").where("organization_id", req.body.organization_id).where("user_id", user.id).first()
-		if (!userInOrganization){
-			res.status(400).json({errors: [error]})
-			return
-		}
 		const storedHash = user.password
 		const result = await bcrypt.compare(req.body.password, storedHash)
 		if (!result){
 			res.status(400).json({errors: [error]})
+			return
+		}
+		const userInOrganization = await db("organization_user_roles").where("organization_id", req.body.organization_id).where("user_id", user.id).first()
+		if (!userInOrganization){
+			res.status(400).json({errors: ["Failed to login: your account has not been approved by the organization yet. Please check your email to see if your organization has approved your account."]})
 			return
 		}
 		const userRole = await db("user_roles").where("id", userInOrganization.user_role_id).first()
@@ -45,16 +62,25 @@ router.post("/login", userValidator.loginValidator, handleValidationResult, asyn
 	}
 })
 
-router.post("/register", userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
+router.post("/register", limiter, userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
 	try {
+		// Generate a hashed activation token
+	    const activationToken = crypto.randomBytes(32).toString("hex");
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(req.body.password, salt)
+		// Expires in 6 months
+		const expiresAt = new Date();
+		expiresAt.setMonth(expiresAt.getMonth() + 6);
 		const user = await db("users").insert({
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
 			email: req.body.email,
-			password: hash
+			password: hash,
+			activation_token: activationToken,
+			activation_token_expires: expiresAt,
+			is_active: false,
 		}, ["id"])
+
 		await db("user_registration_requests").insert({
 			user_id: user[0],
 			organization_id: req.body.organization_id
@@ -67,9 +93,15 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 
 		const organization = await db("organizations").where("id", req.body.organization_id).first()
 
+		// Generate activation link
+	    const activationLink = `/activate?token=${activationToken}`;
+
+		// Send activation email
+		await sendEmail(req.body.email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink, true, organizationName));
+
 		// TODO: send this to an async queue so the request isn't held up by email sending
 		// send email to registered user
-	    await sendEmail(req.body.email, "Registration Request Submitted", () => registrationRequestTemplate(req.body.first_name, req.body.last_name, organization?.name ?? ""));
+	    // await sendEmail(req.body.email, "Registration Request Submitted", () => registrationRequestTemplate(req.body.first_name, req.body.last_name, organization?.name ?? ""));
 
 		res.json({message: "User registered successfully!"})
 	}
@@ -78,17 +110,147 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 	}
 })
 
-router.post("/register/organization", userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
+router.post("/forgot-password", limiter, userValidator.forgotPasswordValidator, handleValidationResult, async (req, res, next) => {
+	try {
+		const email = req.body.email
+		// get user
+		const user = await db("users").where("email", email).first()
+		if (!user) return res.status(422).json({ message: "User not found" });
+
+		// Generate a secure reset token
+		const resetToken = crypto.randomBytes(32).toString("hex");
+		// Expires in 15 minutes
+		const expiresAt = new Date(Date.now() + 1000 * 60 * 15)
+		// Store in the database
+		await db("users").where("email", email).update({
+		    reset_token: resetToken,
+		    reset_token_expires: expiresAt,
+		})
+		// Generate reset link
+		const resetLink = `/reset-password?token=${resetToken}`;
+
+		// Send email
+		await sendEmail(email, "Password Reset", () => passwordResetTemplate(user.first_name, user.last_name, resetLink));
+
+		res.json({ message: "Password reset email sent" });
+
+	}	
+	catch (err){
+		console.error(`Something went wrong when generating forgot password link: ${err}`)
+	}
+})
+
+router.get("/validate-token", limiter, async (req, res, next) => {
+	try {
+		// make sure the reset password token has not exceeded the current date and time
+		const user = await db("users")
+		.modify((queryBuilder) => {
+			if (req.query.type === "reset"){
+				queryBuilder.where("reset_token", req.query.token)
+				.andWhere("reset_token_expires", ">", new Date())
+			}
+			if (req.query.type === "activate"){
+				queryBuilder.where("activation_token", req.query.token)
+				.andWhere("activation_token_expires", ">", new Date())
+			}
+		})
+		.first();
+		if (!user) return res.status(422).json({message: "Invalid or expired token"})
+		return res.json({token: user.token})
+	}	
+	catch (err){
+		console.error(`Something went wrong when validating reset token: ${err}`)
+	}
+})
+
+router.post("/resend-activation", limiter, async (req, res, next) => {
+	try {
+		// if the user has a token but it's expired, allow for a resend
+		const user = await db("users").where("activation_token", req.query.token).andWhere("activation_token_expires", ">", new Date()).first()
+		if (!user){
+			return res.status(400).json({message: "Invalid activation request"})	
+		}
+		// Generate activation link
+	    const activationLink = `/activate?token=${activationToken}`;
+
+	    // Send activation email
+		await sendEmail(email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink));
+		res.json({message: "Activation resent successfully!"})
+	}	
+	catch (err){
+		console.error(`Something went wrong when resending activation: ${err}`)
+	}
+})
+
+router.post("/activate", limiter, async (req, res, next) => {
+	try {
+		const user = await db("users").where("activation_token", req.body.token).andWhere("activation_token_expires", ">", new Date()).first()
+		if (!user) {
+			return res.status(400).json({message: "Invalid activation request"})	
+		}
+		await db("users").where("id", user.id).update({
+			is_active: true,
+			activation_token: undefined,
+			activation_token_expires: undefined 
+		})
+		res.json({message: "Account activated successfully!"})
+	}
+	catch (err) {
+		console.error(`Something went wrong when activating account: ${err}`)
+	}
+})
+
+router.post("/reset-password", limiter, userValidator.resetPasswordValidator, handleValidationResult, async (req, res, next) => {
+	try {
+		const { token, password } = req.body
+		
+		// make sure the reset password token has not exceeded the current date and time
+		const user = await db("users")
+		.where("reset_token", token)
+		.andWhere("reset_token_expires", ">", new Date())
+		.first();
+
+		if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+
+		// Hash new password
+		const salt = await bcrypt.genSalt(config.saltRounds)
+		const hash = await bcrypt.hash(password, salt)
+
+		// Update user password and remove reset token
+		await db("users").where("id", user.id).update({
+			password: hash, 
+			reset_token: null,
+			reset_token_expires: null,
+		});
+
+		res.json({ message: "Password reset successful" });	
+	}	
+	catch (err){
+		console.error(`Something went wrong when resetting password: ${err}`)
+	}
+})
+
+router.post("/register/organization", limiter, userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const { first_name, last_name, password, email: user_email } = req.body.user
 		const { name, address, city, state, zipcode, industry, phone_number, email} = req.body.organization
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(password, salt)
+
+		// Generate a hashed activation token
+	    const activationToken = crypto.randomBytes(32).toString("hex");
+
+		const expiresAt = new Date();
+		expiresAt.setMonth(expiresAt.getMonth() + 6);
+
 		const user = await db("users").insert({
 			first_name: first_name,
 			last_name: last_name,
 			email: user_email,
-			password: hash
+			password: hash,
+			activation_token: activationToken,
+			activation_token_expires: expiresAt,
+			is_active: false
 		}, ["id"])
 		const organization = await db("organizations").insert({
 			name, email, phone_number, address, city, state, zipcode, industry	
@@ -102,6 +264,12 @@ router.post("/register/organization", userValidator.organizationUserRegisterVali
 		})
 		// attach default statuses for the new organization
 		await db("statuses").insert(DEFAULT_STATUSES.map((status) => ({...status, organization_id: organization[0]})))
+
+		// Generate activation link
+	    const activationLink = `/activate?token=${activationToken}`;
+
+	    // Send activation email
+		await sendEmail(user_email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink));
 
 		res.json({message: "Organization and User registered successfully!"})
 	}	

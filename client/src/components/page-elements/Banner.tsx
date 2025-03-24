@@ -15,15 +15,19 @@ export const Banner = ({type, message, children}: Props) => {
 	const toastIcon = iconMap[type] as React.ReactNode || null
 	const color = colorMap[type] as string
 	return (
-		<div className = {`toast tw-flex tw-flex-row tw-items-center tw-justify-center tw-w-96 tw-gap-x-4 tw-p-4 --${type}`}>
-			<IconContext.Provider value = {{color: color, className: "--l-icon"}}>
-				{toastIcon && (
-					<div className = {`--icon-thumb`}>
-					{toastIcon}
-					</div>)}
-			</IconContext.Provider>
-			{message ? (<p>{message}</p>) : null}
-			{children}
+		<div className = {`toast tw-flex tw-flex-col tw-w-96 tw-p-4 --${type}`}>
+			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-4">
+				<IconContext.Provider value = {{color: color, className: "--l-icon"}}>
+					{toastIcon && (
+						<div className = {`--icon-thumb`}>
+						{toastIcon}
+						</div>)}
+				</IconContext.Provider>
+				<div className = "tw-flex-col tw-flex tw-flex-1 tw-gap-y-0.5">
+					{message ? (<p className = "tw-font-bold">{message}</p>) : null}
+					{children}
+				</div>
+			</div>
 		</div>
 	)
 }

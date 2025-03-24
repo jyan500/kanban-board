@@ -122,14 +122,18 @@ export const Dashboard = () => {
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
+		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
 			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
 				<h2>Dashboard</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
-					<DashboardSection title={"Organization"} icon={<IconBuilding/>}>
-						<SwitchOrganizationForm/>	
-					</DashboardSection>
+					{
+						userProfile?.isActive ? (
+							<DashboardSection title={"Organization"} icon={<IconBuilding/>}>
+								<SwitchOrganizationForm/>	
+							</DashboardSection>
+						) : null
+					}
 					<DashboardSection iconColor={"var(--bs-primary)"} icon={<IconBoard color = {"var(--bs-primary)"}/>} title={"Boards"}>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2">
 							{boards?.data?.map((board) => (

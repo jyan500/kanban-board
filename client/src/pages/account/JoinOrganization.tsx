@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import { useForm, Controller } from "react-hook-form"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { AsyncSelect } from "../../components/AsyncSelect"
@@ -7,6 +7,8 @@ import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4} from "uuid"
 import { USER_PROFILE_URL, USER_PROFILE_ORG_URL } from "../../helpers/urls"
 import { OptionType, Toast } from "../../types/common"
+import { useNavigate, Navigate } from "react-router-dom" 
+import { LoadingSpinner } from "../../components/LoadingSpinner"
 
 type FormValues = {
 	organizationId: string | number 
@@ -23,6 +25,7 @@ export const JoinOrganization = () => {
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const { register, control, handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({defaultValues: preloadedValues})
 	const [addRegistrationRequest, {isLoading, error}] = useAddRegistrationRequestMutation()
+	const { userProfile } = useAppSelector((state) => state.userProfile)
 
 	const onSubmit = async (values: FormValues) => {
 		const defaultToast: Toast = {

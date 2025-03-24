@@ -1,10 +1,13 @@
-import React from "react"
-import { Link, useNavigate } from "react-router-dom"
+import React, {useState, useEffect} from "react"
+import { Link, Navigate, useNavigate } from "react-router-dom"
 import { FormValues, OrganizationForm } from "../../components/OrganizationForm"
 import { useRegisterOrganizationMutation } from "../../services/private/userProfile"
+import { useAppSelector } from "../../hooks/redux-hooks"
+import { LoadingSpinner } from "../../components/LoadingSpinner"
 
 export const AccountOrganization = () => {
 	const navigate = useNavigate()
+	const { userProfile } = useAppSelector((state) => state.userProfile)	
 	const [ registerOrganization, {isLoading, error}] = useRegisterOrganizationMutation()
 
 	const onSubmit = async (values: FormValues) => {

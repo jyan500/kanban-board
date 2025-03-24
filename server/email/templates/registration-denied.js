@@ -1,3 +1,4 @@
+const { companyName } = require("../../config")
 const registrationDeniedTemplate = (firstName, lastName, organizationName, organizationEmail, organizationPhone) => {
 	return (
 		`
@@ -16,7 +17,7 @@ const registrationDeniedTemplate = (firstName, lastName, organizationName, organ
 			<p>
 				Thank you,
 			</p>
-			<p>Kanban</p>
+			<p>${companyName}</p>
 		</div>
 		`
 	)

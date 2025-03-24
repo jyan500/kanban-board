@@ -53,7 +53,7 @@ export const OrganizationRegister = () => {
     	setForms(toSubmit)
     	try {
 	    	await organizationUserRegister(toSubmit).unwrap()
-    		navigate(LOGIN, {state: {"alert": "Organization and user registered successfully! You can now login to your organization."}, replace: true})
+    		navigate(LOGIN, {state: {"alert": "You have registered successfully! Please check your email to activate your account."}, replace: true})
     	}
     	catch (e) {
     		console.log(e)
@@ -78,7 +78,7 @@ export const OrganizationRegister = () => {
 			{
 				currentIndex === 1 ? (
 					<>
-						<h1>Register Admin User</h1>
+						<h1>Register User</h1>
 						<RegisterUserForm isOrgRegister={true} user={Object.keys(forms.user).length > 0 ? forms.user : undefined} onSubmit={onSubmitStep2}/>
 					</>
 				) : null

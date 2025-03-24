@@ -1,5 +1,5 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { BACKEND_BASE_URL, REGISTER_URL, REGISTER_ORGANIZATION_USER_URL } from "../../helpers/urls" 
+import { BACKEND_BASE_URL, REGISTER_URL, RESEND_ACTIVATION_URL, ACTIVATE_ACCOUNT_URL, REGISTER_ORGANIZATION_USER_URL,  } from "../../helpers/urls" 
 import { CustomError } from "../../types/common" 
 import { publicApi } from "../public" 
 import { OrgUserRegistrationForm } from "../../pages/register/OrganizationRegister"
@@ -60,8 +60,30 @@ export const userRegisterApi = publicApi.injectEndpoints({
 					}
 				}
 			}
-		})
+		}),
+		resendActivation: builder.mutation<{message: string}, {token: string}>({
+			query: ({token}) => {
+				return {
+					url: RESEND_ACTIVATION_URL,
+					method: "POST",
+					body: {
+						token
+					}
+				}
+			}
+		}),
+		activateAccount: builder.mutation<{message: string}, {token: string}>({
+			query: ({token}) => {
+				return {
+					url: ACTIVATE_ACCOUNT_URL,
+					method: "POST",
+					body: {
+						token
+					}
+				}
+			}
+		}),
 	}),
 })
 
-export const { useUserRegisterMutation, useOrganizationUserRegisterMutation } = userRegisterApi
+export const { useUserRegisterMutation, useOrganizationUserRegisterMutation, useActivateAccountMutation, useResendActivationMutation } = userRegisterApi

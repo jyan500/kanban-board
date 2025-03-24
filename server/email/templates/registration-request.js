@@ -1,3 +1,4 @@
+const { companyName } = require("../../config")
 const registrationRequestTemplate = (firstName, lastName, organizationName) => {
 	return (
 		`
@@ -12,7 +13,7 @@ const registrationRequestTemplate = (firstName, lastName, organizationName) => {
 			<p>
 				Thank you,
 			</p>
-			<p>Kanban</p>
+			<p>${companyName}</p>
 		</div>
 		`
 	)

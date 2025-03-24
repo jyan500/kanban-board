@@ -5,6 +5,9 @@ import { Login } from "./pages/Login"
 import { Home } from "./pages/Home" 
 import { HamburgerButton } from "./components/HamburgerButton" 
 import { Register } from "./pages/Register" 
+import { ForgotPassword } from "./pages/ForgotPassword"
+import { ResetPassword } from "./pages/ResetPassword"
+import { AccountActivation } from "./pages/AccountActivation"
 import { BoardDisplay } from "./pages/boards/BoardDisplay" 
 import { TicketDisplay } from "./pages/tickets/TicketDisplay" 
 import { Ticket as TicketPage } from "./pages/tickets/Ticket"
@@ -28,11 +31,13 @@ import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
 import UserRoleProtectedLayout from "./layouts/UserRoleProtectedLayout"
+import UserActivatedProtectedLayout from "./layouts/UserActivatedProtectedLayout"
 import { useAppSelector, useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
 import { ToastList } from "./components/ToastList" 
 import { 
 	ACCOUNT, 
+	ACTIVATION,
 	REGISTER_USER, 
 	REGISTER_ORG, 
 	ACCOUNT_CREATE_ORG, 
@@ -51,7 +56,9 @@ import {
 	USERS, 
 	ORGANIZATION, 
 	ORGANIZATION_ADD_EDIT_STATUSES,
-	NOTIFICATIONS 
+	NOTIFICATIONS,
+	FORGOT_PASSWORD,
+	RESET_PASSWORD,
 } from "./helpers/routes"
 
 // Define routes using createBrowserRouter
@@ -85,6 +92,18 @@ const router = createBrowserRouter([
 						element: <OrganizationRegister/>
 					}
 				]
+			},
+			{
+				path: FORGOT_PASSWORD,
+				element: <ForgotPassword/>
+			},
+			{
+				path: RESET_PASSWORD,
+				element: <ResetPassword/>
+			},
+			{
+				path: ACTIVATION,
+				element: <AccountActivation/>
 			},
 			{
 				path: "*",
@@ -146,8 +165,21 @@ const router = createBrowserRouter([
 						element: <Account/>
 					},
 					{
-						path: ACCOUNT_CREATE_ORG,
-						element: <AccountOrganization/>
+						element: <UserActivatedProtectedLayout/>,
+						children: [
+							{
+								path: ACCOUNT_CREATE_ORG,
+								element: <AccountOrganization/>
+							},
+							{
+								path: ACCOUNT_JOIN_ORGANIZATION,
+								element: <JoinOrganization/>
+							},
+							{
+								path: ACCOUNT_SWITCH_ORGANIZATION,
+								element: <SwitchOrganization/>
+							},
+						]
 					},
 					{
 						path: ACCOUNT_NOTIFICATION_SETTINGS,
@@ -156,14 +188,6 @@ const router = createBrowserRouter([
 					{
 						path: ACCOUNT_CHANGE_PASSWORD,
 						element: <ChangePassword/>
-					},
-					{
-						path: ACCOUNT_JOIN_ORGANIZATION,
-						element: <JoinOrganization/>
-					},
-					{
-						path: ACCOUNT_SWITCH_ORGANIZATION,
-						element: <SwitchOrganization/>
 					},
 				]
 			},

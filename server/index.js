@@ -45,7 +45,7 @@ app.use(api("notification"), auth.authenticateToken, notificationRouter)
 app.use(api("notification-type"), auth.authenticateToken, notificationTypeRouter)
 app.use(api("group-by"), auth.authenticateToken, groupByRouter)
 
-/* Public Endpoints */
+/* Partially Protected Endpoints */
 app.use(api("user"), userRouter)
 app.use(api("organization"), organizationRouter)
 
