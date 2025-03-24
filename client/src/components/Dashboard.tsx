@@ -122,7 +122,7 @@ export const Dashboard = () => {
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-justify-center tw-items-center">
+		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
 			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
 				<h2>Dashboard</h2>

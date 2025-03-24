@@ -89,12 +89,12 @@ const ProtectedLayout = () => {
 				<div className = "tw-px-4 md:tw-px-16 tw-w-full tw-min-h-screen">
 					<TopNav/>
 					{isDataLoaded ? (
-						<>
+						<div className = "tw-space-y-2">
 							{!userProfileData?.isActive ? 
 								<AccountActivationBanner/>
 							: null}
 							<Outlet/>
-						</>
+						</div>
 					): null}
 				</div>
 				<Footer/>

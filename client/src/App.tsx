@@ -31,6 +31,7 @@ import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
 import UserRoleProtectedLayout from "./layouts/UserRoleProtectedLayout"
+import UserActivatedProtectedLayout from "./layouts/UserActivatedProtectedLayout"
 import { useAppSelector, useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
 import { ToastList } from "./components/ToastList" 
@@ -164,8 +165,21 @@ const router = createBrowserRouter([
 						element: <Account/>
 					},
 					{
-						path: ACCOUNT_CREATE_ORG,
-						element: <AccountOrganization/>
+						element: <UserActivatedProtectedLayout/>,
+						children: [
+							{
+								path: ACCOUNT_CREATE_ORG,
+								element: <AccountOrganization/>
+							},
+							{
+								path: ACCOUNT_JOIN_ORGANIZATION,
+								element: <JoinOrganization/>
+							},
+							{
+								path: ACCOUNT_SWITCH_ORGANIZATION,
+								element: <SwitchOrganization/>
+							},
+						]
 					},
 					{
 						path: ACCOUNT_NOTIFICATION_SETTINGS,
@@ -174,14 +188,6 @@ const router = createBrowserRouter([
 					{
 						path: ACCOUNT_CHANGE_PASSWORD,
 						element: <ChangePassword/>
-					},
-					{
-						path: ACCOUNT_JOIN_ORGANIZATION,
-						element: <JoinOrganization/>
-					},
-					{
-						path: ACCOUNT_SWITCH_ORGANIZATION,
-						element: <SwitchOrganization/>
 					},
 				]
 			},
