@@ -67,7 +67,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 	const onSubmit = async (values: UserFormValues) => {
 		try {
 			const data = await userRegister(values).unwrap()
-    		navigate(LOGIN, {state: {"alert": "User registered successfully! Check your email to see when your selected organization has approved your account."}, replace: true})
+    		navigate(LOGIN, {state: {"alert": "User registered successfully! Please check your email to activate your account, and see when your selected organization has approved your account so you can login."}, replace: true})
 		}
 		catch (err) {
 			console.log(err)

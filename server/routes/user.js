@@ -68,13 +68,17 @@ router.post("/register", limiter, userValidator.registerValidator, handleValidat
 	    const activationToken = crypto.randomBytes(32).toString("hex");
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(req.body.password, salt)
+		// Expires in 6 months
+		const expiresAt = new Date();
+		expiresAt.setMonth(expiresAt.getMonth() + 6);
 		const user = await db("users").insert({
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
 			email: req.body.email,
 			password: hash,
 			activation_token: activationToken,
-			activation_token_expires: new Date(),
+			activation_token_expires: expiresAt,
+			is_active: false,
 		}, ["id"])
 
 		await db("user_registration_requests").insert({
@@ -93,7 +97,7 @@ router.post("/register", limiter, userValidator.registerValidator, handleValidat
 	    const activationLink = `/activate?token=${activationToken}`;
 
 		// Send activation email
-		await sendEmail(email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink, true, organizationName));
+		await sendEmail(req.body.email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink, true, organizationName));
 
 		// TODO: send this to an async queue so the request isn't held up by email sending
 		// send email to registered user
@@ -191,7 +195,7 @@ router.post("/activate", limiter, async (req, res, next) => {
 		})
 		res.json({message: "Account activated successfully!"})
 	}
-	catch {
+	catch (err) {
 		console.error(`Something went wrong when activating account: ${err}`)
 	}
 })
@@ -236,12 +240,16 @@ router.post("/register/organization", limiter, userValidator.organizationUserReg
 		// Generate a hashed activation token
 	    const activationToken = crypto.randomBytes(32).toString("hex");
 
+		const expiresAt = new Date();
+		expiresAt.setMonth(expiresAt.getMonth() + 6);
+
 		const user = await db("users").insert({
 			first_name: first_name,
 			last_name: last_name,
 			email: user_email,
 			password: hash,
 			activation_token: activationToken,
+			activation_token_expires: expiresAt,
 			is_active: false
 		}, ["id"])
 		const organization = await db("organizations").insert({
@@ -261,7 +269,7 @@ router.post("/register/organization", limiter, userValidator.organizationUserReg
 	    const activationLink = `/activate?token=${activationToken}`;
 
 	    // Send activation email
-		await sendEmail(email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink));
+		await sendEmail(user_email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink));
 
 		res.json({message: "Organization and User registered successfully!"})
 	}	
