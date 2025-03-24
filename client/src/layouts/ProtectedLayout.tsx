@@ -7,6 +7,7 @@ import { SecondaryModal } from "../components/SecondaryModal"
 import { LoadingSpinner } from "../components/LoadingSpinner"
 import { TopNav } from "../components/page-elements/TopNav" 
 import { Footer } from "../components/page-elements/Footer"
+import { AccountActivationBanner } from "../components/page-elements//AccountActivationBanner"
 import { useGetUserProfileQuery } from "../services/private/userProfile" 
 import { useGetStatusesQuery } from "../services/private/status" 
 import { useGetTicketTypesQuery } from "../services/private/ticketType" 
@@ -88,7 +89,12 @@ const ProtectedLayout = () => {
 				<div className = "tw-px-4 md:tw-px-16 tw-w-full tw-min-h-screen">
 					<TopNav/>
 					{isDataLoaded ? (
-						<Outlet/>
+						<>
+							{!userProfileData?.isActive ? 
+								<AccountActivationBanner/>
+							: null}
+							<Outlet/>
+						</>
 					): null}
 				</div>
 				<Footer/>

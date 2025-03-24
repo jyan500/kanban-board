@@ -14,6 +14,7 @@ export const USER_REGISTRATION_REQUEST_URL = `/${API_VERSION}/organization/regis
 export const USER_PROFILE_URL = `/${API_VERSION}/user-profile`
 export const USER_PROFILE_ORG_URL = `${USER_PROFILE_URL}/organization`
 export const USER_NOTIFICATION_TYPES_URL = `${USER_PROFILE_URL}/notification-type`
+export const USER_ACTIVATE_ACCOUNT = `${USER_PROFILE_URL}/activate`
 export const USER_ROLE_URL = `/${API_VERSION}/user-role/`
 export const TICKET_URL = `/${API_VERSION}/ticket`
 export const BOARD_URL = `/${API_VERSION}/board`

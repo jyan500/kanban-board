@@ -1,6 +1,6 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../../store" 
-import { BACKEND_BASE_URL, USER_PROFILE_URL, USER_PROFILE_ORG_URL, ORG_LOGIN_URL, USER_NOTIFICATION_TYPES_URL } from "../../helpers/urls" 
+import { BACKEND_BASE_URL, USER_PROFILE_URL, USER_PROFILE_ORG_URL, ORG_LOGIN_URL, USER_NOTIFICATION_TYPES_URL, USER_ACTIVATE_ACCOUNT } from "../../helpers/urls" 
 import { CustomError, ListResponse, Organization, UserProfile, UserNotificationType } from "../../types/common" 
 import { privateApi } from "../private"
 import { UserResponse } from "../public/auth"
@@ -119,6 +119,12 @@ export const userProfileApi = privateApi.injectEndpoints({
 				}
 			}),
 			invalidatesTags: ["UserOrganizations"]	
+		}),
+		activateAccount: builder.mutation<{message: string}, void>({
+			query: () => ({
+				url: USER_ACTIVATE_ACCOUNT,
+				method: "POST",
+			})	
 		})
 	}),
 })
@@ -134,4 +140,5 @@ export const {
 	useGetUserNotificationTypesQuery,
 	useUpdateUserNotificationTypesMutation,
 	useRegisterOrganizationMutation,
+	useActivateAccountMutation,
 } = userProfileApi 

@@ -38,15 +38,15 @@ router.post("/login", limiter, userValidator.loginValidator, handleValidationRes
 			res.status(400).json({errors: [error]})
 			return
 		}
-		const userInOrganization = await db("organization_user_roles").where("organization_id", req.body.organization_id).where("user_id", user.id).first()
-		if (!userInOrganization){
-			res.status(400).json({errors: [error]})
-			return
-		}
 		const storedHash = user.password
 		const result = await bcrypt.compare(req.body.password, storedHash)
 		if (!result){
 			res.status(400).json({errors: [error]})
+			return
+		}
+		const userInOrganization = await db("organization_user_roles").where("organization_id", req.body.organization_id).where("user_id", user.id).first()
+		if (!userInOrganization){
+			res.status(400).json({errors: ["Failed to login: your account has not been approved by the organization yet. Please check your email to see if your organization has approved your account."]})
 			return
 		}
 		const userRole = await db("user_roles").where("id", userInOrganization.user_role_id).first()
@@ -166,7 +166,7 @@ router.get("/validate-token", limiter, async (req, res, next) => {
 router.post("/resend-activation", limiter, async (req, res, next) => {
 	try {
 		// if the user has a token but it's expired, allow for a resend
-		const user = await db("users").where("activation_token", req.query.token).andWhere("activation_token_expires", ">", new Date())
+		const user = await db("users").where("activation_token", req.query.token).andWhere("activation_token_expires", ">", new Date()).first()
 		if (!user){
 			return res.status(400).json({message: "Invalid activation request"})	
 		}
@@ -184,14 +184,14 @@ router.post("/resend-activation", limiter, async (req, res, next) => {
 
 router.post("/activate", limiter, async (req, res, next) => {
 	try {
-		const user = await db("users").where("activation_token", req.query.token).andWhere("activation_token_expires", ">", new Date())
+		const user = await db("users").where("activation_token", req.body.token).andWhere("activation_token_expires", ">", new Date()).first()
 		if (!user) {
 			return res.status(400).json({message: "Invalid activation request"})	
 		}
 		await db("users").where("id", user.id).update({
 			is_active: true,
-			activation_token: null,
-			activation_token_expires: null
+			activation_token: undefined,
+			activation_token_expires: undefined 
 		})
 		res.json({message: "Account activated successfully!"})
 	}

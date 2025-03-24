@@ -209,6 +209,21 @@ router.get("/organization", async (req, res, next) => {
 	}
 })
 
+router.post("/activate", async (req, res, next) => {
+	try {
+		await db("users").where("id", req.user.id).update({
+			is_active: true,
+			activation_token: undefined,
+			activation_token_expires: undefined,
+		})
+		res.json({message: "Account activated successfully!"})
+	}
+	catch (err){
+		console.log(`Error while activating account: ${err.message}`)	
+		next(err)
+	}
+})
+
 router.post("/organization", validateAddOrganization, handleValidationResult, async (req, res, next) => {
 	try {
 		const { name, email, phone_number, address, city, state, zipcode, industry } = req.body
@@ -278,5 +293,6 @@ router.put("/:userId", authenticateUserRole(["ADMIN"]), editUserValidator, handl
 		next(err)
 	}
 })
+
 
 module.exports = router

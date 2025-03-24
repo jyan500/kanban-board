@@ -38,6 +38,9 @@ router.get("/", async (req, res, next) => {
 				.max("tickets_to_boards.updated_at as ticketsUpdatedAt")
 				.max("boards_to_statuses.updated_at as boardStatusesUpdatedAt")
 				.groupBy("boards.id")
+				.groupBy("boards.ticket_limit")
+				.groupBy("boards.name")
+				.groupBy("boards.organization_id")
 				.select(
 					"boards.updated_at as boardUpdatedAt",
 				)
@@ -48,6 +51,9 @@ router.get("/", async (req, res, next) => {
 				.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
 				.groupBy("tickets_to_users.user_id")
 				.groupBy("boards.id")
+				.groupBy("boards.ticket_limit")
+				.groupBy("boards.name")
+				.groupBy("boards.organization_id")
 				.where("tickets_to_users.user_id", "=", req.user.id)
 			}
 		})	
@@ -66,6 +72,8 @@ router.get("/", async (req, res, next) => {
 			.join("users", "tickets_to_users.user_id", "=", "users.id")
 			.groupBy("boards.id")
 			.groupBy("tickets_to_users.user_id")
+			.groupBy("users.first_name")
+			.groupBy("users.last_name")
 			.select("boards.id as id", "tickets_to_users.user_id as userId", "users.first_name as firstName", "users.last_name as lastName")
 			boardAssigneesRes = mapIdToRowAggregateObjArray(boardAssignees, ["userId", "firstName", "lastName"])
 		}
