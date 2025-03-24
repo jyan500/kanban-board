@@ -6,7 +6,6 @@ const crypto = require("crypto")
 const router = express.Router()
 const config = require("../config")
 const db = require("../db/db")
-const { DEFAULT_STATUSES } = require("../constants")
 const userValidator = require("../validation/user")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { body, validationResult } = require("express-validator")
@@ -14,8 +13,23 @@ const { authenticateToken } = require("../middleware/authMiddleware")
 const registrationRequestTemplate = require("../email/templates/registration-request") 
 const passwordResetTemplate = require("../email/templates/password-reset")
 const sendEmail = require("../email/email")
+const { EXCEEDED_MESSAGE, DEFAULT_STATUSES } = require("../constants")
+const rateLimit = require("express-rate-limit")
 
-router.post("/login", userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 max in the window,
+    handler: (req, res) => {
+	    res.status(429).json({
+		    status: 429,
+		    errors: ['Too many requests, please try again later.'],
+	    })
+	},
+	standardHeaders: true,
+	legacyHeaders: false,
+})
+
+router.post("/login", limiter, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const user = await db("users").where("email", req.body.email).first()
 		const error = "Failed to login: email, organization or password is incorrect."
@@ -47,7 +61,7 @@ router.post("/login", userValidator.loginValidator, handleValidationResult, asyn
 	}
 })
 
-router.post("/register", userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
+router.post("/register", limiter, userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(req.body.password, salt)
@@ -80,7 +94,7 @@ router.post("/register", userValidator.registerValidator, handleValidationResult
 	}
 })
 
-router.post("/forgot-password", userValidator.forgotPasswordValidator, handleValidationResult, async (req, res, next) => {
+router.post("/forgot-password", limiter, userValidator.forgotPasswordValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const email = req.body.email
 		// get user
@@ -110,7 +124,7 @@ router.post("/forgot-password", userValidator.forgotPasswordValidator, handleVal
 	}
 })
 
-router.get("/validate-reset-token", async (req, res, next) => {
+router.get("/validate-reset-token", limiter, async (req, res, next) => {
 	try {
 		// make sure the reset password token has not exceeded the current date and time
 		const user = await db("users")
@@ -125,7 +139,7 @@ router.get("/validate-reset-token", async (req, res, next) => {
 	}
 })
 
-router.post("/reset-password", userValidator.resetPasswordValidator, handleValidationResult, async (req, res, next) => {
+router.post("/reset-password", limiter, userValidator.resetPasswordValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const { token, password } = req.body
 		
@@ -155,7 +169,7 @@ router.post("/reset-password", userValidator.resetPasswordValidator, handleValid
 	}
 })
 
-router.post("/register/organization", userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
+router.post("/register/organization", limiter, userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const { first_name, last_name, password, email: user_email } = req.body.user
 		const { name, address, city, state, zipcode, industry, phone_number, email} = req.body.organization
