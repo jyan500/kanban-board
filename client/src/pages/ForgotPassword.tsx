@@ -34,8 +34,12 @@ export const ForgotPassword = () => {
     }
 
 	return (
-		<div>
+		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<h1>Forgot Password</h1>
+			<div>
+				<p>Please enter the email on your account.</p> 
+				<p>After submitting, you will be sent an email to reset your password.</p>
+			</div>
 			<form className = "tw-flex tw-flex-col tw-gap-y-4" onSubmit={handleSubmit(onSubmit)}>
 				{error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
 				<div>
