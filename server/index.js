@@ -18,6 +18,7 @@ const notificationTypeRouter = require("./routes/notificationType")
 const groupByRouter = require("./routes/groupBy")
 const auth = require("./middleware/authMiddleware")
 const {authenticateUserActivated} = require("./middleware/userActivatedMiddleware")
+const { asyncHandler } = require("./helpers/functions")
 
 const api = (route, apiVersion = "") => {
 	return `/api${apiVersion}/${route}`
@@ -36,15 +37,15 @@ app.use(
 /* Protected Endpoints */
 app.use(api("status"), auth.authenticateToken, statusRouter)
 app.use(api("priority"), auth.authenticateToken, priorityRouter)
-app.use(api("board"), auth.authenticateToken, authenticateUserActivated, boardRouter)
-app.use(api("ticket"), auth.authenticateToken, authenticateUserActivated, ticketRouter)
+app.use(api("board"), auth.authenticateToken, asyncHandler(authenticateUserActivated), boardRouter)
+app.use(api("ticket"), auth.authenticateToken, asyncHandler(authenticateUserActivated), ticketRouter)
 app.use(api("ticket-type"), auth.authenticateToken, ticketTypeRouter)
 app.use(api("ticket-relationship-type"), auth.authenticateToken, ticketRelationshipTypeRouter)
 app.use(api("user-profile"), auth.authenticateToken, userProfileRouter)
 app.use(api("user-role"), auth.authenticateToken, userRoleRouter)
-app.use(api("notification"), auth.authenticateToken, authenticateUserActivated, notificationRouter)
+app.use(api("notification"), auth.authenticateToken, notificationRouter)
 app.use(api("notification-type"), auth.authenticateToken, notificationTypeRouter)
-app.use(api("group-by"), auth.authenticateToken, authenticateUserActivated, groupByRouter)
+app.use(api("group-by"), auth.authenticateToken, asyncHandler(authenticateUserActivated), groupByRouter)
 
 /* Partially Protected Endpoints */
 app.use(api("user"), userRouter)

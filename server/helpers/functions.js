@@ -187,6 +187,15 @@ const batchUpdate = (table, collection) => {
   });
 }
 
+/* 
+	Takes in an async function (i.e async middleware) in order
+	to use in a setting where async keyword cannot be used
+*/
+const asyncHandler = fn => (req, res, next) => {
+	fn(req, res, next).catch(next)
+}
+
+
 module.exports = {
 	batchUpdate,
 	getNotificationBody,
@@ -194,5 +203,6 @@ module.exports = {
 	mapIdToRowAggregateArray,
 	mapIdToRowAggregateObjArray,
 	parseMentions,
-	getFromNestedObject
+	getFromNestedObject,
+	asyncHandler,
 }

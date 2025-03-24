@@ -47,6 +47,8 @@ const ProtectedLayout = () => {
     )
 
     useEffect(() => {
+    	console.log("retrieving data...")
+    	console.log("user profile: ", userProfileData)
         // Retrieve user on startup
         if (token){
         	if (userProfileData){
