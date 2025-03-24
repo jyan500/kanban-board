@@ -7,6 +7,7 @@ import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4} from "uuid"
 import { USER_PROFILE_URL, USER_PROFILE_ORG_URL } from "../../helpers/urls"
 import { OptionType, Toast } from "../../types/common"
+import { Navigate } from "react-router-dom" 
 
 type FormValues = {
 	organizationId: string | number 
@@ -23,6 +24,7 @@ export const JoinOrganization = () => {
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const { register, control, handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({defaultValues: preloadedValues})
 	const [addRegistrationRequest, {isLoading, error}] = useAddRegistrationRequestMutation()
+	const { userProfile } = useAppSelector((state) => state.userProfile)
 
 	const onSubmit = async (values: FormValues) => {
 		const defaultToast: Toast = {
@@ -46,35 +48,39 @@ export const JoinOrganization = () => {
 		}
 	}
 	return (
-		<div className = "tw-w-1/2">
-			<h1>Join Organization</h1>	
-			<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
-				 <div>
-				    <label className = "label" htmlFor = "join-organization">
-				    	Organization:
-				    </label>
-					<Controller
-						name={"organizationId"}
-						control={control}
-						rules={registerOptions.organizationId}
-						render={({field: {onChange, value, name, ref}}) => (
-							<AsyncSelect 
-								urlParams={{getJoinedOrgs: false}} 
-								onSelect={(selectedOption: OptionType | null) => {
-			                		const val = selectedOption?.value ?? ""
-									setValue("organizationId", Number(val))
-								}} 
-								endpoint={USER_PROFILE_ORG_URL} 
-								className = "tw-w-full"
-							/>
-						)}
-					/>
-			        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
-			    </div>	
-			    <div>
-			    	<button className = "button" type="submit">Send Request</button>
-			    </div>
-			</form>
-		</div>
+		!userProfile?.isActive ? (
+			<Navigate replace to = {"/"} state={{type: "failure", alert: "You don't have permission to access this page"}}/>
+		) : (
+			<div className = "tw-w-1/2">
+				<h1>Join Organization</h1>	
+				<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
+					 <div>
+					    <label className = "label" htmlFor = "join-organization">
+					    	Organization:
+					    </label>
+						<Controller
+							name={"organizationId"}
+							control={control}
+							rules={registerOptions.organizationId}
+							render={({field: {onChange, value, name, ref}}) => (
+								<AsyncSelect 
+									urlParams={{getJoinedOrgs: false}} 
+									onSelect={(selectedOption: OptionType | null) => {
+				                		const val = selectedOption?.value ?? ""
+										setValue("organizationId", Number(val))
+									}} 
+									endpoint={USER_PROFILE_ORG_URL} 
+									className = "tw-w-full"
+								/>
+							)}
+						/>
+				        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
+				    </div>	
+				    <div>
+				    	<button className = "button" type="submit">Send Request</button>
+				    </div>
+				</form>
+			</div>
+		)
 	)	
 }

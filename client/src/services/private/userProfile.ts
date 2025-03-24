@@ -124,7 +124,8 @@ export const userProfileApi = privateApi.injectEndpoints({
 			query: () => ({
 				url: USER_ACTIVATE_ACCOUNT,
 				method: "POST",
-			})	
+			}),
+			invalidatesTags: ["UserProfiles"]
 		})
 	}),
 })

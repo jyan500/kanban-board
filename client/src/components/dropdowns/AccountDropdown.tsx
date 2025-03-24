@@ -48,13 +48,16 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNoti
 				navigate(NOTIFICATIONS)
 			}
 		},
-		"Switch Organization": { 
-			text: "Switch Organization",
-			icon: <IconBuildingUser/>,
-			onClick: () => {
-				navigate(ACCOUNT_SWITCH_ORGANIZATION)	
-			}
-		},
+		...(userProfile?.isActive ? {
+
+			"Switch Organization": { 
+				text: "Switch Organization",
+				icon: <IconBuildingUser/>,
+				onClick: () => {
+					navigate(ACCOUNT_SWITCH_ORGANIZATION)	
+				}
+			},
+		} : {}),
 		"Logout": {
 			text: "Logout",
 			icon: <IconLogout/>,
