@@ -8,6 +8,7 @@ const { validateAddOrganization } = require("../validation/organization")
 const { DEFAULT_STATUSES } = require("../constants")
 const bcrypt = require("bcrypt")
 const config = require("../config")
+const {authenticateUserActivated} = require("../middleware/userActivatedMiddleware")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -139,7 +140,7 @@ router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res
 	}
 })
 
-router.get("/notification-type", async (req, res, next) => {
+router.get("/notification-type", authenticateUserActivated, async (req, res, next) => {
 	try {
 		const {id: userId, organization: organizationId } = req.user
 		const userNotificationTypes = await db("users_to_notification_types").where("user_id", userId).select(
@@ -155,7 +156,7 @@ router.get("/notification-type", async (req, res, next) => {
 	}
 })
 
-router.post("/notification-type", editNotificationTypesValidator, handleValidationResult, async (req, res, next) => {
+router.post("/notification-type", authenticateUserActivated, editNotificationTypesValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const {id: userId, organization: organizationId } = req.user
 		// delete all notification type ids attached to this user and then re-insert
@@ -224,7 +225,7 @@ router.post("/activate", async (req, res, next) => {
 	}
 })
 
-router.post("/organization", validateAddOrganization, handleValidationResult, async (req, res, next) => {
+router.post("/organization", authenticateUserActivated, validateAddOrganization, handleValidationResult, async (req, res, next) => {
 	try {
 		const { name, email, phone_number, address, city, state, zipcode, industry } = req.body
 		const organization = await db("organizations").insert({

@@ -26,11 +26,11 @@ export const AccountDisplay = () => {
 			link: ACCOUNT_CHANGE_PASSWORD,
 			text: "Change Password"
 		},
-		{
-			link: ACCOUNT_NOTIFICATION_SETTINGS,	
-			text: "Notification Settings",
-		},
 		...(userProfile?.isActive ? [ 
+			{
+				link: ACCOUNT_NOTIFICATION_SETTINGS,	
+				text: "Notification Settings",
+			},
 			{
 				link: ACCOUNT_CREATE_ORG, 
 				text: "Create Organization",
@@ -43,11 +43,11 @@ export const AccountDisplay = () => {
 				link: ACCOUNT_SWITCH_ORGANIZATION,
 				text: "Switch Organization"
 			},
+			{
+				link: NOTIFICATIONS,
+				text: "Notifications"
+			}
 		] : []),
-		{
-			link: NOTIFICATIONS,
-			text: "Notifications"
-		}
 	]
 	return (
 		<div className = "tw-w-full">
