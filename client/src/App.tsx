@@ -116,46 +116,89 @@ const router = createBrowserRouter([
 			<ProtectedLayout />
 		</>,
 		children: [
-			{
-				path: HOME,
-				element: <Home />,
-			},
-			{
-				path: BOARDS,
-				element: 
-					<>	
-						<ScrollRestoration/>
-						<BoardDisplay />
-					</>
-				,
+			{	
+				element: <UserActivatedProtectedLayout/>,
 				children: [
 					{
-						index: true,
-						element: <Boards/>,
+						path: HOME,
+						element: <Home />,
 					},
 					{
-						path: BOARD_ID,
-						element: <>
-							<ScrollRestoration/>
-							<Board/>
-						</>,
+						path: NOTIFICATIONS,
+						element: <NotificationDisplay/>
 					},
-				],
-			},
-			{
-				path: TICKETS,
-				element:
-					<>
-						<ScrollRestoration/>
-						<TicketDisplay/>
-					</>,
-				children: [
-				{
-					path: TICKET_ID,
-					element: <TicketPage/>
-				}
+					{
+						path: BOARDS,
+						element: 
+							<>	
+								<ScrollRestoration/>
+								<BoardDisplay />
+							</>
+						,
+						children: [
+							{
+								index: true,
+								element: <Boards/>,
+							},
+							{
+								path: BOARD_ID,
+								element: <>
+									<ScrollRestoration/>
+									<Board/>
+								</>,
+							},
+						],
+					},
+					{
+						path: TICKETS,
+						element:
+							<>
+								<ScrollRestoration/>
+								<TicketDisplay/>
+							</>,
+						children: [
+						{
+							path: TICKET_ID,
+							element: <TicketPage/>
+						}
+						]
+					},
+					{
+						element: <><UserRoleProtectedLayout/></>,
+						children: [
+						{
+							path: USERS,
+							element: <>
+								<UsersDisplay/>
+							</>,
+						},
+						{
+							path: ORGANIZATION,
+							element: <>
+								<ScrollRestoration/>
+								<OrganizationDisplay/>
+							</>,
+							children: [
+								{
+
+									index: true,
+									element: <Organization/>
+								},
+								{
+									path: ORGANIZATION_ADD_EDIT_STATUSES,		
+									element: <OrganizationAddEditStatuses/>
+								}
+							]
+						}
+						]
+					},
+					{
+						path: "*",
+						element: <Navigate to = {HOME}/>	
+					}
 				]
 			},
+
 			{
 				path: ACCOUNT,
 				element: <AccountDisplay/>,
@@ -179,11 +222,11 @@ const router = createBrowserRouter([
 								path: ACCOUNT_SWITCH_ORGANIZATION,
 								element: <SwitchOrganization/>
 							},
+							{
+								path: ACCOUNT_NOTIFICATION_SETTINGS,
+								element: <NotificationSettings/>
+							},
 						]
-					},
-					{
-						path: ACCOUNT_NOTIFICATION_SETTINGS,
-						element: <NotificationSettings/>
 					},
 					{
 						path: ACCOUNT_CHANGE_PASSWORD,
@@ -192,41 +235,8 @@ const router = createBrowserRouter([
 				]
 			},
 			{
-				path: NOTIFICATIONS,
-				element: <NotificationDisplay/>
-			},
-			{
-				element: <><UserRoleProtectedLayout/></>,
-				children: [
-				{
-					path: USERS,
-					element: <>
-						<UsersDisplay/>
-					</>,
-				},
-				{
-					path: ORGANIZATION,
-					element: <>
-						<ScrollRestoration/>
-						<OrganizationDisplay/>
-					</>,
-					children: [
-						{
-
-							index: true,
-							element: <Organization/>
-						},
-						{
-							path: ORGANIZATION_ADD_EDIT_STATUSES,		
-							element: <OrganizationAddEditStatuses/>
-						}
-					]
-				}
-				]
-			},
-			{
 				path: "*",
-				element: <Navigate to = {HOME}/>	
+				element: <Navigate to = {ACCOUNT}/>	
 			}
 		],
 	},

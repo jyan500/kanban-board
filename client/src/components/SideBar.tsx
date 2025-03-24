@@ -22,15 +22,17 @@ export const SideBar = () => {
 	const [isAdmin, setIsAdmin] = useState(false)
 	
 	const defaultLinks = [
-		{
-			pathname: "/", text: "Dashboard",
-		},
-		{
-			pathname: "/boards", text: "Boards",
-		},
-		{
-			pathname: "/tickets", text: "Tickets",
-		},
+		...userProfile?.isActive ? [
+			{
+				pathname: "/", text: "Dashboard",
+			},
+			{
+				pathname: "/boards", text: "Boards",
+			},
+			{
+				pathname: "/tickets", text: "Tickets",
+			},
+		] : []
 	]
 	const accountLink = [
 		{
@@ -50,7 +52,7 @@ export const SideBar = () => {
 			setIsAdmin(isAdmin ?? false)
 			setLinks([
 				...defaultLinks,
-				...(isAdmin ? [
+				...(isAdmin && userProfile?.isActive ? [
 				{
 					pathname: "/users", text: "Users"
 				},

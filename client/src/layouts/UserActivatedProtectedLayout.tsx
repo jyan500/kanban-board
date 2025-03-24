@@ -4,6 +4,7 @@ import { Link, Outlet, Navigate, useParams } from "react-router-dom"
 import { LoadingSpinner } from "../components/LoadingSpinner"
 import { useGetUserProfileQuery } from "../services/private/userProfile"
 import { UserRole } from "../types/common"
+import { ACCOUNT } from "../helpers/routes"
 
 const UserActivatedProtectedLayout = () => {
 	const { data: userProfile, isLoading: isUserProfileLoading } = useGetUserProfileQuery()
@@ -19,7 +20,7 @@ const UserActivatedProtectedLayout = () => {
 	if (isLoading){
 		return <></>
 	}
-	return !isActivated ? <Navigate replace to = {"/"} state={{type: "failure", alert: "You don't have permission to access this page"}}/> : (<><Outlet/></>)
+	return !isActivated ? <Navigate replace to = {ACCOUNT} state={{type: "failure", alert: "You don't have permission to access this page"}}/> : (<><Outlet/></>)
 }
 
 export default UserActivatedProtectedLayout
