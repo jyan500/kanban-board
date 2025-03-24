@@ -16,23 +16,21 @@ import { GradientContainer } from "./page-elements/GradientContainer"
 
 export const SideBar = () => {
 	const sideBar = useAppSelector((state) => state.nav)
-	const { data: userRoles, isLoading: isUserRolesLoading } = useGetUserRolesQuery()
-	const { data: userProfile, isLoading: isUserProfileLoading } = useGetUserProfileQuery()
+	const { data: userRoles, isFetching: isUserRolesFetching } = useGetUserRolesQuery()
+	const { data: userProfile, isFetching: isUserProfileFetching } = useGetUserProfileQuery()
 	const [isLoading, setIsLoading] = useState(true)
 	const [isAdmin, setIsAdmin] = useState(false)
 	
 	const defaultLinks = [
-		...userProfile?.isActive ? [
-			{
-				pathname: "/", text: "Dashboard",
-			},
-			{
-				pathname: "/boards", text: "Boards",
-			},
-			{
-				pathname: "/tickets", text: "Tickets",
-			},
-		] : []
+		{
+			pathname: "/", text: "Dashboard",
+		},
+		{
+			pathname: "/boards", text: "Boards",
+		},
+		{
+			pathname: "/tickets", text: "Tickets",
+		},
 	]
 	const accountLink = [
 		{
@@ -46,13 +44,13 @@ export const SideBar = () => {
 	const { pathname } = useLocation()
 
 	useEffect(() => {
-		if (!isUserProfileLoading && !isUserRolesLoading){
+		if (!isUserProfileFetching && !isUserRolesFetching){
 			const admin = userRoles?.find((role) => role.name === "ADMIN")
 			const isAdmin = userProfile && admin?.id === userProfile.userRoleId
 			setIsAdmin(isAdmin ?? false)
 			setLinks([
-				...defaultLinks,
-				...(isAdmin && userProfile?.isActive ? [
+				...userProfile?.isActive ? defaultLinks : [],
+				...(isAdmin ? [
 				{
 					pathname: "/users", text: "Users"
 				},
@@ -64,7 +62,7 @@ export const SideBar = () => {
 			])
 			setIsLoading(false)
 		}
-	}, [isUserProfileLoading, isUserRolesLoading])
+	}, [isUserProfileFetching, isUserRolesFetching])
 
 	return (
 		<div className = {`sidebar --card-shadow --transition-transform ${sideBar.showSidebar ? "--translate-x-0" : "--translate-x-full-negative"}`}>

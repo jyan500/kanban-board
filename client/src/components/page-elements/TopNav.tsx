@@ -41,7 +41,7 @@ export const TopNav = () => {
 	const [lastId, setLastId] = useState(0)
 
 	// TODO: need to figure out why this causes other cache invalidation requests to lag (i.e add/remove ticket watchers)
-	const { data: polledNotifications, isLoading: isGetPolledNotificationsLoading } = useGetNotificationsQuery({isUnread: true}, {
+	const { data: polledNotifications, isLoading: isGetPolledNotificationsLoading } = useGetNotificationsQuery(userProfile?.isActive ? {isUnread: true} : skipToken, {
 		pollingInterval: 30000,
 		skipPollingIfUnfocused: true
 	})
@@ -67,23 +67,6 @@ export const TopNav = () => {
 		dispatch(logout())
 		dispatch(privateApi.util.resetApiState())
 	}
-
-	// const markMessagesRead = async () => {
-	// 	const unreadMessages = currentNotifications.filter(n => !n.isRead)
-	// 	if (unreadMessages.length){
-	// 		try {
-	// 			await bulkEditNotifications({isRead: true, ids: currentNotifications.map((n) => n.id) ?? []}).unwrap()
-	// 		}
-	// 		catch (err){
-	// 			dispatch(addToast({
-	// 				id: uuidv4(),
-	// 				message: "Failed to mark notifications as read.",
-	// 				animationType: "animation-in",
-	// 				type: "failure"
-	// 			}))
-	// 		}
-	// 	}		
-	// }
 
 	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
 

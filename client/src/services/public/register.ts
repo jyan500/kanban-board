@@ -81,7 +81,7 @@ export const userRegisterApi = publicApi.injectEndpoints({
 						token
 					}
 				}
-			}
+			},
 		}),
 	}),
 })
