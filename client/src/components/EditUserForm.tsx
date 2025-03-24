@@ -10,6 +10,7 @@ import { UserProfile } from "../types/common"
 import { parseDelimitedWord } from "../helpers/functions"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import { PasswordRules } from "./page-elements/PasswordRules"
 
 type FormValues = {
 	id?: number 
@@ -54,7 +55,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 	const [ editOwnUserProfile, {isLoading: isEditOwnUserLoading, error: ownUserError} ] = useEditOwnUserProfileMutation()
 	const { data: userInfo, isLoading: isUserDataLoading  } = useGetUserQuery(userId ? userId : skipToken)
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { register , handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
+	const { register , handleSubmit, reset, watch, setValue, getValues, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
 	const registerOptions = {
@@ -207,6 +208,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 								className = "tw-w-full"
 								{...register("password", registerOptions.password)}
 								/>
+								<PasswordRules password={watch("password") ?? ""}/>
 						        {errors?.password && <small className = "--text-alert">{errors.password.message}</small>}
 					        </div>
 					    </div>

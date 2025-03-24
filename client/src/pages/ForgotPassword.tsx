@@ -36,7 +36,7 @@ export const ForgotPassword = () => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<h1>Forgot Password</h1>
-			<div>
+			<div className = "tw-text-gray-600 tw-text-sm">
 				<p>Please enter the email on your account.</p> 
 				<p>After submitting, you will be sent an email to reset your password.</p>
 			</div>

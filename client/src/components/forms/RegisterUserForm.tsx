@@ -11,6 +11,7 @@ import { AsyncSelect } from "../../components/AsyncSelect"
 import { OptionType } from "../../types/common"
 import { ORGANIZATION_URL } from "../../helpers/urls"
 import { LoadingButton } from "../../components/page-elements/LoadingButton"
+import { PasswordRules } from "../../components/page-elements/PasswordRules"
 
 export type FormValues = {
 	firstName: string
@@ -33,7 +34,7 @@ type Props = {
 export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Props) => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
-	const { control, register: formRegister, reset, handleSubmit, setValue, formState: {errors} } = useForm<UserFormValues>()
+	const { control, register: formRegister, reset, watch, handleSubmit, setValue, formState: {errors} } = useForm<UserFormValues>()
 	const [ userRegister, { isLoading, error }] = useUserRegisterMutation()
 	const [showPassword, setShowPassword] = useState(false)
 
@@ -157,6 +158,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 						className = "tw-w-full"
 						{...formRegister("password", registerOptions.password)}
 						/>
+						<PasswordRules password={watch("password") ?? ""}/>
 				        {errors?.password && <small className = "--text-alert">{errors.password.message}</small>}
 			        </div>
 			    </div>

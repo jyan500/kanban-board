@@ -8,6 +8,7 @@ import { LoadingButton } from "../components/page-elements/LoadingButton"
 import { useForm } from "react-hook-form"
 import { IconEye } from "../components/icons/IconEye"
 import { IconEyeSlash } from "../components/icons/IconEyeSlash"
+import { PasswordRules } from "../components/page-elements/PasswordRules" 
 
 interface FormValues {
 	password: string
@@ -27,7 +28,7 @@ export const ResetPassword = () => {
 		confirmPassword: "",
 	}
 
-	const { control, register, reset, handleSubmit, setValue, formState: {errors} } = useForm<FormValues>()
+	const { control, register, reset, handleSubmit, watch, setValue, formState: {errors} } = useForm<FormValues>()
 
 	const registerOptions = {
 		password: {
@@ -73,6 +74,7 @@ export const ResetPassword = () => {
 						className = "tw-w-full"
 						{...register("password", registerOptions.password)}
 						/>
+						<PasswordRules password={watch("password") ?? ""}/>
 				        {errors?.password && <small className = "--text-alert">{errors.password.message}</small>}
 			        </div>
 			    	<div>
