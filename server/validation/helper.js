@@ -142,7 +142,7 @@ const validatePasswordAndConfirmation = (passwordField = "password", confirmPass
 			.isStrongPassword({minLength: 6, minLowerCase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1}).withMessage(
 				"Password must be at least 6 characters long, " + 
 				"including one lowercase, one uppercase, " + 
-				"one number and one symbol."
+				"one number and one special character."
 		),
 		expressConfirmPasswordBody.notEmpty().withMessage("Confirm Password is required").custom((value, {req}) => {
 			if (value !== getFromNestedObject(req.body, passwordField)){
