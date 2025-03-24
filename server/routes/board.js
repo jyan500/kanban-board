@@ -86,7 +86,7 @@ router.get("/", async (req, res, next) => {
 			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
 			.groupBy("tickets_to_boards.board_id")
 			.count("tickets_to_boards.ticket_id as numTickets")
-			.select("boards.id as id")
+			.select("tickets_to_boards.board_id as id")
 			numTicketsRes = mapIdToRowObject(numTickets)
 		}
 
