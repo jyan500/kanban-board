@@ -90,9 +90,6 @@ const ProtectedLayout = () => {
 					<TopNav/>
 					{isDataLoaded ? (
 						<div className = "tw-space-y-2">
-							{!userProfileData?.isActive ? 
-								<AccountActivationBanner/>
-							: null}
 							<Outlet/>
 						</div>
 					): null}

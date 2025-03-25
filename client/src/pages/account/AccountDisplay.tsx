@@ -12,6 +12,7 @@ import { ACCOUNT, ACCOUNT_CREATE_ORG, ACCOUNT_SWITCH_ORGANIZATION, ACCOUNT_CHANG
 import { displayUser } from "../../helpers/functions"
 import { SettingsCard } from "../../components/page-elements/SettingsCard"
 import { ProfileCard } from "../../components/page-elements/ProfileCard"
+import { AccountActivationBanner } from "../../components/page-elements/AccountActivationBanner"
 
 export const AccountDisplay = () => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -55,6 +56,7 @@ export const AccountDisplay = () => {
 				{userProfile ? 
 					<>
 						<div className = "lg:tw-w-1/4 tw-flex tw-flex-col tw-gap-y-4">
+							{!userProfile.isActive ? <AccountActivationBanner/> : null}
 							<>
 								<ProfileCard entityId={userProfile.id} imageUploadUrl={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]} imageUrl={userProfile?.imageUrl}>
 									<>

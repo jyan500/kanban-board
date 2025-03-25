@@ -18,6 +18,11 @@ const registrationDeniedTemplate = require("../email/templates/registration-deni
 router.get("/", async (req, res, next) => {
 	try {
 		const organizations = await db("organizations")
+		.modify((queryBuilder) => {
+			if (req.query.query){
+				queryBuilder.whereILike("name", `%${req.query.query}%`)
+			}
+		})
 		.select(
 			"organizations.id as id",
 			"organizations.name as name",
