@@ -374,7 +374,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Ticket Type"}>
 							{
 								<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
-									{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-w-6 tw-h-6 tw-shrink-0"/> : null}
+									{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-0.5 tw-w-6 tw-h-6 tw-shrink-0"/> : null}
 									{
 										epicTicketType?.id !== ticket?.ticketTypeId ?
 											<div className = "tw-w-full tw-ml-0.5">
