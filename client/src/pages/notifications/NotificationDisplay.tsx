@@ -71,14 +71,6 @@ export const NotificationDisplay = () => {
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
 	const { register, handleSubmit, reset, watch, setValue, formState: {errors} } = methods
 	const registerOptions = {
-		searchBy: {"required": "Search By is Required"},
-		query: {"validate": (value: string) => {
-			const allFilters = Object.keys(filters).map((filter: string) => watch(filter as keyof Filters))
-			if (value === "" && allFilters.every((val: string) => val === "")){
-				return "Search Query is required"
-			}
-			return true
-		}},
 	}
 
 	// TODO: unsure if this functionality should be on this page
