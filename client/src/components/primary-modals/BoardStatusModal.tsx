@@ -6,6 +6,7 @@ import { useBulkEditBoardStatusesMutation } from "../../services/private/board"
 import { toggleShowModal } from "../../slices/modalSlice"
 import { sortStatusByOrder } from "../../helpers/functions" 
 import { v4 as uuidv4 } from "uuid"
+import { Switch } from "../page-elements/Switch"
 
 export const BoardStatusModal = () => {
 	const dispatch = useAppDispatch()
@@ -56,13 +57,9 @@ export const BoardStatusModal = () => {
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			{[...statuses].sort(sortStatusByOrder).map((status: Status) => {
 				return (
-					<div className = "tw-flex tw-flex-row tw-gap-x-2" key = {status.id}>
-						<div>
-							<input id = {`status-${status.id}`} checked = {formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)} type = "checkbox"/>
-						</div>
-						<div>
-							<label htmlFor = {`status-${status.id}`}>{status.name}</label>
-						</div>
+					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2" key = {status.id}>
+						<Switch id ={`status-${status.id}`} checked={formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)}/>
+						<label htmlFor = {`status-${status.id}`}>{status.name}</label>
 					</div>
 				)
 			})}

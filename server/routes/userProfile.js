@@ -15,13 +15,13 @@ router.get("/", async (req, res, next) => {
 		// pulled from token middleware 
 		const {id: userId, organization: organizationId, userRole} = req.user
 		const userProfiles = await db("organization_user_roles")
-			.join("users", "users.id", "=", "organization_user_roles.user_id")
 			.where("organization_user_roles.organization_id", organizationId)
+			.join("users", "users.id", "=", "organization_user_roles.user_id")
 			.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
 			.modify((queryBuilder) => {
 				if (req.query.query || req.query.userQuery){
 					const query = req.query.query ?? req.query.userQuery
-					queryBuilder.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`)
+					queryBuilder.where((queryBuilder2) => queryBuilder2.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`))
 				}
 				if (req.query.userIds){
 					queryBuilder.whereIn("users.id", req.query.userIds.split(","))
@@ -55,7 +55,9 @@ router.get("/", async (req, res, next) => {
 				"user_roles.id as userRoleId",
 				"users.image_url as imageUrl",
 				"users.email as email") 
+
 			.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+
 		const userProfilesParsed = req.query.forSelect ? userProfiles.data.map((userProfile) => {
 			return {
 				id: userProfile.id,

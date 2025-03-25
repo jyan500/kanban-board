@@ -50,7 +50,7 @@ export const SideBar = () => {
 			setIsAdmin(isAdmin ?? false)
 			setLinks([
 				...userProfile?.isActive ? defaultLinks : [],
-				...(isAdmin ? [
+				...(isAdmin && userProfile?.isActive ? [
 				{
 					pathname: "/users", text: "Users"
 				},

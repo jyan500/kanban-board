@@ -116,8 +116,8 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			{ownUserError && "status" in ownUserError ? (ownUserError.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
-			{userError && "status" in userError ? (userError.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
+			{ownUserError && "status" in ownUserError ? (ownUserError?.data?.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
+			{userError && "status" in userError ? (userError?.data?.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
 				{!isChangePassword ? 
 				(

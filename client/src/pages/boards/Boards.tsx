@@ -37,7 +37,6 @@ export const Boards = () => {
 	const {data, isFetching } = useGetBoardsQuery({query: searchParams.get("query") ?? "", page: currentPage, lastModified: true, numTickets: true, assignees: true})
 
 	const registerOptions = {
-		query: {"required": "Search query is required."},
 	}
 
 	const addNewBoard = () => {
@@ -68,7 +67,7 @@ export const Boards = () => {
 					<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 						<FormProvider {...methods}>
 							<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
-								<SearchBar placeholder={"Search..."} registerField={"query"} registerOptions={registerOptions.query}/>
+								<SearchBar placeholder={"Search..."} registerField={"query"} registerOptions={registerOptions}/>
 								<button type = "submit" className = "button">Search</button>
 							</form>
 							{userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN") ? (
@@ -81,20 +80,17 @@ export const Boards = () => {
 					</div>
 					{errors?.query ? <small className = "--text-alert">{errors?.query?.message}</small> : null}
 					<Table data={data?.data} config={config}/>
-					{
-						data?.pagination.nextPage || data?.pagination.prevPage ? 
-						<div className = "tw-p-4 tw-border tw-border-gray-300">
-							<PaginationRow
-								showNumResults={true}
-								showPageNums={true}
-								setPage={setPage}	
-								paginationData={data?.pagination}
-								currentPage={currentPage}
-								urlParams={defaultForm}
-								url={BOARDS}	
-							/>
-						</div> : null
-					}
+					<div className = "tw-p-4 tw-border tw-border-gray-300">
+						<PaginationRow
+							showNumResults={true}
+							showPageNums={true}
+							setPage={setPage}	
+							paginationData={data?.pagination}
+							currentPage={currentPage}
+							urlParams={defaultForm}
+							url={BOARDS}	
+						/>
+					</div>
 				</>
 			)}
 		</div>

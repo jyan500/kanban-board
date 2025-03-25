@@ -18,6 +18,11 @@ const registrationDeniedTemplate = require("../email/templates/registration-deni
 router.get("/", async (req, res, next) => {
 	try {
 		const organizations = await db("organizations")
+		.modify((queryBuilder) => {
+			if (req.query.query){
+				queryBuilder.whereILike("name", `%${req.query.query}%`)
+			}
+		})
 		.select(
 			"organizations.id as id",
 			"organizations.name as name",
@@ -47,7 +52,7 @@ router.get("/registration-request", authenticateToken, authenticateUserRole(["AD
 		.modify((queryBuilder) => {
 			if (req.query.query || req.query.regQuery){
 				const query = req.query.query ?? req.query.regQuery
-				queryBuilder.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`)
+				queryBuilder.where((queryBuilder2) => queryBuilder2.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`))
 			}
 		})
 		.select(
