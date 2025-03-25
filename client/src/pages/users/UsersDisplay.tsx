@@ -46,7 +46,6 @@ const UserForm = ({filters}: UserFormProps) => {
 	const userProfileConfig = useUserProfileConfig()
 
 	const registerOptions = {
-		userQuery: {"required": "Search query is required."},
 	}
 
 	const setUserProfPage = (page: number) => {
@@ -73,7 +72,7 @@ const UserForm = ({filters}: UserFormProps) => {
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
 					<FormProvider {...methods}>
 						<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
-							<SearchBar placeholder={"Search..."} registerField={"userQuery"} registerOptions={registerOptions.userQuery}/>
+							<SearchBar placeholder={"Search..."} registerField={"userQuery"} registerOptions={{}}/>
 							<button type = "submit" className = "button">Search</button>
 						</form>
 					</FormProvider>
@@ -119,7 +118,6 @@ const RegForm = ({filters}: RegFormProps) => {
 	const regRequestConfig = useRegistrationRequestConfig(regSelectedIds, setRegSelectedIds, true)
 
 	const registerOptions = {
-		regQuery: {"required": "Search query is required."},
 	}
 
 	const setRegRequestPage = (page: number) => {
@@ -146,7 +144,7 @@ const RegForm = ({filters}: RegFormProps) => {
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
 					<FormProvider {...methods}>
 						<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
-							<SearchBar placeholder={"Search..."} registerField={"regQuery"} registerOptions={registerOptions.regQuery}/>
+							<SearchBar placeholder={"Search..."} registerField={"regQuery"} registerOptions={{}}/>
 							<button type = "submit" className = "button">Search</button>
 						</form>
 					</FormProvider>
