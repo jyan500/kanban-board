@@ -53,7 +53,9 @@ router.get("/", async (req, res, next) => {
 			else if (req.query.searchBy === "assignee"){
 				queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
 				.join("users", "tickets_to_users.user_id", "=", "users.id")
-				.whereILike("users.first_name", `%${req.query.query}%`)
+				.where("tickets_to_users.is_mention", false)
+				.where("tickets_to_users.is_watcher", false)
+				.where((queryBuilder2) => queryBuilder2.whereILike("users.first_name", `%${req.query.query}%`).orWhereILike("users.last_name", `%${req.query.query}%`))
 			}
 			else if (req.query.searchBy === "reporter"){
 				queryBuilder.join("users", "users.id", "=", "tickets.user_id").whereILike("users.first_name", `%${req.query.query}%`)

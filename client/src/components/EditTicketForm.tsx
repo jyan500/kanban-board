@@ -72,7 +72,9 @@ const RightSectionRow = ({children, title}: RightSectionRowProps) => {
 	return (
 		<div className = "tw-flex tw-flex-row tw-w-full tw-items-center tw-min-h-9">	
 			<span className = "tw-font-semibold tw-w-1/2">{title}</span>
-			{children}
+			<div className = "tw-w-1/2">
+				{children}
+			</div>
 		</div>
 	)
 }
@@ -277,7 +279,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
             render={({ field: { onChange, value, name, ref } }) => (
             	<AsyncSelect 
                 	endpoint={USER_PROFILE_URL} 
-					className = {`tw-w-full ${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
+					className = {`${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
                 	clearable={false}
                 	onBlur={(e) => toggleFieldVisibility("assignees", false)}
                 	defaultValue={{value: ticketAssignees?.[0]?.id.toString() ?? "", label: displayUser(ticketAssignees?.[0]) ?? ""}}
@@ -353,39 +355,53 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							{
 								!isTicketAssigneesLoading ? (
 									<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
-										<Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
-										{userProfileSelect}		
+										<div className = "tw-w-[2em] tw-shrink-0">
+											<Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
+										</div>
+										<div className = "tw-flex tw-flex-1">
+											{userProfileSelect}		
+										</div>
 									</button>
 								) : <LoadingSpinner/>
 							}	
 						</RightSectionRow>
 						<RightSectionRow title={"Reporter"}>
 							<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center">
-								<Avatar imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
-								<div className = "tw-ml-3.5">{displayUser(reporter)}</div>
+								<div className = "tw-w-[2em] tw-shrink-0">
+									<Avatar imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
+								</div>
+								<div className = "tw-ml-2.5 tw-flex tw-flex-1">{displayUser(reporter)}</div>
 							</div>
 						</RightSectionRow>
 						<RightSectionRow title={"Priority"}>
 							<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
-								{priorityName ? <PriorityIcon type = {priorityName} color = {priorityName in colorMap ? colorMap[priorityName] : ""} className = "tw-shrink-0 tw-w-6 tw-h-6"/> : <></>}
-								{prioritySelect}
+								<div className = "tw-w-[2em] tw-shrink-0">
+									{priorityName ? <PriorityIcon type = {priorityName} color = {priorityName in colorMap ? colorMap[priorityName] : ""} className = "tw-shrink-0 tw-w-6 tw-h-6"/> : <></>}
+								</div>
+								<div className = "tw-flex tw-flex-1">
+									{prioritySelect}
+								</div>
 							</button>
 						</RightSectionRow>
 						<RightSectionRow title={"Ticket Type"}>
 							{
 								<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
-									{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-0.5 tw-w-6 tw-h-6 tw-shrink-0"/> : null}
+									<div className = "tw-w-[2em] tw-shrink-0">
+										{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-w-5 tw-h-5 tw-shrink-0"/> : null}
+									</div>
+									<div className = "tw-flex tw-flex-1">
 									{
 										epicTicketType?.id !== ticket?.ticketTypeId ?
-											<div className = "tw-w-full tw-ml-0.5">
+											<div className = "tw-w-full">
 											{ticketTypeSelect}
 											</div>
 										: (
-										<div className = "tw-ml-3.5">
+										<div className = "tw-w-full">
 											{ticketTypeName}	
 										</div>
 										)
 									}
+									</div>
 								</button>
 							}
 						</RightSectionRow>
