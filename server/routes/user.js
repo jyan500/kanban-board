@@ -97,7 +97,7 @@ router.post("/register", limiter, userValidator.registerValidator, handleValidat
 	    const activationLink = `/activate?token=${activationToken}`;
 
 		// Send activation email
-		await sendEmail(req.body.email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink, true, organizationName));
+		await sendEmail(req.body.email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink, true, organization.name));
 
 		// TODO: send this to an async queue so the request isn't held up by email sending
 		// send email to registered user
