@@ -27,23 +27,24 @@ export const AccountDisplay = () => {
 			link: ACCOUNT_CHANGE_PASSWORD,
 			text: "Change Password"
 		},
+		{
+			link: ACCOUNT_CREATE_ORG, 
+			text: "Create Organization",
+		},
+		{
+			link: ACCOUNT_JOIN_ORGANIZATION, 	
+			text: "Join Organization",
+		},
+		{
+			link: ACCOUNT_SWITCH_ORGANIZATION,
+			text: "Switch Organization"
+		},
 		...(userProfile?.isActive ? [ 
 			{
 				link: ACCOUNT_NOTIFICATION_SETTINGS,	
 				text: "Notification Settings",
 			},
-			{
-				link: ACCOUNT_CREATE_ORG, 
-				text: "Create Organization",
-			},
-			{
-				link: ACCOUNT_JOIN_ORGANIZATION, 	
-				text: "Join Organization",
-			},
-			{
-				link: ACCOUNT_SWITCH_ORGANIZATION,
-				text: "Switch Organization"
-			},
+			
 			{
 				link: NOTIFICATIONS,
 				text: "Notifications"
