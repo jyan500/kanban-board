@@ -31,6 +31,7 @@ const TempLoginProtectedLayout = () => {
 			<div>
 				<div className = "tw-flex tw-flex-col tw-gap-y-4">
 					<div className = "tw-p-4 md:tw-px-16 tw-w-full tw-min-h-screen">
+						<TopNav/>
 						<div className = "tw-space-y-2">
 							<Outlet/>
 						</div>
