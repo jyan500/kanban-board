@@ -304,6 +304,27 @@ router.get("/:userId", getUserValidator, handleValidationResult, async (req, res
 	}
 })
 
+router.get("/:userId/registration-request", getUserValidator, handleValidationResult, async (req, res, next) => {
+	try {
+		const userId = req.params.userId
+		const registrationRequests = await db("user_registration_requests")
+		.where("user_id", userId)
+		.select(
+			"user_registration_requests.id as id",
+			"user_registration_requests.organization_id as organizationId",
+			"user_registration_requests.user_id as userId",
+			"user_registration_requests.approved_at as approvedAt",
+			"user_registration_requests.denied_at as deniedAt",
+			"user_registration_requests.created_at as createdAt")
+		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		res.json(registrationRequests)
+	}	
+	catch (err){
+		console.log(`Error while getting registration requests: ${err.message}`)
+		next(err)
+	}
+})
+
 router.put("/:userId", authenticateUserRole(["ADMIN"]), editUserValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const userId = req.params.userId

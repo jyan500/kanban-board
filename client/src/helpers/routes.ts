@@ -21,4 +21,5 @@ export const ACCOUNT_CHANGE_PASSWORD = `${ACCOUNT}/change-password`
 export const ACCOUNT_JOIN_ORGANIZATION = `${ACCOUNT}/join-organization`
 export const ACCOUNT_SWITCH_ORGANIZATION = `${ACCOUNT}/switch-organization`
 export const ACCOUNT_NOTIFICATION_SETTINGS = `${ACCOUNT}/notification-settings`
+export const ACCOUNT_REGISTRATION_REQUESTS = `${ACCOUNT}/registration-requests`
 export const NOTIFICATIONS = "/notifications"

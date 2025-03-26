@@ -8,7 +8,7 @@ import { AccountDisplay } from "../account/AccountDisplay"
 import { IconUser } from "../../components/icons/IconUser"
 import { IconEmail } from "../../components/icons/IconEmail"
 import { USER_PROFILE_URL } from "../../helpers/urls"
-import { TEMP, ACCOUNT, ACCOUNT_CREATE_ORG, ACCOUNT_SWITCH_ORGANIZATION, ACCOUNT_CHANGE_PASSWORD, ACCOUNT_JOIN_ORGANIZATION, ACCOUNT_NOTIFICATION_SETTINGS, NOTIFICATIONS } from "../../helpers/routes"
+import { TEMP, ACCOUNT, ACCOUNT_REGISTRATION_REQUESTS, ACCOUNT_CREATE_ORG, ACCOUNT_SWITCH_ORGANIZATION, ACCOUNT_CHANGE_PASSWORD, ACCOUNT_JOIN_ORGANIZATION, ACCOUNT_NOTIFICATION_SETTINGS, NOTIFICATIONS } from "../../helpers/routes"
 import { Banner } from "../../components/page-elements/Banner"
 import { AccountContainer } from "../../components/account/AccountContainer"
 
@@ -36,6 +36,10 @@ export const TempAccount = () => {
 			link: `${TEMP}${ACCOUNT_SWITCH_ORGANIZATION}`,
 			text: "Switch Organization"
 		},
+		{
+			link: `${TEMP}${ACCOUNT_REGISTRATION_REQUESTS}`,		
+			text: "Registration Requests"
+		}
 	]
 	return (
 		<AccountContainer isTemp={true} userProfile={userProfile} links={links} uploadImage={uploadImage} setUploadImage={setUploadImage}/>

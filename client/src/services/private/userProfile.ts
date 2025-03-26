@@ -1,7 +1,7 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 import { RootState } from "../../store" 
-import { BACKEND_BASE_URL, USER_PROFILE_URL, USER_PROFILE_ORG_URL, ORG_LOGIN_URL, USER_NOTIFICATION_TYPES_URL, USER_ACTIVATE_ACCOUNT } from "../../helpers/urls" 
-import { CustomError, ListResponse, Organization, UserProfile, UserNotificationType } from "../../types/common" 
+import { BACKEND_BASE_URL, USER_PROFILE_URL, USER_PROFILE_ORG_URL, ORG_LOGIN_URL, USER_NOTIFICATION_TYPES_URL, USER_ACTIVATE_ACCOUNT, USER_PROFILE_REGISTRATION_REQUEST_URL } from "../../helpers/urls" 
+import { CustomError, ListResponse, Organization, UserRegistrationRequest, UserProfile, UserNotificationType } from "../../types/common" 
 import { privateApi } from "../private"
 import { UserResponse } from "../public/auth"
 import { FormValues as OrganizationFormValues } from "../../components/OrganizationForm"
@@ -126,6 +126,14 @@ export const userProfileApi = privateApi.injectEndpoints({
 				method: "POST",
 			}),
 			invalidatesTags: ["UserProfiles"]
+		}),
+		getRegistrationRequests: builder.query<ListResponse<UserRegistrationRequest>, {id: number, urlParams: Record<string, any>}>({
+			query: ({id, urlParams}) => ({
+				url: USER_PROFILE_REGISTRATION_REQUEST_URL(id),
+				method: "GET",
+				params: urlParams
+			}),
+			providesTags: ["RegistrationRequests"]
 		})
 	}),
 })
@@ -142,4 +150,5 @@ export const {
 	useUpdateUserNotificationTypesMutation,
 	useRegisterOrganizationMutation,
 	useActivateAccountMutation,
+	useGetRegistrationRequestsQuery,
 } = userProfileApi 

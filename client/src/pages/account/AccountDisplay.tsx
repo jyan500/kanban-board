@@ -8,7 +8,7 @@ import { IconBuilding } from "../../components/icons/IconBuilding"
 import { IconEmail } from "../../components/icons/IconEmail"
 import { IconGear } from "../../components/icons/IconGear"
 import { USER_PROFILE_URL, USER_PROFILE_ORG_URL } from "../../helpers/urls"
-import { ACCOUNT, ACCOUNT_CREATE_ORG, ACCOUNT_SWITCH_ORGANIZATION, ACCOUNT_CHANGE_PASSWORD, ACCOUNT_JOIN_ORGANIZATION, ACCOUNT_NOTIFICATION_SETTINGS, NOTIFICATIONS } from "../../helpers/routes"
+import { ACCOUNT, ACCOUNT_REGISTRATION_REQUESTS, ACCOUNT_CREATE_ORG, ACCOUNT_SWITCH_ORGANIZATION, ACCOUNT_CHANGE_PASSWORD, ACCOUNT_JOIN_ORGANIZATION, ACCOUNT_NOTIFICATION_SETTINGS, NOTIFICATIONS } from "../../helpers/routes"
 import { displayUser } from "../../helpers/functions"
 import { SettingsCard } from "../../components/page-elements/SettingsCard"
 import { ProfileCard } from "../../components/page-elements/ProfileCard"
@@ -27,24 +27,28 @@ export const AccountDisplay = () => {
 			link: ACCOUNT_CHANGE_PASSWORD,
 			text: "Change Password"
 		},
-		{
-			link: ACCOUNT_CREATE_ORG, 
-			text: "Create Organization",
-		},
-		{
-			link: ACCOUNT_JOIN_ORGANIZATION, 	
-			text: "Join Organization",
-		},
-		{
-			link: ACCOUNT_SWITCH_ORGANIZATION,
-			text: "Switch Organization"
-		},
+
 		...(userProfile?.isActive ? [ 
+			{
+				link: ACCOUNT_CREATE_ORG, 
+				text: "Create Organization",
+			},
+			{
+				link: ACCOUNT_JOIN_ORGANIZATION, 	
+				text: "Join Organization",
+			},
+			{
+				link: ACCOUNT_SWITCH_ORGANIZATION,
+				text: "Switch Organization"
+			},
+			{
+				link: ACCOUNT_REGISTRATION_REQUESTS,
+				text: "Registration Requests"
+			},	
 			{
 				link: ACCOUNT_NOTIFICATION_SETTINGS,	
 				text: "Notification Settings",
 			},
-			
 			{
 				link: NOTIFICATIONS,
 				text: "Notifications"

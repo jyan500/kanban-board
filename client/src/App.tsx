@@ -27,6 +27,7 @@ import { AccountOrganization } from "./pages/account/AccountOrganization"
 import { ChangePassword } from "./pages/account/ChangePassword"
 import { JoinOrganization } from "./pages/account/JoinOrganization"
 import { SwitchOrganization } from "./pages/account/SwitchOrganization"
+import { RegistrationRequests } from "./pages/account/RegistrationRequests"
 import { NotificationSettings } from "./pages/account/NotificationSettings"
 import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
 import DefaultLayout from "./layouts/DefaultLayout"
@@ -47,6 +48,7 @@ import {
 	ACCOUNT_SWITCH_ORGANIZATION, 
 	ACCOUNT_CHANGE_PASSWORD, 
 	ACCOUNT_NOTIFICATION_SETTINGS, 
+	ACCOUNT_REGISTRATION_REQUESTS,
 	HOME,
 	LOGIN, 
 	REGISTER, 
@@ -143,6 +145,10 @@ const router = createBrowserRouter([
 					{
 						path: `${TEMP}${ACCOUNT_SWITCH_ORGANIZATION}`,
 						element: <SwitchOrganization/>
+					},
+					{
+						path: `${TEMP}${ACCOUNT_REGISTRATION_REQUESTS}`,
+						element: <RegistrationRequests/>
 					},
 				]
 			}
@@ -262,6 +268,10 @@ const router = createBrowserRouter([
 							{
 								path: ACCOUNT_NOTIFICATION_SETTINGS,
 								element: <NotificationSettings/>
+							},
+							{
+								path: ACCOUNT_REGISTRATION_REQUESTS,
+								element: <RegistrationRequests/>
 							},
 						]
 					},

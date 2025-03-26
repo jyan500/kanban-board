@@ -1,5 +1,5 @@
 import { BaseQueryFn, FetchArgs, createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
-import { BACKEND_BASE_URL, REGISTER_URL, RESEND_ACTIVATION_URL, ACTIVATE_ACCOUNT_URL, REGISTER_ORGANIZATION_USER_URL,  } from "../../helpers/urls" 
+import { BACKEND_BASE_URL, REGISTER_URL, RESEND_ACTIVATION_URL, ACTIVATE_ACCOUNT_URL, REGISTER_ORGANIZATION_USER_URL } from "../../helpers/urls" 
 import { CustomError } from "../../types/common" 
 import { publicApi } from "../public" 
 import { OrgUserRegistrationForm } from "../../pages/register/OrganizationRegister"
