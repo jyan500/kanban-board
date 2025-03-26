@@ -30,7 +30,7 @@ const limiter = rateLimit({
 	legacyHeaders: false,
 })
 
-router.post("/login", limiter, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
+router.post("/login",  userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const user = await db("users").where("email", req.body.email).first()
 		const error = "Failed to login: email, organization or password is incorrect."
@@ -44,9 +44,17 @@ router.post("/login", limiter, userValidator.loginValidator, handleValidationRes
 			res.status(400).json({errors: [error]})
 			return
 		}
+		const registrationRequest = await db("user_registration_requests").where("user_id", user.id).where("organization_id", req.body.organization_id).first()
 		const userInOrganization = await db("organization_user_roles").where("organization_id", req.body.organization_id).where("user_id", user.id).first()
-		if (!userInOrganization){
-			res.status(400).json({errors: ["Failed to login: your account has not been approved by the organization yet. Please check your email to see if your organization has approved your account."]})
+		// if the user has not been added to the organization, but they have a registration request,
+		// allow them to login to a different portal with a "is_temp" token
+		if (registrationRequest && !userInOrganization){
+			const token = jwt.sign({"is_temp": true, "id": user.id, "email": user.email, "organization": 0, "userRole": ""}, process.env.SECRET_KEY, {expiresIn: "1d"})
+			res.json({message: "user logged in successfully!", token: token, isTemp: true})
+			return
+		}
+		else if (!userInOrganization){
+			res.status(400).json({errors: ["Failed to login: your account has not been approved by this organization"]})
 			return
 		}
 		const userRole = await db("user_roles").where("id", userInOrganization.user_role_id).first()
@@ -64,8 +72,6 @@ router.post("/login", limiter, userValidator.loginValidator, handleValidationRes
 
 router.post("/register", limiter, userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
 	try {
-		// Generate a hashed activation token
-	    const activationToken = crypto.randomBytes(32).toString("hex");
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(req.body.password, salt)
 		// Expires in 6 months
@@ -76,9 +82,7 @@ router.post("/register", limiter, userValidator.registerValidator, handleValidat
 			last_name: req.body.last_name,
 			email: req.body.email,
 			password: hash,
-			activation_token: activationToken,
-			activation_token_expires: expiresAt,
-			is_active: false,
+			is_active: true,
 		}, ["id"])
 
 		await db("user_registration_requests").insert({
@@ -93,15 +97,9 @@ router.post("/register", limiter, userValidator.registerValidator, handleValidat
 
 		const organization = await db("organizations").where("id", req.body.organization_id).first()
 
-		// Generate activation link
-	    const activationLink = `/activate?token=${activationToken}`;
-
-		// Send activation email
-		await sendEmail(req.body.email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink, true, organization.name));
-
 		// TODO: send this to an async queue so the request isn't held up by email sending
 		// send email to registered user
-	    // await sendEmail(req.body.email, "Registration Request Submitted", () => registrationRequestTemplate(req.body.first_name, req.body.last_name, organization?.name ?? ""));
+	    await sendEmail(req.body.email, "Registration Request Submitted", () => registrationRequestTemplate(req.body.first_name, req.body.last_name, organization?.name ?? ""));
 
 		res.json({message: "User registered successfully!"})
 	}

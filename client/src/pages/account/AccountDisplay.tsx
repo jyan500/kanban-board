@@ -12,7 +12,7 @@ import { ACCOUNT, ACCOUNT_CREATE_ORG, ACCOUNT_SWITCH_ORGANIZATION, ACCOUNT_CHANG
 import { displayUser } from "../../helpers/functions"
 import { SettingsCard } from "../../components/page-elements/SettingsCard"
 import { ProfileCard } from "../../components/page-elements/ProfileCard"
-import { AccountActivationBanner } from "../../components/page-elements/AccountActivationBanner"
+import { AccountContainer } from "../../components/account/AccountContainer"
 
 export const AccountDisplay = () => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -51,39 +51,6 @@ export const AccountDisplay = () => {
 		] : []),
 	]
 	return (
-		<div className = "tw-w-full">
-			<div className = "tw-flex tw-flex-col tw-gap-y-6 lg:tw-flex-row lg:tw-gap-x-6">
-				{userProfile ? 
-					<>
-						<div className = "lg:tw-w-1/4 tw-flex tw-flex-col tw-gap-y-4">
-							{!userProfile.isActive ? <AccountActivationBanner/> : null}
-							<>
-								<ProfileCard entityId={userProfile.id} imageUploadUrl={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]} imageUrl={userProfile?.imageUrl}>
-									<>
-										<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
-								 			<div><IconUser className = "tw-mt-1"/></div>
-								 			<div>{displayUser(userProfile)}</div>	
-								 		</div>
-								 		<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
-								 			<div><IconEmail className = "tw-mt-1"/></div>
-								 			<div className = "tw-w-full">{userProfile?.email}</div>	
-								 		</div>
-								 		<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
-								 			<div><IconBuilding className = "tw-mt-1"/></div>
-								 			<div className = "tw-w-full">{userProfile?.organizationName}</div>	
-								 		</div>	
-							 		</>
-								</ProfileCard>
-								<SettingsCard title={"Account Settings"} links={links}/>
-							</>
-						</div>
-						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full">
-							<Outlet/>
-						</div>
-					</>
-				: null
-				}
-			</div>
-		</div>
+		<AccountContainer userProfile={userProfile} links={links} uploadImage={uploadImage} setUploadImage={setUploadImage}/>
 	)
 }

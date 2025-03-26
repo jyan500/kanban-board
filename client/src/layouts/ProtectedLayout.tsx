@@ -23,9 +23,10 @@ import { setTicketRelationshipTypes } from "../slices/ticketRelationshipTypeSlic
 import { setPriorities } from "../slices/prioritySlice"
 import { setNotificationTypes } from "../slices/notificationTypeSlice"
 import { UserRole } from "../types/common" 
+import { TEMP, ACCOUNT } from "../helpers/routes"
 
 const ProtectedLayout = () => {
-	const token = useAppSelector((state) => state.auth.token)	
+	const {token, isTemp} = useAppSelector((state) => state.auth)	
 	const dispatch = useAppDispatch()
     const {data: userProfileData, isFetching: isUserProfileFetching, isError: isUserProfileError } = useGetUserProfileQuery() 
     const {data: statusData, isLoading: isStatusDataLoading} = useGetStatusesQuery({})
@@ -80,6 +81,9 @@ const ProtectedLayout = () => {
 
 	if (!token){
 		return <Navigate replace to = {"/login"} state={{alert: "You have been logged out"}}/>
+	}
+	if (isTemp){
+		return <Navigate replace to = {`${TEMP}${ACCOUNT}`}/>
 	}
 	
 	return (

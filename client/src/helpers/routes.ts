@@ -12,6 +12,7 @@ export const FORGOT_PASSWORD = "/forgot-password"
 export const RESET_PASSWORD = "/reset-password"
 export const ACTIVATION = "/activate"
 export const ACCOUNT = "/account"
+export const TEMP = "/temp"
 export const REGISTER_USER = `${REGISTER}${USER}`
 export const REGISTER_ORG = `${REGISTER}/${ORGANIZATION}`
 export const ORGANIZATION_ADD_EDIT_STATUSES = `${ORGANIZATION}/add-edit-status`
