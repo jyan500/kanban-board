@@ -127,14 +127,6 @@ export const userProfileApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["UserProfiles"]
 		}),
-		getRegistrationRequests: builder.query<ListResponse<UserRegistrationRequest>, {id: number, urlParams: Record<string, any>}>({
-			query: ({id, urlParams}) => ({
-				url: USER_PROFILE_REGISTRATION_REQUEST_URL(id),
-				method: "GET",
-				params: urlParams
-			}),
-			providesTags: ["RegistrationRequests"]
-		})
 	}),
 })
 
@@ -150,5 +142,4 @@ export const {
 	useUpdateUserNotificationTypesMutation,
 	useRegisterOrganizationMutation,
 	useActivateAccountMutation,
-	useGetRegistrationRequestsQuery,
 } = userProfileApi 

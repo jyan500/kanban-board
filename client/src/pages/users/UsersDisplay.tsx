@@ -4,7 +4,7 @@ import { Outlet, useNavigate, useParams, useSearchParams } from "react-router-do
 import { Table } from "../../components/Table" 
 import { UserRegistrationRequest } from "../../types/common"
 import { useGetUserProfilesQuery } from "../../services/private/userProfile"
-import { useGetRegistrationRequestsQuery } from "../../services/private/organization"
+import { useGetRegistrationRequestsQuery } from "../../services/private/registrationRequest"
 import { useRegistrationRequestConfig } from "../../helpers/table-config/useRegistrationRequestConfig"
 import { useUserProfileConfig } from "../../helpers/table-config/useUserProfileConfig"
 import { LoadingSpinner } from "../../components/LoadingSpinner"

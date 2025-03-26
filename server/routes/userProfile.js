@@ -309,15 +309,45 @@ router.get("/:userId/registration-request", getUserValidator, handleValidationRe
 		const userId = req.params.userId
 		const registrationRequests = await db("user_registration_requests")
 		.where("user_id", userId)
+		.join("organizations", "organizations.id", "=", "user_registration_requests.organization_id")
+		.modify((queryBuilder) => {
+			if (req.query.query){
+				queryBuilder.whereILike("organizations.name", `%${req.query.query}%`) 
+			}
+		})
 		.select(
 			"user_registration_requests.id as id",
 			"user_registration_requests.organization_id as organizationId",
+			"organizations.name as organizationName",
 			"user_registration_requests.user_id as userId",
 			"user_registration_requests.approved_at as approvedAt",
 			"user_registration_requests.denied_at as deniedAt",
 			"user_registration_requests.created_at as createdAt")
 		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		res.json(registrationRequests)
+		const parsedWithStatus = registrationRequests.data.map((request) => {
+			if (request.approvedAt == null && request.deniedAt == null){
+				return {
+					...request,
+					status: "Pending",
+				}
+			}
+			else if (request.approvedAt != null){
+				return {
+					...request,
+					status: "Approved",
+				}
+			}
+			else if (request.deniedAt != null){
+				return {
+					...request,
+					status: "Denied"
+				}
+			}
+		})
+		res.json({
+			data: parsedWithStatus,
+			pagination: registrationRequests.pagination
+		})
 	}	
 	catch (err){
 		console.log(`Error while getting registration requests: ${err.message}`)

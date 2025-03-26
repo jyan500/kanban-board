@@ -35,4 +35,4 @@ export const TICKET_COMMENT_URL = (ticketId: number | string, commentId: number 
 export const TICKET_STATUS_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/status`
 export const TICKET_RELATIONSHIP_URL = (ticketId: number | string, relationshipId: number | string) => `/${API_VERSION}/ticket/${ticketId}/relationship` + (relationshipId !== "" ? `/${relationshipId}` : "")
 export const TICKET_ACTIVITY_URL = (ticketId: number | string, activityId: number | string) => `/${API_VERSION}/ticket/${ticketId}/activity` + (activityId !== "" ? `/${activityId}` : "")
-export const USER_PROFILE_REGISTRATION_REQUEST_URL = (userId: number | string) => `${API_VERSION}/user/${userId}/registration-request`
+export const USER_PROFILE_REGISTRATION_REQUEST_URL = (userId: number | string) => `${API_VERSION}/user-profile/${userId}/registration-request`
