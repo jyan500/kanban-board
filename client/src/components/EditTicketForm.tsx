@@ -47,7 +47,7 @@ import { isValidDateString, convertMinutesToTimeDisplay } from "../helpers/funct
 import { format, toDate } from "date-fns-tz"
 import { TicketActivityModalProps } from "./secondary-modals/TicketActivityModal"
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
-import { TicketRowPlaceholder } from "./placeholders/TicketRowPlaceholder"
+import { RowPlaceholder } from "./placeholders/RowPlaceholder"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -658,7 +658,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						</div> : null
 					) : 
 					<LoadingSkeleton width = "tw-w-full" height = "tw-h-[500px]">
-						<TicketRowPlaceholder/>	
+						<RowPlaceholder/>	
 					</LoadingSkeleton>}
 				</div>
 				<div className = "tw-space-y-2">
@@ -673,7 +673,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							currentTicketId={currentTicketId}
 						/>
 					) : <LoadingSkeleton width = "tw-w-full" height = "tw-h-[500px]">
-						<TicketRowPlaceholder/>	
+						<RowPlaceholder/>	
 					</LoadingSkeleton>}
 				</div>
 			</div>

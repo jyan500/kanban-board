@@ -50,7 +50,7 @@ export const SwitchOrganizationForm = () => {
 	return (
 		<>
 			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-				{!isLoading && organization ? <Avatar isOrg={true} size = "s" className = {`${organization.imageUrl ? "tw-rounded-full" : ""}`} imageUrl={organization.imageUrl}/> : null}
+				<Avatar isOrg={true} size = "s" className = {`${organization?.imageUrl ? "tw-rounded-full" : ""}`} imageUrl={organization?.imageUrl}/>
 				<p className = "tw-font-medium">{userProfile?.organizationName}</p>
 			</div>
 			<div className = "tw-flex tw-flex-col tw-gap-y-2">

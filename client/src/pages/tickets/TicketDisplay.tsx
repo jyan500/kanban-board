@@ -12,7 +12,7 @@ import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
 import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice"
 import { Filters } from "../../components/tickets/Filters"
-import { TicketRowPlaceholder } from "../../components/placeholders/TicketRowPlaceholder"
+import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 
 export type Filters = {
@@ -132,7 +132,7 @@ export const TicketDisplay = () => {
 			</FormProvider>
 			{isFetching ? 
 			<LoadingSkeleton width = "lg:tw-w-1/3 tw-w-full" height="lg:tw-max-h-full tw-h-[500px]">
-				<TicketRowPlaceholder/>
+				<RowPlaceholder/>
 			</LoadingSkeleton> : (
 				<>
 				<div className = "tw-flex tw-flex-col lg:tw-flex-row tw-gap-y-6 lg:tw-gap-x-6">
