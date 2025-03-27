@@ -33,10 +33,6 @@ export const TempAccount = () => {
 			text: "Join Organization",
 		},
 		{
-			link: `${TEMP}${ACCOUNT_SWITCH_ORGANIZATION}`,
-			text: "Switch Organization"
-		},
-		{
 			link: `${TEMP}${ACCOUNT_REGISTRATION_REQUESTS}`,		
 			text: "Registration Requests"
 		}

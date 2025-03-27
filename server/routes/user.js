@@ -30,7 +30,7 @@ const limiter = rateLimit({
 	legacyHeaders: false,
 })
 
-router.post("/login",  limiter, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
+router.post("/login", limiter, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const user = await db("users").where("email", req.body.email).first()
 		const error = "Failed to login: email, organization or password is incorrect."
