@@ -14,6 +14,7 @@ import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { Link } from "react-router-dom"
 import { TICKETS } from "../../helpers/routes"
 import { Banner } from "../../components/page-elements/Banner"
+import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
@@ -67,7 +68,7 @@ export const Board = () => {
 					<KanbanBoard
 					/> 
 				</>
-				: <LoadingSpinner className = "!tw-w-8 !tw-h-8"/>
+				: <></>
 			}
 		</div>
 	)

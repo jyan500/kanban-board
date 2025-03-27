@@ -26,11 +26,13 @@ export const Account = () => {
 
 	return (
 		<div>
-			<h1>Profile</h1>
 			{userProfile ? 
-				<EditUserForm isAccountsPage={true} isChangePassword={false} userId={userProfile.id}/>
-			: null}
-
+				<div>
+					<h1>Profile</h1>
+					<EditUserForm isAccountsPage={true} isChangePassword={false} userId={userProfile.id}/>
+				</div>
+			: null
+		}
 		</div>
 	)
 }

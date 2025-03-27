@@ -26,6 +26,7 @@ import { useScreenSize } from "../../hooks/useScreenSize"
 import { SM_BREAKPOINT } from "../../helpers/constants"
 import { NOTIFICATIONS } from "../../helpers/routes"
 import { Link } from "react-router-dom"
+import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 
 export const TopNav = () => {
 	const dispatch = useAppDispatch()
@@ -104,7 +105,10 @@ export const TopNav = () => {
 						}
 					</>
 				) : (
-					<LoadingSpinner/>
+					<LoadingSkeleton width="tw-w-32" height="tw-h-8" className = "tw-flex tw-flex-row tw-gap-x-4 tw-justify-center tw-items-center">
+						<div className = "tw-bg-gray-200 tw-w-6 tw-h-6 tw-rounded-full"></div>
+						<div className = "tw-bg-gray-200 tw-w-24 tw-h-6"></div>
+					</LoadingSkeleton>
 				)
 			}
 			</div>
