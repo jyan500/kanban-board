@@ -11,6 +11,7 @@ import { Ticket } from "../../types/common"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import { Filters } from "./Filters"
+import { RowContentLoading } from "../page-elements/RowContentLoading"
 
 interface Props {
 	boardId: number | null | undefined
@@ -159,7 +160,7 @@ export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSe
 							<button onClick={closeModal} className = "button --secondary">Cancel</button>	
 						</div>
 					</>
-				) : null
+				) : <RowContentLoading/> 
 			}
 			
 		</div>

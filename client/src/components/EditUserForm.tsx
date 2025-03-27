@@ -112,7 +112,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
     	}
     }
 
-    if (isUserDataFetching){
+    if (isUserDataLoading){
     	return (
 			<LoadingSkeleton width = "tw-w-full" height = "tw-h-[000px]">
 				<ColumnFormPlaceholder/>

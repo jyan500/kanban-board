@@ -74,8 +74,10 @@ export const TopNav = () => {
 	return (
 		<div className = "tw-my-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
 			{
-				isTemp ? (<div></div>) : 
-				<HamburgerButton/>	
+				isTemp ? (<div></div>) : (
+					!isLoading ? 
+						<HamburgerButton/> : <LoadingSkeleton width="tw-w-8" height="tw-h-8" className="tw-bg-gray-200"/>
+				)
 			}
 			<div className = "tw-inline-block tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 				{!isLoading ? (

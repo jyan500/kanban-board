@@ -7,6 +7,7 @@ import { LoadingSpinner } from "../LoadingSpinner"
 import { UserNotificationType, NotificationType } from "../../types/common"
 import { useGetUserNotificationTypesQuery, useUpdateUserNotificationTypesMutation } from "../../services/private/userProfile"
 import { Switch } from "../page-elements/Switch"
+import { RowContentLoading } from "../page-elements/RowContentLoading"
 
 export const UserNotificationTypeForm = () => {
 	const dispatch = useAppDispatch()
@@ -67,7 +68,8 @@ export const UserNotificationTypeForm = () => {
 						<Switch id = {`user-notification-type-${notificationType.id}`} checked={notificationTypeIds.find((id) => id === notificationType.id) != null} onChange={(e) => onCheck(notificationType.id)}/>
 						<label htmlFor = {`user-notification-type-${notificationType.id}`}>{notificationType.name}</label>
 					</div>
-				))) : <LoadingSpinner/>}
+				))) : 
+				<RowContentLoading/>}
 				</div>
 				<button type="submit" className = "button">Submit</button>
 			</form>

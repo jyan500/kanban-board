@@ -15,6 +15,8 @@ import { USER_PROFILE_ORG_URL } from "../../helpers/urls"
 import { AsyncSelect } from "../AsyncSelect"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Avatar } from "../page-elements/Avatar"
+import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
+import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 
 export const SwitchOrganizationForm = () => {
 	const dispatch = useAppDispatch()
@@ -49,27 +51,36 @@ export const SwitchOrganizationForm = () => {
 
 	return (
 		<>
-			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-				<Avatar isOrg={true} size = "s" className = {`${organization?.imageUrl ? "tw-rounded-full" : ""}`} imageUrl={organization?.imageUrl}/>
-				<p className = "tw-font-medium">{userProfile?.organizationName}</p>
-			</div>
-			<div className = "tw-flex tw-flex-col tw-gap-y-2">
-				<AsyncSelect 
-					ref={selectRef}
-					cacheKey={cacheKey} 
-					urlParams={{excludeOwn: true}} 
-					onSelect={(selectedOption: OptionType | null) => {
-						if (selectedOption){
-							setSwitchOrgId(Number(selectedOption.value))
-						}
-					}} 
-					endpoint={USER_PROFILE_ORG_URL} 
-					className = "tw-w-full"
-				/>
-				<div>
-					<button onClick={switchOrganization} className = "button">Switch Organization</button>
-				</div>
-			</div>
+			{
+			isOrganizationLoading ? 
+				<LoadingSkeleton width="tw-w-full" height = "tw-h-84">
+					<RowPlaceholder/>	
+				</LoadingSkeleton> : (
+					<>
+						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+							<Avatar isOrg={true} size = "s" className = {`${organization?.imageUrl ? "tw-rounded-full" : ""}`} imageUrl={organization?.imageUrl}/>
+							<p className = "tw-font-medium">{userProfile?.organizationName}</p>
+						</div>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<AsyncSelect 
+								ref={selectRef}
+								cacheKey={cacheKey} 
+								urlParams={{excludeOwn: true}} 
+								onSelect={(selectedOption: OptionType | null) => {
+									if (selectedOption){
+										setSwitchOrgId(Number(selectedOption.value))
+									}
+								}} 
+								endpoint={USER_PROFILE_ORG_URL} 
+								className = "tw-w-full"
+							/>
+							<div>
+								<button onClick={switchOrganization} className = "button">Switch Organization</button>
+							</div>
+						</div>
+					</>
+				)
+			}
 		</>
 	)	
 }

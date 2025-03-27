@@ -28,8 +28,9 @@ import { IconBoard } from "./icons/IconBoard"
 import { IconContext } from "react-icons"
 import { convertMinutesToTimeDisplay } from "../helpers/functions"
 import { SwitchOrganizationForm } from "./forms/SwitchOrganizationForm"
-import { RowPlaceholder } from "./placeholders/RowPlaceholder"
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
+import { RowContentLoading } from "./page-elements/RowContentLoading"
+import { RowPlaceholder } from "./placeholders/RowPlaceholder"
 
 type DashboardSectionProps = {
 	title: string
@@ -135,9 +136,7 @@ export const Dashboard = () => {
 								<SwitchOrganizationForm/>	
 							</DashboardSection>
 						) : 
-						<LoadingSkeleton width="tw-w-full" height="tw-h-84">
-							<RowPlaceholder/>	
-						</LoadingSkeleton>
+						<RowContentLoading/>
 					}
 					<DashboardSection iconColor={"var(--bs-primary)"} icon={<IconBoard color = {"var(--bs-primary)"}/>} title={"Boards"}>
 						{
@@ -153,9 +152,7 @@ export const Dashboard = () => {
 									</div>
 								</div>	
 							) : (
-								<LoadingSkeleton width="tw-w-full" height="tw-h-84">
-									<RowPlaceholder/>	
-								</LoadingSkeleton>
+								<RowContentLoading/>
 							)
 						}
 						
@@ -173,9 +170,7 @@ export const Dashboard = () => {
 								}	
 							</div>
 							) : (
-								<LoadingSkeleton width="tw-w-full" height="tw-h-84">
-									<RowPlaceholder/>	
-								</LoadingSkeleton>
+								<RowContentLoading/>
 							)
 						}
 					</DashboardSection>
@@ -190,9 +185,7 @@ export const Dashboard = () => {
 									}
 								</div>
 							) : (
-								<LoadingSkeleton width="tw-w-full" height="tw-h-84">
-									<RowPlaceholder/>	
-								</LoadingSkeleton>
+								<RowContentLoading/>
 							)
 						}
 					</DashboardSection>
