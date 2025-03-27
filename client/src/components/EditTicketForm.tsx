@@ -46,6 +46,8 @@ import { LG_BREAKPOINT } from "../helpers/constants"
 import { isValidDateString, convertMinutesToTimeDisplay } from "../helpers/functions"
 import { format, toDate } from "date-fns-tz"
 import { TicketActivityModalProps } from "./secondary-modals/TicketActivityModal"
+import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
+import { LinkedTicketPlaceholder } from "./placeholders/LinkedTicketPlaceholder"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -93,16 +95,16 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const [ commentPage, setCommentPage ] = useState(1)
 	const [ activityPage, setActivityPage ] = useState(1)
 	const { data: reporter, isLoading: isUserLoading } = useGetUserQuery(ticket?.userId ?? skipToken)
-	const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: false, isMention: false}} : skipToken)
-	const { data: ticketWatchers, isLoading: isTicketWatchersLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: true, isMention: false}} : skipToken)
-	const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: commentPage, perPage: 5}} : skipToken)
+	const { data: ticketAssignees, isFetching: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: false, isMention: false}} : skipToken)
+	const { data: ticketWatchers, isFetching: isTicketWatchersLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: true, isMention: false}} : skipToken)
+	const { data: ticketComments, isFetching: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: commentPage, perPage: 5}} : skipToken)
 	const { data: ticketRelationships, isLoading: isTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
 		{ticketId: currentTicketId, params: {page: linkedTicketPage, isEpic: false}} : skipToken
 	)
-	const { data: epicTicketRelationships, isLoading: isEpicTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
+	const { data: epicTicketRelationships, isFetching: isEpicTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
 		{ticketId: currentTicketId, params: {page: epicTicketPage, includeEpicPercentageCompletion: true, isEpic: true}} : skipToken
 	)
-	const { data: ticketActivities, isLoading: isTicketActivitiesLoading } = useGetTicketActivitiesQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: activityPage, includeTotalTime: true, perPage: 5}} : skipToken)
+	const { data: ticketActivities, isFetching: isTicketActivitiesLoading } = useGetTicketActivitiesQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: activityPage, includeTotalTime: true, perPage: 5}} : skipToken)
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
@@ -362,7 +364,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 											{userProfileSelect}		
 										</div>
 									</button>
-								) : <LoadingSpinner/>
+								) : <LoadingSkeleton className="tw-bg-gray-200" width="tw-w-32" height="tw-h-6"/>
 							}	
 						</RightSectionRow>
 						<RightSectionRow title={"Reporter"}>
@@ -387,7 +389,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							{
 								<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
 									<div className = "tw-w-[2em] tw-shrink-0">
-										{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-w-5 tw-h-5 tw-shrink-0"/> : null}
+										{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-0.5 tw-w-5 tw-h-5 tw-shrink-0"/> : null}
 									</div>
 									<div className = "tw-flex tw-flex-1">
 									{
@@ -397,7 +399,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 											</div>
 										: (
 										<div className = "tw-w-full">
-											{ticketTypeName}	
+											<div className = "tw-ml-3">{ticketTypeName}</div>
 										</div>
 										)
 									}
@@ -477,7 +479,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									ticketId: ticket?.id ?? 0
 								}))
 								dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
-							}}>{!isTicketActivitiesLoading ? (ticketActivities?.additional?.totalTime ? convertMinutesToTimeDisplay(ticketActivities?.additional?.totalTime) : <span>None</span>) : <LoadingSpinner/>}</button>
+							}}>{!isTicketActivitiesLoading ? (ticketActivities?.additional?.totalTime ? convertMinutesToTimeDisplay(ticketActivities?.additional?.totalTime) : <span>None</span>) : <LoadingSkeleton className="tw-bg-gray-200" width="tw-w-32" height="tw-h-6"/>}</button>
 						</RightSectionRow>
 					</div>
 				</div>
@@ -654,7 +656,10 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							}
 							<LinkedTicketForm currentTicketId={currentTicketId} showAddLinkedIssue={showAddLinkedIssue} setShowAddLinkedIssue={setShowAddLinkedIssue} ticketRelationships={ticketRelationships?.data?.length ? ticketRelationships.data : []}/>
 						</div> : null
-					) : <LoadingSpinner/>}
+					) : 
+					<LoadingSkeleton width = "tw-w-full" height = "tw-h-[500px]">
+						<LinkedTicketPlaceholder/>	
+					</LoadingSkeleton>}
 				</div>
 				<div className = "tw-space-y-2">
 					{!isTicketCommentsLoading && !isTicketActivitiesLoading && currentTicketId ? (
@@ -667,7 +672,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							commentPage={commentPage}
 							currentTicketId={currentTicketId}
 						/>
-					) : <LoadingSpinner/>}
+					) : <LoadingSkeleton width = "tw-w-full" height = "tw-h-[500px]">
+						<LinkedTicketPlaceholder/>	
+					</LoadingSkeleton>}
 				</div>
 			</div>
 		</div>
