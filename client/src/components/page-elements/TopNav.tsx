@@ -33,7 +33,7 @@ export const TopNav = () => {
 	const { width, height } = useScreenSize()
 	const { organizations } = useAppSelector((state) => state.org)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
-	const { token } = useAppSelector((state) => state.auth)
+	const { token, isTemp } = useAppSelector((state) => state.auth)
 	const [isLoading, setIsLoading] = useState(true)
 	const [showIndicator, setShowIndicator] = useState(false)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
@@ -72,7 +72,10 @@ export const TopNav = () => {
 
 	return (
 		<div className = "tw-my-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
-			<HamburgerButton/>	
+			{
+				isTemp ? (<div></div>) : 
+				<HamburgerButton/>	
+			}
 			<div className = "tw-inline-block tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 				{!isLoading ? (
 					<>
@@ -88,7 +91,7 @@ export const TopNav = () => {
 							</button>
 							{
 								showDropdown ? (
-									<AccountDropdown numNotifications={polledNotifications?.data ? polledNotifications?.data.length : 0} ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
+									<AccountDropdown isTemp={isTemp} numNotifications={polledNotifications?.data ? polledNotifications?.data.length : 0} ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
 								) : null
 							}
 						</div>

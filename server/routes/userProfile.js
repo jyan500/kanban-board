@@ -92,23 +92,37 @@ router.post("/image", editUserImageValidator, handleValidationResult, async (req
 router.get("/me", async (req, res, next) => {
 	try {
 		// pulled from token middleware 
-		const {id: userId, organization: organizationId, userRole} = req.user
-		const userProfile = await db("organization_user_roles")
-			.join("users", "users.id", "=", "organization_user_roles.user_id")
-			.join("organizations", "organization_user_roles.organization_id", "=", "organizations.id")
-			.where("organization_user_roles.user_id", userId)
-			.where("organization_user_roles.organization_id", organizationId)
-			.select(
+		const {id: userId, organization: organizationId, userRole, is_temp} = req.user
+		if (is_temp){
+			const userProfile = await db("users").where("id", userId).select(
 				"users.id as id", 
 				"users.first_name as firstName", 
 				"users.last_name as lastName", 
 				"users.is_active as isActive",
 				"users.image_url as imageUrl",
 				"users.email as email", 
-				"organizations.name as organizationName",
-				"organization_user_roles.organization_id as organizationId", 
-				"organization_user_roles.user_role_id as userRoleId").first()
-		res.json(userProfile)
+			).first()
+			res.json(userProfile)
+			return
+		}
+		else {
+			const userProfile = await db("organization_user_roles")
+				.join("users", "users.id", "=", "organization_user_roles.user_id")
+				.join("organizations", "organization_user_roles.organization_id", "=", "organizations.id")
+				.where("organization_user_roles.user_id", userId)
+				.where("organization_user_roles.organization_id", organizationId)
+				.select(
+					"users.id as id", 
+					"users.first_name as firstName", 
+					"users.last_name as lastName", 
+					"users.is_active as isActive",
+					"users.image_url as imageUrl",
+					"users.email as email", 
+					"organizations.name as organizationName",
+					"organization_user_roles.organization_id as organizationId", 
+					"organization_user_roles.user_role_id as userRoleId").first()
+			res.json(userProfile)
+		}
 	}
 	catch (err){
 		console.log(`Error while getting user profile: ${err.message}`)	
@@ -255,23 +269,88 @@ router.post("/organization", authenticateUserActivated, validateAddOrganization,
 router.get("/:userId", getUserValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const userId = req.params.userId
-		const userProfile = await db("organization_user_roles")
-			.join("users", "users.id", "=", "organization_user_roles.user_id")
-			.where("users.id", userId)
-			.where("organization_user_roles.organization_id", req.user.organization)
-			.select(
+		const isTemp = req.user.is_temp
+		let userProfile
+		if (!isTemp){
+			userProfile = await db("organization_user_roles")
+				.join("users", "users.id", "=", "organization_user_roles.user_id")
+				.where("users.id", userId)
+				.where("organization_user_roles.organization_id", req.user.organization)
+				.select(
+					"users.id as id", 
+					"users.first_name as firstName", 
+					"users.last_name as lastName", 
+					"users.email as email", 
+					"users.is_active as isActive",
+					"users.image_url as imageUrl",
+					"organization_user_roles.organization_id as organizationId", 
+					"organization_user_roles.user_role_id as userRoleId").first()
+		}
+		else {
+			userProfile = await db("users").where("users.id", userId).select(
 				"users.id as id", 
 				"users.first_name as firstName", 
 				"users.last_name as lastName", 
 				"users.email as email", 
 				"users.is_active as isActive",
 				"users.image_url as imageUrl",
-				"organization_user_roles.organization_id as organizationId", 
-				"organization_user_roles.user_role_id as userRoleId").first()
+			).first()
+		}
 		res.json(userProfile)
 	}	
 	catch (err){
 		console.log(`Error while getting user profile: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:userId/registration-request", getUserValidator, handleValidationResult, async (req, res, next) => {
+	try {
+		const userId = req.params.userId
+		const registrationRequests = await db("user_registration_requests")
+		.where("user_id", userId)
+		.join("organizations", "organizations.id", "=", "user_registration_requests.organization_id")
+		.modify((queryBuilder) => {
+			if (req.query.query){
+				queryBuilder.whereILike("organizations.name", `%${req.query.query}%`) 
+			}
+		})
+		.select(
+			"user_registration_requests.id as id",
+			"user_registration_requests.organization_id as organizationId",
+			"organizations.name as organizationName",
+			"user_registration_requests.user_id as userId",
+			"user_registration_requests.approved_at as approvedAt",
+			"user_registration_requests.denied_at as deniedAt",
+			"user_registration_requests.created_at as createdAt")
+		.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		const parsedWithStatus = registrationRequests.data.map((request) => {
+			if (request.approvedAt == null && request.deniedAt == null){
+				return {
+					...request,
+					status: "Pending",
+				}
+			}
+			else if (request.approvedAt != null){
+				return {
+					...request,
+					status: "Approved",
+				}
+			}
+			else if (request.deniedAt != null){
+				return {
+					...request,
+					status: "Denied"
+				}
+			}
+		})
+		res.json({
+			data: parsedWithStatus,
+			pagination: registrationRequests.pagination
+		})
+	}	
+	catch (err){
+		console.log(`Error while getting registration requests: ${err.message}`)
 		next(err)
 	}
 })

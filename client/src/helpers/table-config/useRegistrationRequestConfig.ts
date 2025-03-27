@@ -4,7 +4,7 @@ import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { setModalType, toggleShowModal } from "../../slices/modalSlice" 
 import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
 import { Toast, UserRegistrationRequest } from "../../types/common"
-import { useBulkEditRegistrationRequestsMutation, useUpdateRegistrationRequestMutation } from "../../services/private/organization"
+import { useBulkEditRegistrationRequestsMutation, useUpdateRegistrationRequestMutation } from "../../services/private/registrationRequest"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 

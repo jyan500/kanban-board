@@ -34,6 +34,8 @@ export interface UserNotificationType {
 	userId: number
 }
 
+export type RegistrationRequestStatus = "Pending" | "Approved" | "Denied"
+
 export type UserRole = ObjectType
 export type NotificationType = ObjectType & { template: string }
 export type TicketType = ObjectType
@@ -46,6 +48,8 @@ export interface UserRegistrationRequest {
 	approvedAt?: Date
 	deniedAt?: Date
 	createdAt: Date
+	status?: string
+	organizationName?: string
 	user?: Omit<UserProfile, "organizationId" | "userRoleId">
 }
 

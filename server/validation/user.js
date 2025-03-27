@@ -7,8 +7,14 @@ const bcrypt = require("bcrypt")
 
 const editUserImageValidator = [
 	body("id").custom(
-		async (value, {req}) => 
-		await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
+	async (value, {req}) => {
+		if (!req.user.is_temp){
+			await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")
+		}
+		else {
+			await checkEntityExistsIn("user", value, [{col: "id", value: value}], "users")
+		}
+	}),
 	body("image_url").isURL().withMessage("Must be valid URL")
 ]
 
@@ -79,7 +85,14 @@ const editUserValidator = (action) => {
 
 
 const getUserValidator = [
-	param("userId").custom(async (value, {req}) => await checkEntityExistsIn("organizationUserRole", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
+	param("userId").custom(async (value, {req}) => {
+		if (!req.user.is_temp){
+			return await checkEntityExistsIn("organizationUserRole", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")
+		}
+		else {
+			return await checkEntityExistsIn("user", value, [{col: "id", value: value}], "users")
+		}
+	}),
 ]
 
 const loginValidator = [

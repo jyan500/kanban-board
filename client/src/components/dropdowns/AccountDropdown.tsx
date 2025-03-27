@@ -6,7 +6,7 @@ import { addToast } from "../../slices/toastSlice"
 import { Toast, Notification } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { Link, useLocation } from 'react-router-dom';
-import { NOTIFICATIONS, ACCOUNT, ACCOUNT_SWITCH_ORGANIZATION } from "../../helpers/routes"
+import { TEMP, NOTIFICATIONS, ACCOUNT, ACCOUNT_SWITCH_ORGANIZATION } from "../../helpers/routes"
 import { SetColumnLimitModalProps } from "../secondary-modals/SetColumnLimitModal"
 import { Avatar } from "../page-elements/Avatar"
 import { displayUser } from "../../helpers/functions"
@@ -19,13 +19,14 @@ import { IconLogout } from "../icons/IconLogout"
 import { TextIconRow } from "../page-elements/TextIconRow"
 
 type Props = {
+	isTemp: boolean
 	numNotifications: number
 	closeDropdown: () => void
 	onLogout: () => void
 }
 
 
-export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNotifications, closeDropdown, onLogout}: Props, ref) => {
+export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp, numNotifications, closeDropdown, onLogout}: Props, ref) => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -38,11 +39,11 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({numNoti
 			text: "Account",
 			icon: <IconAccount/>,
 			onClick: () => {
-				navigate(ACCOUNT)
+				navigate(isTemp ? `${TEMP}${ACCOUNT}` : ACCOUNT)
 			}
 		},
 		
-		...(userProfile?.isActive ? {
+		...(userProfile?.isActive && !isTemp ? {
 			"Notifications": {
 				text: "Notifications",
 				icon: <IconBell/>,

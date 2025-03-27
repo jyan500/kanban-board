@@ -22,16 +22,19 @@ import { RegisterSelection } from "./pages/register/RegisterSelection"
 import { OrganizationRegister } from "./pages/register/OrganizationRegister"
 import { AccountDisplay } from "./pages/account/AccountDisplay"
 import { Account } from "./pages/account/Account"
+import { TempAccount } from "./pages/temp-account/TempAccount"
 import { AccountOrganization } from "./pages/account/AccountOrganization"
 import { ChangePassword } from "./pages/account/ChangePassword"
 import { JoinOrganization } from "./pages/account/JoinOrganization"
 import { SwitchOrganization } from "./pages/account/SwitchOrganization"
+import { RegistrationRequests } from "./pages/account/RegistrationRequests"
 import { NotificationSettings } from "./pages/account/NotificationSettings"
 import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
 import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
 import UserRoleProtectedLayout from "./layouts/UserRoleProtectedLayout"
 import UserActivatedProtectedLayout from "./layouts/UserActivatedProtectedLayout"
+import TempLoginProtectedLayout from "./layouts/TempLoginProtectedLayout"
 import { useAppSelector, useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
 import { ToastList } from "./components/ToastList" 
@@ -45,6 +48,7 @@ import {
 	ACCOUNT_SWITCH_ORGANIZATION, 
 	ACCOUNT_CHANGE_PASSWORD, 
 	ACCOUNT_NOTIFICATION_SETTINGS, 
+	ACCOUNT_REGISTRATION_REQUESTS,
 	HOME,
 	LOGIN, 
 	REGISTER, 
@@ -54,6 +58,7 @@ import {
 	TICKET_ID, 
 	USER, 
 	USERS, 
+	TEMP,
 	ORGANIZATION, 
 	ORGANIZATION_ADD_EDIT_STATUSES,
 	NOTIFICATIONS,
@@ -110,6 +115,44 @@ const router = createBrowserRouter([
 				element: <Navigate to = {LOGIN}/>
 			}
 		],
+	},
+	{
+		element:
+		<>
+			<TempLoginProtectedLayout/>	
+		</>,
+		children: [
+			{
+				path: `${TEMP}${ACCOUNT}`,
+				element: <TempAccount/>,
+				children: [
+					{
+						index: true,	
+						element: <Account/>
+					},
+					{
+						path: `${TEMP}${ACCOUNT_CHANGE_PASSWORD}`,
+						element: <ChangePassword/>
+					},
+					{
+						path: `${TEMP}${ACCOUNT_CREATE_ORG}`,
+						element: <AccountOrganization/>
+					},
+					{
+						path: `${TEMP}${ACCOUNT_JOIN_ORGANIZATION}`,
+						element: <JoinOrganization/>
+					},
+					{
+						path: `${TEMP}${ACCOUNT_SWITCH_ORGANIZATION}`,
+						element: <SwitchOrganization/>
+					},
+					{
+						path: `${TEMP}${ACCOUNT_REGISTRATION_REQUESTS}`,
+						element: <RegistrationRequests/>
+					},
+				]
+			}
+		]
 	},
 	{
 		element: <>
@@ -225,6 +268,10 @@ const router = createBrowserRouter([
 							{
 								path: ACCOUNT_NOTIFICATION_SETTINGS,
 								element: <NotificationSettings/>
+							},
+							{
+								path: ACCOUNT_REGISTRATION_REQUESTS,
+								element: <RegistrationRequests/>
 							},
 						]
 					},

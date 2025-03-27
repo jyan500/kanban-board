@@ -6,7 +6,7 @@ import {v4 as uuidv4} from "uuid"
 import { useLocation, useNavigate, Link } from "react-router-dom" 
 import { Controller, useForm } from "react-hook-form"
 import { parseErrorResponse } from "../helpers/functions"
-import { REGISTER, FORGOT_PASSWORD } from "../helpers/routes"
+import { REGISTER, FORGOT_PASSWORD, TEMP, ACCOUNT } from "../helpers/routes"
 import { ORGANIZATION_URL } from "../helpers/urls"
 import { AsyncSelect } from "../components/AsyncSelect"
 import { OptionType } from "../types/common"
@@ -22,7 +22,7 @@ export const Login = () => {
 	const location = useLocation()
 	const navigate = useNavigate()
 	const [login, { isLoading, error }] = useLoginMutation()
-	const { token } = useAppSelector((state) => state.auth)
+	const { token, isTemp } = useAppSelector((state) => state.auth)
 	const { control, register , handleSubmit, setValue, formState: {errors} } = useForm<FormValues>()
 	const registerOptions = {
 	    email: { required: "Email is required" },
@@ -30,9 +30,8 @@ export const Login = () => {
 	    organizationId: { required: "Organization is required"},
     }
     useEffect(() => {
-    	// 
     	if (token){
-    		navigate("/", {replace: true})
+    		navigate(isTemp ? `${TEMP}${ACCOUNT}` : "/", {replace: true})
     	}	
     }, [navigate, token])
 

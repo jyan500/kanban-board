@@ -13,9 +13,6 @@ const DefaultLayout = () => {
 	}
 
 	return (
-		// <>
-		// 	<Outlet/>
-		// </>
 		<div className = "tw-flex tw-h-screen tw-flex-col sm:tw-flex-row tw-my-4 sm:tw-my-0">
 			<div className = "tw-flex tw-flex-1 tw-justify-center tw-items-center tw-p-8 tw-bg-gray-50 tw-shadow-md tw-h-full tw-w-full">
 				<Outlet/>

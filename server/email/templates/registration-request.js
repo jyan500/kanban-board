@@ -7,7 +7,7 @@ const registrationRequestTemplate = (firstName, lastName, organizationName) => {
 				Dear ${firstName} ${lastName},
 			</p>
 			<p>
-				You have successfully requested to register under the organization: ${organizationName}. 
+				You have successfully requested to register under the organization: ${organizationName}
 				You will be notified by email when your registration request is accepted.
 			</p>
 			<p>
