@@ -14,6 +14,7 @@ import { BulkEditToolbar } from "../../components/page-elements/BulkEditToolbar"
 import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
 import { SearchBar } from "../../components/SearchBar"
+import { RowContentLoading } from "../../components/page-elements/RowContentLoading"
 
 type RegFormValues = {
 	regQuery: string
@@ -39,7 +40,7 @@ const UserForm = ({filters}: UserFormProps) => {
 	const userDefaultForm: UserFormValues = {
 		userQuery: searchParams.get("userQuery") ?? "",
 	}
-	const { data: userProfiles, isFetching: isUserProfilesFetching } = useGetUserProfilesQuery({userQuery: searchParams.get("userQuery") ?? "", page: userCurrentPage})
+	const { data: userProfiles, isLoading: isUserProfilesLoading } = useGetUserProfilesQuery({userQuery: searchParams.get("userQuery") ?? "", page: userCurrentPage})
 	const [preloadedValues, setPreloadedValues] = useState(userDefaultForm)
 	const methods = useForm<UserFormValues>({defaultValues: preloadedValues})
 	const { register, handleSubmit, reset, watch, setValue, formState: {errors} } = methods
@@ -64,7 +65,7 @@ const UserForm = ({filters}: UserFormProps) => {
 	}
 
 	return (
-		isUserProfilesFetching ? <LoadingSpinner/> : (
+		isUserProfilesLoading ? <RowContentLoading height={"tw-h-[400px]"}/> : (
 			<div className = "tw-flex tw-flex-col tw-gap-y-4">
 				<div>
 					<h1>Users</h1>
@@ -108,7 +109,7 @@ const RegForm = ({filters}: RegFormProps) => {
 	const userPageParam = (searchParams.get("userPage") != null && searchParams.get("userPage") !== "" ? searchParams.get("userPage") : "") as string
 	const userCurrentPage = userPageParam !== "" ? parseInt(userPageParam) : 1
 	const [ regSelectedIds, setRegSelectedIds ] = useState<Array<number>>([])
-	const { data: registrationRequests, isFetching: isRegistrationRequestsFetching } = useGetRegistrationRequestsQuery({regQuery: searchParams.get("regQuery") ?? "", page: regCurrentPage})
+	const { data: registrationRequests, isLoading: isRegistrationRequestsLoading } = useGetRegistrationRequestsQuery({regQuery: searchParams.get("regQuery") ?? "", page: regCurrentPage})
 	const regDefaultForm: RegFormValues = {
 		regQuery: searchParams.get("regQuery") ?? "",
 	}
@@ -136,7 +137,7 @@ const RegForm = ({filters}: RegFormProps) => {
 	}
 
 	return (
-		isRegistrationRequestsFetching ? <LoadingSpinner/> : (
+		isRegistrationRequestsLoading ? <RowContentLoading height={"tw-h-[400px]"}/> : (
 			<div className = "tw-flex tw-flex-col tw-gap-y-4">
 				<div>
 					<h1>Registration Requests</h1>

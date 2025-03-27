@@ -16,8 +16,7 @@ import { ProfileCard } from "../page-elements/ProfileCard"
 import { Banner } from "../page-elements/Banner"
 import { AccountActivationBanner } from "../page-elements/AccountActivationBanner"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
-import { CardPlaceholder } from "../placeholders/CardPlaceholder"
-import { ColumnFormPlaceholder } from "../placeholders/ColumnFormPlaceholder"
+import { TwoColumnLoading } from "../page-elements/TwoColumnLoading"
 
 interface Props {
 	isTemp?: boolean
@@ -64,15 +63,7 @@ export const AccountContainer = ({userProfile, links, uploadImage, setUploadImag
 						</div>
 					</>
 				: 
-					<>	
-						<LoadingSkeleton width = "lg:tw-w-1/4" height = "tw-w-[500px]" className="tw-flex tw-flex-col tw-gap-y-4">
-							<CardPlaceholder hasImage={true}/>
-							<CardPlaceholder/>
-						</LoadingSkeleton> 
-						<LoadingSkeleton width = "tw-flex tw-flex-col tw-gap-y-2 tw-w-full" height = "tw-h-[500px]">
-							<ColumnFormPlaceholder/>
-						</LoadingSkeleton> 
-					</>
+				<TwoColumnLoading/>
 				}
 			</div>
 		</div>

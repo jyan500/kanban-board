@@ -3,6 +3,7 @@ import { OrganizationForm } from "../../components/OrganizationForm"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { useGetOrganizationQuery } from "../../services/private/organization"
 import { skipToken } from '@reduxjs/toolkit/query/react'
+import { RowContentLoading } from "../../components/page-elements/RowContentLoading"
 
 export const Organization = () => {
 	const {userProfile} = useAppSelector((state) => state.userProfile)
@@ -12,7 +13,7 @@ export const Organization = () => {
 			<h1>Organization</h1>
 			{
 				!isLoading && organization ? 
-				<OrganizationForm organization={organization}/> : null
+				<OrganizationForm organization={organization}/> : <RowContentLoading/>
 			}
 		</div>		
 	)	

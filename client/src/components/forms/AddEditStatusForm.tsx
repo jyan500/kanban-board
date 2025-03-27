@@ -18,6 +18,7 @@ import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icon
 import { IconButton } from "../page-elements/IconButton"
 import { IoMdAdd as AddIcon } from "react-icons/io";
 import { Switch } from "../page-elements/Switch"
+import { RowContentLoading } from "../page-elements/RowContentLoading"
 
 type FormValues = {
 	id?: number
@@ -279,7 +280,7 @@ export const AddEditStatusForm = () => {
 							addUpdateForm("update") : null
 						}
 					</>
-				))) : <LoadingSpinner/>}
+				))) : <RowContentLoading/>}
 			</div>
 		</div>
 	)
