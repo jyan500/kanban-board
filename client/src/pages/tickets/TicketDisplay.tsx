@@ -12,6 +12,8 @@ import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
 import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice"
 import { Filters } from "../../components/tickets/Filters"
+import { TicketRowPlaceholder } from "../../components/placeholders/TicketRowPlaceholder"
+import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 
 export type Filters = {
 	ticketType: string
@@ -41,7 +43,7 @@ export const TicketDisplay = () => {
 		"board": searchParams.get("board") ?? "",
 		"status": searchParams.get("status") ?? "",
 	}
-	const {data: data, isLoading } = useGetTicketsQuery({
+	const {data: data, isFetching } = useGetTicketsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
 		query: searchParams.get("query") ?? "",
 		page: searchParams.get("page") ?? 1,
@@ -128,7 +130,10 @@ export const TicketDisplay = () => {
 				>
 				</SearchToolBar>
 			</FormProvider>
-			{isLoading ? <LoadingSpinner/> : (
+			{isFetching ? 
+			<LoadingSkeleton width = "lg:tw-w-1/3 tw-w-full" height="lg:tw-max-h-full tw-h-[500px]">
+				<TicketRowPlaceholder/>
+			</LoadingSkeleton> : (
 				<>
 				<div className = "tw-flex tw-flex-col lg:tw-flex-row tw-gap-y-6 lg:tw-gap-x-6">
 					<div className = "tw-w-full tw-max-h-[300px] tw-overflow-y-auto lg:tw-overflow-hidden lg:tw-max-h-full lg:tw-w-1/3 tw-flex tw-flex-col tw-gap-y-2">

@@ -47,7 +47,7 @@ import { isValidDateString, convertMinutesToTimeDisplay } from "../helpers/funct
 import { format, toDate } from "date-fns-tz"
 import { TicketActivityModalProps } from "./secondary-modals/TicketActivityModal"
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
-import { LinkedTicketPlaceholder } from "./placeholders/LinkedTicketPlaceholder"
+import { TicketRowPlaceholder } from "./placeholders/TicketRowPlaceholder"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -95,16 +95,16 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const [ commentPage, setCommentPage ] = useState(1)
 	const [ activityPage, setActivityPage ] = useState(1)
 	const { data: reporter, isLoading: isUserLoading } = useGetUserQuery(ticket?.userId ?? skipToken)
-	const { data: ticketAssignees, isFetching: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: false, isMention: false}} : skipToken)
-	const { data: ticketWatchers, isFetching: isTicketWatchersLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: true, isMention: false}} : skipToken)
-	const { data: ticketComments, isFetching: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: commentPage, perPage: 5}} : skipToken)
+	const { data: ticketAssignees, isLoading: isTicketAssigneesLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: false, isMention: false}} : skipToken)
+	const { data: ticketWatchers, isLoading: isTicketWatchersLoading } = useGetTicketAssigneesQuery(currentTicketId ? {ticketId: currentTicketId, params: {isWatcher: true, isMention: false}} : skipToken)
+	const { data: ticketComments, isLoading: isTicketCommentsLoading } = useGetTicketCommentsQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: commentPage, perPage: 5}} : skipToken)
 	const { data: ticketRelationships, isLoading: isTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
 		{ticketId: currentTicketId, params: {page: linkedTicketPage, isEpic: false}} : skipToken
 	)
-	const { data: epicTicketRelationships, isFetching: isEpicTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
+	const { data: epicTicketRelationships, isLoading: isEpicTicketRelationshipsLoading } = useGetTicketRelationshipsQuery(currentTicketId ? 
 		{ticketId: currentTicketId, params: {page: epicTicketPage, includeEpicPercentageCompletion: true, isEpic: true}} : skipToken
 	)
-	const { data: ticketActivities, isFetching: isTicketActivitiesLoading } = useGetTicketActivitiesQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: activityPage, includeTotalTime: true, perPage: 5}} : skipToken)
+	const { data: ticketActivities, isLoading: isTicketActivitiesLoading } = useGetTicketActivitiesQuery(currentTicketId ? {ticketId: currentTicketId, params: {page: activityPage, includeTotalTime: true, perPage: 5}} : skipToken)
 	const [ updateTicket, {isLoading: isUpdateTicketLoading, error: isUpdateTicketError} ] = useUpdateTicketMutation() 
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
@@ -658,7 +658,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						</div> : null
 					) : 
 					<LoadingSkeleton width = "tw-w-full" height = "tw-h-[500px]">
-						<LinkedTicketPlaceholder/>	
+						<TicketRowPlaceholder/>	
 					</LoadingSkeleton>}
 				</div>
 				<div className = "tw-space-y-2">
@@ -673,7 +673,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							currentTicketId={currentTicketId}
 						/>
 					) : <LoadingSkeleton width = "tw-w-full" height = "tw-h-[500px]">
-						<LinkedTicketPlaceholder/>	
+						<TicketRowPlaceholder/>	
 					</LoadingSkeleton>}
 				</div>
 			</div>

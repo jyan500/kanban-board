@@ -3,9 +3,10 @@ import { EditTicketForm } from "../../components/EditTicketForm"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { useGetTicketQuery } from "../../services/private/ticket"
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { useParams } from "react-router-dom"
 import { Banner } from "../../components/page-elements/Banner"
+import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
+import { TicketFormPlaceholder } from "../../components/placeholders/TicketFormPlaceholder"
 
 export const Ticket = () => {
 	const params = useParams<{ticketId: string}>()
@@ -19,7 +20,10 @@ export const Ticket = () => {
 		)
 	}
 	return (
-		isLoading ? <LoadingSpinner/> : 
+		isLoading ? 
+		<LoadingSkeleton height="tw-h-[500px]" width="tw-w-full">
+			<TicketFormPlaceholder/>	
+		</LoadingSkeleton> : 
 		<EditTicketForm ticket={ticket?.[0]} statusesToDisplay={statuses}/>
 	)	
 }
