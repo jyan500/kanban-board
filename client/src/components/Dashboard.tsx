@@ -28,6 +28,9 @@ import { IconBoard } from "./icons/IconBoard"
 import { IconContext } from "react-icons"
 import { convertMinutesToTimeDisplay } from "../helpers/functions"
 import { SwitchOrganizationForm } from "./forms/SwitchOrganizationForm"
+import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
+import { RowContentLoading } from "./page-elements/RowContentLoading"
+import { RowPlaceholder } from "./placeholders/RowPlaceholder"
 
 type DashboardSectionProps = {
 	title: string
@@ -132,39 +135,59 @@ export const Dashboard = () => {
 							<DashboardSection title={"Organization"} icon={<IconBuilding/>}>
 								<SwitchOrganizationForm/>	
 							</DashboardSection>
-						) : null
+						) : 
+						<RowContentLoading/>
 					}
 					<DashboardSection iconColor={"var(--bs-primary)"} icon={<IconBoard color = {"var(--bs-primary)"}/>} title={"Boards"}>
-						<div className = "tw-flex tw-flex-col tw-gap-y-2">
-							{boards?.data?.map((board) => (
-								<div>
-									<Link to={`${BOARDS}/${board.id}`}><span className = "tw-font-medium">{board.name}</span></Link>
-								</div>
-							))}	
-							<div>
-								<Link to={`${BOARDS}`}>See More</Link>
-							</div>
-						</div>	
+						{
+							!isBoardsLoading ? (
+								<div className = "tw-flex tw-flex-col tw-gap-y-2">
+									{boards?.data?.map((board) => (
+										<div>
+											<Link to={`${BOARDS}/${board.id}`}><span className = "tw-font-medium">{board.name}</span></Link>
+										</div>
+									))}	
+									<div>
+										<Link to={`${BOARDS}`}>See More</Link>
+									</div>
+								</div>	
+							) : (
+								<RowContentLoading/>
+							)
+						}
+						
 					</DashboardSection>
 					<DashboardSection iconColor={"var(--bs-warning)"} icon={<IconBars color={"var(--bs-warning)"}/>} title={"Progress"}>
-						<div className = "tw-flex tw-flex-col tw-gap-y-2">
-							{
-								percentageCompletePerBoard?.map((board) => (
-									<div className = "tw-flex tw-flex-row tw-items-center tw-min-h-[24px]">
-										<ProgressBar percentages = {board.percentComplete}/> 
-									</div>
-								))
-							}	
-						</div>
+						{
+							!isBoardsLoading ? (
+							<div className = "tw-flex tw-flex-col tw-gap-y-2">
+								{
+									percentageCompletePerBoard?.map((board) => (
+										<div className = "tw-flex tw-flex-row tw-items-center tw-min-h-[24px]">
+											<ProgressBar percentages = {board.percentComplete}/> 
+										</div>
+									))
+								}	
+							</div>
+							) : (
+								<RowContentLoading/>
+							)
+						}
 					</DashboardSection>
 					<DashboardSection iconColor={"var(--bs-success)"} icon={<IconClock color={"var(--bs-success)"}/>} title={"Time Spent"}>
-						<div className = "tw-flex tw-flex-col tw-gap-y-2">
-							{
-								timeSpentPerBoard?.map((board) => (
-									<div><span className = "tw-font-medium">{board.minutesSpent}</span></div>
-								))
-							}
-						</div>
+						{
+							!isBoardsLoading ? (
+								<div className = "tw-flex tw-flex-col tw-gap-y-2">
+									{
+										timeSpentPerBoard?.map((board) => (
+											<div><span className = "tw-font-medium">{board.minutesSpent}</span></div>
+										))
+									}
+								</div>
+							) : (
+								<RowContentLoading/>
+							)
+						}
 					</DashboardSection>
 				</div>
 			</div>
@@ -173,10 +196,18 @@ export const Dashboard = () => {
 				<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
 					{assignedTickets && !isAssignedTicketsLoading ? (
 						<TicketsContainer setPage={setAssignedToPage} setFilterBy={setAssignedFilter} tickets={assignedTickets} title={"Assigned"}/>
-					) : null}
+					) : 
+						<LoadingSkeleton height="tw-h-[800px]" width="tw-w-full">
+							<RowPlaceholder/>	
+						</LoadingSkeleton>
+					}
 					{watchedTickets && !isWatchedTicketsLoading ? (
 						<TicketsContainer setPage={setWatchingPage} setFilterBy={setWatchFilter} tickets={watchedTickets} title={"Watching"}/>
-					) : null}
+					) : 
+						<LoadingSkeleton height="tw-h-[800px]" width="tw-w-full">
+							<RowPlaceholder/>	
+						</LoadingSkeleton>
+					}
 				</div>
 			</div>
 		</div>

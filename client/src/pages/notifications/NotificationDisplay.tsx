@@ -20,6 +20,8 @@ import {
 	useBulkEditNotificationsMutation, 
 } from "../../services/private/notification"
 import { BulkEditToolbar } from "../../components/page-elements/BulkEditToolbar"
+import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
+import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 
 export type Filters = {
 	notificationType: string
@@ -175,7 +177,11 @@ export const NotificationDisplay = () => {
 					hidePagination={true}
 				/>
 			</FormProvider>
-			{isLoading ? <LoadingSpinner/> : (
+			{isLoading ? (
+				<LoadingSkeleton width="tw-w-full" height="tw-h-84">
+					<RowPlaceholder/>
+				</LoadingSkeleton>
+			) : (
 				<>
 					{
 						selectedIds.length > 0 ? 	

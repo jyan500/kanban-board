@@ -28,6 +28,8 @@ import { sortStatusByOrder } from "../../helpers/functions"
 import { StatusHeader } from "./StatusHeader"
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
+import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
+import { BoardPlaceholder } from "../placeholders/BoardPlaceholder"
 
 type Props = {
 	groupedTickets: GroupedTickets
@@ -125,87 +127,95 @@ export const GroupedBoard = ({
 					)
 				})}
 			</div>
-			{Object.keys(groupedTickets).map((groupById: string) => {
-				const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
-				return (
-					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-						<div style = {boardStyle}>
-							<div className = "tw-w-full tw-flex tw-flex-row tw-gap-x-2 tw-pl-2 tw-justify-between lg:tw-justify-self">
-								{width <= LG_BREAKPOINT ? (
-									<div className = "tw-flex-col tw-flex tw-gap-y-2">
-										<p className = "tw-font-bold">{groupByElement?.name}</p>
-										<p className = "tw-flex tw-flex-1">{`${Object.values(groupedTickets[groupById]).reduce((acc: number, arr: Array<number>) => 
-											acc + arr.length, 0)} issues`}</p>
-									</div>
-								) : (
-									<>
-										<p className = "tw-font-bold">{groupByElement?.name}</p>
-										<p className = "tw-flex tw-flex-1">{`${Object.values(groupedTickets[groupById]).reduce((acc: number, arr: Array<number>) => 
-										acc + arr.length, 0)} issues`}</p>
-									</>
-								)}
-								<IconButton onClick={() => {
-									setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})	
-								}}>
-							    	{
-							    		collapseArrows[groupById] ? 
-										<IconArrowUp className = "tw-h-4 tw-w-4"/>
-										: <IconArrowDown className = "tw-h-4 tw-w-4"/>
-							    	}
-								</IconButton>
-							</div>
-						</div>
-						{!collapseArrows[groupById] ? (
-							<div style = {boardStyle}>
-							{
-								statusesToDisplay.map((status, i) => {
-									return (
-										<div 
-											className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[400px] tw-pt-2"
-											id = {`group_by_${groupById}_status_${status.id}`} 
-											key = {`group_by_${groupById}_status_${status.id}`} 
-											onDrop={(e) => {handleDrop(e, groupById)}} 
-											onDragOver={enableDropping} 
-										>
-											<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
-												{
-													groupedTickets[groupById][status.id]?.slice(0, status.limit ?? MAX_COLUMN_LIMIT).map((ticketId: number) => {
-														const ticket = tickets.find((t: TicketType) => t.id === ticketId)
-														return (
-															<div 
-																onClick={(e) => {
-																	if (e.defaultPrevented){
-																		return
-																	}
-																	dispatch(toggleShowModal(true))
-																	dispatch(setModalType("EDIT_TICKET_FORM"))
-																	dispatch(selectCurrentTicketId(ticketId))	
-																}}
-																key = {`group_by_${groupById}_ticket_${ticketId}`} 
-																id = {`group_by_${groupById}_ticket_${ticketId}`}
-																draggable
-																onDragStart={dragStart}
-																>
-																{ticket ? <Ticket 
-																	ticket = {ticket}
-																	dropdownAlignLeft={i === 0}
-																	statusesToDisplay={statusesToDisplay}
-																	boardId={boardId}
-																/> : null}
-															</div>
-														)
-													})
-												}
+			{
+				!isLoading ? (
+					Object.keys(groupedTickets).map((groupById: string) => {
+						const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
+						return (
+							<div className = "tw-flex tw-flex-col tw-gap-y-2">
+								<div style = {boardStyle}>
+									<div className = "tw-w-full tw-flex tw-flex-row tw-gap-x-2 tw-pl-2 tw-justify-between lg:tw-justify-self">
+										{width <= LG_BREAKPOINT ? (
+											<div className = "tw-flex-col tw-flex tw-gap-y-2">
+												<p className = "tw-font-bold">{groupByElement?.name}</p>
+												<p className = "tw-flex tw-flex-1">{`${Object.values(groupedTickets[groupById]).reduce((acc: number, arr: Array<number>) => 
+													acc + arr.length, 0)} issues`}</p>
 											</div>
-										</div>
-									)
-								})
-							}
+										) : (
+											<>
+												<p className = "tw-font-bold">{groupByElement?.name}</p>
+												<p className = "tw-flex tw-flex-1">{`${Object.values(groupedTickets[groupById]).reduce((acc: number, arr: Array<number>) => 
+												acc + arr.length, 0)} issues`}</p>
+											</>
+										)}
+										<IconButton onClick={() => {
+											setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})	
+										}}>
+									    	{
+									    		collapseArrows[groupById] ? 
+												<IconArrowUp className = "tw-h-4 tw-w-4"/>
+												: <IconArrowDown className = "tw-h-4 tw-w-4"/>
+									    	}
+										</IconButton>
+									</div>
+								</div>
+								{!collapseArrows[groupById] ? (
+									<div style = {boardStyle}>
+									{
+										statusesToDisplay.map((status, i) => {
+											return (
+												<div 
+													className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[400px] tw-pt-2"
+													id = {`group_by_${groupById}_status_${status.id}`} 
+													key = {`group_by_${groupById}_status_${status.id}`} 
+													onDrop={(e) => {handleDrop(e, groupById)}} 
+													onDragOver={enableDropping} 
+												>
+													<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">
+														{
+															groupedTickets[groupById][status.id]?.slice(0, status.limit ?? MAX_COLUMN_LIMIT).map((ticketId: number) => {
+																const ticket = tickets.find((t: TicketType) => t.id === ticketId)
+																return (
+																	<div 
+																		onClick={(e) => {
+																			if (e.defaultPrevented){
+																				return
+																			}
+																			dispatch(toggleShowModal(true))
+																			dispatch(setModalType("EDIT_TICKET_FORM"))
+																			dispatch(selectCurrentTicketId(ticketId))	
+																		}}
+																		key = {`group_by_${groupById}_ticket_${ticketId}`} 
+																		id = {`group_by_${groupById}_ticket_${ticketId}`}
+																		draggable
+																		onDragStart={dragStart}
+																		>
+																		{ticket ? <Ticket 
+																			ticket = {ticket}
+																			dropdownAlignLeft={i === 0}
+																			statusesToDisplay={statusesToDisplay}
+																			boardId={boardId}
+																		/> : null}
+																	</div>
+																)
+															})
+														}
+													</div>
+												</div>
+											)
+										})
+									}
+									</div>
+								) : null}
 							</div>
-						) : null}
-					</div>
-				)
-			})}
+						)
+					})) : (
+						<LoadingSkeleton width = "tw-flex tw-flex-col tw-gap-y-4 tw-w-full" height={"tw-h-[1000px]"}>
+							<div className = "tw-w-32 tw-h-6 tw-bg-gray-200"></div>
+							<BoardPlaceholder/>
+						</LoadingSkeleton>
+					)
+			}
 		</div>
 	)
 }

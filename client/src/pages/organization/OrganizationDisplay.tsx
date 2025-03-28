@@ -24,6 +24,7 @@ import { toggleShowModal, setModalType } from "../../slices/modalSlice"
 import { EditImageIndicator } from "../../components/page-elements/EditImageIndicator"
 import { ProfileCard } from "../../components/page-elements/ProfileCard" 
 import { SettingsCard } from "../../components/page-elements/SettingsCard" 
+import { TwoColumnLoading } from "../../components/page-elements/TwoColumnLoading"
 
 export const OrganizationDisplay = () => {
 	const dispatch = useAppDispatch()
@@ -47,7 +48,7 @@ export const OrganizationDisplay = () => {
 	return (
 		<div>
 			<div className = "tw-flex tw-flex-col tw-gap-y-6 lg:tw-flex-row lg:tw-gap-x-6">
-				{organization ? 
+				{!isLoading && organization ? 
 					<>
 						<div className = "lg:tw-w-1/4 tw-flex tw-flex-col tw-gap-y-4">
 							<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
@@ -84,7 +85,7 @@ export const OrganizationDisplay = () => {
 							<Outlet/>
 						</div>
 					</>
-				: null
+				: <TwoColumnLoading/>
 				}
 			</div>
 		</div>

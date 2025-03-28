@@ -11,6 +11,8 @@ import { parseDelimitedWord } from "../helpers/functions"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { PasswordRules } from "./page-elements/PasswordRules"
+import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
+import { ColumnFormPlaceholder } from "./placeholders/ColumnFormPlaceholder"
 
 type FormValues = {
 	id?: number 
@@ -110,8 +112,12 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
     	}
     }
 
-    if (isUserDataFetching){
-    	return <></>
+    if (isUserDataLoading){
+    	return (
+			<LoadingSkeleton width = "tw-w-full" height = "tw-h-[000px]">
+				<ColumnFormPlaceholder/>
+			</LoadingSkeleton> 
+		)
     }
 
 	return (

@@ -46,6 +46,8 @@ import { LG_BREAKPOINT } from "../helpers/constants"
 import { isValidDateString, convertMinutesToTimeDisplay } from "../helpers/functions"
 import { format, toDate } from "date-fns-tz"
 import { TicketActivityModalProps } from "./secondary-modals/TicketActivityModal"
+import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
+import { RowPlaceholder } from "./placeholders/RowPlaceholder"
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -362,7 +364,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 											{userProfileSelect}		
 										</div>
 									</button>
-								) : <LoadingSpinner/>
+								) : <LoadingSkeleton className="tw-bg-gray-200" width="tw-w-32" height="tw-h-6"/>
 							}	
 						</RightSectionRow>
 						<RightSectionRow title={"Reporter"}>
@@ -387,7 +389,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							{
 								<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
 									<div className = "tw-w-[2em] tw-shrink-0">
-										{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-w-5 tw-h-5 tw-shrink-0"/> : null}
+										{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-0.5 tw-w-5 tw-h-5 tw-shrink-0"/> : null}
 									</div>
 									<div className = "tw-flex tw-flex-1">
 									{
@@ -397,7 +399,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 											</div>
 										: (
 										<div className = "tw-w-full">
-											{ticketTypeName}	
+											<div className = "tw-ml-3">{ticketTypeName}</div>
 										</div>
 										)
 									}
@@ -477,7 +479,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									ticketId: ticket?.id ?? 0
 								}))
 								dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
-							}}>{!isTicketActivitiesLoading ? (ticketActivities?.additional?.totalTime ? convertMinutesToTimeDisplay(ticketActivities?.additional?.totalTime) : <span>None</span>) : <LoadingSpinner/>}</button>
+							}}>{!isTicketActivitiesLoading ? (ticketActivities?.additional?.totalTime ? convertMinutesToTimeDisplay(ticketActivities?.additional?.totalTime) : <span>None</span>) : <LoadingSkeleton className="tw-bg-gray-200" width="tw-w-32" height="tw-h-6"/>}</button>
 						</RightSectionRow>
 					</div>
 				</div>
@@ -654,7 +656,10 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							}
 							<LinkedTicketForm currentTicketId={currentTicketId} showAddLinkedIssue={showAddLinkedIssue} setShowAddLinkedIssue={setShowAddLinkedIssue} ticketRelationships={ticketRelationships?.data?.length ? ticketRelationships.data : []}/>
 						</div> : null
-					) : <LoadingSpinner/>}
+					) : 
+					<LoadingSkeleton width = "tw-w-full" height = "tw-h-[500px]">
+						<RowPlaceholder/>	
+					</LoadingSkeleton>}
 				</div>
 				<div className = "tw-space-y-2">
 					{!isTicketCommentsLoading && !isTicketActivitiesLoading && currentTicketId ? (
@@ -667,7 +672,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							commentPage={commentPage}
 							currentTicketId={currentTicketId}
 						/>
-					) : <LoadingSpinner/>}
+					) : <LoadingSkeleton width = "tw-w-full" height = "tw-h-[500px]">
+						<RowPlaceholder/>	
+					</LoadingSkeleton>}
 				</div>
 			</div>
 		</div>

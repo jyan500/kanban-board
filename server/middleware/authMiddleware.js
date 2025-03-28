@@ -21,7 +21,7 @@ function authenticateApprovedToken(req, res, next){
 		return res.status(401).json({error: "Unauthorized"})
 	}
 	jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
-		if (user.is_temp){
+		if (user?.is_temp){
 			return res.status(401).json({ error: "Unauthorized"})
 		}
 		if (err) {

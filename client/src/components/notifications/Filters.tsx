@@ -8,6 +8,7 @@ import { AsyncSelect, LoadOptionsType } from "../../components/AsyncSelect"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useGetUserQuery } from "../../services/private/userProfile"
 import { displayUser } from "../../helpers/functions"
+import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { Switch } from "../page-elements/Switch"
 
 export const Filters = () => {
@@ -52,7 +53,8 @@ export const Filters = () => {
 			                	}}
 			                />
 		                )}
-					/> : null
+					/> : 
+					<LoadingSkeleton className= "tw-bg-gray-200" width = "tw-w-64" height="tw-h-10"/>	
 				}
 			</div>
 			<div className = "tw-flex tw-flex-col">

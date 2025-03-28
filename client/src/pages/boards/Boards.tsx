@@ -12,6 +12,8 @@ import { BOARDS } from "../../helpers/routes"
 import { SearchBar } from "../../components/SearchBar"
 import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
+import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
+import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 
 type FormValues = {
 	query?: string
@@ -34,7 +36,7 @@ export const Boards = () => {
 	const dispatch = useAppDispatch()
 	const pageParam = (searchParams.get("page") != null && searchParams.get("page") !== "" ? searchParams.get("page") : "") as string
 	const currentPage = pageParam !== "" ? parseInt(pageParam) : 1
-	const {data, isFetching } = useGetBoardsQuery({query: searchParams.get("query") ?? "", page: currentPage, lastModified: true, numTickets: true, assignees: true})
+	const {data, isLoading } = useGetBoardsQuery({query: searchParams.get("query") ?? "", page: currentPage, lastModified: true, numTickets: true, assignees: true})
 
 	const registerOptions = {
 	}
@@ -62,7 +64,10 @@ export const Boards = () => {
 			<div>
 				<h1>Boards</h1>
 			</div>
-			{isFetching ? <LoadingSpinner/> : (
+			{isLoading ? 
+			<LoadingSkeleton width="tw-w-full" height="tw-h-84">
+				<RowPlaceholder/>	
+			</LoadingSkeleton> : (
 				<>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 						<FormProvider {...methods}>

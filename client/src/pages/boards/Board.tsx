@@ -14,6 +14,9 @@ import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { Link } from "react-router-dom"
 import { TICKETS } from "../../helpers/routes"
 import { Banner } from "../../components/page-elements/Banner"
+import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
+import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPlaceholder"
+import { BoardPlaceholder } from "../../components/placeholders/BoardPlaceholder"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
@@ -67,7 +70,12 @@ export const Board = () => {
 					<KanbanBoard
 					/> 
 				</>
-				: <LoadingSpinner className = "!tw-w-8 !tw-h-8"/>
+				: 
+				<LoadingSkeleton width = "tw-flex tw-flex-col tw-gap-y-4 tw-w-full" height={"tw-h-[1000px]"}>
+					<div className = "tw-w-32 tw-h-6 tw-bg-gray-200"></div>
+					<SearchBarPlaceholder/>	
+					<BoardPlaceholder/>
+				</LoadingSkeleton>
 			}
 		</div>
 	)

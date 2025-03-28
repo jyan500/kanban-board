@@ -7,6 +7,7 @@ import { useBoardTicketConfig } from "../../helpers/table-config/useBoardTicketC
 import { PaginationRow } from "../page-elements/PaginationRow"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { IconWarning } from "../icons/IconWarning"
+import { RowContentLoading } from "../page-elements/RowContentLoading"
 
 interface Props {
 	selectedIds: Array<number>
@@ -66,7 +67,7 @@ export const BulkActionsFormStep4 = ({selectedIds, skipStep3, step, setStep, for
 									tableKey={"bulk-actions-confirmation"}
 								></Table>
 						</>
-					) : null
+					) : <RowContentLoading/>
 				}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">

@@ -10,6 +10,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ACCOUNT_REGISTRATION_REQUESTS } from "../../helpers/routes"
 import { SearchBar } from "../../components/SearchBar"
 import { withUrlParams } from "../../helpers/functions"
+import { RowContentLoading } from "../../components/page-elements/RowContentLoading"
 
 type FormValues = {
 	query: string
@@ -57,22 +58,30 @@ export const RegistrationRequests = () => {
 						</form>
 					</FormProvider>
 				</div>
-				<Table 
-					tableKey={"reg"} 
-					data={data?.data} 
-					config={config}
-				/>
-				<div className = "tw-p-4 tw-border tw-border-gray-300">
-					<PaginationRow
-						showNumResults={true}
-						showPageNums={true}
-						setPage={setPage}	
-						paginationData={data?.pagination}
-						currentPage={currentPage}
-						urlParams={{...defaultForm, page: currentPage}}
-						url={ACCOUNT_REGISTRATION_REQUESTS}	
-					/>
-				</div>
+				{
+					isLoading ? (
+						<RowContentLoading/>	
+					) : (
+						<>
+							<Table 
+								tableKey={"reg"} 
+								data={data?.data} 
+								config={config}
+							/>
+							<div className = "tw-p-4 tw-border tw-border-gray-300">
+								<PaginationRow
+									showNumResults={true}
+									showPageNums={true}
+									setPage={setPage}	
+									paginationData={data?.pagination}
+									currentPage={currentPage}
+									urlParams={{...defaultForm, page: currentPage}}
+									url={ACCOUNT_REGISTRATION_REQUESTS}	
+								/>
+							</div>
+						</>
+					)
+				}
 			</div>
 		</div>
 	)	

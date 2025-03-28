@@ -28,7 +28,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 	const ticketType = ticketTypes?.find((ticketType) => ticketType.id === ticket?.ticketTypeId)?.name
 	const priority = priorities?.find((priority) => priority.id === ticket?.priorityId)?.name
 	const [showConfirmUnlink, setShowConfirmUnlink] = useState(false)
-	const { data, isFetching } = useGetUserQuery(ticket?.assignees?.[0].id ?? skipToken)
+	const { data, isLoading } = useGetUserQuery(ticket?.assignees?.[0].id ?? skipToken)
 	const { width, height } = useScreenSize()
 	return (
 		<div className = {`hover:tw-bg-gray-50 tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full ${borderless ? "" : "tw-border tw-border-gray-200"} tw-rounded-md`}>
@@ -49,7 +49,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 					: <></>}	
 				</div>
 				{width >= SM_BREAKPOINT ? 
-					(isFetching ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>) 
+					(isLoading ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>) 
 				: null}
 				<div className = "tw-text-left tw-break-words">{status?.name}</div>
 			</div>
