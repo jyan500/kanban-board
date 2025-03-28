@@ -33,7 +33,7 @@ export const AccountActivation = () => {
 	const activate = async () => {
 		try {
 			await activateAccount({token: searchParams.get("token") ?? ""}).unwrap()
-    		navigate(LOGIN, {state: {"alert": "Account activated succesfully!"}, replace: true})
+    		navigate(LOGIN, {state: {"alert": "Account activated successfully!"}, replace: true})
 		}
 		catch (e){
 
