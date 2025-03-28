@@ -7,6 +7,7 @@ import { BOARD_URL } from "../../helpers/urls"
 import { AsyncSelect, LoadOptionsType } from "../../components/AsyncSelect"
 import { useGetBoardQuery } from "../../services/private/board"
 import { skipToken } from '@reduxjs/toolkit/query/react'
+import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 
 export const Filters = () => {
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -64,7 +65,7 @@ export const Filters = () => {
 			                )}
 						/>
 					) : (
-						<LoadingSpinner/>	
+						<LoadingSkeleton className= "tw-bg-gray-200" width = "tw-w-64" height="tw-h-10"/>	
 					)
 				}
 			</div>

@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form"
 import { IconEye } from "../components/icons/IconEye"
 import { IconEyeSlash } from "../components/icons/IconEyeSlash"
 import { PasswordRules } from "../components/page-elements/PasswordRules" 
+import { RowContentLoading } from "../components/page-elements/RowContentLoading"
 
 interface FormValues {
 	password: string
@@ -59,7 +60,7 @@ export const ResetPassword = () => {
 	}
 
 	return (
-		isLoading ? <LoadingSpinner/> : (
+		isLoading ? <RowContentLoading/> : (
 			<div>
 				<h1>Reset Password</h1>		
 				<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-4">
