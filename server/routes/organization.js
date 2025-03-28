@@ -10,7 +10,7 @@ const {
 	validateUpdateOrganization 
 } = require("../validation/organization")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
-const sendEmail = require("../email/email")
+const {sendEmail, sendBulkEmail} = require("../email/email")
 const registrationSuccessTemplate = require("../email/templates/registration-success") 
 const registrationRequestTemplate = require("../email/templates/registration-request") 
 const registrationDeniedTemplate = require("../email/templates/registration-denied") 
@@ -190,6 +190,7 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 			const userRole = await db("user_roles").where("name", "USER").first()
 			await db("user_registration_requests").whereIn("id", regIds).update({
 				"approved_at": new Date(),
+				// saving the organization user that approved this registration request
 				"org_user_id": orgUser?.id
 			})
 			const regRequests = await db("user_registration_requests").whereIn("id", regIds)
@@ -202,6 +203,18 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 			})
 			await db("organization_user_roles").insert(toInsert)
 			// TODO: email the user
+			const userIds = regRequests.map((regRequest) => regRequest.user_id)
+			const recipients = await db("organization_user_roles").join("users", "users.id", "=", "organization_user_roles.user_id").whereIn("organization_user_roles.user_id", userIds)
+			.join("organizations", "organizations.id", "=", "organization_user_roles.organization_id")
+			.select(
+				"users.first_name as firstName",
+				"users.last_name as lastName",
+				"users.email as email",
+				"organizations.email as orgEmail",
+				"organizations.phone_number as orgPhoneNum",
+				"organizations.name as orgName"
+			)
+			sendBulkEmail(recipients, "Registration Request Accepted", (firstName, lastName, orgName, _, __) => registrationSuccessTemplate(firstName, lastName, orgName))
 			res.json({
 				message: "Users registration process is complete"
 			})
@@ -209,8 +222,23 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 		else {
 			await db("user_registration_requests").whereIn("id", regIds).update({
 				"denied_at": new Date(),
+				// saving the organization user that denied this registration request
 				"org_user_id": orgUser?.id
 			})
+			const deniedUsers = await db("user_registration_requests").whereIn("id", regIds).select("user_registration_requests.user_id as userId")
+			const userIds = deniedUsers.map((user) => user.userId)
+			const recipients = await db("user_registration_requests").join("users", "users.id", "=", "user_registration_requests.user_id").whereIn("user_registration_requests.user_id", userIds)
+			.join("organizations", "organizations.id", "=", "user_registration_requests.organization_id")
+			.select(
+				"users.first_name as firstName",
+				"users.last_name as lastName",
+				"users.email as email",
+				"organizations.email as orgEmail",
+				"organizations.phone_number as orgPhoneNum",
+				"organizations.name as orgName"
+			)
+			console.log("recipients: ", recipients)
+			sendBulkEmail(recipients, "Registration Request Denied", (firstName, lastName, orgName, orgEmail, orgPhoneNum) => registrationDeniedTemplate(firstName, lastName, orgName, orgEmail, orgPhoneNum))
 			res.json({
 				message: "Users registration requests were denied"
 			})
