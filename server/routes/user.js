@@ -18,7 +18,7 @@ const { EXCEEDED_MESSAGE, DEFAULT_STATUSES } = require("../constants")
 const rateLimit = require("express-rate-limit")
 
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 10 * 60 * 1000, // 10 minutes
     max: 5, // 5 max in the window,
     handler: (req, res) => {
 	    res.status(429).json({
@@ -67,6 +67,7 @@ router.post("/login", limiter, userValidator.loginValidator, handleValidationRes
 	}
 	catch (err){
 		console.error(`Something went wrong when logging in: ${err}`)
+		next(err)
 	}
 })
 
@@ -105,6 +106,7 @@ router.post("/register", limiter, userValidator.registerValidator, handleValidat
 	}
 	catch (err){
 		console.error(`Something went wrong when registering user: ${err}`)
+		next(err)
 	}
 })
 
@@ -135,6 +137,7 @@ router.post("/forgot-password", limiter, userValidator.forgotPasswordValidator, 
 	}	
 	catch (err){
 		console.error(`Something went wrong when generating forgot password link: ${err}`)
+		next(err)
 	}
 })
 
@@ -158,6 +161,7 @@ router.get("/validate-token", limiter, async (req, res, next) => {
 	}	
 	catch (err){
 		console.error(`Something went wrong when validating reset token: ${err}`)
+		next(err)
 	}
 })
 
@@ -177,6 +181,7 @@ router.post("/resend-activation", limiter, async (req, res, next) => {
 	}	
 	catch (err){
 		console.error(`Something went wrong when resending activation: ${err}`)
+		next(err)
 	}
 })
 
@@ -195,6 +200,7 @@ router.post("/activate", limiter, async (req, res, next) => {
 	}
 	catch (err) {
 		console.error(`Something went wrong when activating account: ${err}`)
+		next(err)
 	}
 })
 
@@ -225,6 +231,7 @@ router.post("/reset-password", limiter, userValidator.resetPasswordValidator, ha
 	}	
 	catch (err){
 		console.error(`Something went wrong when resetting password: ${err}`)
+		next(err)
 	}
 })
 
@@ -273,6 +280,7 @@ router.post("/register/organization", limiter, userValidator.organizationUserReg
 	}	
 	catch (err){
 		console.error(`Something went wrong when registering organization and user: ${err}`)
+		next(err)
 	}
 })
 
@@ -294,6 +302,7 @@ router.post("/org-login", authenticateToken, async (req, res, next) => {
 	}	
 	catch (err) {
 		console.error(`Something went wrong while switching organizations: ${err}`)
+		next(err)
 	}
 })
 

@@ -18,7 +18,7 @@ router.get("/", async (req, res, next) => {
 		res.json(statuses)
 	}	
 	catch (err) {
-		console.log(`Error while getting statuses: ${err.message}`)	
+		console.error(`Error while getting statuses: ${err.message}`)	
 		next(err)
 	}
 })
@@ -36,7 +36,7 @@ router.get("/:id", validateGet, handleValidationResult, async (req, res, next) =
 		res.json(statuses)
 	}	
 	catch (err){
-		console.log(`Error while getting status: ${err.message}`)	
+		console.error(`Error while getting status: ${err.message}`)	
 		next(err)
 	}
 })
@@ -54,7 +54,7 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 		res.json({id: id[0], message: `Status inserted successfully!`})
 	}	
 	catch (err){
-		console.log(`Error while inserting status: ${err.message}`)	
+		console.error(`Error while inserting status: ${err.message}`)	
 		next(err)
 	}
 })
@@ -123,7 +123,7 @@ router.delete("/:id", validateDelete, handleValidationResult, async (req, res, n
 		res.json({message: "Status deleted successfully!"})
 	}
 	catch (err){
-		console.log(`Error while deleting status: ${err.message}`)
+		console.error(`Error while deleting status: ${err.message}`)
 		next(err)
 	}
 })

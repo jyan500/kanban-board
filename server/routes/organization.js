@@ -39,7 +39,7 @@ router.get("/", async (req, res, next) => {
 		res.json(organizations)
 	}
 	catch (err){
-		console.log(`Error while getting organizations: ${err.message}`)	
+		console.error(`Error while getting organizations: ${err.message}`)	
 		next(err)
 	}
 })
@@ -69,7 +69,7 @@ router.get("/registration-request", authenticateToken, authenticateUserRole(["AD
 		res.json(registrationRequest)
 	}	
 	catch (err) {
-		console.log(`Error while getting registration requests: ${err.message}`)	
+		console.error(`Error while getting registration requests: ${err.message}`)	
 		next(err)
 	}
 })
@@ -128,7 +128,7 @@ router.get("/registration-request/:regId", authenticateToken, authenticateUserRo
 		})
 	}	
 	catch (err) {
-		console.log(`Error while getting registration request: ${err.message}`)	
+		console.error(`Error while getting registration request: ${err.message}`)	
 		next(err)
 	}	
 })
@@ -176,7 +176,7 @@ router.put("/registration-request/:regId", authenticateToken, authenticateUserRo
 		}
 	}	
 	catch (err) {
-		console.log(`Error while updating registration requests: ${err.message}`)	
+		console.error(`Error while updating registration requests: ${err.message}`)	
 		next(err)
 	}
 })
@@ -237,7 +237,6 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 				"organizations.phone_number as orgPhoneNum",
 				"organizations.name as orgName"
 			)
-			console.log("recipients: ", recipients)
 			sendBulkEmail(recipients, "Registration Request Denied", (firstName, lastName, orgName, orgEmail, orgPhoneNum) => registrationDeniedTemplate(firstName, lastName, orgName, orgEmail, orgPhoneNum))
 			res.json({
 				message: "Users registration requests were denied"
@@ -245,7 +244,7 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 		}
 	}	
 	catch (err){
-		console.log(`Error while updating registration requests: ${err.message}`)	
+		console.error(`Error while updating registration requests: ${err.message}`)	
 		next(err)
 	}
 })
@@ -267,7 +266,7 @@ router.get("/:id", async (req, res, next) => {
 		res.json(organization)
 	}	
 	catch (err){
-		console.log(`Error while getting organizations: ${err.message}`)	
+		console.error(`Error while getting organizations: ${err.message}`)	
 		next(err)
 	}
 })
@@ -281,7 +280,7 @@ router.put("/:id", authenticateToken, authenticateUserRole(["ADMIN"]), validateU
 		res.json({"message": "Organization updated successfully!"})
 	}	
 	catch (err){
-		console.log(`Error while updating organization: ${err.message}`)	
+		console.error(`Error while updating organization: ${err.message}`)	
 		next(err)
 	}
 })

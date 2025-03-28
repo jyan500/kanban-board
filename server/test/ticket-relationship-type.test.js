@@ -36,7 +36,7 @@ describe("routes: ticket-relationship-type", function() {
 					});
 				}
 				catch(err){
-					console.log("something went wrong with seeding")
+					console.error("something went wrong with seeding")
 				}
 			})
 		});

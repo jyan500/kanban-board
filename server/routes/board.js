@@ -164,7 +164,7 @@ router.get("/", async (req, res, next) => {
 		res.json(resData)
 	}
 	catch (err) {
-		console.log(`Error while getting boards: ${err.message}`)	
+		console.error(`Error while getting boards: ${err.message}`)	
 		next(err)
 	}
 })
@@ -205,7 +205,7 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 		res.json(resData)
 	}	
 	catch (err) {
-		console.log(`Error while getting Boards: ${err.message}`)	
+		console.error(`Error while getting Boards: ${err.message}`)	
 		next(err)
 	}
 })
@@ -226,7 +226,7 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 		res.json({"lastModified": new Date(mostRecentUpdate)})
 	}	
 	catch (err) {
-		console.log(`Error while getting board last modified:  ${err.message}`)	
+		console.error(`Error while getting board last modified:  ${err.message}`)	
 		next(err)
 	}
 })
@@ -326,7 +326,7 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 
 	}	
 	catch (err) {
-		console.log(`Error while getting tickets: ${err.message}`)
+		console.error(`Error while getting tickets: ${err.message}`)
 		next(err)
 	}
 })
@@ -339,7 +339,7 @@ router.post("/:boardId/ticket", validateBoardTicketCreate, handleValidationResul
 		res.json({message: "tickets inserted into board successfully!"})
 	}	
 	catch (err) {
-		console.log(`Error while inserting tickets into board: ${err.message}`)
+		console.error(`Error while inserting tickets into board: ${err.message}`)
 		next(err)
 	}
 })
@@ -366,7 +366,7 @@ router.get("/:boardId/ticket/:ticketId", validateBoardTicketGet, handleValidatio
 
 	}	
 	catch (err) {
-		console.log(`Error while getting tickets: ${err.message}`)
+		console.error(`Error while getting tickets: ${err.message}`)
 		next(err)
 	}
 })
@@ -378,7 +378,7 @@ router.delete("/:boardId/ticket", validateBoardTicketBulkDelete, handleValidatio
 		res.json({message: "tickets deleted from board successfully!"})
 	}
 	catch (err) {
-		console.log(`Error while deleting tickets from board: ${err.message}`)
+		console.error(`Error while deleting tickets from board: ${err.message}`)
 		next(err)
 	}})
 
@@ -389,7 +389,7 @@ router.delete("/:boardId/ticket/:ticketId", validateBoardTicketDelete, handleVal
 		res.json({message: "ticket deleted from board successfully!"})
 	}
 	catch (err) {
-		console.log(`Error while deleting ticket from board: ${err.message}`)
+		console.error(`Error while deleting ticket from board: ${err.message}`)
 		next(err)
 	}
 })
@@ -416,7 +416,7 @@ router.get("/:boardId/status", validateGet, handleValidationResult, async (req, 
 		res.json(statuses)
 	}
 	catch (err) {
-		console.log(`Error while getting statuses: ${err.message}`)
+		console.error(`Error while getting statuses: ${err.message}`)
 		next(err)
 	}
 })
@@ -439,7 +439,7 @@ router.get("/:boardId/status/:statusId", validateBoardStatusGet, handleValidatio
 
 	}	
 	catch (err) {
-		console.log(`Error while getting status: ${err.message}`)
+		console.error(`Error while getting status: ${err.message}`)
 		next(err)
 	}
 })
@@ -452,7 +452,7 @@ router.post("/:boardId/status", validateBoardStatusCreate, handleValidationResul
 		res.json({message: "statuses inserted into board successfully!"})
 	}
 	catch (err) {
-		console.log(`Error while inserting statuses: ${err.message}`)
+		console.error(`Error while inserting statuses: ${err.message}`)
 		next(err)
 	}
 })
@@ -484,7 +484,7 @@ router.post("/:boardId/status/bulk-edit", validateBoardStatusBulkEdit, handleVal
 		res.json({message: "statuses bulk edited successfully"})
 	}	
 	catch (err) {
-		console.log(`Error while updating board statuses: ${err.message}`)
+		console.error(`Error while updating board statuses: ${err.message}`)
 		next(err)
 	}
 })
@@ -498,7 +498,7 @@ router.delete("/:boardId/status/:statusId", validateBoardStatusDelete, handleVal
 		res.json({"message": "status deleted successfully!"})
 	}
 	catch (err) {
-		console.log(`Error while deleting status: ${err.message}`)
+		console.error(`Error while deleting status: ${err.message}`)
 		next(err)
 	}
 })
@@ -539,7 +539,7 @@ router.delete("/:boardId", validateDelete, handleValidationResult, async (req, r
 		res.json({message: "Board deleted successfully!"})
 	}
 	catch (err){
-		console.log(`Error while deleting Board: ${err.message}`)
+		console.error(`Error while deleting Board: ${err.message}`)
 		next(err)
 	}
 })

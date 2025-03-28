@@ -150,7 +150,7 @@ router.get("/", async (req, res, next) => {
 		res.json(tickets)
 	}
 	catch (err) {
-		console.log(`Error while getting tickets: ${err.message}`)	
+		console.error(`Error while getting tickets: ${err.message}`)	
 		next(err)
 	}
 })
@@ -191,7 +191,7 @@ router.get("/:ticketId", validateGet, handleValidationResult, async (req, res, n
 		res.json(tickets)
 	}	
 	catch (err) {
-		console.log(`Error while getting tickets: ${err.message}`)	
+		console.error(`Error while getting tickets: ${err.message}`)	
 		next(err)
 	}
 })
@@ -317,7 +317,7 @@ router.get("/:ticketId/user", validateGet, handleValidationResult, async (req, r
 		res.json(users)
 	}	
 	catch (err){
-		console.log(`Error while getting assigned users for ticket: ${err.message}`)
+		console.error(`Error while getting assigned users for ticket: ${err.message}`)
 		next(err)
 	}
 })
@@ -338,7 +338,7 @@ router.get("/:ticketId/user/:userId", validateTicketUserGet, handleValidationRes
 		res.json(assignedUser)
 	}	
 	catch (err) {
-		console.log(`Error while getting assigned user for ticket: ${err.message}`)
+		console.error(`Error while getting assigned user for ticket: ${err.message}`)
 		next(err)
 	}
 })
@@ -352,7 +352,7 @@ router.post("/:ticketId/user/", validateTicketUserCreate, handleValidationResult
 		res.json({message: "users assigned to tickets successfully!"})
 	}	
 	catch (err) {
-		console.log(`Error while assigning user to ticket: ${err.message}`)
+		console.error(`Error while assigning user to ticket: ${err.message}`)
 		next(err)
 	}
 })
@@ -368,7 +368,7 @@ router.post("/:ticketId/user/bulk-edit", validateTicketUserBulkEdit, handleValid
 		res.json({message: "users assigned to ticket successfully!"})
 	}	
 	catch (err){ 
-		console.log(`Error while assigning users to ticket: ${err.message}`)
+		console.error(`Error while assigning users to ticket: ${err.message}`)
 		next(err)
 	}
 })
@@ -384,7 +384,7 @@ router.delete("/:ticketId/user/:userId", validateTicketUserGet, handleValidation
 		res.json({"message": "user unassigned from ticket successfully!"})
 	}	
 	catch (err) {
-		console.log(`Error while getting assigned user for ticket: ${err.message}`)
+		console.error(`Error while getting assigned user for ticket: ${err.message}`)
 		next(err)
 	}
 })
@@ -420,7 +420,7 @@ router.get("/:ticketId/comment", validateGet, handleValidationResult, async (req
 		})
 	}	
 	catch (err) {
-		console.log(`Error while getting comments for ticket: ${err.message}`)
+		console.error(`Error while getting comments for ticket: ${err.message}`)
 		next(err)
 	}
 })
@@ -437,7 +437,7 @@ router.get("/:ticketId/comment/:commentId", validateTicketCommentGet, handleVali
 		req.json(comment)
 	}	
 	catch (err) {
-		console.log(`Error while getting comment for ticket: ${err.message}`)
+		console.error(`Error while getting comment for ticket: ${err.message}`)
 		next(err)
 	}
 })
@@ -461,7 +461,7 @@ router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationR
 		}), message: "Comment inserted successfully!"})
 	}
 	catch (err){
-		console.log(`Error while creating comment for ticket: ${err.message}`)
+		console.error(`Error while creating comment for ticket: ${err.message}`)
 		next(err)
 	}
 })
@@ -499,7 +499,7 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 		}), message: "Comment updated successfully!"})
 	}	
 	catch (err) {
-		console.log(`Error while updating comment: ${err.message}`)
+		console.error(`Error while updating comment: ${err.message}`)
 		next(err)
 	}
 })
@@ -510,7 +510,7 @@ router.delete("/:ticketId/comment/:commentId", validateTicketCommentDelete, hand
 		res.json({message: "Comment deleted successfully!"})
 	}	
 	catch (err){
-		console.log(`Error while deleting comment: ${err.message}`)
+		console.error(`Error while deleting comment: ${err.message}`)
 		next(err)
 	}
 })
@@ -551,7 +551,7 @@ router.get("/:ticketId/relationship", validateGet, handleValidationResult, async
 		})	
 	}
 	catch (err) {
-		console.log(`Error while getting ticket relationships: ${err.message}`)
+		console.error(`Error while getting ticket relationships: ${err.message}`)
 		next(err)
 	}
 })
@@ -567,7 +567,7 @@ router.get("/:ticketId/relationship/:relationshipId", validateTicketRelationship
 		res.json(relationship)
 	}	
 	catch (err) {
-		console.log(`Error while getting ticket relationship: ${err.message}`)
+		console.error(`Error while getting ticket relationship: ${err.message}`)
 		next(err)
 	}
 })
@@ -582,7 +582,7 @@ router.post("/:ticketId/relationship", validateTicketRelationshipCreate, handleV
 		res.json({id: id[0], message: "Ticket relationship inserted successfully!"})
 	}	
 	catch (err){
-		console.log(`Error while creating ticket relationship: ${err.message}`)
+		console.error(`Error while creating ticket relationship: ${err.message}`)
 		next(err)
 	}
 })
@@ -593,7 +593,7 @@ router.delete("/:ticketId/relationship/:relationshipId", validateTicketRelations
 		res.json({message: "ticket relationship deleted successfully!"})
 	}	
 	catch (err) {
-		console.log(`Error while deleting ticket relationship: ${err.message}`)
+		console.error(`Error while deleting ticket relationship: ${err.message}`)
 		next(err)
 	}
 })
@@ -632,7 +632,7 @@ router.get("/:ticketId/activity", validateGet, handleValidationResult, async (re
 		})
 	}
 	catch (err) {
-		console.log(`Error while getting ticket activity: ${err.message}`)
+		console.error(`Error while getting ticket activity: ${err.message}`)
 		next(err)
 	}
 })
@@ -649,7 +649,7 @@ router.post("/:ticketId/activity", validateTicketActivityAdd, handleValidationRe
 		res.json({message: "ticket activity created successfully!"})
 	}
 	catch (err) {
-		console.log(`Error while adding ticket activity: ${err.message}`)
+		console.error(`Error while adding ticket activity: ${err.message}`)
 		next(err)
 	}
 })
@@ -667,7 +667,7 @@ router.get("/:ticketId/activity/:activityId", validateTicketActivityGet, handleV
 		res.json(ticketActivity)
 	}
 	catch (err) {
-		console.log(`Error while getting ticket activity: ${err.message}`)
+		console.error(`Error while getting ticket activity: ${err.message}`)
 		next(err)
 	}
 })
@@ -682,7 +682,7 @@ router.put("/:ticketId/activity/:activityId", validateTicketActivityUpdate, hand
 		res.json({message: "Ticket activity updated successfully!"})
 	}	
 	catch (err){
-		console.log(`Error while updatnig ticket activity: ${err.message}`)
+		console.error(`Error while updatnig ticket activity: ${err.message}`)
 		next(err)
 	}
 })
@@ -693,7 +693,7 @@ router.delete("/:ticketId/activity/:activityId", validateTicketActivityDelete, h
 		res.json({message: "Ticket activity deleted successfully!"})
 	}
 	catch (err) {
-		console.log(`Error while deleting ticket activity: ${err.message}`)
+		console.error(`Error while deleting ticket activity: ${err.message}`)
 		next(err)
 	}
 })
@@ -772,7 +772,7 @@ router.delete("/:ticketId", validateDelete, handleValidationResult, async (req, 
 		res.json({message: "Ticket deleted successfully!"})
 	}
 	catch (err){
-		console.log(`Error while deleting ticket: ${err.message}`)
+		console.error(`Error while deleting ticket: ${err.message}`)
 		next(err)
 	}
 })

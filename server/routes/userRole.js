@@ -13,7 +13,7 @@ router.get("/", async (req, res, next) => {
 		res.json(userRoles)
 	}
 	catch (err){
-		console.log(`Error while getting user profile: ${err.message}`)	
+		console.error(`Error while getting user profile: ${err.message}`)	
 		next(err)
 	}
 })

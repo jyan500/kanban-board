@@ -70,7 +70,7 @@ router.get("/", async (req, res, next) => {
 		})
 	}
 	catch (err){
-		console.log(`Error while getting user profile: ${err.message}`)	
+		console.error(`Error while getting user profile: ${err.message}`)	
 		next(err)
 	}
 })
@@ -125,7 +125,7 @@ router.get("/me", async (req, res, next) => {
 		}
 	}
 	catch (err){
-		console.log(`Error while getting user profile: ${err.message}`)	
+		console.error(`Error while getting user profile: ${err.message}`)	
 		next(err)
 	}
 })
@@ -151,7 +151,7 @@ router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res
 		res.json({message: "Account updated successfully!"})
 	}	
 	catch (err){
-		console.log(`Error while getting user profile: ${err.message}`)	
+		console.error(`Error while getting user profile: ${err.message}`)	
 		next(err)
 	}
 })
@@ -167,7 +167,7 @@ router.get("/notification-type", authenticateUserActivated, async (req, res, nex
 		res.json(userNotificationTypes)
 	}	
 	catch (err){
-		console.log(`Error while getting user notification types: ${err.message}`)	
+		console.error(`Error while getting user notification types: ${err.message}`)	
 		next(err)
 	}
 })
@@ -182,7 +182,7 @@ router.post("/notification-type", authenticateUserActivated, editNotificationTyp
 		res.json({message: "notification types updated successfully"})
 	}	
 	catch (err){
-		console.log(`Error while updating user notification types: ${err.message}`)
+		console.error(`Error while updating user notification types: ${err.message}`)
 	}
 })
 
@@ -221,7 +221,7 @@ router.get("/organization", async (req, res, next) => {
 		res.json(organizations)
 	}	
 	catch (err) {
-		console.log(`Error while getting organizations: ${err.message}`)	
+		console.error(`Error while getting organizations: ${err.message}`)	
 		next(err)
 	}
 })
@@ -236,7 +236,7 @@ router.post("/activate", async (req, res, next) => {
 		res.json({message: "Account activated successfully!"})
 	}
 	catch (err){
-		console.log(`Error while activating account: ${err.message}`)	
+		console.error(`Error while activating account: ${err.message}`)	
 		next(err)
 	}
 })
@@ -260,7 +260,7 @@ router.post("/organization", authenticateUserActivated, validateAddOrganization,
 		res.json({message: "Organization registered successfully!"})
 	}
 	catch (err){
-		console.log(`Error while adding organization: ${err.message}`)	
+		console.error(`Error while adding organization: ${err.message}`)	
 		next(err)
 	}
 })
@@ -299,7 +299,7 @@ router.get("/:userId", getUserValidator, handleValidationResult, async (req, res
 		res.json(userProfile)
 	}	
 	catch (err){
-		console.log(`Error while getting user profile: ${err.message}`)
+		console.error(`Error while getting user profile: ${err.message}`)
 		next(err)
 	}
 })
@@ -350,7 +350,7 @@ router.get("/:userId/registration-request", getUserValidator, handleValidationRe
 		})
 	}	
 	catch (err){
-		console.log(`Error while getting registration requests: ${err.message}`)
+		console.error(`Error while getting registration requests: ${err.message}`)
 		next(err)
 	}
 })
@@ -371,7 +371,7 @@ router.put("/:userId", authenticateUserRole(["ADMIN"]), editUserValidator, handl
 		res.json({message: "User profile updated successfully!"})
 	}	
 	catch (err){
-		console.log(`Error while updating user profile: ${err.message}`)
+		console.error(`Error while updating user profile: ${err.message}`)
 		next(err)
 	}
 })
