@@ -91,7 +91,7 @@ const checkFieldUniqueToStatuses = async (fieldName, field, organizationId, id=n
 		return true
 	}
 	catch (err) {
-		console.log(`Error while validating statuses: ${err.message}`)	
+		console.error(`Error while validating statuses: ${err.message}`)	
 	}
 
 }

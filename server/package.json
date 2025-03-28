@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter spec --exit --timeout 10000"
+    "test": "mocha --reporter spec --exit --timeout 10000",
+    "dev": "knex migrate:latest --env development && nodemon index.js",
+    "start": "knex migrate:latest --env production && node index.js"
   },
   "keywords": [],
   "author": "",

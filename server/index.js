@@ -2,7 +2,7 @@ require("dotenv").config()
 const express = require("express")
 const cors = require("cors")
 const app = express()
-const port = 8000
+const port = process.env.PORT || 8000;
 const statusRouter = require("./routes/status")
 const priorityRouter = require("./routes/priority")
 const ticketRouter = require("./routes/ticket")
@@ -54,7 +54,7 @@ app.use(api("organization"), organizationRouter)
 app.use((err, req, res, next) => {
 	const statusCode = err.statusCode || 500
 	console.error(err.message, err.stack)
-	res.status(statusCode).json({message: err.message})
+	res.status(statusCode).json({errors: ["Something went wrong!"]})
 	return
 })
 

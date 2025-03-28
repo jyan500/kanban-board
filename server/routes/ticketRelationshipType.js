@@ -11,7 +11,7 @@ router.get("/", async (req, res, next) => {
 		res.json(ticketRelationshipTypes)
 	}
 	catch (err){
-		console.log(`Error while getting ticket relationship types: ${err.message}`)	
+		console.error(`Error while getting ticket relationship types: ${err.message}`)	
 		next(err)
 	}
 })
@@ -25,7 +25,7 @@ router.get("/:id", async (req, res, next) => {
 		res.json(ticketRelationshipTypes)
 	}	
 	catch (err){
-		console.log(`Error while getting ticket relationship types: ${err.message}`)	
+		console.error(`Error while getting ticket relationship types: ${err.message}`)	
 		next(err)
 	}
 })

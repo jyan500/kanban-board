@@ -4,6 +4,16 @@ require("dotenv").config()
  * @type { Object.<string, import("knex").Knex.Config> }
  */
 module.exports = {
+  production: {
+    client: process.env.DB_CLIENT,
+    connection: process.env.DATABASE_URL,
+    seeds: {
+      directory: "./db/seeds"
+    },
+    migrations: {
+      directory: "./db/migrations",
+    },
+  },
   development: {
     client: process.env.DB_CLIENT,
     connection: {

@@ -184,6 +184,7 @@ router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, 
 	}
 	catch (err){
 		console.error(`There was an error while updating notification: ${err}`)
+		next(err)
 	}
 })
 
@@ -195,6 +196,7 @@ router.put("/:notificationId", async (req, res, next) => {
 	}
 	catch (err){
 		console.error(`There was an error while updating notification: ${err}`)
+		next(err)
 	}
 })
 

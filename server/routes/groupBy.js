@@ -30,7 +30,7 @@ router.get("/", async (req, res, next) => {
 		res.json(elements)
 	}
 	catch (err){
-		console.log(`Error while getting ticket types: ${err.message}`)	
+		console.error(`Error while getting ticket types: ${err.message}`)	
 		next(err)
 	}
 })
