@@ -44,10 +44,3 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
-
-## Image/Design Credits
-
-[Jira icons](https://www.figma.com/design/bGqYY7Lc0UibN0XWCByiil/Atlassian-Jira-Software-Icons-(Community)?node-id=50-398&t=UIr3d6d3yCaJ69QC-0)
-[Jira Icon](https://static-00.iconduck.com/assets.00/jira-icon-512x512-kkop6eik.png)
-[favicon.ico](https://store-images.s-microsoft.com/image/apps.60333.972ef998-9cea-47ce-b06b-160ef818806e.9fd711c5-d061-4a7d-bfaa-456676dfba0c.8a3db838-2bc4-47a6-bfdb-316a3aea1bf7.png)
-
