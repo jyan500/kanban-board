@@ -30,11 +30,11 @@ export const AccountContainer = ({userProfile, links, uploadImage, setUploadImag
 	return (
 		<div className = "tw-w-full tw-space-y-4">
 			{isTemp ? <Banner type="warning" message = "Your account has not been approved by the organization. Website features will be limited until the account's approval."/> : null}
+			{!userProfile?.isActive ? <AccountActivationBanner/> : null}
 			<div className = "tw-flex tw-flex-col tw-gap-y-6 lg:tw-flex-row lg:tw-gap-x-6">
 				{userProfile ? 
 					<>
 						<div className = "lg:tw-w-1/4 tw-flex tw-flex-col tw-gap-y-4">
-							{!userProfile.isActive ? <AccountActivationBanner/> : null}
 							<>
 								<ProfileCard entityId={userProfile.id} imageUploadUrl={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]} imageUrl={userProfile?.imageUrl}>
 									<>
