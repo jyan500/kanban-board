@@ -13,7 +13,7 @@ const { authenticateToken } = require("../middleware/authMiddleware")
 const registrationRequestTemplate = require("../email/templates/registration-request") 
 const activateAccountTemplate = require("../email/templates/activate-account")
 const passwordResetTemplate = require("../email/templates/password-reset")
-const sendEmail = require("../email/email")
+const {sendEmail} = require("../email/email")
 const { EXCEEDED_MESSAGE, DEFAULT_STATUSES } = require("../constants")
 const rateLimit = require("express-rate-limit")
 

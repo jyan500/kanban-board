@@ -37,4 +37,46 @@ const sendEmail = async (to, subject, template) => {
 	}
 }
 
-module.exports = sendEmail
+/**
+ * takes in multiple recipients, creates an array of promises and then sends them all in bulk
+ * @param recipients: object containing {email, firstName, lastName, orgName, orgEmail, orgPhoneNum}
+ * @param subject: email subject
+ * @param template: email template
+ */ 
+const sendBulkEmail = (recipients, subject, template) => {
+	try {
+		if (process.env.ENVIRONMENT === "PROD" || process.env.ENVIRONMENT === "DEV"){
+			const emails = recipients.map((recipient) => {
+				return transporter.sendMail({
+					from: config.email,
+					to: recipient.email,	
+					subject: subject,
+					html: template(recipient.firstName, recipient.lastName, recipient.orgName, recipient.orgEmail ?? "", recipient.orgPhoneNum ?? "")
+				})
+			})
+			Promise.all(emails)
+			   .then(results => {
+			       console.log('All emails sent successfully');
+			       results.forEach(result => {
+			           console.log(`Message to ${result.envelope.to} sent: ${result.messageId}`);
+			       });
+			   })
+			   .catch(errors => {
+			       console.error('Failed to send one or more emails:', errors);
+			   });
+		}
+		else {
+			recipients.forEach((recipient) => {
+				console.log('Test Environment: message not sent. Debug log: \n%s', `From: ${config.email} \nTo: ${recipient.email} \nSubject: ${subject} \n${template(recipient.firstName, recipient.lastName, recipient.orgName, recipient.orgEmail, recipient.orgPhoneNum)}`);
+			})
+		}
+	}
+	catch (error){
+		console.error('Error sending email:', error);
+	}
+}
+
+module.exports = {
+	sendEmail,
+	sendBulkEmail
+}
