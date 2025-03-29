@@ -283,7 +283,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "*",
-				element: <Navigate to = {ACCOUNT}/>	
+				element: <Navigate to = {"/"}/>	
 			}
 		],
 	},
