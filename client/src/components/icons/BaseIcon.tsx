@@ -6,7 +6,7 @@ interface Props {
 	children: React.ReactNode
 }
 
-export const BaseIcon = ({color, className, children}: Props) => {
+export const BaseIcon = ({color, className, children}: Props): React.ReactNode => {
 	return (
 		<IconContext.Provider value={{color: color ?? "", className: className ?? "tw-w-4 tw-h-4"}}>
 			{children}

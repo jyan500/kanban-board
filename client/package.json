@@ -29,6 +29,9 @@
     "uuid": "^9.0.1",
     "web-vitals": "^2.1.4"
   },
+  "overrides": {
+    "typescript": "^5.8.2"
+  },
   "scripts": {
     "dev": "set PORT=3006 && react-scripts start",
     "start": "serve -s build",

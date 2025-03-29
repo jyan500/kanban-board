@@ -4,6 +4,8 @@ import { useNavigate, Link } from "react-router-dom"
 import { useForm, Resolver, Controller } from "react-hook-form"
 import { useUserRegisterMutation } from "../../services/public/register" 
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import { IconEye } from "../../components/icons/IconEye"
+import { IconEyeSlash } from "../../components/icons/IconEyeSlash"
 import { v4 as uuidv4 } from "uuid" 
 import { LOGIN } from "../../helpers/routes"
 import "../../styles/register.css" 
@@ -176,8 +178,8 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 							/>
 							{
 								!showPassword ? 
-								<FaEye className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4" onClick={() => setShowPassword(!showPassword)}/> : 
-								<FaEyeSlash className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4" onClick={() => setShowPassword(!showPassword)}/>
+								<button onClick={() => setShowPassword(!showPassword)}><IconEye className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button> : 
+								<button onClick={() => setShowPassword(!showPassword)}><IconEyeSlash className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button>
 							}
 						</div>
 				        {errors?.confirmPassword && <small className = "--text-alert">{errors.confirmPassword.message}</small>}

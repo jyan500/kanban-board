@@ -10,6 +10,8 @@ import { UserProfile } from "../types/common"
 import { parseDelimitedWord } from "../helpers/functions"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import { IconEye } from "./icons/IconEye"
+import { IconEyeSlash } from "./icons/IconEyeSlash"
 import { PasswordRules } from "./page-elements/PasswordRules"
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
 import { ColumnFormPlaceholder } from "./placeholders/ColumnFormPlaceholder"
@@ -236,8 +238,8 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 									/>
 									{
 										!showPassword ? 
-										<FaEye className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4" onClick={() => setShowPassword(!showPassword)}/> : 
-										<FaEyeSlash className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4" onClick={() => setShowPassword(!showPassword)}/>
+										<button onClick={() => setShowPassword(!showPassword)}><IconEye className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4" /></button> :
+										<button onClick={() => setShowPassword(!showPassword)}><IconEyeSlash className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button>
 									}
 								</div>
 						        {errors?.confirmPassword && <small className = "--text-alert">{errors.confirmPassword.message}</small>}

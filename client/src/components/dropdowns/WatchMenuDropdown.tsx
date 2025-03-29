@@ -5,7 +5,8 @@ import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType
 import { Toast, Ticket, Status, UserProfile } from "../../types/common"
 import { CgProfile } from "react-icons/cg"
 import { Avatar } from "../page-elements/Avatar"
-import { IoMdEye as WatchIcon, IoMdEyeOff as WatchOffIcon } from "react-icons/io";
+import { IconEye } from "../icons/IconEye";
+import { IconEyeSlash } from "../icons/IconEyeSlash";
 import { 
 	useAddTicketAssigneeMutation,
 	useDeleteTicketAssigneeMutation, 
@@ -135,8 +136,8 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 							>
 								<div className = "tw-flex tw-flex-row tw-gap-x-2">
 									{option === "Start Watching" ? 
-									<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center"><WatchIcon className = "tw-w-6 tw-h-6"/><p>{option}</p></div>
-									: <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center"><WatchOffIcon className = "tw-w-6 tw-h-6"/><p>{option}</p></div>}
+									<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center"><IconEye className = "tw-w-6 tw-h-6"/><p>{option}</p></div>
+									: <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center"><IconEyeSlash className = "tw-w-6 tw-h-6"/><p>{option}</p></div>}
 								</div>
 							</li>
 						)

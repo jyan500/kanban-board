@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react"
 import { IconContext } from "react-icons"
 import { CgProfile } from "react-icons/cg"
 import { HiOutlineLink as LinkIcon } from "react-icons/hi";
+import { IconLink } from "./icons/IconLink"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { setModalType } from "../slices/modalSlice" 
 import { LoadingSpinner } from "./LoadingSpinner"
@@ -28,6 +29,7 @@ import { EditTicketFormToolbar } from "./EditTicketFormToolbar"
 import { priorityIconMap, PriorityIcon, TicketTypeIcon , colorMap } from "./Ticket"
 import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown" 
 import { ImTree as AddToEpicIcon } from "react-icons/im";
+import { IconTree } from "./icons/IconTree"
 import { Badge } from "./page-elements/Badge"
 import { PaginationRow } from "./page-elements/PaginationRow"
 import { Link } from "react-router-dom"
@@ -576,9 +578,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									setShowAddLinkedIssue(!showAddLinkedIssue)
 								}} className = "button !tw-bg-secondary">
 									<div className = "icon-container">
-										<IconContext.Provider value = {{className: "icon"}}>
-											<LinkIcon/>
-										</IconContext.Provider>
+										<IconLink className="icon"/>
 										<span>Link Issue</span>
 									</div>
 								</button>
@@ -590,9 +590,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 										setShowAddToEpic(!showAddToEpic)
 										}} className = "button !tw-bg-light-purple">
 											<div className = "icon-container">
-												<IconContext.Provider value = {{className: "icon"}}>
-													<AddToEpicIcon/>
-												</IconContext.Provider>
+												<IconTree className="icon"/>
 												<span>Add To Epic</span>
 											</div>
 										</button>
