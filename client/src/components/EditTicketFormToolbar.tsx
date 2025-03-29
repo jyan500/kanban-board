@@ -3,9 +3,10 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { IconContext } from "react-icons" 
 import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown"
 import { WatchMenuDropdown } from "./dropdowns/WatchMenuDropdown"
-import { IoMdEye as WatchIcon, IoMdEyeOff as WatchOffIcon } from "react-icons/io";
+import { IconMenu } from "./icons/IconMenu"
+import { IconEye } from "./icons/IconEye"
 import { BsThreeDots as MenuIcon } from "react-icons/bs";
-import { FiShare2 as ShareIcon } from "react-icons/fi";
+import { IconShare } from "./icons/IconShare"
 import { useClickOutside } from "../hooks/useClickOutside" 
 import { Ticket, Status, UserProfile } from "../types/common"
 import { TICKETS } from "../helpers/routes"
@@ -60,7 +61,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 						setShowWatchDropdown(!showWatchDropdown)
 					}}>
 						<div className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
-							<WatchIcon className = "tw-ml-3 --l-icon"/>
+							<IconEye className = "tw-ml-3 --l-icon"/>
 							{
 								(ticketWatchers && ticketWatchers?.length > 0 ? (
 									<span className = "tw-text-primary">{ticketWatchers.length}</span>
@@ -87,7 +88,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 						animationType: "animation-in"
 					}))
 				}}>
-					<ShareIcon className = "tw-ml-3 --l-icon"/>
+					<IconShare className = "tw-ml-3 --l-icon"/>
 				</button>
 			</IconContext.Provider>
 			<div className = "tw-relative tw-inline-block tw-text-left">
@@ -95,7 +96,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 					<button ref = {buttonRef} onClick={(e) => {
 						e.preventDefault()
 						setShowDropdown(!showDropdown)
-					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-ml-3 --l-icon"/></button>
+					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu className = "tw-ml-3 --l-icon"/></button>
 					{
 						showDropdown ? (
 							<EditTicketFormMenuDropdown closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>

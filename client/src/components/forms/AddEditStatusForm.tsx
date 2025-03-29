@@ -15,8 +15,11 @@ import { useForm, Controller } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { IoIosArrowDown as ArrowDown, IoIosArrowUp as ArrowUp } from "react-icons/io";
+import { IconArrowUp } from "../icons/IconArrowUp"
+import { IconArrowDown } from "../icons/IconArrowDown"
 import { IconButton } from "../page-elements/IconButton"
 import { IoMdAdd as AddIcon } from "react-icons/io";
+import { IconPlus } from "../icons/IconPlus"
 import { Switch } from "../page-elements/Switch"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
 
@@ -244,7 +247,7 @@ export const AddEditStatusForm = () => {
 						})
 					}} className = "button --secondary">
 						<div className = "tw-flex tw-items-center tw-gap-x-2">
-							<AddIcon/>
+							<IconPlus/>
 							<p>Add Status</p>
 						</div>
 					</button>
@@ -271,8 +274,8 @@ export const AddEditStatusForm = () => {
 								{status.name}
 							</button>
 							<div className = "tw-flex tw-flex-col tw-items-center">
-								<IconButton disabled = {index === 0} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, false))}><ArrowUp className = "tw-w-6 tw-h-6"/></IconButton>
-								<IconButton disabled = {index === statusData.length-1} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, true))}><ArrowDown className = "tw-w-6 tw-h-6"/></IconButton>
+								<IconButton disabled = {index === 0} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, false))}><IconArrowUp className = "tw-w-6 tw-h-6"/></IconButton>
+								<IconButton disabled = {index === statusData.length-1} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, true))}><IconArrowDown className = "tw-w-6 tw-h-6"/></IconButton>
 							</div>
 						</div>
 						{

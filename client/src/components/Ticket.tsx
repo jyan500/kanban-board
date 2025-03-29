@@ -8,6 +8,7 @@ import { HiChevronDown as LowPriorityIcon } from "react-icons/hi2";
 import { IconLowPriority } from "./icons/IconLowPriority"
 import { IconMediumPriority } from "./icons/IconMediumPriority"
 import { IconHighPriority } from "./icons/IconHighPriority"
+import { IconMenu } from "./icons/IconMenu"
 import { IconContext } from "react-icons"
 import { BugIcon } from "../assets/icons/BugIcon"
 import { ModificationIcon } from "../assets/icons/ModificationIcon"
@@ -137,7 +138,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: 
 							// when clicking the "..." menu on the individual ticket rather than from inside the edit ticket form modal
 							e.preventDefault()
 							setShowDropdown(!showDropdown)
-						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><MenuIcon className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
+						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
 						{
 							showDropdown ? (
 								<EditTicketFormMenuDropdown dropdownAlignLeft={dropdownAlignLeft} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
