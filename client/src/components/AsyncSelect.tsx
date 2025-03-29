@@ -83,11 +83,12 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 			selectRef={ref}
 			loadOptions={loadOptions}
 			defaultValue={defaultValue}
+			value={defaultValue}
 			onInputChange={handleInputChange}
 			onBlur={onBlur}
 			additional={{page: 1}}
 			classNames={{
-			    control: (state) => `${SELECT_Z_INDEX} ${className}` ?? `tw-w-full ${SELECT_Z_INDEX}`
+			    control: (state) => `${className ?? "tw-w-full"} ${SELECT_Z_INDEX}`
 			}}
 			styles={{
 			    control: (baseStyles, state) => ({

@@ -16,7 +16,7 @@ import {
 import { useGetUserQuery } from "../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { InlineEdit } from "./InlineEdit" 
-import { Controller, useForm, FormProvider } from "react-hook-form"
+import { Controller, useForm, FormProvider, Control } from "react-hook-form"
 import { OptionType, Mention, Ticket, TicketType, Priority, Status, UserProfile } from "../types/common"
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
@@ -81,6 +81,36 @@ const RightSectionRow = ({children, title}: RightSectionRowProps) => {
 	)
 }
 
+
+interface UserProfileSelectProps {
+	assignee: UserProfile
+	toggleFieldVisibility: (field: string, flag: boolean) => void
+	control: Control<EditFormValues>
+	editFieldVisibility: EditFieldVisibility 
+	submit: (selectedOption: {label: string, value: string} | null) => void
+} 
+
+const UserProfileSelect = ({submit, assignee, control, editFieldVisibility, toggleFieldVisibility}: UserProfileSelectProps) => {
+	return (
+		<Controller
+			name={"userId"}
+			control={control}
+            render={({ field: { onChange, value, name, ref } }) => (
+            	<AsyncSelect 
+                	endpoint={USER_PROFILE_URL} 
+					className = {`${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
+                	clearable={false}
+                	onBlur={(e) => toggleFieldVisibility("assignees", false)}
+                	defaultValue={{value: assignee.id.toString() ?? "", label: displayUser(assignee) ?? ""}}
+                	urlParams={{forSelect: true, /*filterOnUserRole: true*/}} 
+                	onSelect={async (selectedOption: {label: string, value: string} | null) => {
+                		await submit(selectedOption)
+                	}}
+                />
+            )}
+		/>
+	)
+} 
 export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Props) => {
 	const dispatch = useAppDispatch()
 	const currentTicketId = ticket?.id
@@ -201,8 +231,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 				...ticket, 
 				dueDate: ticket.dueDate != null && ticket.dueDate !== "" ? new Date(ticket.dueDate).toISOString().split("T")[0] : "",
 				userId: ticketAssignees?.length ? ticketAssignees[0].id : 0
-			} ?? defaultForm
-			)
+			})
 		}
 		else {
 			reset(defaultForm)
@@ -213,7 +242,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		if (!isTicketAssigneesLoading){
 			setValue("userId", ticketAssignees?.length ? ticketAssignees[0].id : 0, { shouldDirty: true })
 		}
-	}, [ticketAssignees])
+	}, [isTicketAssigneesLoading, ticketAssignees])
 
 	const onSubmit = async (values: EditFormValues) => {
     	try {
@@ -274,30 +303,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     }
 
 
-	const userProfileSelect = ( 
-		<Controller
-			name={"userId"}
-			control={control}
-            render={({ field: { onChange, value, name, ref } }) => (
-            	<AsyncSelect 
-                	endpoint={USER_PROFILE_URL} 
-					className = {`${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
-                	clearable={false}
-                	onBlur={(e) => toggleFieldVisibility("assignees", false)}
-                	defaultValue={{value: ticketAssignees?.[0]?.id.toString() ?? "", label: displayUser(ticketAssignees?.[0]) ?? ""}}
-                	urlParams={{forSelect: true, /*filterOnUserRole: true*/}} 
-                	onSelect={async (selectedOption: {label: string, value: string} | null) => {
-                		const val = selectedOption?.value ?? ""
-                		if (!isNaN(Number(val))){
-                			setValue("userId", Number(val))
-                			toggleFieldVisibility("assignees", false)
-                			await handleSubmit(onSubmit)()
-                		}
-                	}}
-                />
-            )}
-		/>
-	)
 
 	const ticketTypeSelect = (
 		<select {...ticketTypeIdRegisterMethods} 
@@ -333,6 +338,31 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		</select>
 	)
 
+	const userProfileSelect = ( 
+		<Controller
+			name={"userId"}
+			control={control}
+            render={({ field: { onChange, value, name, ref } }) => (
+            	<AsyncSelect 
+                	endpoint={USER_PROFILE_URL} 
+					className = {`${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
+                	clearable={false}
+                	onBlur={(e) => toggleFieldVisibility("assignees", false)}
+                	defaultValue={{value: ticketAssignees?.[0]?.id.toString() ?? "", label: displayUser(ticketAssignees?.[0]) ?? ""}}
+                	urlParams={{forSelect: true, /*filterOnUserRole: true*/}} 
+                	onSelect={async (selectedOption: {label: string, value: string} | null) => {
+                		const val = selectedOption?.value ?? ""
+                		if (!isNaN(Number(val))){
+                			setValue("userId", Number(val))
+                			toggleFieldVisibility("assignees", false)
+                			await handleSubmit(onSubmit)()
+                		}
+                	}}
+                />
+            )}
+		/>
+	)
+
 	const rightSection = () => {
 		return (
 			<>
@@ -355,16 +385,16 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<span className = "tw-font-bold tw-text-xl">Details</span>
 						<RightSectionRow title={"Assignee"}>
 							{
-								!isTicketAssigneesLoading ? (
+								!isTicketAssigneesLoading && ticketAssignees && ticketAssignees?.length ? (
 									<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
 										<div className = "tw-w-[2em] tw-shrink-0">
 											<Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 										</div>
 										<div className = "tw-flex tw-flex-1">
-											{userProfileSelect}		
+											{userProfileSelect}
 										</div>
 									</button>
-								) : <LoadingSkeleton className="tw-bg-gray-200" width="tw-w-32" height="tw-h-6"/>
+								) : <LoadingSkeleton width="tw-w-32" height="tw-h-6"><LoadingSpinner/></LoadingSkeleton>
 							}	
 						</RightSectionRow>
 						<RightSectionRow title={"Reporter"}>
