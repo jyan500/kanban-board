@@ -21,7 +21,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSpinner } from "./LoadingSpinner"
 import { USER_PROFILE_URL } from "../helpers/urls"
 import { MdOutlineArrowBackIosNew as ArrowBackward } from "react-icons/md"
-import { IoIosWarning as WarningIcon } from "react-icons/io"
+import { IconWarning } from "./icons/IconWarning"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
@@ -276,9 +276,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 							        {
 							        	watch("ticketTypeId") == epicTicketType?.id ? (
 									        <div className = "tw-flex tw-flex tw-items-center tw-gap-x-2">
-										        <IconContext.Provider value={{color: "var(--bs-warning)"}}>
-													<WarningIcon className = "tw-h-6 tw-w-6"/>
-												</IconContext.Provider>
+												<IconWarning color="var(--bs-warning)" className = "tw-h-6 tw-w-6"/>
 												<span className = "tw-font-semibold">If the ticket type is "Epic", it cannot changed once saved.</span>
 											</div>
 							        	) : null
