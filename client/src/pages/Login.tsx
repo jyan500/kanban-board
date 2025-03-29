@@ -10,6 +10,7 @@ import { REGISTER, FORGOT_PASSWORD, TEMP, ACCOUNT } from "../helpers/routes"
 import { ORGANIZATION_URL } from "../helpers/urls"
 import { AsyncSelect } from "../components/AsyncSelect"
 import { OptionType } from "../types/common"
+import { BackendErrorMessage } from "../components/page-elements/BackendErrorMessage"
 
 type FormValues = {
 	email: string
@@ -54,7 +55,7 @@ export const Login = () => {
 			 rather than SerializedError Type */}
 			<form className = "tw-flex tw-flex-col tw-gap-y-4" onSubmit={handleSubmit(onSubmit)}>
 				<div><h1>Login</h1></div>
-				{error && "status" in error ? (error.data.errors?.map((errorMessage) => <p className = "--text-alert" key = {uuidv4()}>{errorMessage}</p>)) : null}
+				<BackendErrorMessage error={error}/>
 				{location.state?.alert ? <p>{location.state.alert}</p> : null}
 				<div>
 					<div>
