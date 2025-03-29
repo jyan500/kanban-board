@@ -55,54 +55,47 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 	return (
 		<div className = "tw-pt-2 tw-pb-2 tw-flex tw-flex-row tw-justify-end tw-w-full">
 			<div className = "tw-relative tw-inline-block tw-text-left">
-				<IconContext.Provider value = {{color: "var(--bs-primary)"}}>
-					<button className = "hover:tw-opacity-60" ref = {watchButtonRef} onClick={(e) => {
-						e.preventDefault()	
-						setShowWatchDropdown(!showWatchDropdown)
-					}}>
-						<div className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
-							<IconEye className = "tw-ml-3 --l-icon"/>
-							{
-								(ticketWatchers && ticketWatchers?.length > 0 ? (
-									<span className = "tw-text-primary">{ticketWatchers.length}</span>
-								) : null)
-							}
-						</div>
-					</button>
-					
-				</IconContext.Provider>
+				<button className = "hover:tw-opacity-60" ref = {watchButtonRef} onClick={(e) => {
+					e.preventDefault()	
+					setShowWatchDropdown(!showWatchDropdown)
+				}}>
+					<div className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
+						<IconEye color={"var(--bs-primary"} className = "tw-ml-3 --l-icon"/>
+						{
+							(ticketWatchers && ticketWatchers?.length > 0 ? (
+								<span className = "tw-text-primary">{ticketWatchers.length}</span>
+							) : null)
+						}
+					</div>
+				</button>
 				{
 					showWatchDropdown ? (
 						<WatchMenuDropdown closeDropdown={onClickWatchOutside} ticketAssignee={ticketAssignee} ticketWatchers={ticketWatchers} ticket={ticket} ref = {watchMenuDropdownRef}/>
 					) : null
 				}
 			</div>
-			<IconContext.Provider value = {{color: "var(--bs-primary)"}}>
-				<button className = "hover:tw-opacity-60" onClick={(e) => {
-					e.preventDefault()	
-					navigator.clipboard.writeText(`${window.location.origin}${TICKETS}/${ticket?.id}`)
-					dispatch(addToast({
-						id: uuidv4(),
-						type: "success",
-						message: "Link copied to clipboard",
-						animationType: "animation-in"
-					}))
-				}}>
-					<IconShare className = "tw-ml-3 --l-icon"/>
-				</button>
-			</IconContext.Provider>
+			<button className = "hover:tw-opacity-60" onClick={(e) => {
+				e.preventDefault()	
+				navigator.clipboard.writeText(`${window.location.origin}${TICKETS}/${ticket?.id}`)
+				dispatch(addToast({
+					id: uuidv4(),
+					type: "success",
+					message: "Link copied to clipboard",
+					animationType: "animation-in"
+				}))
+			}}>
+				<IconShare color = {"var(--bs-primary"} className = "tw-ml-3 --l-icon"/>
+			</button>
 			<div className = "tw-relative tw-inline-block tw-text-left">
-				<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
-					<button ref = {buttonRef} onClick={(e) => {
-						e.preventDefault()
-						setShowDropdown(!showDropdown)
-					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu className = "tw-ml-3 --l-icon"/></button>
-					{
-						showDropdown ? (
-							<EditTicketFormMenuDropdown closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
-						) : null
-					}
-				</IconContext.Provider>
+				<button ref = {buttonRef} onClick={(e) => {
+					e.preventDefault()
+					setShowDropdown(!showDropdown)
+				}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu color={"var(--bs-dark-grey)"} className = "tw-ml-3 --l-icon"/></button>
+				{
+					showDropdown ? (
+						<EditTicketFormMenuDropdown closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
+					) : null
+				}
 			</div>
 		</div>
 	)
