@@ -274,7 +274,7 @@ router.post("/register/organization", limiter, userValidator.organizationUserReg
 	    const activationLink = `/activate?token=${activationToken}`;
 
 	    // Send activation email
-		await sendEmail(user_email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink));
+		await sendEmail(user_email, "Activate Your Account", () => activateAccountTemplate(first_name, last_name, activationLink));
 
 		res.json({message: "Organization and User registered successfully!"})
 	}	
