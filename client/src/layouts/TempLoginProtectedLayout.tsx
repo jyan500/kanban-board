@@ -24,7 +24,7 @@ const TempLoginProtectedLayout = () => {
     }, [token, userProfile]);
 
 	if (!token){
-		return <Navigate replace to = {"/login"} state={{alert: "You have been logged out"}}/>
+		return <Navigate replace to = {"/login"}/>
 	}
 	if (isTemp){
 		return (
