@@ -1,5 +1,7 @@
-export const API_VERSION = "api"
-export const BACKEND_BASE_URL = "http://localhost:8000"
+export const API_VERSION = process.env.REACT_APP_API_VERSION
+export const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL
+// export const API_VERSION = "api"
+// export const BACKEND_BASE_URL = "http://localhost:8000"
 export const LOGIN_URL = `/${API_VERSION}/user/login`
 export const FORGOT_PASSWORD_URL = `/${API_VERSION}/user/forgot-password`
 export const RESET_PASSWORD_URL = `/${API_VERSION}/user/reset-password`
