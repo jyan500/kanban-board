@@ -179,7 +179,7 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Tickets", "BoardTickets"]
 		}),
-		updateTicket: builder.mutation<{message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "createdAt">>({
+		updateTicket: builder.mutation<{message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "createdAt" | "userIdOption" | "userId">>({
 			query: (ticket) => ({
 				url: `${TICKET_URL}/${ticket.id}`,
 				method: "PUT",
