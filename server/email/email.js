@@ -1,6 +1,9 @@
 const nodemailer = require("nodemailer")
 const config = require("../config")
+const { Resend } = require("resend")
 require("dotenv").config()
+
+const resend = new Resend(process.env.RESEND_API_URL);
 
 const transporter = nodemailer.createTransport({
 	host: process.env.SMTP_HOST,
@@ -12,26 +15,36 @@ const transporter = nodemailer.createTransport({
 })
 
 /**
- * sends email using nodemailer using mailtrap server
+ * sends email using nodemailer using mailtrap server for DEV,
+ * or resend API for prod
  * @param to: user email
  * @param subject: email subject
  * @param template: user email
  */
 const sendEmail = async (to, subject, template) => {
 	try {
-		if (process.env.ENVIRONMENT === "PROD" || process.env.ENVIRONMENT === "DEV"){
+		if (process.env.ENVIRONMENT === "PROD"){
+			const {id} = await resend.emails.send({
+				from: config.email,
+				to: to,
+				subject: subject,
+				html: template()
+			})
+			console.log('Message sent: %s', id)
+		}
+		else if (process.env.ENVIRONMENT === "DEV"){
 			const info = await transporter.sendMail({
 				from: config.email,
 				to: to,
 				subject: subject,
 				html: template() 
 			});
-			console.log('Message sent: %s', info.messageId);
+			console.log('Message sent: %s', info.messageId)
 		}
-		else {
+		else if (process.env.ENVIRONMENT === "TEST"){
+
 			console.log('Test Environment: message not sent. Debug log: \n%s', `From: ${config.email} \nTo: ${to} \nSubject: ${subject} \n${template()}`);
 		}
-
 	} catch (error) {
 		console.error('Error sending email:', error);
 	}
@@ -43,9 +56,21 @@ const sendEmail = async (to, subject, template) => {
  * @param subject: email subject
  * @param template: email template
  */ 
-const sendBulkEmail = (recipients, subject, template) => {
+const sendBulkEmail = async (recipients, subject, template) => {
 	try {
-		if (process.env.ENVIRONMENT === "PROD" || process.env.ENVIRONMENT === "DEV"){
+		if (process.env.ENVIRONMENT === "PROD"){
+			const emails = recipients.map((recipient) => {
+				return {	
+				    from: config.email,
+				    to: recipient.email,
+				    subject: subject,
+				    html: template(recipient.firstName, recipient.lastName, recipient.orgName, recipient.orgEmail ?? "", recipient.orgPhoneNum ?? ""),
+			    }
+			})
+			const { data } = await resend.batch.send(emails)
+			console.log(`${data.length} emails sent successfully!`)
+		}
+		else if (process.env.ENVIRONMENT === "DEV"){
 			const emails = recipients.map((recipient) => {
 				return transporter.sendMail({
 					from: config.email,
@@ -65,7 +90,7 @@ const sendBulkEmail = (recipients, subject, template) => {
 			       console.error('Failed to send one or more emails:', errors);
 			   });
 		}
-		else {
+		else if (process.env.ENVIRONMENT === "TEST") {
 			recipients.forEach((recipient) => {
 				console.log('Test Environment: message not sent. Debug log: \n%s', `From: ${config.email} \nTo: ${recipient.email} \nSubject: ${subject} \n${template(recipient.firstName, recipient.lastName, recipient.orgName, recipient.orgEmail, recipient.orgPhoneNum)}`);
 			})

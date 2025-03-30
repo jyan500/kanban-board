@@ -214,7 +214,7 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 				"organizations.phone_number as orgPhoneNum",
 				"organizations.name as orgName"
 			)
-			sendBulkEmail(recipients, "Registration Request Accepted", (firstName, lastName, orgName, _, __) => registrationSuccessTemplate(firstName, lastName, orgName))
+			await sendBulkEmail(recipients, "Registration Request Accepted", (firstName, lastName, orgName, _, __) => registrationSuccessTemplate(firstName, lastName, orgName))
 			res.json({
 				message: "Users registration process is complete"
 			})
@@ -237,7 +237,7 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 				"organizations.phone_number as orgPhoneNum",
 				"organizations.name as orgName"
 			)
-			sendBulkEmail(recipients, "Registration Request Denied", (firstName, lastName, orgName, orgEmail, orgPhoneNum) => registrationDeniedTemplate(firstName, lastName, orgName, orgEmail, orgPhoneNum))
+			await sendBulkEmail(recipients, "Registration Request Denied", (firstName, lastName, orgName, orgEmail, orgPhoneNum) => registrationDeniedTemplate(firstName, lastName, orgName, orgEmail, orgPhoneNum))
 			res.json({
 				message: "Users registration requests were denied"
 			})
