@@ -17,7 +17,7 @@ export interface LoadOptionsType {
 
 interface AsyncSelectProps {
 	endpoint: string
-	defaultValue?: OptionType 
+	defaultValue?: OptionType | null 
 	clearable?: boolean
 	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
 	className?: string 

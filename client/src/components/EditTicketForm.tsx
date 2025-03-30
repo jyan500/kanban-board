@@ -321,7 +321,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 					className = {`${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
                 	clearable={false}
                 	onBlur={(e) => toggleFieldVisibility("assignees", false)}
-                	defaultValue={watch("userIdOption") ?? {label: "", value: ""}}
+                	defaultValue={watch("userIdOption") ?? null}
                 	urlParams={{forSelect: true, /*filterOnUserRole: true*/}} 
                 	onSelect={async (selectedOption: OptionType | null) => {
             			setValue("userIdOption", selectedOption)

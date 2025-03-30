@@ -10,7 +10,7 @@ type Props = {
 	isOrg?: boolean
 }
 
-export const Avatar = ({size, className, imageUrl, isOrg}: Props) => {
+export const Avatar = ({size="s", className, imageUrl, isOrg}: Props) => {
 	const sizes: {[k: string]: string} = {
 		"l": "tw-w-32 tw-h-32",
 		"m": "tw-w-16 tw-h-16",
@@ -20,7 +20,7 @@ export const Avatar = ({size, className, imageUrl, isOrg}: Props) => {
 	const defaultIcon = () => {
 		if (isOrg){
 			return (
-				<IconBuilding className={cName}/>	
+				<IconBuilding className={`${size === "s" ? "tw-w-4 tw-h-4" : sizes[size]} ${className}`}/>	
 			)
 		}	
 		else {
