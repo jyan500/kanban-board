@@ -14,8 +14,8 @@ import { Switch } from "../page-elements/Switch"
 export const Filters = () => {
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
 	const methods = useFormContext()
-	const { register, getValues, control } = methods
-	const { data: user, isLoading} = useGetUserQuery(!isNaN(Number(getValues("user"))) ? Number(getValues("user")) : skipToken)
+	const { register, getValues, control, watch } = methods
+	const { data: user, isLoading} = useGetUserQuery(!isNaN(Number(watch("user"))) ? Number(watch("user")) : skipToken)
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 			<div className = "tw-flex tw-flex-col">
@@ -45,7 +45,7 @@ export const Filters = () => {
 		                render={({ field: { onChange, value, name, ref } }) => (
 		                	<AsyncSelect 
 			                	endpoint={USER_PROFILE_URL} 
-			                	defaultValue={{value: user ? user.id.toString() : "", label: displayUser(user)}}
+			                	defaultValue={watch("user") ? {value: user ? user.id.toString() : "", label: displayUser(user)} : {label: "", value: ""}}
 			                	urlParams={{forSelect: true}} 
 			                	className={"tw-w-64"}
 			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
