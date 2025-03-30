@@ -58,7 +58,7 @@ const sendEmail = async (to, subject, template) => {
  */ 
 const sendBulkEmail = async (recipients, subject, template) => {
 	try {
-		if (process.env.ENVIRONMENT === "PROD"){
+		if (process.env.ENVIRONMENT === "TEST"){
 			const emails = recipients.map((recipient) => {
 				return {	
 				    from: config.email,
@@ -68,7 +68,9 @@ const sendBulkEmail = async (recipients, subject, template) => {
 			    }
 			})
 			const { data } = await resend.batch.send(emails)
-			console.log(`${data.length} emails sent successfully!`)
+			if (data && data.length){
+				console.log(`${data.length} emails sent successfully!`)
+			}
 		}
 		else if (process.env.ENVIRONMENT === "DEV"){
 			const emails = recipients.map((recipient) => {
@@ -90,7 +92,7 @@ const sendBulkEmail = async (recipients, subject, template) => {
 			       console.error('Failed to send one or more emails:', errors);
 			   });
 		}
-		else if (process.env.ENVIRONMENT === "TEST") {
+		else if (process.env.ENVIRONMENT === "PROD") {
 			recipients.forEach((recipient) => {
 				console.log('Test Environment: message not sent. Debug log: \n%s', `From: ${config.email} \nTo: ${recipient.email} \nSubject: ${subject} \n${template(recipient.firstName, recipient.lastName, recipient.orgName, recipient.orgEmail, recipient.orgPhoneNum)}`);
 			})
