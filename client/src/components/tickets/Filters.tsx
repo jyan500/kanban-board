@@ -56,7 +56,7 @@ export const Filters = () => {
 			                	<AsyncSelect 
 				                	endpoint={BOARD_URL} 
 				                	urlParams={{}} 
-				                	defaultValue={watch("board") ? {value: boardInfo?.[0]?.id.toString() ?? "", label: boardInfo?.[0]?.name ?? ""} : {label: "", value: ""}}
+				                	defaultValue={watch("board") ? {value: boardInfo?.[0]?.id.toString() ?? "", label: boardInfo?.[0]?.name ?? ""} : null}
 				                	className={"tw-w-64"}
 				                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 				                		onChange(selectedOption?.value ?? null) 	

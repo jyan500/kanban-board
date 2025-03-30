@@ -45,7 +45,7 @@ export const Filters = () => {
 		                render={({ field: { onChange, value, name, ref } }) => (
 		                	<AsyncSelect 
 			                	endpoint={USER_PROFILE_URL} 
-			                	defaultValue={watch("user") ? {value: user ? user.id.toString() : "", label: displayUser(user)} : {label: "", value: ""}}
+			                	defaultValue={watch("user") ? {value: user ? user.id.toString() : "", label: displayUser(user)} : null}
 			                	urlParams={{forSelect: true}} 
 			                	className={"tw-w-64"}
 			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
