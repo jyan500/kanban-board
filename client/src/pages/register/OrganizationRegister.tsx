@@ -84,7 +84,7 @@ export const OrganizationRegister = () => {
 				) : null
 			}
 			<div>
-				{error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`org_user_error_${i}`}>{errorMessage}</p>)) : null}
+				{error && "status" in error ? (error?.data?.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`org_user_error_${i}`}>{errorMessage}</p>)) : null}
 			</div>	
 		    <div className = "tw-p-4 tw-flex tw-items-center tw-justify-center tw-gap-2">
                 {

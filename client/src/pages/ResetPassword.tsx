@@ -10,6 +10,7 @@ import { IconEye } from "../components/icons/IconEye"
 import { IconEyeSlash } from "../components/icons/IconEyeSlash"
 import { PasswordRules } from "../components/page-elements/PasswordRules" 
 import { RowContentLoading } from "../components/page-elements/RowContentLoading"
+import { BackendErrorMessage } from "../components/page-elements/BackendErrorMessage"
 
 interface FormValues {
 	password: string
@@ -64,7 +65,7 @@ export const ResetPassword = () => {
 			<div>
 				<h1>Reset Password</h1>		
 				<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-4">
-					{error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
+					<BackendErrorMessage error={error}/>
 			    	<div>
 					    <label className = "label" htmlFor = "register-password">
 					    	Password: <span className = "tw-font-bold tw-text-red-500">*</span>

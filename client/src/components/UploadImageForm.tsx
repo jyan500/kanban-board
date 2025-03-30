@@ -7,6 +7,7 @@ import { useAppDispatch } from "../hooks/redux-hooks"
 import { Toast } from "../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { Avatar } from "./page-elements/Avatar"
+import { BackendErrorMessage } from "./page-elements/BackendErrorMessage"
 
 interface Props {
 	id: number
@@ -59,7 +60,7 @@ export const UploadImageForm = ({id, imageUrl, endpoint, invalidatesTags}: Props
 			<div>
 				<button type = "submit" className = "button">Upload</button>
 			</div>
-			{error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`image_error_${i}`}>{errorMessage}</p>)) : null}
+			{error && "status" in error ? (error?.data?.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`image_error_${i}`}>{errorMessage}</p>)) : null}
 		</form>
 	)
 }

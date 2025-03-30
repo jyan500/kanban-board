@@ -43,7 +43,7 @@ export const TicketDisplay = () => {
 		"board": searchParams.get("board") ?? "",
 		"status": searchParams.get("status") ?? "",
 	}
-	const {data: data, isFetching } = useGetTicketsQuery({
+	const {data: data, isLoading } = useGetTicketsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
 		query: searchParams.get("query") ?? "",
 		page: searchParams.get("page") ?? 1,
@@ -130,7 +130,7 @@ export const TicketDisplay = () => {
 				>
 				</SearchToolBar>
 			</FormProvider>
-			{isFetching ? 
+			{isLoading ? 
 			<LoadingSkeleton width = "lg:tw-w-1/3 tw-w-full" height="lg:tw-max-h-full tw-h-[500px]">
 				<RowPlaceholder/>
 			</LoadingSkeleton> : (

@@ -13,6 +13,7 @@ import { LoadingSpinner } from "./LoadingSpinner"
 import { Organization } from "../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { EMAIL_PATTERN, PHONE_PATTERN } from "../helpers/constants"
+import { BackendErrorMessage } from "./page-elements/BackendErrorMessage"
 
 export type FormValues = {
 	id?: number
@@ -103,7 +104,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			{error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`org_error_${i}`}>{errorMessage}</p>)) : null}
+			<BackendErrorMessage error={error}/>
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(propsSubmit ?? onSubmit)}>
 				<div>
 					<label className = "label" htmlFor = "organization-name">Name: <span className = "tw-font-bold tw-text-red-500">*</span></label>

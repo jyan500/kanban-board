@@ -12,11 +12,11 @@ const UserActivatedProtectedLayout = () => {
 	const [isActivated, setIsActivated] = useState(false)
 
 	useEffect(() => {
-		if (!isUserProfileLoading){
-			setIsActivated(userProfile?.isActive ?? false)
+		if (!isUserProfileLoading && userProfile){
+			setIsActivated(userProfile.isActive ?? false)
 			setIsLoading(false)
 		}
-	}, [isUserProfileLoading])
+	}, [isUserProfileLoading, userProfile])
 	if (isLoading){
 		return <></>
 	}

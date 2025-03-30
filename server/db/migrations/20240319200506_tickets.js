@@ -15,7 +15,8 @@ exports.up = function(knex) {
 		table.foreign("status_id").references("statuses.id").onDelete("cascade")
 		table.foreign("organization_id").references("organizations.id").onDelete("cascade")
 		table.foreign("ticket_type_id").references("ticket_types.id").onDelete("cascade")
-		table.timestamps(true, true)
+		table.timestamp('created_at').defaultTo(knex.fn.now());	
+ 		table.timestamp('updated_at').defaultTo(knex.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
 	})  
 };
 

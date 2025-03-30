@@ -9,7 +9,7 @@ type Props = {
 export const BackendErrorMessage = ({error}: Props) => {
 	return (
 		<>
-			{error && "status" in error ? (error.data.errors?.map((errorMessage: string) => <p className = "--text-alert" key = {uuidv4()}>{errorMessage}</p>)) : <></>}
+			{error && "status" in error ? (error?.data?.errors?.map((errorMessage: string) => <p className = "--text-alert" key = {uuidv4()}>{errorMessage}</p>)) : <></>}
 		</>
 	)
 }

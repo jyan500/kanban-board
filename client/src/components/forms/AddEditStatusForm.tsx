@@ -22,6 +22,7 @@ import { IoMdAdd as AddIcon } from "react-icons/io";
 import { IconPlus } from "../icons/IconPlus"
 import { Switch } from "../page-elements/Switch"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
+import { BackendErrorMessage } from "../page-elements/BackendErrorMessage"
 
 type FormValues = {
 	id?: number
@@ -61,7 +62,7 @@ export const AddEditStatusForm = () => {
 		return (
 			<form className = "tw-border tw-border-gray-100 tw-p-4" onSubmit={handleSubmit(onSubmit)}>
 				{
-					error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`org_error_${i}`}>{errorMessage}</p>)) : null
+					<BackendErrorMessage error={error}/>
 				}
 				<div className = {`tw-flex tw-flex-col tw-gap-y-2`}>
 					<div className = "">

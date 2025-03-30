@@ -14,6 +14,7 @@ import { OptionType } from "../../types/common"
 import { ORGANIZATION_URL } from "../../helpers/urls"
 import { LoadingButton } from "../../components/page-elements/LoadingButton"
 import { PasswordRules } from "../../components/page-elements/PasswordRules"
+import { BackendErrorMessage } from "../../components/page-elements/BackendErrorMessage"
 
 export type FormValues = {
 	firstName: string
@@ -80,7 +81,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 	return (
 		<div className = "tw-w-full">
 			<form className = "tw-flex tw-flex-col tw-gap-y-4" onSubmit={handleSubmit(propSubmit ?? onSubmit)}>
-				{error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
+				<BackendErrorMessage error={error}/>
 				<div>
 					<div>
 					    <label className = "label" htmlFor = "register-firstname">
@@ -178,8 +179,14 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 							/>
 							{
 								!showPassword ? 
-								<button onClick={() => setShowPassword(!showPassword)}><IconEye className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button> : 
-								<button onClick={() => setShowPassword(!showPassword)}><IconEyeSlash className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button>
+								<button onClick={(e) => {
+									e.preventDefault()
+									setShowPassword(!showPassword)}
+								}><IconEye className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button> : 
+								<button onClick={(e) => {
+									e.preventDefault()
+									setShowPassword(!showPassword)}
+								}><IconEyeSlash className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button>
 							}
 						</div>
 				        {errors?.confirmPassword && <small className = "--text-alert">{errors.confirmPassword.message}</small>}

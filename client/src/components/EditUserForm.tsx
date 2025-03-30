@@ -238,8 +238,14 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 									/>
 									{
 										!showPassword ? 
-										<button onClick={() => setShowPassword(!showPassword)}><IconEye className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4" /></button> :
-										<button onClick={() => setShowPassword(!showPassword)}><IconEyeSlash className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button>
+										<button onClick={(e) => {
+											e.preventDefault()
+											setShowPassword(!showPassword)}
+										}><IconEye className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4" /></button> :
+										<button onClick={(e) => {
+											e.preventDefault()
+											setShowPassword(!showPassword)
+										}}><IconEyeSlash className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button>
 									}
 								</div>
 						        {errors?.confirmPassword && <small className = "--text-alert">{errors.confirmPassword.message}</small>}

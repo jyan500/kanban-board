@@ -4,6 +4,7 @@ import { FormValues, OrganizationForm } from "../../components/OrganizationForm"
 import { useRegisterOrganizationMutation } from "../../services/private/userProfile"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { LoadingSpinner } from "../../components/LoadingSpinner"
+import { BackendErrorMessage } from "../../components/page-elements/BackendErrorMessage"
 
 export const AccountOrganization = () => {
 	const navigate = useNavigate()
@@ -25,7 +26,7 @@ export const AccountOrganization = () => {
 			<div className = "tw-flex tw-flex-col tw-gap-y-2">
 				<h1>Create Organization</h1>
 				<p>By creating an organization under this account, you will automatically be added as the admin of the new organization. </p>
-				{error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`org_error_${i}`}>{errorMessage}</p>)) : null}
+				<BackendErrorMessage error={error}/>
 				<OrganizationForm onSubmit={onSubmit}/>
 			</div>
 		</div>

@@ -83,36 +83,6 @@ const RightSectionRow = ({children, title}: RightSectionRowProps) => {
 	)
 }
 
-
-interface UserProfileSelectProps {
-	assignee: UserProfile
-	toggleFieldVisibility: (field: string, flag: boolean) => void
-	control: Control<EditFormValues>
-	editFieldVisibility: EditFieldVisibility 
-	submit: (selectedOption: {label: string, value: string} | null) => void
-} 
-
-const UserProfileSelect = ({submit, assignee, control, editFieldVisibility, toggleFieldVisibility}: UserProfileSelectProps) => {
-	return (
-		<Controller
-			name={"userId"}
-			control={control}
-            render={({ field: { onChange, value, name, ref } }) => (
-            	<AsyncSelect 
-                	endpoint={USER_PROFILE_URL} 
-					className = {`${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
-                	clearable={false}
-                	onBlur={(e) => toggleFieldVisibility("assignees", false)}
-                	defaultValue={{value: assignee.id.toString() ?? "", label: displayUser(assignee) ?? ""}}
-                	urlParams={{forSelect: true, /*filterOnUserRole: true*/}} 
-                	onSelect={async (selectedOption: {label: string, value: string} | null) => {
-                		await submit(selectedOption)
-                	}}
-                />
-            )}
-		/>
-	)
-} 
 export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Props) => {
 	const dispatch = useAppDispatch()
 	const currentTicketId = ticket?.id
@@ -167,7 +137,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		priorityId: 0,
 		statusId: 0,
 		ticketTypeId: 0,
-		userId: 0,
+		userIdOption: {label: "", value: ""},
 		storyPoints: "",
 		dueDate: "" 
 	}	
@@ -192,7 +162,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const adminRole = userRoles?.find((role) => role.name === "ADMIN")
 	const boardAdminRole = userRoles?.find((role) => role.name === "BOARD_ADMIN")
 
-	const userIdRegisterMethods = register("userId", registerOptions.userId)
 	const ticketTypeIdRegisterMethods = register("ticketTypeId", registerOptions.ticketTypeId)
 	const priorityIdRegisterMethods = register("priorityId", registerOptions.priorityId)
 
@@ -232,7 +201,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 			reset({
 				...ticket, 
 				dueDate: ticket.dueDate != null && ticket.dueDate !== "" ? new Date(ticket.dueDate).toISOString().split("T")[0] : "",
-				userId: ticketAssignees?.length ? ticketAssignees[0].id : 0
 			})
 		}
 		else {
@@ -241,8 +209,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	}, [showModal, currentTicketId])
 
 	useEffect(() => {
-		if (!isTicketAssigneesLoading){
-			setValue("userId", ticketAssignees?.length ? ticketAssignees[0].id : 0, { shouldDirty: true })
+		if (!isTicketAssigneesLoading && ticketAssignees?.length){
+			const assigneeId = ticketAssignees?.[0] ? ticketAssignees?.[0]?.id.toString() : ""
+			setValue("userIdOption", {label: displayUser(ticketAssignees[0]), value: assigneeId}, { shouldDirty: true })
 		}
 	}, [isTicketAssigneesLoading, ticketAssignees])
 
@@ -253,14 +222,15 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			// update ticket assignees
     			// TODO: need to update this line to include all userIds if allowing multiple 
     			// assignees per ticket
-    			if (values.userId){
-	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [values.userId], isWatcher: false}).unwrap()
+	    		const assigneeId = !isNaN(Number(values.userIdOption?.value)) ? Number(values.userIdOption?.value) : 0
+    			if (assigneeId){
+	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [assigneeId], isWatcher: false}).unwrap()
     			}
     			// if the assignee id was changed from its previous value, and it's not equal to the logged in user,
     			// send notification
-    			if (values.userId && values.userId !== ticketAssignees?.[0]?.id && userProfile && values.userId !== userProfile.id && assigneeNotificationType){
+    			if (assigneeId && assigneeId !== ticketAssignees?.[0]?.id && userProfile && assigneeId !== userProfile.id && assigneeNotificationType){
     				await addNotification({
-    					recipientId: values.userId,
+    					recipientId: assigneeId,
     					senderId: userProfile.id,
     					ticketId: values.id,
     					objectLink: `${TICKETS}/${values.id}`,
@@ -268,8 +238,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 
     				}).unwrap()
     			}
+    			const {userIdOption, ...ticketBody} = values
     			const { mentions } = await updateTicket({
-    				...values, 
+    				...ticketBody, 
     				storyPoints: !isNaN(Number(values.storyPoints)) ? Number(values.storyPoints) : 0,
     				dueDate: values.dueDate ? new Date(values.dueDate) : "",  
     				id: values.id
@@ -342,7 +313,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 
 	const userProfileSelect = ( 
 		<Controller
-			name={"userId"}
+			name={"userIdOption"}
 			control={control}
             render={({ field: { onChange, value, name, ref } }) => (
             	<AsyncSelect 
@@ -350,15 +321,12 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 					className = {`${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
                 	clearable={false}
                 	onBlur={(e) => toggleFieldVisibility("assignees", false)}
-                	defaultValue={{value: ticketAssignees?.[0]?.id.toString() ?? "", label: displayUser(ticketAssignees?.[0]) ?? ""}}
+                	defaultValue={watch("userIdOption") ?? {label: "", value: ""}}
                 	urlParams={{forSelect: true, /*filterOnUserRole: true*/}} 
-                	onSelect={async (selectedOption: {label: string, value: string} | null) => {
-                		const val = selectedOption?.value ?? ""
-                		if (!isNaN(Number(val))){
-                			setValue("userId", Number(val))
-                			toggleFieldVisibility("assignees", false)
-                			await handleSubmit(onSubmit)()
-                		}
+                	onSelect={async (selectedOption: OptionType | null) => {
+            			setValue("userIdOption", selectedOption)
+            			toggleFieldVisibility("assignees", false)
+            			await handleSubmit(onSubmit)()
                 	}}
                 />
             )}

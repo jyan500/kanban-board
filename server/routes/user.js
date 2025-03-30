@@ -30,7 +30,15 @@ const limiter = rateLimit({
 	legacyHeaders: false,
 })
 
-router.post("/login", limiter, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
+// apply rate limiting only in production
+const applyRateLimit = (req, res, next) => {
+  if (process.env.ENVIRONMENT === "PROD") {
+    return limiter(req, res, next);
+  }
+  next();
+};
+
+router.post("/login", applyRateLimit, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const user = await db("users").where("email", req.body.email).first()
 		const error = "Failed to login: email, organization or password is incorrect."
@@ -71,7 +79,7 @@ router.post("/login", limiter, userValidator.loginValidator, handleValidationRes
 	}
 })
 
-router.post("/register", limiter, userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
+router.post("/register", applyRateLimit, userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(req.body.password, salt)
@@ -110,7 +118,7 @@ router.post("/register", limiter, userValidator.registerValidator, handleValidat
 	}
 })
 
-router.post("/forgot-password", limiter, userValidator.forgotPasswordValidator, handleValidationResult, async (req, res, next) => {
+router.post("/forgot-password", applyRateLimit, userValidator.forgotPasswordValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const email = req.body.email
 		// get user
@@ -141,7 +149,7 @@ router.post("/forgot-password", limiter, userValidator.forgotPasswordValidator, 
 	}
 })
 
-router.get("/validate-token", limiter, async (req, res, next) => {
+router.get("/validate-token", applyRateLimit, async (req, res, next) => {
 	try {
 		// make sure the reset password token has not exceeded the current date and time
 		const user = await db("users")
@@ -165,7 +173,7 @@ router.get("/validate-token", limiter, async (req, res, next) => {
 	}
 })
 
-router.post("/resend-activation", limiter, async (req, res, next) => {
+router.post("/resend-activation", applyRateLimit, async (req, res, next) => {
 	try {
 		// if the user has a token but it's expired, allow for a resend
 		const user = await db("users").where("activation_token", req.query.token).andWhere("activation_token_expires", ">", new Date()).first()
@@ -185,7 +193,7 @@ router.post("/resend-activation", limiter, async (req, res, next) => {
 	}
 })
 
-router.post("/activate", limiter, async (req, res, next) => {
+router.post("/activate", applyRateLimit, async (req, res, next) => {
 	try {
 		const user = await db("users").where("activation_token", req.body.token).andWhere("activation_token_expires", ">", new Date()).first()
 		if (!user) {
@@ -204,7 +212,7 @@ router.post("/activate", limiter, async (req, res, next) => {
 	}
 })
 
-router.post("/reset-password", limiter, userValidator.resetPasswordValidator, handleValidationResult, async (req, res, next) => {
+router.post("/reset-password", applyRateLimit, userValidator.resetPasswordValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const { token, password } = req.body
 		
@@ -235,7 +243,7 @@ router.post("/reset-password", limiter, userValidator.resetPasswordValidator, ha
 	}
 })
 
-router.post("/register/organization", limiter, userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
+router.post("/register/organization", applyRateLimit, userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const { first_name, last_name, password, email: user_email } = req.body.user
 		const { name, address, city, state, zipcode, industry, phone_number, email} = req.body.organization
@@ -274,7 +282,7 @@ router.post("/register/organization", limiter, userValidator.organizationUserReg
 	    const activationLink = `/activate?token=${activationToken}`;
 
 	    // Send activation email
-		await sendEmail(user_email, "Activate Your Account", () => activateAccountTemplate(user.first_name, user.last_name, activationLink));
+		await sendEmail(user_email, "Activate Your Account", () => activateAccountTemplate(first_name, last_name, activationLink));
 
 		res.json({message: "Organization and User registered successfully!"})
 	}	

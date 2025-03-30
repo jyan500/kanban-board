@@ -37,12 +37,10 @@ export type FormCommon = {
 }
 
 export type FormValues = FormCommon & {
-	userId: number 
+	userIdOption: OptionType | null
 }
 
-export type AddTicketFormValues = FormCommon & {
-	userIdOption: OptionType
-}
+export type AddTicketFormValues = FormCommon & FormValues
 
 type Props = {
 	boardId?: number | null | undefined
@@ -128,7 +126,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 
     const onSubmit = async (values: AddTicketFormValues) => {
     	try {
-    		const assigneeId = !isNaN(Number(values.userIdOption.value)) ? Number(values.userIdOption.value) : 0
+    		const assigneeId = !isNaN(Number(values.userIdOption?.value)) ? Number(values.userIdOption?.value) : 0
 	    	const {id: insertedTicketId, mentions} = await addTicket({
 	    		...values, 
 	    		// this value is unused, just for typescript purposes
@@ -240,7 +238,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 								control={control}
 				                render={({ field: { onChange, value, name, ref } }) => (
 			                	<AsyncSelect 
-			                		defaultValue={formValues?.userIdOption ?? {label: "", value: "'"}}
+			                		defaultValue={watch("userIdOption") ?? {label: "", value: ""}}
 				                	endpoint={USER_PROFILE_URL} 
 				                	urlParams={{forSelect: true}} 
 				                	className={"tw-w-full"}

@@ -5,6 +5,7 @@ import { useForgotPasswordMutation } from "../services/public/auth"
 import { useForm } from "react-hook-form"
 import { LOGIN } from "../helpers/routes"
 import { LoadingButton } from "../components/page-elements/LoadingButton"
+import { BackendErrorMessage } from "../components/page-elements/BackendErrorMessage"
 
 interface UserFormValues {
 	email: string
@@ -41,7 +42,7 @@ export const ForgotPassword = () => {
 				<p>After submitting, you will be sent an email to reset your password.</p>
 			</div>
 			<form className = "tw-flex tw-flex-col tw-gap-y-4" onSubmit={handleSubmit(onSubmit)}>
-				{error && "status" in error ? (error.data.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
+				<BackendErrorMessage error={error}/>
 				<div>
 				    <label className = "label" htmlFor = "register-email">
 				    	Email: <span className = "tw-font-bold tw-text-red-500">*</span>
