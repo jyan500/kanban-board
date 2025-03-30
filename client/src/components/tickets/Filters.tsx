@@ -14,8 +14,8 @@ export const Filters = () => {
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
 	const methods = useFormContext()
-	const { register, getValues, control } = methods
-	const { data: boardInfo, isLoading, isError } = useGetBoardQuery(getValues("board") ? {id: getValues("board"), urlParams: {}} : skipToken)
+	const { register, getValues, watch, control } = methods
+	const { data: boardInfo, isLoading, isError } = useGetBoardQuery(watch("board") ? {id: watch("board"), urlParams: {}} : skipToken)
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
 			<div className = "tw-flex tw-flex-col">
@@ -56,10 +56,10 @@ export const Filters = () => {
 			                	<AsyncSelect 
 				                	endpoint={BOARD_URL} 
 				                	urlParams={{}} 
-				                	defaultValue={{value: boardInfo?.[0]?.id.toString() ?? "", label: boardInfo?.[0]?.name ?? ""}}
+				                	defaultValue={watch("board") ? {value: boardInfo?.[0]?.id.toString() ?? "", label: boardInfo?.[0]?.name ?? ""} : {label: "", value: ""}}
 				                	className={"tw-w-64"}
 				                	onSelect={(selectedOption: {label: string, value: string} | null) => {
-				                		onChange(selectedOption?.value ?? "") 	
+				                		onChange(selectedOption?.value ?? null) 	
 				                	}}
 				                />
 			                )}
