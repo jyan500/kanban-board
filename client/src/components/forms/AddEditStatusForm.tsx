@@ -218,18 +218,18 @@ export const AddEditStatusForm = () => {
 				}
 			}
 			dispatch(addToast(toast))
+			// reset the form and clear out the selected id
+			reset({
+				id: undefined,	
+				name: "",
+				isActive: false,
+				isCompleted: false,
+			})
+			setSelectedStatusId(null)
 		}	
 		catch (e){
 			dispatch(addToast({...toast, type: "failure", message: `Status could not be ${values.id ? "updated" : "added"}`}))
 		}
-		// reset the form and clear out the selected id
-		reset({
-			id: undefined,	
-			name: "",
-			isActive: false,
-			isCompleted: false,
-		})
-		setSelectedStatusId(null)
 	}		
 
 	return (
