@@ -380,7 +380,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								<div className = "tw-w-[2em] tw-shrink-0">
 									{priorityName ? <PriorityIcon type = {priorityName} color = {priorityName in colorMap ? colorMap[priorityName] : ""} className = "tw-shrink-0 tw-w-6 tw-h-6"/> : <></>}
 								</div>
-								<div className = "tw-flex tw-flex-1">
+								<div className = "tw-min-w-32 tw-flex tw-flex-1">
 									{prioritySelect}
 								</div>
 							</button>
@@ -394,11 +394,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									<div className = "tw-flex tw-flex-1">
 									{
 										epicTicketType?.id !== ticket?.ticketTypeId ?
-											<div className = "tw-w-full">
+											<div className = "tw-min-w-32 tw-w-full">
 											{ticketTypeSelect}
 											</div>
 										: (
-										<div className = "tw-w-full">
+										<div className = "tw-min-w-32 tw-w-full">
 											<div className = "tw-ml-3">{ticketTypeName}</div>
 										</div>
 										)

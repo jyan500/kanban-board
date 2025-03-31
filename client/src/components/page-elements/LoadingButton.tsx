@@ -13,9 +13,9 @@ interface LoadingButtonProps {
 export const LoadingButton = ({disabled, type, className, isLoading, text, onClick}: LoadingButtonProps) => {
 	return (
 		<button disabled={isLoading || disabled} type={type ?? "button"} onClick={onClick} className = {`${className ?? "button"}`}>
-			<div className = "tw-flex tw-flex-row tw-justify-center tw-gap-x-4">
-				<span>{text}</span>
+			<div className = "tw-flex tw-flex-row tw-justify-center tw-items-center tw-gap-x-2">
 				{isLoading ? (<LoadingSpinner className={"tw-h-6 tw-w-6"}/>) : null}
+				<span>{text}</span>
 			</div>
 		</button>	
 	)

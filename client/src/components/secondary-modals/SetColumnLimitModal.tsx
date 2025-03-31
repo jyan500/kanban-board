@@ -8,6 +8,7 @@ import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps
 import { Toast } from "../../types/common"
 import { BackendErrorMessage } from "../page-elements/BackendErrorMessage"
 import { MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT } from "../../helpers/constants"
+import { LoadingButton } from "../page-elements/LoadingButton"
 
 export type SetColumnLimitModalProps = {
 	boardId: number
@@ -87,7 +88,7 @@ export const SetColumnLimitModal = ({boardId, statusId}: SetColumnLimitModalProp
 		        {errors?.limit && <small className = "--text-alert">{errors.limit.message}</small>}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<button type = "submit" className = "button">Save</button>
+				<LoadingButton isLoading={isUpdateBoardStatusLoading} type = "submit" className = "button" text="Save"/>
 				<button onClick = {(e) => {
 					e.preventDefault()
 					onClose()

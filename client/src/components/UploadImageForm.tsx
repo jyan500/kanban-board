@@ -8,6 +8,7 @@ import { Toast } from "../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { Avatar } from "./page-elements/Avatar"
 import { BackendErrorMessage } from "./page-elements/BackendErrorMessage"
+import { LoadingButton } from "./page-elements/LoadingButton"
 
 interface Props {
 	id: number
@@ -52,13 +53,12 @@ export const UploadImageForm = ({id, imageUrl, endpoint, invalidatesTags}: Props
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
-			{/*<Avatar imageUrl={imageUrl} size={"l"}/>*/}
 			<div>
 				<label className = "label">Image Url: </label>
 				<input {...register("imageUrl")} placeholder={"URL"} type="text" className = "tw-w-full"/>
 			</div>
 			<div>
-				<button type = "submit" className = "button">Upload</button>
+				<LoadingButton isLoading={isLoading} type = "submit" className = "button" text = "Upload"/>
 			</div>
 			{error && "status" in error ? (error?.data?.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`image_error_${i}`}>{errorMessage}</p>)) : null}
 		</form>

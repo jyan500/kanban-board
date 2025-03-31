@@ -16,7 +16,8 @@ import {
 	convertTimeDisplayToMinutes 
 } from "../../helpers/functions"
 import { IconContext } from "react-icons"
-import { LuClock as ClockIcon } from "react-icons/lu";
+import { IconClock } from "../icons/IconClock";
+import { LoadingButton } from "../page-elements/LoadingButton"
 
 type FormValues = {
 	id?: number
@@ -146,9 +147,7 @@ export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: Tic
 				totalTime ? ( 
 					<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-border tw-p-1">
 						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-							<IconContext.Provider value={{color: "var(--bs-primary)", className: "tw-w-4 tw-h-4"}}>
-								<ClockIcon/>	
-							</IconContext.Provider>
+							<IconClock color="var(--bs-primary" className="tw-w-4 tw-h-4"/>
 							<p className = "tw-font-bold">Total Time Spent</p>
 						</div>
 						<p>{convertMinutesToTimeDisplay(totalTime)}</p>
@@ -205,7 +204,7 @@ export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: Tic
 			        {errors?.description && <small className = "--text-alert">{errors.description.message}</small>}
 				</div>
 				<div>
-					<button type="submit" className = "button">Submit</button>
+					<LoadingButton isLoading={isAddTicketActivityLoading || isUpdateTicketActivityLoading} type="submit" className = "button" text={"Submit"}/>
 				</div>
 			</form>
 		</div>

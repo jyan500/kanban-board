@@ -11,6 +11,7 @@ import { ORGANIZATION_URL } from "../helpers/urls"
 import { AsyncSelect } from "../components/AsyncSelect"
 import { OptionType } from "../types/common"
 import { BackendErrorMessage } from "../components/page-elements/BackendErrorMessage"
+import { LoadingButton } from "../components/page-elements/LoadingButton"
 
 type FormValues = {
 	email: string
@@ -111,7 +112,7 @@ export const Login = () => {
 				</div>
 				<div>
 				    <div>
-						<button className = "button" type = "submit">Submit</button>
+						<LoadingButton isLoading={isLoading} className = "button" type = "submit" text="Submit"/>
 					</div>
 				</div>
 				<div className = "tw-flex tw-flex-col tw-gap-y-2">

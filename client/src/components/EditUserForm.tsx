@@ -15,6 +15,8 @@ import { IconEyeSlash } from "./icons/IconEyeSlash"
 import { PasswordRules } from "./page-elements/PasswordRules"
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
 import { ColumnFormPlaceholder } from "./placeholders/ColumnFormPlaceholder"
+import { BackendErrorMessage } from "./page-elements/BackendErrorMessage"
+import { LoadingButton } from "./page-elements/LoadingButton"
 
 type FormValues = {
 	id?: number 
@@ -124,8 +126,8 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			{ownUserError && "status" in ownUserError ? (ownUserError?.data?.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
-			{userError && "status" in userError ? (userError?.data?.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`register_error_${i}`}>{errorMessage}</p>)) : null}
+			<BackendErrorMessage error={ownUserError}/>
+			<BackendErrorMessage error={userError}/>
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
 				{!isChangePassword ? 
 				(
@@ -255,7 +257,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 				    ): null
 		        }
 		        <div>
-		        	<button type = "submit" className = "button">Submit</button>
+		        	<LoadingButton isLoading={isEditUserLoading || isEditOwnUserLoading} type = "submit" className = "button" text="Submit"/>
 		        </div>
 			</form>
 		</div>

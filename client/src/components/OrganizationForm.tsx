@@ -14,6 +14,7 @@ import { Organization } from "../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { EMAIL_PATTERN, PHONE_PATTERN } from "../helpers/constants"
 import { BackendErrorMessage } from "./page-elements/BackendErrorMessage"
+import { LoadingButton } from "./page-elements/LoadingButton"
 
 export type FormValues = {
 	id?: number
@@ -200,7 +201,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 			        {errors?.industry && <small className = "--text-alert">{errors.industry.message}</small>}
 				</div>
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
-					<button type = "submit" className = "button">{isOrgRegister ? "Next" : "Submit"}</button>
+					<LoadingButton isLoading={isUpdateOrganizationLoading} type = "submit" className = "button" text={isOrgRegister ? "Next" : "Submit"}/>
 				</div>
 			</form>
 			{
