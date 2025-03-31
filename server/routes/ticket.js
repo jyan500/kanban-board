@@ -26,7 +26,7 @@ const {
 
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
-const { parseMentions } = require("../helpers/functions")
+const { parseMentions, insertAndGetId } = require("../helpers/functions")
 const db = require("../db/db")
 const { DEFAULT_PER_PAGE } = require("../constants")
 
@@ -264,7 +264,7 @@ router.post("/bulk-watch", validateBulkWatch, handleValidationResult, async (req
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
 		const body = {...req.body, organization_id: req.user.organization}
-		const id = await db("tickets").insert({
+		const id = await insertAndGetId("tickets", {
 			name: body.name,
 			description: body.description,
 			priority_id: body.priority_id,
@@ -272,12 +272,12 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			ticket_type_id: body.ticket_type_id,
 			organization_id: body.organization_id,
 			user_id: req.user.id
-		}, ["id"])
+		})
 		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: id[0], is_mention: true}, req.user.organization)
 		if (ticketsToUsers.length){
 			await db("tickets_to_users").insert(ticketsToUsers)
 		}
-		res.json({id: id[0], mentions: ticketsToUsers.map((obj) => {
+		res.json({id: id, mentions: ticketsToUsers.map((obj) => {
 			return {
 				userId: obj.user_id,
 				ticketId: obj.ticket_id,
@@ -444,16 +444,16 @@ router.get("/:ticketId/comment/:commentId", validateTicketCommentGet, handleVali
 
 router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationResult, async (req, res, next) => {
 	try {
-		const id = await db("ticket_comments").insert({
+		const id = await insertAndGetId("ticket_comments", {
 			comment: req.body.comment,
 			ticket_id: req.params.ticketId,
 			user_id: req.user.id
-		}, ["id"])
+		})
 		const ticketCommentsToUsers = await parseMentions(req.body.comment, {ticket_comment_id: id[0]}, req.user.organization)
 		if (ticketCommentsToUsers.length){
 			await db("ticket_comments_to_users").insert(ticketCommentsToUsers)
 		}
-		res.json({id: id[0], mentions: ticketCommentsToUsers.map((obj) => {
+		res.json({id: id, mentions: ticketCommentsToUsers.map((obj) => {
 			return {
 				ticketCommentId: obj.ticket_comment_id,
 				userId: obj.user_id,
@@ -574,12 +574,12 @@ router.get("/:ticketId/relationship/:relationshipId", validateTicketRelationship
 
 router.post("/:ticketId/relationship", validateTicketRelationshipCreate, handleValidationResult, async (req, res, next) => {
 	try {
-		const id = await db("ticket_relationships").insert([{
+		const id = await insertAndGetId("ticket_relationships", {
 			parent_ticket_id: req.params.ticketId,
 			child_ticket_id: req.body.child_ticket_id,
 			ticket_relationship_type_id: req.body.ticket_relationship_type_id
-		}], ["id"])
-		res.json({id: id[0], message: "Ticket relationship inserted successfully!"})
+		})
+		res.json({id: id, message: "Ticket relationship inserted successfully!"})
 	}	
 	catch (err){
 		console.error(`Error while creating ticket relationship: ${err.message}`)

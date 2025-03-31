@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const { validateCreate, validateGet, validateUpdate, validateDelete, validateBulkEdit, validateUpdateOrder } = require("../validation/status")
 const { handleValidationResult } = require("../middleware/validationMiddleware")
-const { batchUpdate } = require("../helpers/functions")
+const { insertAndGetId, batchUpdate } = require("../helpers/functions")
 const db = require("../db/db")
 
 router.get("/", async (req, res, next) => {
@@ -44,14 +44,14 @@ router.get("/:id", validateGet, handleValidationResult, async (req, res, next) =
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
 		const body = {...req.body, organization_id: req.user.organization}
-		const id = await db("statuses").insert({
+		const id = await insertAndGetId("statuses", {
 			name: body.name,
 			order: body.order,
 			is_active: req.body.is_active,
 			is_completed: req.body.is_completed,
 			organization_id: body.organization_id
-		}, ["id"])
-		res.json({id: id[0], message: `Status inserted successfully!`})
+		})
+		res.json({id: id, message: `Status inserted successfully!`})
 	}	
 	catch (err){
 		console.error(`Error while inserting status: ${err.message}`)	

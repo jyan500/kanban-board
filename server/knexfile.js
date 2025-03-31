@@ -13,6 +13,19 @@ module.exports = {
     migrations: {
       directory: "./db/migrations",
     },
+    pool: {
+      afterCreate: function (conn, done) {
+        conn.query('SET serial_normalization = "sql_sequence";', function (err) {
+          if (err) {
+            done(err, conn);
+          } else {
+            conn.query('SET default_int_size = 4;', function (err) {
+              done(err, conn);
+            });
+          }
+        });
+      }
+    }
   },
   development: {
     client: process.env.DB_CLIENT,

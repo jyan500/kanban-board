@@ -9,6 +9,7 @@ const { DEFAULT_STATUSES } = require("../constants")
 const bcrypt = require("bcrypt")
 const config = require("../config")
 const {authenticateUserActivated} = require("../middleware/userActivatedMiddleware")
+const { insertAndGetId } = require("../helpers/functions")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -244,18 +245,18 @@ router.post("/activate", async (req, res, next) => {
 router.post("/organization", authenticateUserActivated, validateAddOrganization, handleValidationResult, async (req, res, next) => {
 	try {
 		const { name, email, phone_number, address, city, state, zipcode, industry } = req.body
-		const organization = await db("organizations").insert({
+		const organizationId = await insertAndGetId("organizations", {
 			name, email, phone_number, address, city, state, zipcode, industry	
-		}, ["id"])
+		})
 		// create the admin user role for the new user
 		const adminUserRole = await db("user_roles").where("name", "ADMIN").first()
 		await db("organization_user_roles").insert({
 			user_id: req.user.id,
-			organization_id: organization[0],
+			organization_id: organizationId,
 			user_role_id: adminUserRole?.id
 		})
 		// attach default statuses for the new organization
-		await db("statuses").insert(DEFAULT_STATUSES.map((status) => ({...status, organization_id: organization[0]})))
+		await db("statuses").insert(DEFAULT_STATUSES.map((status) => ({...status, organization_id: organizationId})))
 
 		res.json({message: "Organization registered successfully!"})
 	}
