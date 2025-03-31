@@ -129,12 +129,15 @@ export const NotificationDisplay = () => {
 	}
 
 	const onSubmit = (values: FormValues) => {
+		const parsedValues = Object.fromEntries(
+			Object.entries(values).map(([key, value]) => [key, value === null ? "" : value])
+		) as FormValues
 		// reset back to page 1 if modifying search results
 		// setting the search params 
 		// modifying the search params will then retrigger the useGetTicketsQuery
 		setSearchParams({
 			page: "1",
-			...values
+			...parsedValues
 		})
 	}
 

@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { useGetTicketsQuery } from "../../services/private/ticket" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { Outlet, useNavigate, useParams, useSearchParams } from "react-router-dom"
-import { Ticket } from "../../types/common"
+import { Ticket, OptionType } from "../../types/common"
 import { TICKETS } from "../../helpers/routes"
 import { PaginationRow } from "../../components/page-elements/PaginationRow"
 import { LoadingSpinner } from "../../components/LoadingSpinner"
@@ -22,7 +22,9 @@ export type Filters = {
 	status: string
 }
 
-export type FormValues = Filters & {
+export type FormValues = {
+	ticketType: string
+	priority: string
 	searchBy: string
 	query: string	
 }
@@ -55,9 +57,9 @@ export const TicketDisplay = () => {
 	const currentPage = pageParam !== "" ? parseInt(pageParam) : 1
 	const url = `${TICKETS}${ticketId ? `/${ticketId}` : ""}`
 	const defaultForm: FormValues = {
+		...filters,
 		query: searchParams.get("query") ?? "",
 		searchBy: searchParams.get("searchBy") ?? "title",
-		...filters
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
@@ -66,12 +68,16 @@ export const TicketDisplay = () => {
 	}
 
 	const onSubmit = (values: FormValues) => {
+		// replace any null values with ""
+		const parsedValues = Object.fromEntries(
+			Object.entries(values).map(([key, value]) => [key, value === null ? "" : value])
+		) as FormValues
 		// reset back to page 1 if modifying search results
 		// setting the search params 
 		// modifying the search params will then retrigger the useGetTicketsQuery
 		setSearchParams({
 			page: "1",
-			...values
+			...parsedValues
 		})
 	}
 
