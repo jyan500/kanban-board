@@ -8,7 +8,7 @@ import { v4 as uuidv4} from "uuid"
 import { USER_PROFILE_URL, USER_PROFILE_ORG_URL } from "../../helpers/urls"
 import { OptionType, Toast } from "../../types/common"
 import { useNavigate, Navigate } from "react-router-dom" 
-import { LoadingSpinner } from "../../components/LoadingSpinner"
+import { LoadingButton } from "../../components/page-elements/LoadingButton"
 
 type FormValues = {
 	organizationId: string | number 
@@ -75,7 +75,7 @@ export const JoinOrganization = () => {
 			        {errors?.organizationId && <small className = "--text-alert">{errors.organizationId.message}</small>}
 			    </div>	
 			    <div>
-			    	<button className = "button" type="submit">Send Request</button>
+			    	<LoadingButton isLoading={isLoading} className = "button" type="submit" text="Send Request"/>
 			    </div>
 			</form>
 		</div>

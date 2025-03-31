@@ -23,6 +23,7 @@ import { IconPlus } from "../icons/IconPlus"
 import { Switch } from "../page-elements/Switch"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
 import { BackendErrorMessage } from "../page-elements/BackendErrorMessage"
+import { LoadingButton } from "../page-elements/LoadingButton"
 
 type FormValues = {
 	id?: number
@@ -109,7 +110,7 @@ export const AddEditStatusForm = () => {
 						<small><span className = "tw-font-bold">*</span>all tickets in this status are considered "completed" for progress checking purposes</small>	
 					</div>
 					<div>
-						<button type = "submit" className = "button">Save</button>
+						<LoadingButton isLoading={isAddStatusLoading || isUpdateStatusLoading} type = "submit" className = "button" text="Save"/>
 					</div>
 				</div>
 			</form>

@@ -5,10 +5,9 @@ import { toggleShowModal, setModalType, setModalProps } from "../slices/modalSli
 import { Controller, useForm, FormProvider } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import type { Mention, UserProfile, Status, Ticket, TicketType, Priority, OptionType } from "../types/common"
-import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../services/private/board"
+import { useAddBoardTicketsMutation } from "../services/private/board"
 import { 
 	useAddTicketMutation, 
-	useDeleteTicketMutation, 
 	useBulkEditTicketAssigneesMutation,
 	useBulkEditTicketsMutation,
 } 
@@ -67,9 +66,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 	// which notifies RTK query to skip this 
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const [ addTicket, {isLoading: isAddTicketLoading, error: isAddTicketError} ] = useAddTicketMutation() 
-	const [ deleteTicket, {isLoading: isDeleteTicketLoading, error: isDeleteTicketError} ] = useDeleteTicketMutation()
 	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
-	const [ deleteBoardTicket, {isLoading: isDeleteBoardTicketLoading, error: isDeleteBoardTicketError}] = useDeleteBoardTicketMutation()
 	const [ bulkCreateNotifications, {isLoading: isBulkCreateNotificationLoading}] = useBulkCreateNotificationsMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
 	const defaultForm: AddTicketFormValues = {
@@ -285,7 +282,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 						{
 							buttonBar ? buttonBar : (
 								<div>
-									<LoadingButton type="submit" className = "button" text={"Submit"}></LoadingButton>
+									<LoadingButton isLoading={isAddTicketLoading || isAddBoardTicketsLoading || isAddNotificationLoading || isBulkCreateNotificationLoading} type="submit" className = "button" text={"Submit"}></LoadingButton>
 								</div>
 							)
 						}

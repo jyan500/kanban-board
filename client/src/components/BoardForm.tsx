@@ -17,6 +17,7 @@ import { Board, Status } from "../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { MIN_BOARD_TICKET_LIMIT, MAX_BOARD_TICKET_LIMIT } from "../helpers/constants"
 import { Switch } from "./page-elements/Switch"
+import { LoadingButton } from "./page-elements/LoadingButton"
 
 type FormValues = {
 	id?: number
@@ -33,7 +34,7 @@ export const BoardForm = () => {
 	const { currentBoardId } = useAppSelector((state) => state.boardInfo)
 	const defaultForm: FormValues = {
 		id: undefined,
-		ticketLimit: MIN_BOARD_TICKET_LIMIT,
+		ticketLimit: MAX_BOARD_TICKET_LIMIT,
 		name: "",
 	}
 	const [ addBoard ] = useAddBoardMutation() 
@@ -141,7 +142,7 @@ export const BoardForm = () => {
 			))) : <LoadingSpinner/>}
 			</div>
 			<div className = "tw-flex tw-flex-col">
-				<button type="submit" className = "button">Submit</button>
+				<LoadingButton isLoading={isLoading} type="submit" text="Submit" className = "button"/>
 			</div>
 		</form>
 	)	

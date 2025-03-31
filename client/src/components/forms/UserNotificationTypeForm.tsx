@@ -8,6 +8,7 @@ import { UserNotificationType, NotificationType } from "../../types/common"
 import { useGetUserNotificationTypesQuery, useUpdateUserNotificationTypesMutation } from "../../services/private/userProfile"
 import { Switch } from "../page-elements/Switch"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
+import { LoadingButton } from "../page-elements/LoadingButton"
 
 export const UserNotificationTypeForm = () => {
 	const dispatch = useAppDispatch()
@@ -71,7 +72,7 @@ export const UserNotificationTypeForm = () => {
 				))) : 
 				<RowContentLoading/>}
 				</div>
-				<button type="submit" className = "button">Submit</button>
+				<LoadingButton isLoading={isUpdateUserNotificationTypesLoading} type="submit" className = "button" text={"Submit"}/>
 			</form>
 		</div>
 	)	
