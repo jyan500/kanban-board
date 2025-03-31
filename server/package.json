@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec --exit --timeout 10000",
-    "migrate-prod": "knex migrate:latest --env production",
+    "migrate-prod": "node migrate-db.js",
     "dev": "knex migrate:latest --env development && nodemon index.js",
     "start": "knex migrate:latest --env production && node index.js"
   },
