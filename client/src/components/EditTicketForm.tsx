@@ -398,7 +398,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 											{ticketTypeSelect}
 											</div>
 										: (
-										<div className = "tw-min-w-32 tw-w-full">
+										<div className = "tw-w-full">
 											<div className = "tw-ml-3">{ticketTypeName}</div>
 										</div>
 										)
