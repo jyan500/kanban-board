@@ -9,6 +9,7 @@ import { toggleShowModal, setModalProps } from "../../slices/modalSlice"
 import { OptionType, Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../../services/private/board"
+import { LoadingButton } from "../page-elements/LoadingButton"
 
 type Props = {
 	ticketId?: number | string | undefined
@@ -126,7 +127,7 @@ export const MoveTicketForm = ({step, title, boardId: currentBoardId, ticketId, 
 					</>
 				) : null}
 				{
-					buttonBar ? buttonBar : <button type = "submit" className = "button">Submit</button>
+					buttonBar ? buttonBar : <LoadingButton isLoading={addBoardTicketsLoading || deleteBoardTicketLoading} type = "submit" className = "button" text="Submit"/>
 				}
 			</form>
 		</div>
