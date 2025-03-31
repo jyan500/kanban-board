@@ -17,7 +17,7 @@ const {
 }  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
-const { mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
+const { insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 
@@ -506,12 +506,12 @@ router.delete("/:boardId/status/:statusId", validateBoardStatusDelete, handleVal
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
 		const body = {...req.body, organization_id: req.user.organization}
-		const id = await db("boards").insert({
+		const id = await insertAndGetId("boards", {
 			name: body.name,
 			ticket_limit: body.ticket_limit,
 			organization_id: body.organization_id
-		},["id"])
-		res.json({id: id[0], message: "Board inserted successfully!"})
+		})
+		res.json({id: id, message: "Board inserted successfully!"})
 	}	
 	catch (err) {
 		console.error(`Error while creating Board: ${err.message}`)

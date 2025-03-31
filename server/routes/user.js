@@ -9,6 +9,7 @@ const db = require("../db/db")
 const userValidator = require("../validation/user")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { body, validationResult } = require("express-validator")
+const { insertAndGetId } = require("../helpers/functions")
 const { authenticateToken } = require("../middleware/authMiddleware")
 const registrationRequestTemplate = require("../email/templates/registration-request") 
 const activateAccountTemplate = require("../email/templates/activate-account")
@@ -86,22 +87,22 @@ router.post("/register", applyRateLimit, userValidator.registerValidator, handle
 		// Expires in 6 months
 		const expiresAt = new Date();
 		expiresAt.setMonth(expiresAt.getMonth() + 6);
-		const user = await db("users").insert({
+		const userId = await insertAndGetId("users", {
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
 			email: req.body.email,
 			password: hash,
 			is_active: true,
-		}, ["id"])
+		})
 
 		await db("user_registration_requests").insert({
-			user_id: user[0],
+			user_id: userId,
 			organization_id: req.body.organization_id
 		})
 
 		// insert all notification types by default for a user
 		const notificationTypes = await db("notification_types")
-		const userToNotificationTypes = notificationTypes.map((notification) => ({user_id: user[0], notification_type_id: notification.id}))	
+		const userToNotificationTypes = notificationTypes.map((notification) => ({user_id: userId, notification_type_id: notification.id}))	
 		await db("users_to_notification_types").insert(userToNotificationTypes)
 
 		const organization = await db("organizations").where("id", req.body.organization_id).first()
@@ -256,7 +257,7 @@ router.post("/register/organization", applyRateLimit, userValidator.organization
 		const expiresAt = new Date();
 		expiresAt.setMonth(expiresAt.getMonth() + 6);
 
-		const user = await db("users").insert({
+		const userId = await insertAndGetId("users", {
 			first_name: first_name,
 			last_name: last_name,
 			email: user_email,
@@ -264,19 +265,19 @@ router.post("/register/organization", applyRateLimit, userValidator.organization
 			activation_token: activationToken,
 			activation_token_expires: expiresAt,
 			is_active: false
-		}, ["id"])
-		const organization = await db("organizations").insert({
+		})
+		const organizationId = await insertAndGetId("organizations", {
 			name, email, phone_number, address, city, state, zipcode, industry	
-		}, ["id"])
+		})
 		// create the admin user role for the new user
 		const adminUserRole = await db("user_roles").where("name", "ADMIN").first()
 		await db("organization_user_roles").insert({
-			user_id: user[0],
-			organization_id: organization[0],
+			user_id: userId,
+			organization_id: organizationId,
 			user_role_id: adminUserRole?.id
 		})
 		// attach default statuses for the new organization
-		await db("statuses").insert(DEFAULT_STATUSES.map((status) => ({...status, organization_id: organization[0]})))
+		await db("statuses").insert(DEFAULT_STATUSES.map((status) => ({...status, organization_id: organizationId})))
 
 		// Generate activation link
 	    const activationLink = `/activate?token=${activationToken}`;

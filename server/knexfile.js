@@ -13,6 +13,21 @@ module.exports = {
     migrations: {
       directory: "./db/migrations",
     },
+    // set sql_sequence to use auto incrementing ids instead of uuid on cockroach DB
+    // https://github.com/knex/knex/issues/4953#issuecomment-1018036689
+    pool: {
+      afterCreate: function (conn, done) {
+        conn.query('SET serial_normalization = "sql_sequence";', function (err) {
+          if (err) {
+            done(err, conn);
+          } else {
+            conn.query('SET default_int_size = 4;', function (err) {
+              done(err, conn);
+            });
+          }
+        });
+      }
+    }
   },
   development: {
     client: process.env.DB_CLIENT,
