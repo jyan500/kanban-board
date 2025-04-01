@@ -17,6 +17,7 @@ export interface RegisterRequest {
 	password: string
 	confirmPassword: string
 	organizationId: number
+	recaptcha: string
 }
 
 export const userRegisterApi = publicApi.injectEndpoints({
@@ -32,7 +33,8 @@ export const userRegisterApi = publicApi.injectEndpoints({
 					email: registrationInfo.email,
 					password: registrationInfo.password,
 					confirm_password: registrationInfo.confirmPassword,
-					organization_id: registrationInfo.organizationId
+					organization_id: registrationInfo.organizationId,
+					recaptcha: registrationInfo.recaptcha,
 				} 
 			})	
 		}),
@@ -46,9 +48,9 @@ export const userRegisterApi = publicApi.injectEndpoints({
 					}
 				}
 				const userBody = (user: UserFormValues) => {
-					const { firstName: first_name, lastName: last_name, email, password, confirmPassword: confirm_password } = user
+					const { firstName: first_name, lastName: last_name, email, password, confirmPassword: confirm_password, recaptcha } = user
 					return {
-						first_name, last_name, email, password, confirm_password
+						first_name, last_name, email, password, confirm_password, recaptcha
 					}
 				}
 				return {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import ReCAPTCHA from 'react-google-recaptcha';
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { useNavigate, Link } from "react-router-dom" 
 import { useForm, Resolver, Controller } from "react-hook-form"
@@ -22,6 +23,7 @@ export type FormValues = {
 	email: string
 	password: string
 	confirmPassword: string
+	recaptcha: string
 }
 
 type UserFormValues = FormValues & {
@@ -47,6 +49,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 		email: "",
 		password: "",
 		confirmPassword: "",
+		recaptcha: "",
 		organizationId: 0
 	}
 
@@ -56,6 +59,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 	    email: { required: "Email is required" },
 	    password: { required: "Password is required"},
 	    confirmPassword: { required: "Confirm Password is required"},
+	    recaptcha: { required: "ReCAPTCHA is required"},
 	    ...(!isOrgRegister ? {organizationId: { required: "Organization is required"}} : {}),
     }
 
@@ -70,6 +74,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 
 	const onSubmit = async (values: UserFormValues) => {
 		try {
+			console.log("values: ", values)
 			const data = await userRegister(values).unwrap()
     		navigate(LOGIN, {state: {"alert": "User registered successfully!"}, replace: true})
 		}
@@ -157,7 +162,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 					    </label>
 						<input 
 						id = "register-password"
-						type="password"
+						type={!showPassword ? "password" : "text"}
 						className = "tw-w-full"
 						{...formRegister("password", registerOptions.password)}
 						/>
@@ -191,6 +196,20 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 						</div>
 				        {errors?.confirmPassword && <small className = "--text-alert">{errors.confirmPassword.message}</small>}
 			        </div>
+			    </div>
+			    <div>
+			    	<Controller
+				    	control={control}
+			    		name="recaptcha"
+			    		rules={registerOptions.recaptcha}
+			    		render={({field}) => (
+			    			<ReCAPTCHA
+					            sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY ?? ""}
+					            onChange={(value) => setValue("recaptcha", value || "")}
+				            />
+			    		)}
+			    	/>
+			        {errors?.recaptcha && <small className = "--text-alert">{errors.recaptcha.message}</small>}
 			    </div>
 			    <div>
 			    	<LoadingButton className = "button" type = "submit" text = "Submit"/>
