@@ -4,9 +4,8 @@ const config = {
 	companyName: "Kanban",
 	saltRounds: 10,
 	listPerPage: 10,
-	email: "noreply@kanban.com",
-	adminEmail: "admin@kanban.com",
-	domain: process.env.DOMAIN
+	domain: process.env.DOMAIN,
+	environment: process.env.ENVIRONMENT
 }
 
 module.exports = config
