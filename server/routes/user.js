@@ -17,6 +17,7 @@ const passwordResetTemplate = require("../email/templates/password-reset")
 const {sendEmail} = require("../email/email")
 const { EXCEEDED_MESSAGE, DEFAULT_STATUSES } = require("../constants")
 const rateLimit = require("express-rate-limit")
+const axios = require("axios")
 
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
@@ -82,11 +83,20 @@ router.post("/login", applyRateLimit, userValidator.loginValidator, handleValida
 
 router.post("/register", applyRateLimit, userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
 	try {
+		const { recaptcha } = req.body
+		const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+			params: {
+				secret: process.env.RECAPTCHA_SECRET_KEY,
+				response: recaptcha
+			}
+		});
+
+		if (!response.data.success) {
+			return res.status(500).json({errors: ["Failed reCAPTCHA validation"]});
+		}
+
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(req.body.password, salt)
-		// Expires in 6 months
-		const expiresAt = new Date();
-		expiresAt.setMonth(expiresAt.getMonth() + 6);
 		const userId = await insertAndGetId("users", {
 			first_name: req.body.first_name,
 			last_name: req.body.last_name,
