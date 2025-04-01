@@ -11,7 +11,7 @@ const activateAccountTemplate = (firstName, lastName, activationLink, isRegReque
 	` : `
 		<p>You have registered your account and organization successfully!</p>
 		<p>
-			Please click the link <a href = "${domain}${activationLink}" target="_blank">here</a> below to activate your account.
+			Please click the link <a href = "${domain}${activationLink}" target="_blank">here</a> to activate your account.
 		</p>
 	`
 	return (
