@@ -162,7 +162,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 					    </label>
 						<input 
 						id = "register-password"
-						type="password"
+						type={!showPassword ? "password" : "text"}
 						className = "tw-w-full"
 						{...formRegister("password", registerOptions.password)}
 						/>

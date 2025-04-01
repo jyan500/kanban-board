@@ -256,6 +256,18 @@ router.post("/reset-password", applyRateLimit, userValidator.resetPasswordValida
 
 router.post("/register/organization", applyRateLimit, userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
 	try {
+		const { recaptcha } = req.body.user
+		const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+			params: {
+				secret: process.env.RECAPTCHA_SECRET_KEY,
+				response: recaptcha
+			}
+		});
+
+		if (!response.data.success) {
+			return res.status(500).json({errors: ["Failed reCAPTCHA validation"]});
+		}
+
 		const { first_name, last_name, password, email: user_email } = req.body.user
 		const { name, address, city, state, zipcode, industry, phone_number, email} = req.body.organization
 		const salt = await bcrypt.genSalt(config.saltRounds)

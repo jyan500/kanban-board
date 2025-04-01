@@ -48,9 +48,9 @@ export const userRegisterApi = publicApi.injectEndpoints({
 					}
 				}
 				const userBody = (user: UserFormValues) => {
-					const { firstName: first_name, lastName: last_name, email, password, confirmPassword: confirm_password } = user
+					const { firstName: first_name, lastName: last_name, email, password, confirmPassword: confirm_password, recaptcha } = user
 					return {
-						first_name, last_name, email, password, confirm_password
+						first_name, last_name, email, password, confirm_password, recaptcha
 					}
 				}
 				return {

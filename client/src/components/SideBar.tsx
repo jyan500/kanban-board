@@ -84,7 +84,7 @@ export const SideBar = () => {
 						<div className = "sidebar__links">
 							{ 
 								links.map((link) => 
-									<NavLink text={link.text} url={link.pathname} onClick={() => dispatch(toggleSideBar(false))}/>
+									<NavLink key={`sidebar_${link.text}`} text={link.text} url={link.pathname} onClick={() => dispatch(toggleSideBar(false))}/>
 								)
 							}
 						</div>

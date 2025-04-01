@@ -30,7 +30,9 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 					All
 				</FilterButton>
 				{ticketTypes.map((ticketType) => (
-					<FilterButton isActive={isActive === ticketType.id} onClick={(e) => {
+					<FilterButton 
+						key={`filter_button_${ticketType.id}`}
+						isActive={isActive === ticketType.id} onClick={(e) => {
 						setFilterBy(ticketType.id)
 						setIsActive(ticketType.id)
 					}}>

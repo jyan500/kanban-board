@@ -218,7 +218,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 							    </label>
 								<input 
 								id = "register-password"
-								type="password"
+								type={!showPassword ? "password" : "text"}
 								className = "tw-w-full"
 								{...register("password", registerOptions.password)}
 								/>
