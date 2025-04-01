@@ -202,7 +202,6 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 				}
 			})
 			await db("organization_user_roles").insert(toInsert)
-			// TODO: email the user
 			const userIds = regRequests.map((regRequest) => regRequest.user_id)
 			const recipients = await db("organization_user_roles").join("users", "users.id", "=", "organization_user_roles.user_id").whereIn("organization_user_roles.user_id", userIds)
 			.join("organizations", "organizations.id", "=", "organization_user_roles.organization_id")
@@ -214,7 +213,10 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 				"organizations.phone_number as orgPhoneNum",
 				"organizations.name as orgName"
 			)
-			await sendBulkEmail(recipients, "Registration Request Accepted", (firstName, lastName, orgName, _, __) => registrationSuccessTemplate(firstName, lastName, orgName))
+			/* 
+				TODO: note this is functional, but to avoid email charges, commented out for now.
+			*/
+			// await sendBulkEmail(recipients, "Registration Request Accepted", (firstName, lastName, orgName, _, __) => registrationSuccessTemplate(firstName, lastName, orgName))
 			res.json({
 				message: "Users registration process is complete"
 			})
@@ -237,7 +239,11 @@ router.post("/registration-request/bulk-edit", authenticateToken, authenticateUs
 				"organizations.phone_number as orgPhoneNum",
 				"organizations.name as orgName"
 			)
-			await sendBulkEmail(recipients, "Registration Request Denied", (firstName, lastName, orgName, orgEmail, orgPhoneNum) => registrationDeniedTemplate(firstName, lastName, orgName, orgEmail, orgPhoneNum))
+
+			/* 
+				TODO: note this is functional, but to avoid email charges, commented out for now.
+			*/
+			// await sendBulkEmail(recipients, "Registration Request Denied", (firstName, lastName, orgName, orgEmail, orgPhoneNum) => registrationDeniedTemplate(firstName, lastName, orgName, orgEmail, orgPhoneNum))
 			res.json({
 				message: "Users registration requests were denied"
 			})

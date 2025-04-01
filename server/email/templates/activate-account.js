@@ -1,4 +1,4 @@
-const { companyName, domain, adminEmail } = require("../../config")
+const { companyName, domain } = require("../../config")
 const activateAccountTemplate = (firstName, lastName, activationLink, isRegRequest=false, organizationName="") => {
 	const regRequestMessage = isRegRequest ? `
 		<p>
@@ -6,12 +6,12 @@ const activateAccountTemplate = (firstName, lastName, activationLink, isRegReque
 			You will be notified by email when your registration request is accepted.
 		</p>
 		<p>
-			In the meantime, please activate your account by clicking on the link <a href = "${domain}${activationLink}">here</a>.
+			In the meantime, please activate your account by clicking on the link <a href = "${domain}${activationLink}" target = "_blank">here</a>.
 		</p>
 	` : `
 		<p>You have registered your account and organization successfully!</p>
 		<p>
-			Please click <a href = "${domain}${activationLink}">here</a> to activate your account.
+			Please click the link <a href = "${domain}${activationLink}" target="_blank">here</a> to activate your account.
 		</p>
 	`
 	return (

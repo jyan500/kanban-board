@@ -1,4 +1,4 @@
-const { companyName, domain, adminEmail } = require("../../config")
+const { companyName, domain } = require("../../config")
 const passwordResetTemplate = (firstName, lastName, passwordResetLink) => {
 	return (
 		`
@@ -7,8 +7,7 @@ const passwordResetTemplate = (firstName, lastName, passwordResetLink) => {
 				Dear ${firstName} ${lastName},
 			</p>
 			<p>
-				Please click <a href="${domain}${passwordResetLink}">here</a> to reset your password. If you didn't make this request to change your password, please
-				contact us at <a href="mailto:${adminEmail}">${adminEmail}</a>
+				Please click <a target="_blank" href="${domain}${passwordResetLink}">here</a> to reset your password. 
 			</p>
 			<p>
 				Thank you,
