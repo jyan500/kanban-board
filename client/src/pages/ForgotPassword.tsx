@@ -56,7 +56,7 @@ export const ForgotPassword = () => {
 			        {errors?.email && <small className = "--text-alert">{errors.email.message}</small>}
 			 	</div>	
 			 	<div>
-			    	<LoadingButton className = "button" type = "submit" text = "Submit"/>
+			    	<LoadingButton isLoading={isLoading} className = "button" type = "submit" text = "Submit"/>
 			 	</div>
 		 	</form>
 		</div>

@@ -212,7 +212,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 			        {errors?.recaptcha && <small className = "--text-alert">{errors.recaptcha.message}</small>}
 			    </div>
 			    <div>
-			    	<LoadingButton className = "button" type = "submit" text = "Submit"/>
+			    	<LoadingButton isLoading={isLoading} className = "button" type = "submit" text = "Submit"/>
 				</div>
 				{
 					!isOrgRegister ? ( 

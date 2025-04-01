@@ -48,13 +48,13 @@ export const AccountActivation = () => {
 					<p>It appears your activation link has expired. Please click the "resend" button below to receive
 					another activation link in your email.</p>
 					{resendActivationError && "status" in resendActivationError ? (resendActivationError?.data?.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`activation_resend_error_${i}`}>{errorMessage}</p>)) : null}
-					<LoadingButton onClick={resendLink} text={"Resend"}/>
+					<LoadingButton isLoading={isResendActivationLoading} onClick={resendLink} text={"Resend"}/>
 				</div>
 			) : (
 				<div className = "tw-flex tw-flex-col tw-gap-y-4">
 					<p>Please click "confirm" below to activate your account.</p>	
 					{activateAccountError && "status" in activateAccountError ? (activateAccountError?.data?.errors?.map((errorMessage: string, i: number) => <p className = "--text-alert" key = {`activation_error_${i}`}>{errorMessage}</p>)) : null}
-					<LoadingButton onClick={activate} text={"Confirm"}/>
+					<LoadingButton isLoading={isActivateAccountLoading} onClick={activate} text={"Confirm"}/>
 				</div>
 			)
 		}	
