@@ -29,6 +29,7 @@ app.use(express.json())
 app.use(cors())
 
 // Enable trust proxy
+// https://community.render.com/t/what-number-of-proxies-sit-in-front-of-an-express-app-deployed-on-render/35981
 app.set('trust proxy', 3)
 app.get('/ip', (request, response) => response.send(request.ip))
 
