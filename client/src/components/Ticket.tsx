@@ -84,13 +84,14 @@ type PropType = {
 	statusesToDisplay: Array<Status>
 	boardId: number
 	dropdownAlignLeft?: boolean
+	isLoading?: boolean
 }
 
-export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: PropType) => {
+export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, isLoading}: PropType) => {
 	const {priorities} = useAppSelector((state) => state.priority)
 	const {statuses} = useAppSelector((state) => state.status)
 	const {ticketTypes} = useAppSelector((state) => state.ticketType)
-	const { data, isLoading } = useGetUserQuery(ticket?.assignees?.[0]?.id ?? skipToken)
+	const { data } = useGetUserQuery(ticket?.assignees?.[0]?.id ?? skipToken)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef(null)
 	const [showDropdown, setShowDropdown] = useState(false)
@@ -109,7 +110,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: 
 		<div className = {`tw-relative tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2`}>
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1">
 				<span className = "tw-font-medium">{ticket.name}</span>
-				{isLoading ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>}
+				<Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				{
@@ -132,19 +133,23 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft}: 
 					}
 				</div>
 				<div className = {"tw-inline-block tw-text-left"}>
-					<IconContext.Provider value = {{color: "var(--bs-dark-gray"}}>
-						<button ref = {buttonRef} onClick={(e) => {
-							// the prevent default here is to avoid the edit ticket form modal from opening
-							// when clicking the "..." menu on the individual ticket rather than from inside the edit ticket form modal
-							e.preventDefault()
-							setShowDropdown(!showDropdown)
-						}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
-						{
-							showDropdown ? (
-								<EditTicketFormMenuDropdown dropdownAlignLeft={dropdownAlignLeft} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
-							) : null
-						}
-					</IconContext.Provider>
+					{!isLoading ? (
+						<>
+							<button ref = {buttonRef} onClick={(e) => {
+								// the prevent default here is to avoid the edit ticket form modal from opening
+								// when clicking the "..." menu on the individual ticket rather than from inside the edit ticket form modal
+								e.preventDefault()
+								setShowDropdown(!showDropdown)
+							}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu color={"var(--bs-dark-gray)"} className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
+							{
+								showDropdown ? (
+									<EditTicketFormMenuDropdown dropdownAlignLeft={dropdownAlignLeft} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>
+								) : null
+							}
+						</>
+					) : (
+						<LoadingSpinner/>
+					)}
 				</div>
 			</div>
 		</div>
