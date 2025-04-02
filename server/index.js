@@ -29,7 +29,7 @@ app.use(express.json())
 app.use(cors())
 
 // Enable trust proxy
-app.set('trust proxy', 1)
+app.set('trust proxy', 2)
 app.get('/ip', (request, response) => response.send(request.ip))
 
 app.use(
