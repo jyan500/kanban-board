@@ -11,6 +11,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Avatar } from "./page-elements/Avatar"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { SM_BREAKPOINT } from "../helpers/constants"
+import { LoadingSpinner } from "./LoadingSpinner"
 
 type Props = {
 	ticket: Ticket | undefined

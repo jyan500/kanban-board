@@ -48,6 +48,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 	const { showModal } = useAppSelector((state) => state.modal) 
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
 	const [cacheKey, setCacheKey] = useState(uuidv4())
+	const [unlinkedTicketId, setUnlinkedTicketId] = useState<number | null>()
 	const dispatch = useAppDispatch()
 	const ticketIdSet = new Set()
 	ticketRelationships.forEach((ticketRelationship) => {
@@ -61,7 +62,6 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)  
 	const [ addTicketRelationship, { error: addTicketRelationshipError, isLoading: isAddTicketRelationshipLoading }] = useAddTicketRelationshipMutation()
-	const [ deleteTicketRelationship, { error: deleteTicketRelationshipError, isLoading: isDeleteTicketRelationshipLoading }] = useDeleteTicketRelationshipMutation()
 	const ticket = tickets?.data?.find((ticket) => ticket.id === currentTicketId)
 	const epicTicketType = ticketTypes?.find((type) => type.name === "Epic")
 	const epicTicketRelationshipType = ticketRelationshipTypes?.find((type) => type.name === "Epic")

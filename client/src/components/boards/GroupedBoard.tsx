@@ -71,7 +71,7 @@ export const GroupedBoard = ({
 	}, {}))
 	// removing overflowX and maxWidth fixes an issue where the status header dropdowns were not showing
 	const { overflowX, maxWidth, ...groupedHeaderStyle } = boardStyle
-	const [updateTicketStatus] = useUpdateTicketStatusMutation() 
+	const [updateTicketStatus, {isLoading: isUpdateTicketStatusLoading}] = useUpdateTicketStatusMutation() 
 	const { width, height } = useScreenSize()
 	const {data: groupByElements, isLoading, isError} = useGetGroupByElementsQuery({groupBy: groupBy, ids: Object.keys(groupedTickets)})  
 
@@ -191,6 +191,7 @@ export const GroupedBoard = ({
 																		onDragStart={dragStart}
 																		>
 																		{ticket ? <Ticket 
+																			isLoading={isUpdateTicketStatusLoading}
 																			ticket = {ticket}
 																			dropdownAlignLeft={i === 0}
 																			statusesToDisplay={statusesToDisplay}

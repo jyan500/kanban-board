@@ -47,12 +47,14 @@ export const Board = ({
 }: Props) => {
 
 	const dispatch = useAppDispatch()
-	const [updateTicketStatus] = useUpdateTicketStatusMutation() 
+	const [updateTicketStatus, {isLoading: isUpdateTicketStatusLoading}] = useUpdateTicketStatusMutation() 
+	const [dragTicketId, setDragTicketId] = useState<number | null>()
 
 	const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
 		const ticketId = parseInt(e.dataTransfer.getData("text").replace("ticket_", ""))
 		const statusId = parseInt(e.currentTarget.id.replace("status_", ""))
 		const ticket = board[statusId].find((tId) => tId === ticketId)
+		setDragTicketId(ticketId)
 		// if the status column does not contain the ticket, move the ticket into this column
 		if (!ticket){
 			// new endpoint to PATCH update ticket status
@@ -64,6 +66,7 @@ export const Board = ({
 	    			animationType: "animation-in",
 	    			message: `Ticket status updated successfully!`,
 	    		}))
+				setDragTicketId(null)
 			}
 			catch (e){
 				dispatch(addToast({
@@ -125,6 +128,7 @@ export const Board = ({
 										{ticket ? <Ticket 
 											ticket = {ticket}
 											dropdownAlignLeft={i === 0}
+											isLoading={dragTicketId === ticket.id && isUpdateTicketStatusLoading}
 											statusesToDisplay={statusesToDisplay}
 											boardId={boardId}
 										/> : null}
