@@ -28,6 +28,9 @@ const api = (route, apiVersion = "") => {
 app.use(express.json())
 app.use(cors())
 
+// Enable trust proxy
+app.set('trust proxy', 1);
+
 app.use(
 	express.urlencoded({
 		extended: true	
