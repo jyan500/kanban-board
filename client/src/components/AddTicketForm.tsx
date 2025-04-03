@@ -69,6 +69,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
 	const [ bulkCreateNotifications, {isLoading: isBulkCreateNotificationLoading}] = useBulkCreateNotificationsMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
+	const [ submitLoading, setSubmitLoading ] = useState(false) 
 	const defaultForm: AddTicketFormValues = {
 		id: undefined,
 		name: "",
@@ -123,6 +124,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 
     const onSubmit = async (values: AddTicketFormValues) => {
     	try {
+    		setSubmitLoading(true)
     		const assigneeId = !isNaN(Number(values.userIdOption?.value)) ? Number(values.userIdOption?.value) : 0
 	    	const {id: insertedTicketId, mentions} = await addTicket({
 	    		...values, 
@@ -162,6 +164,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 					notificationTypeId: assigneeNotificationType.id,
 				}).unwrap()	
 			}
+			setSubmitLoading(false)
 			dispatch(toggleShowModal(false))
 			dispatch(setModalType(undefined))
 			dispatch(setModalProps({}))
@@ -177,6 +180,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
     		}))
     	}
     	catch (e) { 
+			setSubmitLoading(false)
     		dispatch(addToast({
     			id: uuidv4(),
     			type: "failure",
@@ -282,7 +286,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 						{
 							buttonBar ? buttonBar : (
 								<div>
-									<LoadingButton isLoading={isAddTicketLoading || isAddBoardTicketsLoading || isAddNotificationLoading || isBulkCreateNotificationLoading} type="submit" className = "button" text={"Submit"}></LoadingButton>
+									<LoadingButton isLoading={submitLoading} type="submit" className = "button" text={"Submit"}></LoadingButton>
 								</div>
 							)
 						}

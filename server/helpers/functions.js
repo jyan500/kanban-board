@@ -1,5 +1,6 @@
 const db = require("../db/db")
 const { parse } = require('node-html-parser')
+const config = require("../config")
 const Mustache = require("mustache")
 /*
 turns an object of the following from knex into an object where the key is the id of the row, mapped
@@ -195,14 +196,49 @@ const asyncHandler = fn => (req, res, next) => {
 	fn(req, res, next).catch(next)
 }
 
+
+// code from: https://github.com/cockroachlabs/example-app-node-knex/blob/main/app.js
+// Wrapper for a transaction.  This automatically re-calls the operation with
+// the client as an argument as long as the database server asks for
+// the transaction to be retried.
+const retryTxn = async (n, max, operation) => {
+  const transactionProvider = db.transactionProvider();
+  const transaction = await transactionProvider();
+  while (true) {
+    n++;
+    if (n === max) {
+      throw new Error("Max retry count reached.");
+    }
+    try {
+      const res = await operation
+      const test = await transaction.commit();
+      return res;
+    } catch (err) {
+      if (err.code !== "40001") {
+        console.error(err.message);
+        throw err;
+      } else {
+        console.log("Transaction failed. Retrying transaction.");
+        console.log(err.message);
+        await transaction.rollback();
+        await new Promise((r) => setTimeout(r, 2 ** n * 1000));
+      }
+    }
+  }
+}
+
+// Wrapper around the previous function, with a max retries set to 15
+const retryTransaction = async (operation) => {
+	return await retryTxn(0, config.maxTransactionRetries, operation)
+}
+
 /**
  * Inserts a single record and return id
  */
 const insertAndGetId = async (tableName, data) => {
-	const result = await db(tableName).insert(data, 'id');
+	const result = await retryTransaction(db(tableName).insert(data, 'id'));
   return result[0]?.id ?? result[0];
 }
-
 
 module.exports = {
 	batchUpdate,
@@ -215,4 +251,5 @@ module.exports = {
 	getFromNestedObject,
 	asyncHandler,
 	insertAndGetId,
+	retryTransaction,
 }

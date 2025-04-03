@@ -155,36 +155,6 @@ const validatePasswordAndConfirmation = (passwordField = "password", confirmPass
 	]
 }
 
-// code from: https://github.com/cockroachlabs/example-app-node-knex/blob/main/app.js
-// Wrapper for a transaction.  This automatically re-calls the operation with
-// the client as an argument as long as the database server asks for
-// the transaction to be retried.
-const retryTxn = async (n, max, client, operation) => {
-  const transactionProvider = client.transactionProvider();
-  const transaction = await transactionProvider();
-  while (true) {
-    n++;
-    if (n === max) {
-      throw new Error("Max retry count reached.");
-    }
-    try {
-      await operation(client, transaction);
-      await transaction.commit();
-      return;
-    } catch (err) {
-      if (err.code !== "40001") {
-        console.error(err.message);
-        throw err;
-      } else {
-        console.log("Transaction failed. Retrying transaction.");
-        console.log(err.message);
-        await transaction.rollback();
-        await new Promise((r) => setTimeout(r, 2 ** n * 1000));
-      }
-    }
-  }
-}
-
 module.exports = {
 	checkEntityExistsIn,
 	checkUniqueEntity,

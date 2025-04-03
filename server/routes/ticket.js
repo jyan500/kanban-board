@@ -26,7 +26,7 @@ const {
 
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
-const { parseMentions, insertAndGetId } = require("../helpers/functions")
+const { retryTransaction, parseMentions, insertAndGetId } = require("../helpers/functions")
 const db = require("../db/db")
 const { DEFAULT_PER_PAGE } = require("../constants")
 
@@ -273,7 +273,8 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			organization_id: body.organization_id,
 			user_id: req.user.id
 		})
-		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: id[0], is_mention: true}, req.user.organization)
+		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: id, is_mention: true}, req.user.organization)
+		console.log("ticketsToUsers: ", ticketsToUsers)
 		if (ticketsToUsers.length){
 			await db("tickets_to_users").insert(ticketsToUsers)
 		}
