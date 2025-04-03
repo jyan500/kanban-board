@@ -39,7 +39,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 							<TicketTypeIcon type={ticketType} />	
 						) : <></>}
 				</div>
-				<div className = "tw-text-left tw-break-words"><p className = "tw-font-medium">{ticket?.name}</p></div>
+				<div className = "tw-w-3/4 tw-text-left tw-break-words"><p className = "tw-font-medium">{ticket?.name}</p></div>
 			</div>
 			<div className = "lg:tw-p-1 tw-flex tw-flex-1 tw-flex-row tw-justify-start tw-items-center tw-gap-x-2">
 				<div>
