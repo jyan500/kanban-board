@@ -226,20 +226,20 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		}
 	}
 
-	const onSubmit = () => {
+	const onSubmit = async () => {
 		setSubmitLoading(true)
 		switch (operation){
 			case "edit-issues":
-				editIssues()
+				await editIssues()
 				break
 			case "move-issues":
-				moveIssues()
+				await moveIssues()
 				break
 			case "remove-issues":
-				removeIssues()
+				await removeIssues()
 				break
 			case "watch-issues":
-				watchIssues()
+				await watchIssues()
 				break
 			case "stop-watching-issues":
 				stopWatchingIssues()
@@ -316,7 +316,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 						)}
 					</ol>
 				</div>
-				<div className = "tw-flex tw-flex-1">
+				<div className = "lg:tw-w-3/4">
 					{
 						renderStep()
 					}	
