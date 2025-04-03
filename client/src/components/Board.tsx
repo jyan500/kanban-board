@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useState} from "react"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
 import { 
 	selectCurrentTicketId,
@@ -19,7 +19,8 @@ import type {
 	Ticket as TicketType, 
 	Board as BoardType, 
 	KanbanBoard as KanbanBoardType,
-	Priority
+	Priority,
+	LoadingStatus
 } from "../types/common"
 import { prioritySort as sortByPriority, sortStatusByOrder } from "../helpers/functions" 
 import { useDeleteBoardStatusMutation } from "../services/private/board"
@@ -45,6 +46,7 @@ export const Board = () => {
 		"gridGap": "8px",
 		"width": "100%"
 	}
+	const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({id: 0, isLoading: false})
 
 	const prioritySort = (sortOrder: 1 | -1, statusId: number | undefined) => {
 		let sortedBoard = sortByPriority(
@@ -78,6 +80,7 @@ export const Board = () => {
 	}
 
 	const hideStatusHandler = async (statusId: number) => {
+		setLoadingStatus({id: statusId, isLoading: true})	
 		if (boardInfo?.id && statusId){
 			try {
 				await deleteBoardStatus({statusId, boardId: boardInfo.id}).unwrap()
@@ -105,6 +108,7 @@ export const Board = () => {
     			message: `Failed to hide status.`,
     		}))		
 		}
+		setLoadingStatus({id: statusId, isLoading: false})	
 	}
 
 	return (
@@ -127,7 +131,7 @@ export const Board = () => {
 						allStatuses={allStatuses}
 						addTicketHandler={addTicketHandler}
 						hideStatusHandler={hideStatusHandler}
-						hideStatusHandlerLoading={hideStatusHandlerLoading}
+						hideStatusHandlerLoading={loadingStatus}
 					/>
 				) : (
 					/* Dragging tickets is disabled on mobile */
@@ -143,7 +147,7 @@ export const Board = () => {
 						colWidth={width/statusesToDisplay.length}
 						addTicketHandler={addTicketHandler}
 						hideStatusHandler={hideStatusHandler}
-						hideStatusHandlerLoading={hideStatusHandlerLoading}
+						hideStatusHandlerLoading={loadingStatus}
 					/>		
 				)
 			}

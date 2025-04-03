@@ -12,6 +12,7 @@ import { TICKETS } from "../../helpers/routes"
 import { LG_BREAKPOINT } from "../../helpers/constants"
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LoadingSpinner } from "../LoadingSpinner"
+import { LoadingStatus } from "../../types/common"
 
 type Props = {
 	numTickets: number
@@ -19,7 +20,7 @@ type Props = {
 	boardId: number
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
-	hideStatusHandlerLoading: boolean
+	hideStatusHandlerLoading: LoadingStatus
 	dropdownAlignLeft?: boolean 
 }
 
@@ -54,7 +55,7 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 					: null
 				}
 				{
-					hideStatusHandlerLoading ? <LoadingSpinner/> : (
+					hideStatusHandlerLoading.isLoading && hideStatusHandlerLoading.id === status.id ? <LoadingSpinner/> : (
 						<div className = "tw-inline-block tw-text-left tw-pr-2">
 							<button ref = {buttonRef} onClick={(e) => {
 								e.preventDefault()

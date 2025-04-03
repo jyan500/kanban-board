@@ -3,7 +3,7 @@ Structure board by groups to prevent users from moving a ticket between groups
 */
 import React, { useState } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
-import { KanbanBoard, GroupedTickets, GroupByOptionsKey, Status, GroupByElement, Ticket as TicketType } from "../../types/common"
+import { KanbanBoard, GroupedTickets, GroupByOptionsKey, Status, GroupByElement, Ticket as TicketType, LoadingStatus } from "../../types/common"
 import { useGetGroupByElementsQuery } from "../../services/private/groupBy"
 import { useUpdateTicketStatusMutation } from "../../services/private/ticket"
 import { MAX_COLUMN_LIMIT } from "../../helpers/constants"
@@ -45,7 +45,7 @@ type Props = {
 	colWidth: number
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
-	hideStatusHandlerLoading: boolean 
+	hideStatusHandlerLoading: LoadingStatus
 }
 
 export const GroupedBoard = ({
