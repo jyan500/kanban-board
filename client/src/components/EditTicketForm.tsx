@@ -129,6 +129,13 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		"story-points": false,
 		"due-date": false,
 	})
+	const [selectFieldLoading, setSelectFieldLoading] = useState<EditFieldVisibility>({
+		"assignees": false,
+		"priority": false,
+		"ticket-type": false,
+		"status": false,
+	})
+
 	const [showAddLinkedIssue, setShowAddLinkedIssue] = useState(false)
 	const [showAddToEpic, setShowAddToEpic] = useState(false)
 	const defaultForm: EditFormValues = {
@@ -171,16 +178,24 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const priorityName = priorities.find((priority) => priority.id === watch("priorityId"))?.name
 
 	const toggleFieldVisibility = (field: string, flag: boolean) => {
-		let fieldVisibility = {...editFieldVisibility}
-		for (let key in fieldVisibility){
+		toggleHelper(field, flag, editFieldVisibility, setEditFieldVisibility)
+	}
+
+	const toggleSelectFieldLoading = (field: string, flag: boolean) => {
+		toggleHelper(field, flag, selectFieldLoading, setSelectFieldLoading)
+	}
+
+	const toggleHelper = (field: string, flag: boolean, fields: EditFieldVisibility, setFields: (fields: EditFieldVisibility) => void) => {
+		let currentFields = {...fields}
+		for (let key in currentFields){
 			if (key === field){
-				fieldVisibility[key] = flag
+				currentFields[key] = flag
 			}
 			else {
-				fieldVisibility[key] = false
+				currentFields[key] = false
 			}
 		}
-		setEditFieldVisibility(fieldVisibility)
+		setFields(currentFields)
 	}
 
 	useEffect(() => {
@@ -193,6 +208,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 				"ticket-type": false,
 				"due-date": false,
 				"story-points": false,
+			})
+			setSelectFieldLoading({
+				"assignees": false,
+				"priority": false,
+				"ticket-type": false,
 			})
 			setShowAddLinkedIssue(false)
 			setShowAddToEpic(false)
@@ -287,9 +307,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		<select {...ticketTypeIdRegisterMethods} 
 		className = {`tw-w-full ${editFieldVisibility["ticket-type"] ? "" : "tw-border-transparent"}`}
 		onChange={async (e) => {
+    		toggleSelectFieldLoading("ticket-type", true)
 			setValue("ticketTypeId", parseInt(e.target.value))
 			toggleFieldVisibility("ticket-type", false)
 			await handleSubmit(onSubmit)()
+    		toggleSelectFieldLoading("ticket-type", false)
 		}}
 		onBlur = {(e) => toggleFieldVisibility("ticket-type", false)}>
 			{ticketTypes?.filter((ticketType) => ticketType?.id !== epicTicketType?.id).map((ticketType: TicketType) => {
@@ -304,9 +326,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		<select {...priorityIdRegisterMethods} 
 		className = {`tw-w-full ${editFieldVisibility["priority"] ? "" : "tw-border-transparent"}`}
 		onChange={async (e) => {
+    		toggleSelectFieldLoading("priority", true)
 			setValue("priorityId", parseInt(e.target.value))
 			toggleFieldVisibility("priority", false)
 			await handleSubmit(onSubmit)()
+    		toggleSelectFieldLoading("priority", false)
 		}}
 		onBlur = {(e) => toggleFieldVisibility("priority", false)}>
 			{priorities?.map((priority: Priority) => {
@@ -330,9 +354,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
                 	defaultValue={watch("userIdOption") ?? null}
                 	urlParams={{forSelect: true, /*filterOnUserRole: true*/}} 
                 	onSelect={async (selectedOption: OptionType | null) => {
+                		toggleSelectFieldLoading("assignees", true)
             			setValue("userIdOption", selectedOption)
             			toggleFieldVisibility("assignees", false)
             			await handleSubmit(onSubmit)()
+                		toggleSelectFieldLoading("assignees", false)
                 	}}
                 />
             )}
@@ -343,20 +369,29 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		return (
 			<>
 				<div className = "tw-flex tw-flex-col tw-gap-y-2">
-					<select 
-					{...register("statusId", registerOptions.statusId)} 
-					onChange={(e) => {
-						setValue("statusId", parseInt(e.target.value))
-					    handleSubmit(onSubmit)()
-					}}
-					className = {`${ticket && isCompletedStatusIds.includes(ticket.statusId) ? "tw-bg-success tw-border-success" : "tw-bg-primary tw-border-primary"} tw-w-full __custom-select`}>
-						{statuses.map((status) => {
-								return (
-									<option key = {status.id} value = {status.id}>{status.name}</option>
-								)
-							})
-						}
-					</select>
+					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-4">
+						<div className = "tw-w-[90%]">
+							<select 
+							{...register("statusId", registerOptions.statusId)} 
+							onChange={async (e) => {
+					    		toggleSelectFieldLoading("status", true)
+								setValue("statusId", parseInt(e.target.value))
+							    await handleSubmit(onSubmit)()
+					    		toggleSelectFieldLoading("status", false)
+							}}
+							className = {`${ticket && isCompletedStatusIds.includes(ticket.statusId) ? "tw-bg-success tw-border-success" : "tw-bg-primary tw-border-primary"} tw-w-full __custom-select`}>
+								{statuses.map((status) => {
+										return (
+											<option key = {status.id} value = {status.id}>{status.name}</option>
+										)
+									})
+								}
+							</select>
+						</div>
+						<div className = "tw-flex tw-flex-row tw-justify-center tw-items-center tw-h-6">
+							{selectFieldLoading["status"] ? <LoadingSpinner/> : null}
+						</div>
+					</div>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						<span className = "tw-font-bold tw-text-xl">Details</span>
 						<RightSectionRow title={"Assignee"}>
@@ -364,7 +399,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								!isTicketAssigneesLoading && ticketAssignees && ticketAssignees?.length ? (
 									<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
 										<div className = "tw-w-[2em] tw-shrink-0">
-											<Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
+											{selectFieldLoading["assignees"] ? <LoadingSpinner/> : <Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>}
 										</div>
 										<div className = "tw-flex tw-flex-1">
 											{userProfileSelect}
@@ -384,7 +419,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Priority"}>
 							<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
 								<div className = "tw-w-[2em] tw-shrink-0">
-									{priorityName ? <PriorityIcon type = {priorityName} color = {priorityName in colorMap ? colorMap[priorityName] : ""} className = "tw-shrink-0 tw-w-6 tw-h-6"/> : <></>}
+									{selectFieldLoading["priority"] ? <LoadingSpinner/> : priorityName ? <PriorityIcon type = {priorityName} color = {priorityName in colorMap ? colorMap[priorityName] : ""} className = "tw-shrink-0 tw-w-6 tw-h-6"/> : <></>}
 								</div>
 								<div className = "tw-min-w-32 tw-flex tw-flex-1">
 									{prioritySelect}
@@ -395,7 +430,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							{
 								<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
 									<div className = "tw-w-[2em] tw-shrink-0">
-										{ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-0.5 tw-w-5 tw-h-5 tw-shrink-0"/> : null}
+										{selectFieldLoading["ticket-type"] ? <LoadingSpinner/> : ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-0.5 tw-w-5 tw-h-5 tw-shrink-0"/> : null}
 									</div>
 									<div className = "tw-flex tw-flex-1">
 									{
