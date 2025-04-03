@@ -242,7 +242,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 				await watchIssues()
 				break
 			case "stop-watching-issues":
-				stopWatchingIssues()
+				await stopWatchingIssues()
 				break
 		}
 		setSubmitLoading(false)
