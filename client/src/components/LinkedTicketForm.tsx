@@ -270,7 +270,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 							</div>
 							<div className = "tw-flex tw-flex-row tw-justify-end">
 								<div className = "btn-group">
-									<InlineEditButton onClick = {async (e) => {
+									<InlineEditButton isLoading={isAddTicketRelationshipLoading} onClick = {async (e) => {
 										e.preventDefault()
 										await handleSubmit(onSubmit)()
 										if (!Object.keys(errors).length){
