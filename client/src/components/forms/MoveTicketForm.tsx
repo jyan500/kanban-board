@@ -32,6 +32,7 @@ export const MoveTicketForm = ({step, title, boardId: currentBoardId, ticketId, 
 	const [addBoardTickets, {isLoading: addBoardTicketsLoading, error: addBoardTicketsErrors}] = useAddBoardTicketsMutation()
 	const [deleteBoardTicket, {isLoading: deleteBoardTicketLoading, error: deleteBoardTicketErrors}] = useDeleteBoardTicketMutation()
 	const [cacheKey, setCacheKey] = useState(uuidv4())
+	const [submitLoading, setSubmitLoading] = useState(false)
 
 	const defaultForm = {
 		boardIdOption: {value: "", label: ""},
@@ -60,26 +61,28 @@ export const MoveTicketForm = ({step, title, boardId: currentBoardId, ticketId, 
 			animationType: "animation-in",
 			type: "failure"
 		}
+		setSubmitLoading(true)
 		if (ticketId){
 			const { value: boardId } = values.boardIdOption
 	    	try {
-			    	await addBoardTickets({boardId: !isNaN(Number(boardId)) ? Number(boardId) : 0, ticketIds: [!isNaN(Number(ticketId)) ? Number(ticketId) : 0]}).unwrap()
-			    	if (currentBoardId && values.shouldUnlink){
-				    	await deleteBoardTicket({boardId: !isNaN(Number(currentBoardId)) ? Number(currentBoardId) : 0, ticketId: !isNaN(Number(ticketId)) ? Number(ticketId) : 0}).unwrap()
-			    	}
-			    	dispatch(addToast({
-			    		...defaultToast,
-			    		message: "Ticket moved successfully!",
-			    		type: "success"
-			    	}))			    	
+		    	await addBoardTickets({boardId: !isNaN(Number(boardId)) ? Number(boardId) : 0, ticketIds: [!isNaN(Number(ticketId)) ? Number(ticketId) : 0]}).unwrap()
+		    	if (currentBoardId && values.shouldUnlink){
+			    	await deleteBoardTicket({boardId: !isNaN(Number(currentBoardId)) ? Number(currentBoardId) : 0, ticketId: !isNaN(Number(ticketId)) ? Number(ticketId) : 0}).unwrap()
 		    	}
-		    	catch (e){
-		    		dispatch(addToast(defaultToast))
-		    	}
+		    	dispatch(addToast({
+		    		...defaultToast,
+		    		message: "Ticket moved successfully!",
+		    		type: "success"
+		    	}))			    	
 	    	}
+	    	catch (e){
+	    		dispatch(addToast(defaultToast))
+	    	}
+    	}
     	else {
     		dispatch(addToast(defaultToast))
     	}
+		setSubmitLoading(false)	
     	dispatch(setSecondaryModalType(undefined))
     	dispatch(toggleShowSecondaryModal(false))
     	dispatch(setSecondaryModalProps({}))
