@@ -123,8 +123,9 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 	}, [formValues])
 
     const onSubmit = async (values: AddTicketFormValues) => {
+
+		setSubmitLoading(true)
     	try {
-    		setSubmitLoading(true)
     		const assigneeId = !isNaN(Number(values.userIdOption?.value)) ? Number(values.userIdOption?.value) : 0
 	    	const {id: insertedTicketId, mentions} = await addTicket({
 	    		...values, 
@@ -164,7 +165,6 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 					notificationTypeId: assigneeNotificationType.id,
 				}).unwrap()	
 			}
-			setSubmitLoading(false)
 			dispatch(toggleShowModal(false))
 			dispatch(setModalType(undefined))
 			dispatch(setModalProps({}))
@@ -180,13 +180,15 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
     		}))
     	}
     	catch (e) { 
-			setSubmitLoading(false)
     		dispatch(addToast({
     			id: uuidv4(),
     			type: "failure",
     			animationType: "animation-in",
     			message: "Failed to submit ticket",
     		}))
+    	}
+    	finally {
+			setSubmitLoading(false)
     	}
     }
 

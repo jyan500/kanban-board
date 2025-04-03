@@ -1,4 +1,4 @@
-import React, { useRef } from "react" 
+import React, { useState, useRef } from "react" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { Dropdown } from "../Dropdown" 
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice" 
@@ -42,6 +42,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 	const [ addTicketAssignee, {isLoading: addTicketAssigneeLoading} ] = useAddTicketAssigneeMutation()
 	const [ deleteTicketAssignee, {isLoading: isDeleteTicketAssigneeLoading}] = useDeleteTicketAssigneeMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
+	const [ submitLoading, setSubmitLoading ] = useState(false)
 
 	const addTicketWatcher = async (ticketId: number | null | undefined, userId: number | null | undefined) => {
 		let defaultToast: Toast = {
@@ -50,6 +51,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 			animationType: "animation-in",
 			message: "You are now watching this ticket!"
 		}
+		setSubmitLoading(true)
 		try {
 			if (watchNotificationType && userProfile && ticketId && userId){
 				await addTicketAssignee({ticketId: ticketId, userIds: [userId], isWatcher: true}).unwrap()
@@ -69,6 +71,9 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 				type: "failure",
 				message: "Failed to add ticket watcher"
 			}))
+		}
+		finally {
+			setSubmitLoading(false)
 		}
 	}
 

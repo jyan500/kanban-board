@@ -74,8 +74,8 @@ export const BoardForm = () => {
 	}, [isStatusDataLoading, statusData])
 
     const onSubmit = async (values: FormValues) => {
+		setSubmitLoading(true)
     	try {
-    		setSubmitLoading(true)
     		if (values.id != null && currentBoardId){
     			await updateBoard(values).unwrap()
 				await bulkEditBoardStatuses({boardId: currentBoardId, statusIds: formStatuses.map((status) => status.id)}).unwrap()
@@ -84,7 +84,6 @@ export const BoardForm = () => {
     			const res = await addBoard(values).unwrap()
 				await bulkEditBoardStatuses({boardId: res.id, statusIds: formStatuses.map((status) => status.id)}).unwrap()
     		}
-    		setSubmitLoading(false)
     		dispatch(toggleShowModal(false))
     		dispatch(addToast({
     			id: uuidv4(),
@@ -94,13 +93,15 @@ export const BoardForm = () => {
     		}))
     	}
     	catch {
-    		setSubmitLoading(false)
     		dispatch(addToast({
     			id: uuidv4(),
     			type: "failure",
     			animationType: "animation-in",
     			message: `Failed to ${values.id != null ? "update" : "add"} board.`,
     		}))
+    	}
+    	finally {
+    		setSubmitLoading(false)
     	}
     }
 
