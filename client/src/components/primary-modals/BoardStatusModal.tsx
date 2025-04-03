@@ -7,6 +7,7 @@ import { toggleShowModal } from "../../slices/modalSlice"
 import { sortStatusByOrder } from "../../helpers/functions" 
 import { v4 as uuidv4 } from "uuid"
 import { Switch } from "../page-elements/Switch"
+import { LoadingButton } from "../page-elements/LoadingButton"
 
 export const BoardStatusModal = () => {
 	const dispatch = useAppDispatch()
@@ -63,7 +64,7 @@ export const BoardStatusModal = () => {
 					</div>
 				)
 			})}
-			<button className = "button" onClick={onSubmit}>Save Changes</button>	
+			<LoadingButton isLoading={isLoading} className = "button" onClick={onSubmit} text={"Save Changes"}/>	
 		</div>
 	)	
 }

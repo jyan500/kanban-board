@@ -29,6 +29,7 @@ type Props = {
 	colWidth: number 
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
+	hideStatusHandlerLoading: boolean
 	boardId: number
 }
 
@@ -44,6 +45,7 @@ export const Board = ({
 	colWidth,
 	addTicketHandler,
 	hideStatusHandler,
+	hideStatusHandlerLoading,
 }: Props) => {
 
 	const dispatch = useAppDispatch()
@@ -97,6 +99,7 @@ export const Board = ({
 							numTickets={board[status.id]?.length} 
 							addTicketHandler={addTicketHandler} 
 							hideStatusHandler={hideStatusHandler}
+							hideStatusHandlerLoading={hideStatusHandlerLoading}
 							dropdownAlignLeft={i === 0}
 						/>
 						<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-px-2 tw-pb-2">

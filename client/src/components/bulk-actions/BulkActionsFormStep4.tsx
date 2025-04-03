@@ -8,6 +8,7 @@ import { PaginationRow } from "../page-elements/PaginationRow"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { IconWarning } from "../icons/IconWarning"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
+import { LoadingButton } from "../page-elements/LoadingButton"
 
 interface Props {
 	selectedIds: Array<number>
@@ -18,10 +19,11 @@ interface Props {
 	operation: BulkEditOperationKey | null | undefined
 	operations: Array<BulkEditOperation>
 	onSubmit: () => void
+	isSubmitLoading: boolean
 	skipStep3: boolean
 }
 
-export const BulkActionsFormStep4 = ({selectedIds, skipStep3, step, setStep, formValues, setSelectedIds, operation, operations, onSubmit}: Props) => {
+export const BulkActionsFormStep4 = ({isSubmitLoading, selectedIds, skipStep3, step, setStep, formValues, setSelectedIds, operation, operations, onSubmit}: Props) => {
 	const [page, setPage] = useState(1)
 	const { data, isLoading, isFetching, isError } = useGetTicketsQuery({
 		page: page,
@@ -71,7 +73,7 @@ export const BulkActionsFormStep4 = ({selectedIds, skipStep3, step, setStep, for
 				}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<button onClick={onSubmit} className = "button">Confirm</button>
+				<LoadingButton isLoading={isSubmitLoading} onClick={onSubmit} className = "button" text={"Confirm"}/>
 				<button onClick={() => {
 					if (step-1 === 3 && skipStep3){
 						setStep(step-2)

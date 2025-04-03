@@ -108,9 +108,9 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 
 	return (
 		<div className = {`tw-relative tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2`}>
-			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1">
-				<span className = "tw-font-medium">{ticket.name}</span>
-				<Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>
+			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1 tw-text-wrap">
+				<span className = "tw-w-4/5 tw-font-medium tw-break-words">{ticket.name}</span>
+				<Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-shrink-0 tw-mt-1 tw-rounded-full"/>
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				{

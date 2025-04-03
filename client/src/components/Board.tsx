@@ -22,8 +22,7 @@ import type {
 	Priority
 } from "../types/common"
 import { prioritySort as sortByPriority, sortStatusByOrder } from "../helpers/functions" 
-import { useUpdateTicketStatusMutation } from "../services/private/ticket" 
-import { useUpdateBoardStatusMutation, useDeleteBoardStatusMutation } from "../services/private/board"
+import { useDeleteBoardStatusMutation } from "../services/private/board"
 import { addToast } from "../slices/toastSlice"
 import { boardGroupBy } from "../helpers/groupBy"
 import { GroupedBoard } from "./boards/GroupedBoard"
@@ -35,8 +34,7 @@ export const Board = () => {
 	const {board, boardInfo, filteredTickets, tickets, statusesToDisplay, groupBy} = useAppSelector((state) => state.board)
 	const { statuses: allStatuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
-	const [updateTicketStatus] = useUpdateTicketStatusMutation() 
-	const [ deleteBoardStatus ] = useDeleteBoardStatusMutation()
+	const [ deleteBoardStatus, {isLoading: hideStatusHandlerLoading, error} ] = useDeleteBoardStatusMutation()
 	const dispatch = useAppDispatch()
 	const {width, height} = useScreenSize()
 	const boardStyle = {
@@ -70,33 +68,6 @@ export const Board = () => {
 		*/
 		if (width >= LG_BREAKPOINT){
 			e.preventDefault()
-		}
-	}
-
-	const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-		const ticketId = parseInt(e.dataTransfer.getData("text").replace("ticket_", ""))
-		const statusId = parseInt(e.currentTarget.id.replace("status_", ""))
-		const ticket = board[statusId].find((tId) => tId === ticketId)
-		// if the status column does not contain the ticket, move the ticket into this column
-		if (!ticket){
-			// new endpoint to PATCH update ticket status
-			try {
-				await updateTicketStatus({ticketId: ticketId, statusId: statusId}).unwrap()
-				dispatch(addToast({
-	    			id: uuidv4(),
-	    			type: "success",
-	    			animationType: "animation-in",
-	    			message: `Ticket status updated successfully!`,
-	    		}))
-			}
-			catch (e){
-				dispatch(addToast({
-	    			id: uuidv4(),
-	    			type: "failure",
-	    			animationType: "animation-in",
-	    			message: `Failed to update ticket status.`,
-	    		}))
-			}
 		}
 	}
 
@@ -156,6 +127,7 @@ export const Board = () => {
 						allStatuses={allStatuses}
 						addTicketHandler={addTicketHandler}
 						hideStatusHandler={hideStatusHandler}
+						hideStatusHandlerLoading={hideStatusHandlerLoading}
 					/>
 				) : (
 					/* Dragging tickets is disabled on mobile */
@@ -171,6 +143,7 @@ export const Board = () => {
 						colWidth={width/statusesToDisplay.length}
 						addTicketHandler={addTicketHandler}
 						hideStatusHandler={hideStatusHandler}
+						hideStatusHandlerLoading={hideStatusHandlerLoading}
 					/>		
 				)
 			}

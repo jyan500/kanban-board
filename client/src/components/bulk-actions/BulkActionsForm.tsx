@@ -36,6 +36,7 @@ export interface BulkEditFormValues {
 
 export const BulkActionsForm = ({boardId}: Props) => {
 	const [step, setStep] = useState(1)
+	const [submitLoading, setSubmitLoading] = useState(false)
 	const dispatch = useAppDispatch()
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -226,6 +227,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 	}
 
 	const onSubmit = () => {
+		setSubmitLoading(true)
 		switch (operation){
 			case "edit-issues":
 				editIssues()
@@ -243,6 +245,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 				stopWatchingIssues()
 				break
 		}
+		setSubmitLoading(false)
 		closeModal()
 	}
 
@@ -296,6 +299,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 					setStep={setStep} 
 					step={step} 
 					formValues={formValues}
+					isSubmitLoading={submitLoading}
 				/>
 		}	
 	}

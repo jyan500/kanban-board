@@ -45,6 +45,7 @@ type Props = {
 	colWidth: number
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
+	hideStatusHandlerLoading: boolean 
 }
 
 export const GroupedBoard = ({
@@ -61,6 +62,7 @@ export const GroupedBoard = ({
 	statusesToDisplay,
 	addTicketHandler,
 	hideStatusHandler,
+	hideStatusHandlerLoading,
 }: Props) => {
 	const dispatch = useAppDispatch()
 	/* object mapping the group by ids to boolean to denote whether the collapse arrow for that section is on/off */
@@ -121,6 +123,7 @@ export const GroupedBoard = ({
 								numTickets={board[status.id]?.length} 
 								addTicketHandler={addTicketHandler}
 								hideStatusHandler={hideStatusHandler}
+								hideStatusHandlerLoading={hideStatusHandlerLoading}
 								dropdownAlignLeft={i === 0}
 							/>
 						</div>
