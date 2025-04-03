@@ -17,7 +17,7 @@ const {
 }  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
-const { insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
+const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 
@@ -335,7 +335,7 @@ router.post("/:boardId/ticket", validateBoardTicketCreate, handleValidationResul
 	try {
 		const tickets = req.body.ticket_ids
 		const boardId = req.params.boardId
-		await db("tickets_to_boards").insert(tickets.map((ticketId) => ({board_id: boardId, ticket_id: ticketId})))
+		await retryTransaction(db("tickets_to_boards").insert(tickets.map((ticketId) => ({board_id: boardId, ticket_id: ticketId}))))
 		res.json({message: "tickets inserted into board successfully!"})
 	}	
 	catch (err) {
