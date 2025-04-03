@@ -118,6 +118,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
 	const mentionNotificationType = notificationTypes?.find((notif) => notif.name === "Mention")
 	const assigneeNotificationType = notificationTypes?.find((notif) => notif.name === "Ticket Assigned")
+	const [ submitLoading, setSubmitLoading ] = useState(false)
 
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
 		"name": false,
@@ -216,6 +217,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	}, [isTicketAssigneesLoading, ticketAssignees])
 
 	const onSubmit = async (values: EditFormValues) => {
+
+		setSubmitLoading(true)
     	try {
     		// update existing ticket
     		if (values.id != null){
@@ -272,6 +275,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			animationType: "animation-in",
     			message: "Failed to submit ticket",
     		}))
+    	}
+    	finally {
+    		setSubmitLoading(false)
     	}
     }
 
@@ -416,7 +422,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								) : (
 									<div className = "tw-w-1/2">
 										<InlineEdit 
-											isLoading={isUpdateTicketLoading}
+											isLoading={submitLoading}
 											mentionsEnabled={false}
 											customReset={() => {
 												if (ticket?.storyPoints){
@@ -447,7 +453,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								) : (
 									<div className = "tw-w-1/2">
 										<InlineEdit 
-											isLoading={isUpdateTicketLoading}
+											isLoading={submitLoading}
 											mentionsEnabled={false}
 											type="date"
 											minDate={new Date().toISOString().split("T")[0]}
@@ -522,7 +528,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								) : (
 									<>
 										<InlineEdit 
-											isLoading={isUpdateTicketLoading}
+											isLoading={submitLoading}
 											mentionsEnabled={false}
 											customReset={() => {
 												if (ticket?.name){
@@ -582,7 +588,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 															setValue("description", ticket.description)
 														}
 													}}
-													isLoading={isUpdateTicketLoading}
+													isLoading={submitLoading}
 													onSubmit={async () => {
 														await handleSubmit(onSubmit)()
 														if (!errors?.description){
