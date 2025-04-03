@@ -108,7 +108,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 			<BackendErrorMessage error={error}/>
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(propsSubmit ?? onSubmit)}>
 				<div>
-					<label className = "label" htmlFor = "organization-name">Name: <span className = "tw-font-bold tw-text-red-500">*</span></label>
+					<label className = "label" htmlFor = "organization-name">Organization Name: <span className = "tw-font-bold tw-text-red-500">*</span></label>
 					<input id = "organization-name" className = "tw-w-full" type = "text"
 					{...register("name", registerOptions.name)}
 					/>

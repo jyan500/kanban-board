@@ -300,7 +300,7 @@ router.post("/register/organization", applyRateLimit, userValidator.organization
 		})
 		// attach default statuses for the new organization
 		await db("statuses").insert(DEFAULT_STATUSES.map((status) => ({...status, organization_id: organizationId})))
-		
+
 		// insert all notification types by default for a user
 		const notificationTypes = await db("notification_types")
 		const userToNotificationTypes = notificationTypes.map((notification) => ({user_id: userId, notification_type_id: notification.id}))	
