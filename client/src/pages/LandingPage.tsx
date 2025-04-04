@@ -5,6 +5,7 @@ import { IconClipboardList } from "../components/icons/IconClipboardList"
 import { IconTree } from "../components/icons/IconTree"
 import { IconTextArea } from "../components/icons/IconTextArea"
 import { IconComment } from "../components/icons/IconComment"
+import { IconBulkAction } from "../components/icons/IconBulkAction"
 import { IconDragDrop } from "../components/icons/IconDragDrop"
 import { Footer } from "../components/page-elements/Footer"
 import { Header } from "../components/landing-page/Header"
@@ -13,37 +14,42 @@ const features = [
 	{
 		title: "Inline Ticket Editing",
 		description: "Edit tickets with a sleek inline modal featuring rich text support.",
-		icon: <IconTextArea className="h-6 w-6 text-blue-500" />,
+		icon: <IconTextArea className="tw-h-6 tw-w-6 tw-text-blue-500" />,
 	},
 	{
 		title: "Ticket Linking & Epics",
 		description: "Organize work efficiently with parent-child and linked issues.",
-		icon: <IconTree className="h-6 w-6 text-green-500" />,
+		icon: <IconTree className="tw-h-6 tw-w-6 tw-text-green-500" />,
 	},
 	{
 		title: "Group by & Drag-and-Drop",
 		description: "Flexible Kanban board with grouping and drag-and-drop statuses.",
-		icon: <IconDragDrop className="h-6 w-6 text-yellow-500" />,
+		icon: <IconDragDrop className="tw-h-6 tw-w-6 tw-text-yellow-500" />,
 	},
 	{
 		title: "Mentions & Comments",
 		description: "Tag teammates in rich text comments and descriptions.",
-		icon: <IconComment className="h-6 w-6 text-purple-500" />,
+		icon: <IconComment className="tw-h-6 tw-w-6 tw-text-purple-500" />,
+	},
+	{
+		title: "Bulk Actions",
+		description: "Apply actions to multiple tickets to optimize your workflow.",
+		icon: <IconBulkAction className = "tw-h-6 tw-w-6 tw-text-blue-500"/>
 	},
 	{
 		title: "Backlog & Issue Tracking",
 		description: "Track upcoming work and stay on top of the backlog.",
-		icon: <IconClipboardList className="h-6 w-6 text-red-500" />,
+		icon: <IconClipboardList className="tw-h-6 tw-w-6 tw-text-red-500" />,
 	},
 	{
 		title: "Notifications",
 		description: "Stay informed with smart, real-time notifications.",
-		icon: <IconBell className="h-6 w-6 text-indigo-500" />,
+		icon: <IconBell className="tw-h-6 tw-w-6 tw-text-indigo-500" />,
 	},
 	{
 		title: "Org & User Settings",
 		description: "Manage your organization and personal preferences easily.",
-		icon: <IconGear className="h-6 w-6 text-gray-500" />,
+		icon: <IconGear className="tw-h-6 tw-w-6 tw-text-gray-500" />,
 	},
 ];
 
@@ -90,7 +96,7 @@ export const LandingPage = () => {
 	            <div className="tw-grid md:tw-grid-cols-2 tw-gap-6 tw-max-w-5xl tw-mx-auto">
 	                {features.map((feature, idx) => (
 	                    <Card key={idx} className="tw-p-4">
-	                        <CardContent className="tw-flex tw-gap-4 tw-items-start">
+	                        <CardContent className="tw-flex tw-gap-4 tw-items-center">
 	                            {feature.icon}
 	                            <div>
 	                                <h3 className="tw-text-xl tw-font-semibold tw-mb-1">{feature.title}</h3>
