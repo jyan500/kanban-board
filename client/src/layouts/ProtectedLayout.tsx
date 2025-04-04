@@ -25,7 +25,7 @@ import { setTicketRelationshipTypes } from "../slices/ticketRelationshipTypeSlic
 import { setPriorities } from "../slices/prioritySlice"
 import { setNotificationTypes } from "../slices/notificationTypeSlice"
 import { UserRole } from "../types/common" 
-import { TEMP, ACCOUNT } from "../helpers/routes"
+import { TEMP, ACCOUNT, LOGIN } from "../helpers/routes"
 
 const ProtectedLayout = () => {
 	const {token, isTemp} = useAppSelector((state) => state.auth)	
@@ -82,7 +82,7 @@ const ProtectedLayout = () => {
     }, [token, userProfileData, ticketTypesData, statusData, priorityData, notificationTypeData]);
 
 	if (!token){
-		return <Navigate replace to = {"/login"}/>
+		return <Navigate replace to = {LOGIN}/>
 	}
 	if (isTemp){
 		return <Navigate replace to = {`${TEMP}${ACCOUNT}`}/>

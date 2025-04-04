@@ -5,7 +5,7 @@ import { LoadingSpinner } from "../components/LoadingSpinner"
 import { useGetUserProfileQuery } from "../services/private/userProfile"
 import { setUserProfile } from "../slices/userProfileSlice"
 import { UserRole } from "../types/common"
-import { TEMP, ACCOUNT } from "../helpers/routes"
+import { LOGIN, TEMP, ACCOUNT, HOME } from "../helpers/routes"
 import { Footer } from "../components/page-elements/Footer"
 import { TopNav } from "../components/page-elements/TopNav"
 
@@ -24,7 +24,7 @@ const TempLoginProtectedLayout = () => {
     }, [token, userProfile]);
 
 	if (!token){
-		return <Navigate replace to = {"/login"}/>
+		return <Navigate replace to = {LOGIN}/>
 	}
 	if (isTemp){
 		return (
@@ -41,7 +41,7 @@ const TempLoginProtectedLayout = () => {
 			</div>
 		)
 	}
-	return <Navigate replace to = "/"/>
+	return <Navigate replace to = {HOME}/>
 }
 
 export default TempLoginProtectedLayout

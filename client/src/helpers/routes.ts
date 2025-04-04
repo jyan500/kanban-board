@@ -1,4 +1,5 @@
-export const HOME = "/"
+export const LANDING_PAGE = "/"
+export const HOME = "/dashboard"
 export const LOGIN = "/login"
 export const REGISTER = "/register"
 export const BOARDS = "/boards"

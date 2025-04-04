@@ -4,12 +4,13 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { SocialMedia } from "../components/page-elements/SocialMedia"
 import { Logo } from "../components/page-elements/Logo"
 import { GradientContainer } from "../components/page-elements/GradientContainer"
+import { HOME } from "../helpers/routes"
 
-const DefaultLayout = () => {
+const AuthLayout = () => {
 	const token = useAppSelector((state) => state.auth.token)
 
 	if (token){
-		return <Navigate replace to = {"/"} />
+		return <Navigate replace to = {HOME} />
 	}
 
 	return (
@@ -25,4 +26,4 @@ const DefaultLayout = () => {
 	)
 }
 
-export default DefaultLayout
+export default AuthLayout

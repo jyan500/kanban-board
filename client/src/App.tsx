@@ -30,7 +30,9 @@ import { SwitchOrganization } from "./pages/account/SwitchOrganization"
 import { RegistrationRequests } from "./pages/account/RegistrationRequests"
 import { NotificationSettings } from "./pages/account/NotificationSettings"
 import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
-import DefaultLayout from "./layouts/DefaultLayout"
+import { LandingPage } from "./pages/LandingPage"
+import LandingLayout from "./layouts/LandingLayout"
+import AuthLayout from "./layouts/AuthLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
 import UserRoleProtectedLayout from "./layouts/UserRoleProtectedLayout"
 import UserActivatedProtectedLayout from "./layouts/UserActivatedProtectedLayout"
@@ -64,21 +66,34 @@ import {
 	NOTIFICATIONS,
 	FORGOT_PASSWORD,
 	RESET_PASSWORD,
+	LANDING_PAGE,
 } from "./helpers/routes"
 
 // Define routes using createBrowserRouter
 const router = createBrowserRouter([
 	{
+		element: <>
+			<ScrollRestoration/>
+			<LandingLayout/>
+		</>,
+		children: [
+			{
+				path: LANDING_PAGE,
+				element: <LandingPage/>
+			}	
+		]
+	},
+	{
 		element: 
 		<>	
 			<ScrollRestoration/>
-			<DefaultLayout />
+			<AuthLayout />
 		</>
 		,
 		children: [
 			{
 				path: LOGIN,
-				element: <Login />,
+				element: <Login/>,
 			},
 			{
 				path: REGISTER,
@@ -110,10 +125,6 @@ const router = createBrowserRouter([
 				path: ACTIVATION,
 				element: <AccountActivation/>
 			},
-			{
-				path: "*",
-				element: <Navigate to = {LOGIN}/>
-			}
 		],
 	},
 	{
