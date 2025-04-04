@@ -19,7 +19,7 @@ const AuthLayout = () => {
 				<Outlet/>
 			</div>
 			<GradientContainer className = "tw-p-4 tw-h-screen tw-flex tw-flex-1 tw-flex-col tw-justify-center tw-items-center tw-gap-y-4">
-				<Logo isLandingPage={true}/>
+				<Logo isAuthLayout={true}/>
 				<SocialMedia/>
 			</GradientContainer>
 		</div>

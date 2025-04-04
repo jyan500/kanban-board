@@ -6,6 +6,8 @@ import { IconTree } from "../components/icons/IconTree"
 import { IconTextArea } from "../components/icons/IconTextArea"
 import { IconComment } from "../components/icons/IconComment"
 import { IconDragDrop } from "../components/icons/IconDragDrop"
+import { Footer } from "../components/page-elements/Footer"
+import { Header } from "../components/landing-page/Header"
 
 const features = [
 	{
@@ -70,18 +72,18 @@ const CardContent: React.FC<CardContentProps> = ({ children, className = "" }) =
 export const LandingPage = () => {
 	return (
 	    <div className="tw-min-h-screen tw-bg-white tw-text-gray-900">
-	        <header className="tw-px-6 tw-py-8 tw-bg-gray-50 tw-border-b tw-border-gray-200">
+	        {/*<header className="tw-px-6 tw-py-8 tw-bg-gray-50 tw-border-b tw-border-gray-200">
 	            <div className="tw-max-w-7xl tw-mx-auto tw-flex tw-justify-between tw-items-center">
 	                <h1 className="tw-text-2xl tw-font-bold">Kanban</h1>
 	                <button className = "button">Get Started</button>
 	            </div>
-	        </header>
-
+	        </header>*/}
+	    	<Header/>
 	        <main className="tw-px-6 tw-py-16 tw-bg-white">
 	            <div className="tw-max-w-4xl tw-mx-auto tw-text-center">
-	                <h2 className="tw-text-4xl tw-font-bold tw-mb-4">Project Management made Easy</h2>
+	                <h2 className="tw-text-4xl tw-font-bold tw-mb-4">Project Management Made Easy</h2>
 	                <p className="tw-text-lg tw-text-gray-600 tw-mb-10">
-	                    Kanban helps startups and teams stay agile without the overhead.
+	                    Kanban helps startups and small teams stay agile without the overhead.
 	                </p>
 	            </div>
 
@@ -99,12 +101,7 @@ export const LandingPage = () => {
 	                ))}
 	            </div>
 	        </main>
-
-	        <footer className="tw-px-6 tw-py-10 tw-border-t tw-bg-gray-50">
-	            <div className="tw-max-w-7xl tw-mx-auto tw-text-center tw-text-sm tw-text-gray-500">
-	                © {new Date().getFullYear()} Kanban. All rights reserved.
-	            </div>
-	        </footer>
+	        <Footer/>
 	    </div>
 	);
 }
