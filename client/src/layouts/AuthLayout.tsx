@@ -5,6 +5,8 @@ import { SocialMedia } from "../components/page-elements/SocialMedia"
 import { Logo } from "../components/page-elements/Logo"
 import { GradientContainer } from "../components/page-elements/GradientContainer"
 import { HOME } from "../helpers/routes"
+import { Header } from "../components/landing-page/Header"
+import { Footer } from "../components/page-elements/Footer"
 
 const AuthLayout = () => {
 	const token = useAppSelector((state) => state.auth.token)
@@ -14,14 +16,18 @@ const AuthLayout = () => {
 	}
 
 	return (
-		<div className = "tw-flex tw-h-screen tw-flex-col sm:tw-flex-row tw-my-4 sm:tw-my-0">
-			<div className = "tw-flex tw-flex-1 tw-justify-center tw-items-center tw-p-8 tw-bg-gray-50 tw-shadow-md tw-h-full tw-w-full">
-				<Outlet/>
+		<div className = "tw-min-h-screen tw-bg-white tw-text-gray-900">
+			<Header/>
+			<div className = "tw-min-h-[76vh] tw-flex tw-flex-1 tw-justify-center tw-items-center tw-p-8 tw-bg-gray-50 tw-shadow-md">
+				<div className = "tw-w-full lg:tw-w-1/2">
+					<Outlet/>
+				</div>
 			</div>
-			<GradientContainer className = "tw-p-4 tw-h-screen tw-flex tw-flex-1 tw-flex-col tw-justify-center tw-items-center tw-gap-y-4">
+			<Footer/>
+{/*			<GradientContainer className = "tw-p-4 tw-h-screen tw-flex tw-flex-1 tw-flex-col tw-justify-center tw-items-center tw-gap-y-4">
 				<Logo isAuthLayout={true}/>
 				<SocialMedia/>
-			</GradientContainer>
+			</GradientContainer>*/}
 		</div>
 	)
 }

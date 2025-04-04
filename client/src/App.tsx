@@ -31,7 +31,6 @@ import { RegistrationRequests } from "./pages/account/RegistrationRequests"
 import { NotificationSettings } from "./pages/account/NotificationSettings"
 import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
 import { LandingPage } from "./pages/LandingPage"
-import LandingLayout from "./layouts/LandingLayout"
 import AuthLayout from "./layouts/AuthLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
 import UserRoleProtectedLayout from "./layouts/UserRoleProtectedLayout"
@@ -72,18 +71,6 @@ import {
 // Define routes using createBrowserRouter
 const router = createBrowserRouter([
 	{
-		element: <>
-			<ScrollRestoration/>
-			<LandingLayout/>
-		</>,
-		children: [
-			{
-				path: LANDING_PAGE,
-				element: <LandingPage/>
-			}	
-		]
-	},
-	{
 		element: 
 		<>	
 			<ScrollRestoration/>
@@ -91,6 +78,10 @@ const router = createBrowserRouter([
 		</>
 		,
 		children: [
+			{
+				path: LANDING_PAGE,
+				element: <LandingPage/>
+			},
 			{
 				path: LOGIN,
 				element: <Login/>,

@@ -4,7 +4,7 @@ import { GradientContainer } from "./GradientContainer"
 
 export const Footer = () => {
 	return (
-		<GradientContainer className = "tw-p-8 tw-flex tw-justify-center tw-items-center tw-bg-primary">
+		<GradientContainer className = "tw-h-[12vh] tw-w-full tw-p-8 tw-flex tw-justify-center tw-items-center tw-bg-primary">
 			<SocialMedia/>
 		</GradientContainer>
 	)		
