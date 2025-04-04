@@ -1,4 +1,5 @@
 import React from "react"
+import { useNavigate } from "react-router-dom"
 import { IconBell } from "../components/icons/IconBell"
 import { IconGear } from "../components/icons/IconGear"
 import { IconClipboardList } from "../components/icons/IconClipboardList"
@@ -9,6 +10,8 @@ import { IconBulkAction } from "../components/icons/IconBulkAction"
 import { IconDragDrop } from "../components/icons/IconDragDrop"
 import { Footer } from "../components/page-elements/Footer"
 import { Header } from "../components/landing-page/Header"
+import { REGISTER } from "../helpers/routes"
+import { FADE_ANIMATION	} from "../helpers/constants"
 
 const features = [
 	{
@@ -54,8 +57,8 @@ const features = [
 ];
 
 interface CardProps {
-    children: React.ReactNode;
-    className?: string;
+    children: React.ReactNode
+    className?: string
 }
 
 const Card: React.FC<CardProps> = ({ children, className = "" }) => {
@@ -63,26 +66,28 @@ const Card: React.FC<CardProps> = ({ children, className = "" }) => {
         <div className={`tw-rounded-2xl tw-shadow-sm tw-border tw-bg-white ${className}`}>
             {children}
         </div>
-    );
-};
+    )
+}
 
 interface CardContentProps {
-    children: React.ReactNode;
-    className?: string;
+    children: React.ReactNode
+    className?: string
 }
 
 const CardContent: React.FC<CardContentProps> = ({ children, className = "" }) => {
     return <div className={`tw-p-4 ${className}`}>{children}</div>;
-};
+}
 
 export const LandingPage = () => {
+	const navigate = useNavigate()
 	return (
         <main className="tw-px-6 tw-py-16">
             <div className="tw-max-w-4xl tw-mx-auto tw-text-center">
                 <h2 className="tw-text-4xl tw-font-bold tw-mb-4">Project Management Made Easy</h2>
-                <p className="tw-text-lg tw-text-gray-600 tw-mb-10">
+                <p className="tw-text-lg tw-text-gray-600 tw-mb-4">
                     Kanban helps startups and small teams stay agile without the overhead.
                 </p>
+                <button onClick={() => navigate(REGISTER)} className = {`${FADE_ANIMATION} hover:tw-opacity-60 tw-border-gray-300 tw-border tw-inline-block tw-p-2 tw-tw-text-lg tw-text-gray-600 tw-font-bold tw-mb-10`}>Get Started</button>
             </div>
 
             <div className="tw-grid md:tw-grid-cols-2 tw-gap-6 tw-max-w-5xl tw-mx-auto">
@@ -99,5 +104,5 @@ export const LandingPage = () => {
                 ))}
             </div>
         </main>
-	);
+	)
 }

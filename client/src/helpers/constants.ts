@@ -108,3 +108,5 @@ export const MAX_MINUTES = 1007999
 export const TIME_DISPLAY_INPUT_MASK = "99w 9d 99h 99m"
 export const TIME_DISPLAY_PLACEHOLDER = "ww d hh mm"
 
+export const FADE_ANIMATION = "tw-transition tw-duration-100 tw-ease-in-out"
+
