@@ -111,16 +111,13 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 				userIdOption: {label: "", value: ""}
 			})
 		}
+		else if (step && formValues){
+			reset(formValues)
+		}
 		else {
 			reset(defaultForm)
 		}
-	}, [ticket])
-
-	useEffect(() => {
-		if (formValues){
-			reset(formValues)
-		}
-	}, [formValues])
+	}, [ticket, formValues, step])
 
     const onSubmit = async (values: AddTicketFormValues) => {
 

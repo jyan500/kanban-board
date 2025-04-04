@@ -98,7 +98,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		}	
 		const { priorityId, statusId, userIdOption } = formValues
 		try {
-			const assigneeId = !isNaN(Number(userIdOption.value)) ? Number(userIdOption.value) : 0
+			const assigneeId = !isNaN(Number(userIdOption?.value)) ? Number(userIdOption?.value) : 0
 			await bulkEditTickets({ticketIds: selectedIds, priorityId, statusId, userIds: assigneeId ? [assigneeId] : []}).unwrap()
 			// no need to send the notification if you're assigning the tickets to yourself
 			if (userProfile && assigneeId && assigneeId !== userProfile.id && bulkAssignNotificationType){
@@ -117,7 +117,9 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		}
 		catch (e){
 			dispatch(addToast(defaultToast))
+			return false
 		}
+		return true
 	} 
 
 	const moveIssues = async () => {
@@ -140,7 +142,9 @@ export const BulkActionsForm = ({boardId}: Props) => {
 	    	}
     	catch (e){
     		dispatch(addToast(defaultToast))
+    		return false
     	}
+    	return true
 	}
 
 	const removeIssues = async () => {
@@ -165,7 +169,9 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		}
 		else {
 			dispatch(addToast(defaultToast))	
+			return false
 		}
+		return true
 	}
 
 	const watchIssues = async () => {
@@ -194,11 +200,14 @@ export const BulkActionsForm = ({boardId}: Props) => {
 			}
 			catch (e){
 				dispatch(addToast(defaultToast))	
+				return false
 			}
 		}
 		else {
 			dispatch(addToast(defaultToast))	
+			return false
 		}
+		return true
 	}
 
 	const stopWatchingIssues = async () => {
@@ -219,34 +228,40 @@ export const BulkActionsForm = ({boardId}: Props) => {
 			}
 			catch (e){
 				dispatch(addToast(defaultToast))	
+				return false
 			}
 		}
 		else {
 			dispatch(addToast(defaultToast))	
+			return false
 		}
+		return true
 	}
 
 	const onSubmit = async () => {
 		setSubmitLoading(true)
+		let isSuccess = false
 		switch (operation){
 			case "edit-issues":
-				await editIssues()
+				isSuccess = await editIssues()
 				break
 			case "move-issues":
-				await moveIssues()
+				isSuccess = await moveIssues()
 				break
 			case "remove-issues":
-				await removeIssues()
+				isSuccess = await removeIssues()
 				break
 			case "watch-issues":
-				await watchIssues()
+				isSuccess = await watchIssues()
 				break
 			case "stop-watching-issues":
-				await stopWatchingIssues()
+				isSuccess = await stopWatchingIssues()
 				break
 		}
 		setSubmitLoading(false)
-		closeModal()
+		if (isSuccess){
+			closeModal()
+		}
 	}
 
 
