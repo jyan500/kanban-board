@@ -261,10 +261,10 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 		if (req.query.skipPaginate){
 			const ticketsForAmt = await tickets
 			const total = ticketsForAmt.length
-			tickets = await tickets.paginate({ perPage: total, currentPage: 1, isLengthAware: true})
+			tickets = await retryTransaction(tickets.paginate({ perPage: total, currentPage: 1, isLengthAware: true}))
 		}
 		else {
-			tickets = await tickets.paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+			tickets = await retryTransaction(tickets.paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true}));
 		}
 
 		if (req.query.includeAssignees){

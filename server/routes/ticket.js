@@ -274,7 +274,6 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			user_id: req.user.id
 		})
 		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: id, is_mention: true}, req.user.organization)
-		console.log("ticketsToUsers: ", ticketsToUsers)
 		if (ticketsToUsers.length){
 			await db("tickets_to_users").insert(ticketsToUsers)
 		}

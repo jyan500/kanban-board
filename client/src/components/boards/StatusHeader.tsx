@@ -11,6 +11,8 @@ import { Link } from "react-router-dom"
 import { TICKETS } from "../../helpers/routes"
 import { LG_BREAKPOINT } from "../../helpers/constants"
 import { useScreenSize } from "../../hooks/useScreenSize"
+import { LoadingSpinner } from "../LoadingSpinner"
+import { LoadingStatus } from "../../types/common"
 
 type Props = {
 	numTickets: number
@@ -18,10 +20,11 @@ type Props = {
 	boardId: number
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
+	hideStatusHandlerLoading: LoadingStatus
 	dropdownAlignLeft?: boolean 
 }
 
-export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hideStatusHandler, dropdownAlignLeft}: Props) => {
+export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hideStatusHandlerLoading, hideStatusHandler, dropdownAlignLeft}: Props) => {
 	const [ showDropdown, setShowDropdown ] = useState(false)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef<HTMLButtonElement>(null)
@@ -51,17 +54,21 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 					</div>
 					: null
 				}
-				<div className = "tw-inline-block tw-text-left tw-pr-2">
-					<button ref = {buttonRef} onClick={(e) => {
-						e.preventDefault()
-						setShowDropdown(!showDropdown)
-					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu color={"var(--bs-dark-grey)"} className = "tw-w-6 tw-h-6"/></button>
-					{
-						showDropdown ? (
-							<StatusHeaderDropdown dropdownAlignLeft={dropdownAlignLeft} boardId = {boardId} statusId={status.id} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>
-						) : null
-					}
-				</div>
+				{
+					hideStatusHandlerLoading.isLoading && hideStatusHandlerLoading.id === status.id ? <LoadingSpinner/> : (
+						<div className = "tw-inline-block tw-text-left tw-pr-2">
+							<button ref = {buttonRef} onClick={(e) => {
+								e.preventDefault()
+								setShowDropdown(!showDropdown)
+							}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu color={"var(--bs-dark-grey)"} className = "tw-w-6 tw-h-6"/></button>
+							{
+								showDropdown ? (
+									<StatusHeaderDropdown dropdownAlignLeft={dropdownAlignLeft} boardId = {boardId} statusId={status.id} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>
+								) : null
+							}
+						</div>
+					)
+				}
 			</div>
 			{
 				status.limit && (status.limit <= numTickets) ? (

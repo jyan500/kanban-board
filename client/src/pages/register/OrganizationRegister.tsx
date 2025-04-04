@@ -79,7 +79,7 @@ export const OrganizationRegister = () => {
 				currentIndex === 1 ? (
 					<>
 						<h1>Register User</h1>
-						<RegisterUserForm isOrgRegister={true} user={Object.keys(forms.user).length > 0 ? forms.user : undefined} onSubmit={onSubmitStep2}/>
+						<RegisterUserForm isOrgRegisterLoading={isLoading} isOrgRegister={true} user={Object.keys(forms.user).length > 0 ? forms.user : undefined} onSubmit={onSubmitStep2}/>
 					</>
 				) : null
 			}

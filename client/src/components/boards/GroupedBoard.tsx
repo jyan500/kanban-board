@@ -3,7 +3,7 @@ Structure board by groups to prevent users from moving a ticket between groups
 */
 import React, { useState } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
-import { KanbanBoard, GroupedTickets, GroupByOptionsKey, Status, GroupByElement, Ticket as TicketType } from "../../types/common"
+import { KanbanBoard, GroupedTickets, GroupByOptionsKey, Status, GroupByElement, Ticket as TicketType, LoadingStatus } from "../../types/common"
 import { useGetGroupByElementsQuery } from "../../services/private/groupBy"
 import { useUpdateTicketStatusMutation } from "../../services/private/ticket"
 import { MAX_COLUMN_LIMIT } from "../../helpers/constants"
@@ -45,6 +45,7 @@ type Props = {
 	colWidth: number
 	addTicketHandler: (statusId: number) => void
 	hideStatusHandler: (statusId: number) => void
+	hideStatusHandlerLoading: LoadingStatus
 }
 
 export const GroupedBoard = ({
@@ -61,6 +62,7 @@ export const GroupedBoard = ({
 	statusesToDisplay,
 	addTicketHandler,
 	hideStatusHandler,
+	hideStatusHandlerLoading,
 }: Props) => {
 	const dispatch = useAppDispatch()
 	/* object mapping the group by ids to boolean to denote whether the collapse arrow for that section is on/off */
@@ -121,6 +123,7 @@ export const GroupedBoard = ({
 								numTickets={board[status.id]?.length} 
 								addTicketHandler={addTicketHandler}
 								hideStatusHandler={hideStatusHandler}
+								hideStatusHandlerLoading={hideStatusHandlerLoading}
 								dropdownAlignLeft={i === 0}
 							/>
 						</div>

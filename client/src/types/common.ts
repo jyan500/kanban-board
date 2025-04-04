@@ -16,6 +16,11 @@ export interface OptionType {
 	label: string
 }
 
+export interface LoadingStatus {
+	id: number | string
+	isLoading: boolean
+}
+
 export interface UserProfile {
 	id: number
 	firstName: string

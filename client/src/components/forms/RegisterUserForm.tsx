@@ -32,11 +32,12 @@ type UserFormValues = FormValues & {
 
 type Props = {
 	isOrgRegister?: boolean
+	isOrgRegisterLoading?: boolean
 	onSubmit?: (values: FormValues) => void
 	user?: FormValues | undefined
 }
 
-export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Props) => {
+export const RegisterUserForm = ({isOrgRegisterLoading, isOrgRegister, onSubmit: propSubmit, user}: Props) => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const { control, register: formRegister, reset, watch, handleSubmit, setValue, formState: {errors} } = useForm<UserFormValues>()
@@ -212,7 +213,7 @@ export const RegisterUserForm = ({isOrgRegister, onSubmit: propSubmit, user}: Pr
 			        {errors?.recaptcha && <small className = "--text-alert">{errors.recaptcha.message}</small>}
 			    </div>
 			    <div>
-			    	<LoadingButton isLoading={isLoading} className = "button" type = "submit" text = "Submit"/>
+			    	<LoadingButton isLoading={isLoading || isOrgRegisterLoading} className = "button" type = "submit" text = "Submit"/>
 				</div>
 				{
 					!isOrgRegister ? ( 

@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from "uuid"
 import { displayUser } from "../../helpers/functions"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { TICKETS } from "../../helpers/routes"
+import { LoadingButton } from "../page-elements/LoadingButton"
 
 type Props = {
 	ticketId: number | undefined
@@ -32,6 +33,7 @@ type FormValues = {
 
 export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 	const [cacheKey, setCacheKey] = useState(uuidv4())
+	const [submitLoading, setSubmitLoading] = useState(false)
 	const dispatch = useAppDispatch()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
@@ -62,6 +64,7 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 			animationType: "animation-in",
 			type: "failure"
 		}
+		setSubmitLoading(true)
 		if (watchNotificationType && userProfile && ticketId){
 	    	try {
 		    	await addTicketAssignee({
@@ -95,6 +98,7 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
     	// flush cached options after submitting
     	selectRef.current?.clearValue()
     	setCacheKey(uuidv4())
+		setSubmitLoading(false)
 	}
 
 	const deleteWatcher = async (userId: number) => {
@@ -144,7 +148,7 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 				                />
 			                )}
 						/>
-						<button className = "button">Submit</button>
+						<LoadingButton type="submit" isLoading={submitLoading} text={"Submit"} className = "button"/>
 					</form>
 				) : null} 
 			</div>
@@ -152,9 +156,9 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
 					{ ticketWatchers?.filter(watcher => watcher.id !== ticketAssigneeId).map((watcher) => 
 						<button onClick={(e) => deleteWatcher(watcher.id)}>
-							<Badge className = "tw-flex tw-flex-row tw-items-center tw-justify-between tw-text-white tw-bg-primary">
+							<Badge className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center tw-justify-between tw-text-white tw-bg-primary">
 								<span>{displayUser(watcher)}</span>
-								<IoMdClose className = "icon"/>
+								{isDeleteTicketAssigneeLoading ? <LoadingSpinner/> : <IoMdClose className = "icon"/>}
 							</Badge>	
 						</button>
 					)}

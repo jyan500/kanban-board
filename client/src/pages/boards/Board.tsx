@@ -51,7 +51,7 @@ export const Board = () => {
 	return (
 		<div className = "tw-space-y-2">
 			<ArrowButton text="Back" onClick={() => navigate(-1)}/>
-			{(!isGetBoardLoading && isGetBoardError) || (!isGetBoardTicketsLoading && isGetBoardTicketsError) || (!isGetBoardStatusesLoading && isGetBoardStatusesError) ? 
+			{(isGetBoardError || isGetBoardTicketsError || isGetBoardStatusesError) ? 
 				(
 					<Banner message = {"Something went wrong!"} type = "failure"/>
 				) : null

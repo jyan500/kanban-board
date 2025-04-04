@@ -47,6 +47,7 @@ export const BoardForm = () => {
 	const { register , handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
+	const [ submitLoading ,setSubmitLoading ] = useState(false)
 	const registerOptions = {
 	    name: { required: "Name is required" },
 	    ticketLimit: { 
@@ -73,6 +74,7 @@ export const BoardForm = () => {
 	}, [isStatusDataLoading, statusData])
 
     const onSubmit = async (values: FormValues) => {
+		setSubmitLoading(true)
     	try {
     		if (values.id != null && currentBoardId){
     			await updateBoard(values).unwrap()
@@ -97,6 +99,9 @@ export const BoardForm = () => {
     			animationType: "animation-in",
     			message: `Failed to ${values.id != null ? "update" : "add"} board.`,
     		}))
+    	}
+    	finally {
+    		setSubmitLoading(false)
     	}
     }
 
@@ -142,7 +147,7 @@ export const BoardForm = () => {
 			))) : <LoadingSpinner/>}
 			</div>
 			<div className = "tw-flex tw-flex-col">
-				<LoadingButton isLoading={isLoading} type="submit" text="Submit" className = "button"/>
+				<LoadingButton isLoading={submitLoading} type="submit" text="Submit" className = "button"/>
 			</div>
 		</form>
 	)	

@@ -36,6 +36,7 @@ export interface BulkEditFormValues {
 
 export const BulkActionsForm = ({boardId}: Props) => {
 	const [step, setStep] = useState(1)
+	const [submitLoading, setSubmitLoading] = useState(false)
 	const dispatch = useAppDispatch()
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -225,24 +226,26 @@ export const BulkActionsForm = ({boardId}: Props) => {
 		}
 	}
 
-	const onSubmit = () => {
+	const onSubmit = async () => {
+		setSubmitLoading(true)
 		switch (operation){
 			case "edit-issues":
-				editIssues()
+				await editIssues()
 				break
 			case "move-issues":
-				moveIssues()
+				await moveIssues()
 				break
 			case "remove-issues":
-				removeIssues()
+				await removeIssues()
 				break
 			case "watch-issues":
-				watchIssues()
+				await watchIssues()
 				break
 			case "stop-watching-issues":
-				stopWatchingIssues()
+				await stopWatchingIssues()
 				break
 		}
+		setSubmitLoading(false)
 		closeModal()
 	}
 
@@ -296,6 +299,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 					setStep={setStep} 
 					step={step} 
 					formValues={formValues}
+					isSubmitLoading={submitLoading}
 				/>
 		}	
 	}
@@ -312,7 +316,7 @@ export const BulkActionsForm = ({boardId}: Props) => {
 						)}
 					</ol>
 				</div>
-				<div className = "tw-flex tw-flex-1">
+				<div className = "lg:tw-w-3/4">
 					{
 						renderStep()
 					}	

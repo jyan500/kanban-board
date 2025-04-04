@@ -1,4 +1,4 @@
-import React, { useRef } from "react" 
+import React, { useState, useRef } from "react" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { Dropdown } from "../Dropdown" 
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice" 
@@ -18,6 +18,7 @@ import { displayUser } from "../../helpers/functions"
 import { FiPlus as PlusIcon } from "react-icons/fi";
 import { IconPlus } from "../icons/IconPlus"
 import { TICKETS } from "../../helpers/routes"
+import { LoadingSpinner } from "../LoadingSpinner"
 
 type Props = {
 	closeDropdown: () => void
@@ -42,6 +43,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 	const [ addTicketAssignee, {isLoading: addTicketAssigneeLoading} ] = useAddTicketAssigneeMutation()
 	const [ deleteTicketAssignee, {isLoading: isDeleteTicketAssigneeLoading}] = useDeleteTicketAssigneeMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
+	const [ submitLoading, setSubmitLoading ] = useState(false)
 
 	const addTicketWatcher = async (ticketId: number | null | undefined, userId: number | null | undefined) => {
 		let defaultToast: Toast = {
@@ -50,6 +52,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 			animationType: "animation-in",
 			message: "You are now watching this ticket!"
 		}
+		setSubmitLoading(true)
 		try {
 			if (watchNotificationType && userProfile && ticketId && userId){
 				await addTicketAssignee({ticketId: ticketId, userIds: [userId], isWatcher: true}).unwrap()
@@ -70,6 +73,9 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 				message: "Failed to add ticket watcher"
 			}))
 		}
+		finally {
+			setSubmitLoading(false)
+		}
 	}
 
 	const showAddWatchersModal = () => {
@@ -85,6 +91,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 			animationType: "animation-in",
 			message: "Ticket watcher removed successfully!"
 		}
+		setSubmitLoading(true)
 		try {
 			if (ticketId && userId){
 				await deleteTicketAssignee({ticketId: ticketId, userId: userId}).unwrap()
@@ -97,6 +104,9 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 				type: "failure",
 				message: "Failed to remove ticket watcher"
 			}))
+		}
+		finally {
+			setSubmitLoading(false)
 		}
 	} 
 
@@ -134,10 +144,11 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 								className="tw-border-b tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
 								role="menuitem"
 							>
-								<div className = "tw-flex tw-flex-row tw-gap-x-2">
+								<div className = "tw-flex tw-flex-row tw-justify-between tw-items-center tw-gap-x-2">
 									{option === "Start Watching" ? 
 									<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center"><IconEye className = "tw-w-6 tw-h-6"/><p>{option}</p></div>
 									: <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center"><IconEyeSlash className = "tw-w-6 tw-h-6"/><p>{option}</p></div>}
+									{submitLoading ? <LoadingSpinner/> : null}
 								</div>
 							</li>
 						)
