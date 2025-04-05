@@ -189,7 +189,11 @@ const ticketUserValidator = (actionType) => {
 				{
 					"col": "ticket_id",
 					"value": req.params.ticketId
-				}
+				},
+				{
+					"col": "is_watcher",
+					"value": true
+				},
 				], "tickets_to_users"))
 			]
 		}
