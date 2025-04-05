@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useRef} from "react"
 import { useNavigate } from "react-router-dom"
 import { IconBell } from "../components/icons/IconBell"
 import { IconGear } from "../components/icons/IconGear"
@@ -161,9 +161,10 @@ export const LandingPage = () => {
 		index: 0,
 		show: false
 	})
+	const scrollToRef = useRef<HTMLDivElement | null>(null)
 	return (
         <main className="tw-px-6 tw-py-16">
-            <div className="tw-max-w-4xl tw-mx-auto tw-text-center">
+            <div ref={scrollToRef} className="tw-max-w-4xl tw-mx-auto tw-text-center">
                 <h2 className="tw-text-4xl tw-font-bold tw-mb-4">Project Management Made Easy</h2>
                 <p className="tw-text-lg tw-text-gray-600 tw-mb-4">
                     Kanban helps startups and small teams stay agile without the overhead.
@@ -185,7 +186,10 @@ export const LandingPage = () => {
 
             <div className="tw-grid md:tw-grid-cols-2 tw-gap-6 tw-max-w-5xl tw-mx-auto">
                 {features.map((feature) => (
-                    <Card disabled={width < LG_BREAKPOINT} key={`feature_${feature.id}`} className="tw-p-4" onClick={() => setCarouselIndex(feature.id-1)}>
+                    <Card disabled={width < LG_BREAKPOINT} key={`feature_${feature.id}`} className="tw-p-4" onClick={() => {
+                    	setCarouselIndex(feature.id-1)
+                    	scrollToRef?.current?.scrollIntoView({ behavior: 'smooth' })
+                    }}>
                         <CardContent className="tw-flex tw-flex-col tw-gap-4 tw-items-center tw-justify-center">
                         	<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-justify-center tw-items-start">
 	                            {feature.icon}
