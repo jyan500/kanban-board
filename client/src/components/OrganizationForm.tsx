@@ -10,11 +10,12 @@ import { useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import { addToast } from "../slices/toastSlice" 
 import { LoadingSpinner } from "./LoadingSpinner"
-import { Organization } from "../types/common"
+import { OptionType, Organization } from "../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { EMAIL_PATTERN, PHONE_PATTERN } from "../helpers/constants"
 import { BackendErrorMessage } from "./page-elements/BackendErrorMessage"
 import { LoadingButton } from "./page-elements/LoadingButton"
+import { US_STATES } from "../helpers/constants"
 
 export type FormValues = {
 	id?: number
@@ -114,71 +115,38 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 					/>
 			        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 				</div>
-				{
-					!isOrgRegister ? (
-						<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
-							<div className = "tw-flex tw-flex-col">
-								<label className = "label" htmlFor = "organization-name">Address:</label>
-								<input id = "organization-address" type = "text"
-								{...register("address")}
-								/>
-							</div>
-							<div className = "tw-flex tw-flex-col">
-								<label className = "label" htmlFor = "organization-name">City:</label>
-								<input id = "organization-city" type = "text"
-								{...register("city")}
-								/>
-							</div>
-							<div className = "tw-flex tw-flex-col lg:tw-w-16">
-								<label className = "label" htmlFor = "organization-state">State:</label>
-								<input id = "organization-state" type = "text"
-								{...register("state")}
-								/>
-							</div>
-							<div className = "tw-flex tw-flex-col lg:tw-w-32">
-								<label className = "label" htmlFor = "organization-zipcode">Zipcode:</label>
-								<input id = "organization-zipcode" type = "text"
-								{...register("zipcode")}
-								/>
-							</div>
-						</div>	
-					) : (
-						<>
-							<div className = "tw-flex tw-flex-col">
-								<label className = "label" htmlFor = "organization-name">Address:</label>
-								<input id = "organization-address" type = "text"
-								{...register("address")}
-								/>
-							</div>
-							<div className = "tw-flex tw-flex-col">
-								<label className = "label" htmlFor = "organization-name">City:</label>
-								<input id = "organization-city" type = "text"
-								{...register("city")}
-								/>
-							</div>
-							<div className = "tw-flex tw-flex-col lg:tw-w-16">
-								<label className = "label" htmlFor = "organization-state">State:</label>
-								<input id = "organization-state" type = "text"
-								{...register("state")}
-								/>
-							</div>
-							<div className = "tw-flex tw-flex-col lg:tw-w-32">
-								<label className = "label" htmlFor = "organization-zipcode">Zipcode:</label>
-								<input id = "organization-zipcode" type = "text"
-								{...register("zipcode")}
-								/>
-							</div>
-						</>
-					)
-				}
-				{errors?.address || errors?.city || errors?.state || errors?.zipcode ? (
-					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-				        {errors?.address && <small className = "--text-alert">{errors.address.message}</small>}
-				        {errors?.city && <small className = "--text-alert">{errors.city.message}</small>}
-				        {errors?.state && <small className = "--text-alert">{errors.state.message}</small>}
-				        {errors?.zipcode && <small className = "--text-alert">{errors.zipcode.message}</small>}
-					</div>
-				) : null}
+				<div className = "tw-flex tw-flex-col">
+					<label className = "label" htmlFor = "organization-name">Address:</label>
+					<input id = "organization-address" type = "text"
+					{...register("address")}
+					/>
+			        {errors?.address && <small className = "--text-alert">{errors.address.message}</small>}
+				</div>
+				<div className = "tw-flex tw-flex-col">
+					<label className = "label" htmlFor = "organization-name">City:</label>
+					<input id = "organization-city" type = "text"
+					{...register("city")}
+					/>
+			        {errors?.city && <small className = "--text-alert">{errors.city.message}</small>}
+				</div>
+				<div className = "tw-flex tw-flex-col">
+					<label className = "label" htmlFor = "organization-state">State:</label>
+					<select id = "organization-state" {...register("state")}>
+						{US_STATES.map((option: OptionType) => {
+							return (
+								<option value={option.value}>{option.label}</option>
+							)
+						})}
+					</select>
+			        {errors?.state && <small className = "--text-alert">{errors.state.message}</small>}
+				</div>
+				<div className = "tw-flex tw-flex-col">
+					<label className = "label" htmlFor = "organization-zipcode">Zipcode:</label>
+					<input id = "organization-zipcode" type = "text"
+					{...register("zipcode")}
+					/>
+			        {errors?.zipcode && <small className = "--text-alert">{errors.zipcode.message}</small>}
+				</div>
 				<div>
 					<label className = "label" htmlFor = "organization-phone">Phone:<span className = "tw-font-bold tw-text-red-500">*</span></label>
 					<input id = "organization-phone" type = "text"
