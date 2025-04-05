@@ -128,11 +128,12 @@ interface CardProps {
     children: React.ReactNode
     className?: string
     onClick: () => void
+    disabled: boolean
 }
 
-const Card: React.FC<CardProps> = ({ children, className = "", onClick }) => {
+const Card: React.FC<CardProps> = ({ children, className = "", onClick, disabled }) => {
     return (
-        <button onClick={onClick} className={`hover:tw-opacity-60 tw-rounded-2xl tw-shadow-sm tw-border tw-bg-white ${className}`}>
+        <button disabled={disabled} onClick={onClick} className={`${!disabled ? "hover:tw-opacity-60" : ""} tw-rounded-2xl tw-shadow-sm tw-border tw-bg-white ${className}`}>
             {children}
         </button>
     )
@@ -184,7 +185,7 @@ export const LandingPage = () => {
 
             <div className="tw-grid md:tw-grid-cols-2 tw-gap-6 tw-max-w-5xl tw-mx-auto">
                 {features.map((feature) => (
-                    <Card key={`feature_${feature.id}`} className="tw-p-4" onClick={() => setCarouselIndex(feature.id-1)}>
+                    <Card disabled={width < LG_BREAKPOINT} key={`feature_${feature.id}`} className="tw-p-4" onClick={() => setCarouselIndex(feature.id-1)}>
                         <CardContent className="tw-flex tw-flex-col tw-gap-4 tw-items-center tw-justify-center">
                         	<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-justify-center tw-items-start">
 	                            {feature.icon}
