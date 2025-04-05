@@ -12,6 +12,8 @@ import { AsyncSelect } from "../components/AsyncSelect"
 import { OptionType } from "../types/common"
 import { BackendErrorMessage } from "../components/page-elements/BackendErrorMessage"
 import { LoadingButton } from "../components/page-elements/LoadingButton"
+import { IconEye } from "../components/icons/IconEye"
+import { IconEyeSlash } from "../components/icons/IconEyeSlash"
 
 type FormValues = {
 	email: string
@@ -31,6 +33,7 @@ export const Login = () => {
 	    password: { required: "Password is required"},
 	    organizationId: { required: "Organization is required"},
     }
+    const [showPassword, setShowPassword] = useState(false)
     useEffect(() => {
     	if (token){
     		navigate(isTemp ? `${TEMP}${ACCOUNT}` : "/", {replace: true})
@@ -77,12 +80,25 @@ export const Login = () => {
 					    <label className = "label" htmlFor = "login-password">
 					    	Password:
 					    </label>
-						<input 
-						id="login-password"
-						type="password"
-						className = "tw-w-full"
-						{...register("password", registerOptions.password)}
-						/>
+					    <div className = "tw-mt-2 tw-relative">
+							<input 
+								id = "login-password"
+								type={!showPassword ? "password" : "text"}
+								className = "tw-w-full"
+								{...register("password", registerOptions.password)}
+							/>
+							{
+								!showPassword ? 
+								<button onClick={(e) => {
+									e.preventDefault()
+									setShowPassword(!showPassword)}
+								}><IconEye className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button> : 
+								<button onClick={(e) => {
+									e.preventDefault()
+									setShowPassword(!showPassword)}
+								}><IconEyeSlash className = "hover:tw-opacity-60 tw-absolute tw-top-0 tw-right-0 tw-mt-4 tw-mr-4"/></button>
+							}
+						</div>
 				        {errors?.password && <small className = "--text-alert">{errors.password.message}</small>}
 				    </div>
 				</div>
