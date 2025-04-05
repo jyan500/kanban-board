@@ -1,8 +1,8 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import { GradientContainer } from "../page-elements/GradientContainer"
+import { GradientContainer } from "./GradientContainer"
 import { LOGIN, REGISTER, LANDING_PAGE } from "../../helpers/routes"
-import { Logo } from "../page-elements/Logo"
+import { Logo } from "./Logo"
 import { FADE_ANIMATION } from "../../helpers/constants"
 
 export const Header = () => {

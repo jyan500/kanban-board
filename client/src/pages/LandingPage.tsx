@@ -8,11 +8,10 @@ import { IconTextArea } from "../components/icons/IconTextArea"
 import { IconComment } from "../components/icons/IconComment"
 import { IconBulkAction } from "../components/icons/IconBulkAction"
 import { IconDragDrop } from "../components/icons/IconDragDrop"
-import { Footer } from "../components/page-elements/Footer"
-import { Header } from "../components/landing-page/Header"
 import { REGISTER } from "../helpers/routes"
 import { FADE_ANIMATION	} from "../helpers/constants"
 import { MultiCardCarousel } from "../components/page-elements/MultiCardCarousel"
+import { ImageOverlay } from "../components/page-elements/ImageOverlay"
 import BacklogImage from "../assets/images/landing-page/backlog.png"
 import BulkActionsImage from "../assets/images/landing-page/bulk-actions.png"
 import EpicTicketsImage from "../assets/images/landing-page/epic-tickets.png"
@@ -145,9 +144,18 @@ const CardContent: React.FC<CardContentProps> = ({ children, className = "" }) =
     return <div className={`tw-p-4 ${className}`}>{children}</div>;
 }
 
+export interface ShowImageOverlay {
+	index: number
+	show: boolean
+}
+
 export const LandingPage = () => {
 	const navigate = useNavigate()
 	const [carouselIndex, setCarouselIndex] = useState(0)
+	const [showImageOverlay, setShowImageOverlay] = useState<ShowImageOverlay>({
+		index: 0,
+		show: false
+	})
 	return (
         <main className="tw-px-6 tw-py-16">
             <div className="tw-max-w-4xl tw-mx-auto tw-text-center">
@@ -158,7 +166,7 @@ export const LandingPage = () => {
                 <button onClick={() => navigate(REGISTER)} className = {`${FADE_ANIMATION} hover:tw-opacity-60 tw-border-gray-300 tw-border tw-inline-block tw-p-2 tw-tw-text-lg tw-text-gray-600 tw-font-bold tw-mb-10`}>Get Started</button>
             </div>
 
-            <MultiCardCarousel index={carouselIndex} items={createImageCarouselElements(features.map((feature: Feature) => {
+            <MultiCardCarousel setShowImageOverlay={setShowImageOverlay} index={carouselIndex} items={createImageCarouselElements(features.map((feature: Feature) => {
 				return {
 					id: feature.id,
 					title: feature.title,
@@ -180,6 +188,7 @@ export const LandingPage = () => {
                     </Card>
                 ))}
             </div>
+            <ImageOverlay imageUrl={features.find((feature: Feature) => feature.id === showImageOverlay.index + 1)?.imageURL ?? ""} isOpen={showImageOverlay.show} onClose={() => setShowImageOverlay({index: showImageOverlay.index, show: false})}/>
         </main>
 	)
 }

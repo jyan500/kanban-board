@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { IconContext } from "react-icons"
 import { GrNext as Next, GrPrevious as Previous } from "react-icons/gr";
 import { IconButton } from "../page-elements/IconButton"
+import { ShowImageOverlay } from "../../pages/LandingPage"
+import { FADE_ANIMATION } from "../../helpers/constants"
 
 interface Props {
     items: Array<React.ReactNode>
     itemsPerPage: number
     itemContainerClassName?: string
     index?: number
+    setShowImageOverlay?: (showImageOverlay: ShowImageOverlay) => void 
 }
 
-export const MultiCardCarousel = ({ index, items, itemsPerPage, itemContainerClassName }: Props) => {
-    console.log("index: ", index)
+export const MultiCardCarousel = ({ index, items, itemsPerPage, itemContainerClassName, setShowImageOverlay }: Props) => {
     const [currentIndex, setCurrentIndex] = useState(index ?? 0)
-    console.log("index: ", currentIndex)
 
     useEffect(() => {
         if (index && index >= 0 && index <= items.length){
@@ -61,9 +62,9 @@ export const MultiCardCarousel = ({ index, items, itemsPerPage, itemContainerCla
                                 Renders all items, the combination of flex-shrink-0 on each flex item, as well as the width being set to the percent each item takes per page
                                 gives the illusion that only a certain amount of items display on each page based on the itemsPerPage.
                             */
-                            <div key={`carousel_item_${i}`} style = {style} className = {`${itemContainerClassName ?? ""} tw-relative tw-w-full tw-h-full tw-flex-shrink-0 tw-px-2`}>
+                            <button onClick={() => setShowImageOverlay ? setShowImageOverlay({index: i, show: true}) : null} key={`carousel_item_${i}`} style = {style} className = {`${itemContainerClassName ?? ""} ${FADE_ANIMATION} tw-relative tw-w-full tw-h-full hover:tw-opacity-80 tw-flex-shrink-0 tw-px-2`}>
                                 {item}
-                            </div>
+                            </button>
                         ))}
                     </div>
                     {
