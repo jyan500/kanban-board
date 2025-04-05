@@ -16,7 +16,7 @@ import { ImageOverlay } from "../components/page-elements/ImageOverlay"
 import BacklogImage from "../assets/images/landing-page/backlog.png"
 import BulkActionsImage from "../assets/images/landing-page/bulk-actions.png"
 import EpicTicketsImage from "../assets/images/landing-page/epic-tickets.png"
-import GroupByImage from "../assets/images/landing-page/group-by.png"
+import BoardImage from "../assets/images/landing-page/board.png"
 import MentionsImage from "../assets/images/landing-page/mentions.png"
 import NotificationsImage from "../assets/images/landing-page/notifications.png"
 import SettingsImage from "../assets/images/landing-page/organization-settings.png"
@@ -85,7 +85,7 @@ const features: Array<Feature> = [
 		title: "Group by & Drag-and-Drop",
 		description: "Flexible board display with grouping and drag-and-drop statuses.",
 		icon: <IconDragDrop className={`${iconClass} tw-text-yellow-500`} />,
-		imageURL: GroupByImage,
+		imageURL: BoardImage,
 	},
 	{
 		id: 4,
