@@ -76,6 +76,7 @@ export const GroupedBoard = ({
 	const [updateTicketStatus, {isLoading: isUpdateTicketStatusLoading}] = useUpdateTicketStatusMutation() 
 	const { width, height } = useScreenSize()
 	const {data: groupByElements, isLoading, isError} = useGetGroupByElementsQuery({groupBy: groupBy, ids: Object.keys(groupedTickets)})  
+	const [dragTicketId, setDragTicketId] = useState<number | null>(null)
 
 	const handleDrop = async (e: React.DragEvent<HTMLDivElement>, groupById: string) => {
 		const ticketId = parseInt(e.dataTransfer.getData("text").replace(`group_by_${groupById}_ticket_`, ""))
@@ -89,6 +90,7 @@ export const GroupedBoard = ({
 		*/
 		if (!ticket && !isNaN(ticketId)){
 			// new endpoint to PATCH update ticket status
+			setDragTicketId(ticketId)
 			try {
 				await updateTicketStatus({ticketId: ticketId, statusId: statusId}).unwrap()
 				dispatch(addToast({
@@ -107,6 +109,7 @@ export const GroupedBoard = ({
 	    		}))
 			}
 		}
+		setDragTicketId(null)
 	}
 
 	return (
@@ -194,7 +197,7 @@ export const GroupedBoard = ({
 																		onDragStart={dragStart}
 																		>
 																		{ticket ? <Ticket 
-																			isLoading={isUpdateTicketStatusLoading}
+																			isLoading={dragTicketId != null && dragTicketId === ticket.id && isUpdateTicketStatusLoading}
 																			ticket = {ticket}
 																			dropdownAlignLeft={i === 0}
 																			statusesToDisplay={statusesToDisplay}

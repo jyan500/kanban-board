@@ -28,6 +28,11 @@ export const Board = () => {
 	const {data: statusData, isLoading: isGetBoardStatusesLoading, isError: isGetBoardStatusesError } = useGetBoardStatusesQuery(boardId ? {id: boardId, isActive: true} : skipToken)
 	const board = useAppSelector((state) => state.board)
 
+	// only reset the "group by" on the toolbar if we're navigating to this page
+	useEffect(() => {
+		dispatch(setGroupBy("NONE"))
+	}, [boardId])
+
 	useEffect(() => {
 		if (boardData?.length){
 			let board: KanbanBoardType = {}
@@ -39,7 +44,6 @@ export const Board = () => {
 				}
 			}
 			dispatch(setBoard(board))
-			dispatch(setGroupBy("NONE"))
 			dispatch(setBoardInfo(boardData[0]))
 			dispatch(setBoardTickets(boardTicketData?.data ?? []))
 			dispatch(setFilteredTickets(boardTicketData?.data ?? []))
