@@ -9,7 +9,8 @@ import { IconComment } from "../components/icons/IconComment"
 import { IconBulkAction } from "../components/icons/IconBulkAction"
 import { IconDragDrop } from "../components/icons/IconDragDrop"
 import { REGISTER } from "../helpers/routes"
-import { FADE_ANIMATION	} from "../helpers/constants"
+import { useScreenSize } from "../hooks/useScreenSize"
+import { FADE_ANIMATION, LG_BREAKPOINT} from "../helpers/constants"
 import { MultiCardCarousel } from "../components/page-elements/MultiCardCarousel"
 import { ImageOverlay } from "../components/page-elements/ImageOverlay"
 import BacklogImage from "../assets/images/landing-page/backlog.png"
@@ -62,61 +63,63 @@ const createImageCarouselElements = (data: Array<CarouselElement>) => {
 	return []	
 }
 
+const iconClass = "tw-mt-1 tw-shrink-0 tw-h-6 tw-w-6"
+
 const features: Array<Feature> = [
 	{
 		id: 1,
 		title: "Inline Ticket Editing",
 		description: "Edit tickets with a sleek inline modal featuring rich text support.",
-		icon: <IconTextArea className="tw-mt-1 tw-shrink-0 tw-h-6 tw-w-6 tw-text-blue-500" />,
+		icon: <IconTextArea className={`${iconClass} tw-text-blue-500`} />,
 		imageURL: RTEImage,
 	},
 	{
 		id: 2,
 		title: "Ticket Linking & Epics",
 		description: "Organize work efficiently with parent-child and linked issues.",
-		icon: <IconTree className="tw-mt-1 tw-shrink-0 tw-h-6 tw-w-6 tw-text-green-500" />,
+		icon: <IconTree className={`${iconClass} tw-text-green-500`} />,
 		imageURL: EpicTicketsImage,
 	},
 	{
 		id: 3,
 		title: "Group by & Drag-and-Drop",
 		description: "Flexible board display with grouping and drag-and-drop statuses.",
-		icon: <IconDragDrop className="tw-mt-1 tw-shrink-0 tw-h-6 tw-w-6 tw-text-yellow-500" />,
+		icon: <IconDragDrop className={`${iconClass} tw-text-yellow-500`} />,
 		imageURL: GroupByImage,
 	},
 	{
 		id: 4,
 		title: "Mentions & Comments",
 		description: "Tag teammates in rich text comments and descriptions.",
-		icon: <IconComment className="tw-mt-1 tw-shrink-0 tw-h-6 tw-w-6 tw-text-purple-500" />,
+		icon: <IconComment className={`${iconClass} tw-text-purple-500`} />,
 		imageURL: MentionsImage,
 	},
 	{
 		id: 5,
 		title: "Bulk Actions",
 		description: "Apply actions to multiple tickets to optimize your workflow.",
-		icon: <IconBulkAction className = "tw-mt-1 tw-shrink-0 tw-h-6 tw-w-6 tw-text-blue-500"/>,
+		icon: <IconBulkAction className = {`${iconClass} tw-text-blue-500`}/>,
 		imageURL: BulkActionsImage,
 	},
 	{
 		id: 6,
 		title: "Backlog & Issue Tracking",
 		description: "Track upcoming work and stay on top of the backlog.",
-		icon: <IconClipboardList className="tw-mt-1 tw-shrink-0 tw-h-6 tw-w-6 tw-text-red-500" />,
+		icon: <IconClipboardList className={`${iconClass} tw-w-6 tw-text-red-500`} />,
 		imageURL: BacklogImage,
 	},
 	{
 		id: 7,
 		title: "Notifications",
 		description: "Stay informed with smart, real-time notifications.",
-		icon: <IconBell className="tw-mt-1 tw-shrink-0 tw-h-6 tw-w-6 tw-text-indigo-500" />,
+		icon: <IconBell className={`${iconClass} tw-text-indigo-500`} />,
 		imageURL: NotificationsImage,
 	},
 	{
 		id: 8,
 		title: "Organization & User Settings",
 		description: "Manage your organization and personal preferences easily.",
-		icon: <IconGear className="tw-mt-1 tw-shrink-0 tw-h-6 tw-w-6 tw-text-gray-500" />,
+		icon: <IconGear className="tw-shrink-0 tw-h-6 tw-w-6 tw-text-gray-500" />,
 		imageURL: SettingsImage,
 	},
 ];
@@ -151,6 +154,7 @@ export interface ShowImageOverlay {
 
 export const LandingPage = () => {
 	const navigate = useNavigate()
+	const {width, height} = useScreenSize()
 	const [carouselIndex, setCarouselIndex] = useState(0)
 	const [showImageOverlay, setShowImageOverlay] = useState<ShowImageOverlay>({
 		index: 0,
@@ -165,30 +169,39 @@ export const LandingPage = () => {
                 </p>
                 <button onClick={() => navigate(REGISTER)} className = {`${FADE_ANIMATION} hover:tw-opacity-60 tw-border-gray-300 tw-border tw-inline-block tw-p-2 tw-tw-text-lg tw-text-gray-600 tw-font-bold tw-mb-10`}>Get Started</button>
             </div>
-
-            <MultiCardCarousel setShowImageOverlay={setShowImageOverlay} index={carouselIndex} items={createImageCarouselElements(features.map((feature: Feature) => {
-				return {
-					id: feature.id,
-					title: feature.title,
-					imageURL: feature.imageURL,
-					description: feature.description
-				}
-			}))} itemsPerPage={1}/>
+            {
+            	width >= LG_BREAKPOINT ? 
+	            <MultiCardCarousel setShowImageOverlay={setShowImageOverlay} index={carouselIndex} items={createImageCarouselElements(features.map((feature: Feature) => {
+					return {
+						id: feature.id,
+						title: feature.title,
+						imageURL: feature.imageURL,
+						description: feature.description
+					}
+				}))} itemsPerPage={1}/>
+				: null
+            }
 
             <div className="tw-grid md:tw-grid-cols-2 tw-gap-6 tw-max-w-5xl tw-mx-auto">
                 {features.map((feature) => (
                     <Card key={`feature_${feature.id}`} className="tw-p-4" onClick={() => setCarouselIndex(feature.id-1)}>
-                        <CardContent className="tw-flex tw-gap-4 tw-items-start">
-                            {feature.icon}
+                        <CardContent className="tw-flex tw-flex-col tw-gap-4 tw-items-center tw-justify-center">
+                        	<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-justify-center tw-items-start">
+	                            {feature.icon}
+	                            <h3 className="tw-mt-0 tw-text-xl tw-font-semibold tw-mb-1">{feature.title}</h3>
+                            </div>
                             <div>
-                                <h3 className="tw-mt-0 tw-text-xl tw-font-semibold tw-mb-1">{feature.title}</h3>
                                 <p className="tw-text-sm tw-text-gray-600">{feature.description}</p>
                             </div>
                         </CardContent>
                     </Card>
                 ))}
             </div>
-            <ImageOverlay imageUrl={features.find((feature: Feature) => feature.id === showImageOverlay.index + 1)?.imageURL ?? ""} isOpen={showImageOverlay.show} onClose={() => setShowImageOverlay({index: showImageOverlay.index, show: false})}/>
+            {
+            	width >= LG_BREAKPOINT ? 
+	            <ImageOverlay imageUrl={features.find((feature: Feature) => feature.id === showImageOverlay.index + 1)?.imageURL ?? ""} isOpen={showImageOverlay.show} onClose={() => setShowImageOverlay({index: showImageOverlay.index, show: false})}/>
+	            : null
+            }
         </main>
 	)
 }

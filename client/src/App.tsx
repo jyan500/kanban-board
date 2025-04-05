@@ -32,6 +32,7 @@ import { NotificationSettings } from "./pages/account/NotificationSettings"
 import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
 import { LandingPage } from "./pages/LandingPage"
 import AuthLayout from "./layouts/AuthLayout"
+import DefaultLayout from "./layouts/DefaultLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
 import UserRoleProtectedLayout from "./layouts/UserRoleProtectedLayout"
 import UserActivatedProtectedLayout from "./layouts/UserActivatedProtectedLayout"
@@ -74,7 +75,7 @@ const router = createBrowserRouter([
 		element: 
 		<>	
 			<ScrollRestoration/>
-			<AuthLayout />
+			<DefaultLayout />
 		</>
 		,
 		children: [
@@ -83,39 +84,47 @@ const router = createBrowserRouter([
 				element: <LandingPage/>
 			},
 			{
-				path: LOGIN,
-				element: <Login/>,
-			},
-			{
-				path: REGISTER,
-				element: <RegisterDisplay/>,
+				element: <>
+					<ScrollRestoration/>
+					<AuthLayout/>
+				</>,
 				children: [
 					{
-						index: true,
-						element: <RegisterSelection/>
+						path: LOGIN,
+						element: <Login/>,
 					},
 					{
-						path: REGISTER_USER,
-						element: <Register/>
+						path: REGISTER,
+						element: <RegisterDisplay/>,
+						children: [
+							{
+								index: true,
+								element: <RegisterSelection/>
+							},
+							{
+								path: REGISTER_USER,
+								element: <Register/>
+							},
+							{
+								path: REGISTER_ORG,
+								element: <OrganizationRegister/>
+							}
+						]
 					},
 					{
-						path: REGISTER_ORG,
-						element: <OrganizationRegister/>
-					}
+						path: FORGOT_PASSWORD,
+						element: <ForgotPassword/>
+					},
+					{
+						path: RESET_PASSWORD,
+						element: <ResetPassword/>
+					},
+					{
+						path: ACTIVATION,
+						element: <AccountActivation/>
+					},	
 				]
-			},
-			{
-				path: FORGOT_PASSWORD,
-				element: <ForgotPassword/>
-			},
-			{
-				path: RESET_PASSWORD,
-				element: <ResetPassword/>
-			},
-			{
-				path: ACTIVATION,
-				element: <AccountActivation/>
-			},
+			}
 		],
 	},
 	{
