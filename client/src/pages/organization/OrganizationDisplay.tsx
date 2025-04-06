@@ -47,7 +47,7 @@ export const OrganizationDisplay = () => {
 	]
 	return (
 		<div>
-			<div className = "tw-flex tw-flex-col tw-gap-y-6 lg:tw-flex-row lg:tw-gap-x-6">
+			<div className = "tw-flex tw-flex-col tw-w-full tw-gap-y-6 lg:tw-flex-row lg:tw-gap-x-6">
 				{!isLoading && organization ? 
 					<>
 						<div className = "lg:tw-w-1/4 tw-flex tw-flex-col tw-gap-y-4">
@@ -81,7 +81,7 @@ export const OrganizationDisplay = () => {
 								</>
 							</div>
 						</div>
-						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+						<div className = "lg:tw-w-1/2 tw-w-full tw-flex tw-flex-col tw-gap-y-2">
 							<Outlet/>
 						</div>
 					</>

@@ -194,7 +194,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					status_id: ticket.statusId
 				}
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets"]
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships"]
 			// invalidatesTags: (result, error, arg) => [{type: "Tickets", id: arg.id}, {type: "BoardTickets", id: arg.id}]
 		}),
 		bulkEditTickets: builder.mutation<{message: string}, {ticketIds: Array<number>, priorityId: number, userIds: Array<number>, statusId: number}>({
@@ -208,7 +208,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					status_id: statusId,
 				}
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets"]
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships"]
 		}),
 		bulkWatchTickets: builder.mutation<{message: string}, {toAdd: boolean, ticketIds: Array<number>, userId: number}>({
 			query: ({ticketIds, userId, toAdd}) => ({
@@ -227,7 +227,7 @@ export const ticketApi = privateApi.injectEndpoints({
 				url: `${TICKET_URL}/${ticketId}`,
 				method: "DELETE",
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets"]
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships"]
 		}),
 		updateTicketStatus: builder.mutation<{message: string}, {ticketId: number, statusId: number}>({
 			query: ({ticketId, statusId}) => ({
@@ -235,7 +235,7 @@ export const ticketApi = privateApi.injectEndpoints({
 				method: "PATCH",
 				body: {status_id: statusId}
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets"]
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships"]
 		}),
 		getTicketRelationships: builder.query<ListResponse<TicketRelationship>, TicketEntityPaginationRequest>({
 			query: ({ticketId, params}) => ({

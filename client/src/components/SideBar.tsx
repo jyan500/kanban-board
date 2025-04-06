@@ -13,6 +13,7 @@ import { useGetUserProfileQuery } from "../services/private/userProfile"
 import { Avatar } from "./page-elements/Avatar"
 import { NavLink } from "./page-elements/NavLink"
 import { GradientContainer } from "./page-elements/GradientContainer"
+import { ORGANIZATION, USERS, ACCOUNT, BOARDS, HOME, TICKETS } from "../helpers/routes"
 
 export const SideBar = () => {
 	const sideBar = useAppSelector((state) => state.nav)
@@ -23,18 +24,18 @@ export const SideBar = () => {
 	
 	const defaultLinks = [
 		{
-			pathname: "/", text: "Dashboard",
+			pathname: HOME, text: "Dashboard",
 		},
 		{
-			pathname: "/boards", text: "Boards",
+			pathname: BOARDS, text: "Boards",
 		},
 		{
-			pathname: "/tickets", text: "Tickets",
+			pathname: TICKETS, text: "Tickets",
 		},
 	]
 	const accountLink = [
 		{
-			pathname: "/account", text: "Account",
+			pathname: ACCOUNT, text: "Account",
 		},
 	]
 	const [ links, setLinks ] = useState([
@@ -52,10 +53,10 @@ export const SideBar = () => {
 				...userProfile?.isActive ? defaultLinks : [],
 				...(isAdmin && userProfile?.isActive ? [
 				{
-					pathname: "/users", text: "Users"
+					pathname: USERS, text: "Users"
 				},
 				{
-					pathname: "/organization", text: "Organization"
+					pathname: ORGANIZATION, text: "Organization"
 				}
 				]: []),
 				...accountLink
@@ -78,7 +79,7 @@ export const SideBar = () => {
 						>
 					<IconClose color="white" className = "icon"/></button>	
 					<GradientContainer className = "tw-p-4 tw-flex tw-items-center tw-h-20 tw-rounded-sm">
-						<Logo isLandingPage={false}/>
+						<Logo isAuthLayout={false}/>
 					</GradientContainer>
 					<div className = "sidebar__container">
 						<div className = "sidebar__links">

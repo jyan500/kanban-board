@@ -68,7 +68,6 @@ export const Board = ({
 	    			animationType: "animation-in",
 	    			message: `Ticket status updated successfully!`,
 	    		}))
-				setDragTicketId(null)
 			}
 			catch (e){
 				dispatch(addToast({
@@ -79,6 +78,7 @@ export const Board = ({
 	    		}))
 			}
 		}
+		setDragTicketId(null)
 	}
 
 	return (
@@ -131,7 +131,7 @@ export const Board = ({
 										{ticket ? <Ticket 
 											ticket = {ticket}
 											dropdownAlignLeft={i === 0}
-											isLoading={dragTicketId === ticket.id && isUpdateTicketStatusLoading}
+											isLoading={dragTicketId != null && dragTicketId === ticket.id && isUpdateTicketStatusLoading}
 											statusesToDisplay={statusesToDisplay}
 											boardId={boardId}
 										/> : null}

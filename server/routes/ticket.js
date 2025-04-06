@@ -449,7 +449,7 @@ router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationR
 			ticket_id: req.params.ticketId,
 			user_id: req.user.id
 		})
-		const ticketCommentsToUsers = await parseMentions(req.body.comment, {ticket_comment_id: id[0]}, req.user.organization)
+		const ticketCommentsToUsers = await parseMentions(req.body.comment, {ticket_comment_id: id}, req.user.organization)
 		if (ticketCommentsToUsers.length){
 			await db("ticket_comments_to_users").insert(ticketCommentsToUsers)
 		}
