@@ -44,7 +44,7 @@ interface CarouselContentProps<T = {}> {
 const ImageCarouselContent = ({data}: CarouselContentProps<CarouselElement>) => {
 	return (
 		<>
-	        <img src={data.imageURL} alt={data.title} className="tw-relative tw-object-cover tw-w-full tw-h-[440px] tw-rounded-lg" />
+	        <img src={data.imageURL} alt={data.title} className="tw-relative tw-object-cover tw-w-full tw-h-[40vh] tw-rounded-lg" />
 	        {/* Adds linear gradient starting from mid to bottom of the image to provide more contrast with the white text*/}
         	<div className="tw-mx-2 tw-rounded-lg tw-absolute tw-inset-0 tw-bg-gradient-to-b tw-from-transparent tw-to-black tw-from-60%">
 		        <p className = "tw-absolute tw-bottom-4 tw-left-4 tw-text-2xl tw-font-bold tw-text-white">{data.title}</p>
