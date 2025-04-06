@@ -17,7 +17,7 @@ export const MultiCardCarousel = ({ index, items, itemsPerPage, itemContainerCla
     const [currentIndex, setCurrentIndex] = useState(index ?? 0)
 
     useEffect(() => {
-        if (index && index >= 0 && index <= items.length){
+        if (index != null && index <= items.length){
             setCurrentIndex(index)
         }
     }, [index])
