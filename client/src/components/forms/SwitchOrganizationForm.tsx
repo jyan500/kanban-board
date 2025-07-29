@@ -17,6 +17,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Avatar } from "../page-elements/Avatar"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
+import { HOME } from "../../helpers/routes"
 
 export const SwitchOrganizationForm = () => {
 	const dispatch = useAppDispatch()
@@ -34,7 +35,7 @@ export const SwitchOrganizationForm = () => {
 				const data = await switchUserOrganization({organizationId: switchOrgId}).unwrap()
 				dispatch(setCredentials(data))
 				dispatch(privateApi.util.resetApiState())
-	    		navigate("/", {state: {type: "success", alert: "You have switched organizations!"}, replace: true})
+	    		navigate(HOME, {state: {type: "success", alert: "You have switched organizations!"}, replace: true})
 			}
 			catch (e){
 				dispatch(addToast({
