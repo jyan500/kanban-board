@@ -10,6 +10,7 @@ import {
 	TICKET_BULK_EDIT_ASSIGNEES_URL ,
 	TICKET_RELATIONSHIP_URL,
 	TICKET_ACTIVITY_URL,
+	TICKET_SUMMARY_URL,
 } 
 from "../../helpers/urls" 
 import { CustomError, Mention, ListResponse, Ticket, TicketComment, TicketActivity, TicketRelationship, UserProfile } from "../../types/common" 
@@ -311,12 +312,19 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["TicketActivity", "Boards"]
 		}),
+		getTicketSummary: builder.query<{message: string}, {ticketId: number}>({
+			query: ({ticketId}) => ({
+				url: TICKET_SUMMARY_URL(ticketId),	
+				method: "GET",
+			})	
+		})
 	}),
 })
 
 export const { 
 	useGetTicketQuery, 
 	useGetTicketsQuery, 
+	useLazyGetTicketSummaryQuery,
 	useLazyGetTicketsQuery,
 	useAddTicketMutation, 
 	useBulkEditTicketsMutation,

@@ -13,6 +13,7 @@ import { MoveTicketFormModal } from "./secondary-modals/MoveTicketFormModal"
 import { SetColumnLimitModal } from "./secondary-modals/SetColumnLimitModal"
 import { AddTicketWatchersModal } from "./secondary-modals/AddTicketWatchersModal"
 import { TicketActivityModal } from "./secondary-modals/TicketActivityModal"
+import { TicketAIFeaturesModal } from "./secondary-modals/TicketAIFeaturesModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SECONDARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
 import { useScreenSize } from "../hooks/useScreenSize"
@@ -30,6 +31,7 @@ export const secondaryModalTypes = {
 	"ADD_TICKET_WATCHERS_MODAL": AddTicketWatchersModal,
 	"SET_COLUMN_LIMIT_MODAL": SetColumnLimitModal,
 	"TICKET_ACTIVITY_MODAL": TicketActivityModal,
+	"TICKET_AI_FEATURES_MODAL": TicketAIFeaturesModal,
 }
 
 export const secondaryModalClassNames = {

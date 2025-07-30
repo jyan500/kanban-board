@@ -7,6 +7,7 @@ import { IconMenu } from "./icons/IconMenu"
 import { IconEye } from "./icons/IconEye"
 import { BsThreeDots as MenuIcon } from "react-icons/bs";
 import { IconShare } from "./icons/IconShare"
+import { IconSparkle } from "./icons/IconSparkle"
 import { useClickOutside } from "../hooks/useClickOutside" 
 import { Ticket, Status, UserProfile } from "../types/common"
 import { TICKETS } from "../helpers/routes"
@@ -14,6 +15,7 @@ import { addToast } from "../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../helpers/constants"
+import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps} from "../slices/secondaryModalSlice"
 
 type Props = {
 	ticket: Ticket | null | undefined	
@@ -31,6 +33,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 	const watchMenuDropdownRef = useRef<HTMLDivElement>(null)
 	const buttonRef = useRef(null)
 	const watchButtonRef = useRef(null)
+	const sparkleButtonRef = useRef(null)
 	const dispatch = useAppDispatch()
 	const { width, height } = useScreenSize()
 
@@ -54,6 +57,18 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 
 	return (
 		<div className = "tw-pt-2 tw-pb-2 tw-flex tw-flex-row tw-justify-end tw-w-full">
+			<div className = "tw-relative tw-inline-block tw-text-left">
+				<button className = "hover:tw-opacity-60" ref = {sparkleButtonRef} onClick={(e) => {
+					e.preventDefault()	
+					dispatch(setSecondaryModalType("TICKET_AI_FEATURES_MODAL"))
+					dispatch(setSecondaryModalProps({ticketId: ticket?.id ?? ""}))
+					dispatch(toggleShowSecondaryModal(true))
+				}}>
+					<div className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
+						<IconSparkle color={"var(--bs-primary"} className = "tw-ml-3 --l-icon"/>
+					</div>
+				</button>
+			</div>
 			<div className = "tw-relative tw-inline-block tw-text-left">
 				<button className = "hover:tw-opacity-60" ref = {watchButtonRef} onClick={(e) => {
 					e.preventDefault()	

@@ -29,6 +29,7 @@ const { handleValidationResult }  = require("../middleware/validationMiddleware"
 const { retryTransaction, parseMentions, insertAndGetId } = require("../helpers/functions")
 const db = require("../db/db")
 const { DEFAULT_PER_PAGE } = require("../constants")
+const { GoogleGenAI } = require("@google/genai")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -750,6 +751,25 @@ router.patch("/:ticketId/status", validateTicketStatusUpdate, handleValidationRe
 	}
 	catch (err) {
 		console.error(`Error while updating ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+/* 
+Generates smart-summary of a ticket by concatenating all text content + ticket activity, and inputting
+into LLM model. 
+*/
+router.get("/:ticketId/summary", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const ai = new GoogleGenAI({})
+		const response = await ai.models.generateContent({
+			model: process.env.GEMINI_MODEL,
+			contents: "Explain how AI works in a few words"
+		})
+		res.json({message: response.text})
+	}
+	catch (err){
+		console.error(`Error while generating ticket summary: ${err.message}`)
 		next(err)
 	}
 })
