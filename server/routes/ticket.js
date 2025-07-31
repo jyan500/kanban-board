@@ -762,11 +762,39 @@ into LLM model.
 router.get("/:ticketId/summary", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const ai = new GoogleGenAI({})
+		const ticket = await db("tickets").where("id", req.params.ticketId).first()
+		const ticketComments = await db("ticket_comments").where("ticket_id", req.params.ticketId)
+		const status = await db("statuses").where("id", ticket.status_id).first()
+		const ticketAssignees = await db("tickets_to_users").where("ticket_id", req.params.ticketId).join("users", "users.id", "=", "tickets_to_users.user_id").select(
+			"users.first_name as firstName", "users.last_name as lastName"
+		)
+		const commenters = await db("ticket_comments").where("ticket_id", req.params.ticketId)
+		.join("ticket_comments_to_users", "ticket_comments_to_users.ticket_comment_id", "=", "ticket_comments.id")
+		.join("users", "users.id", "=", "ticket_comments_to_users.user_id")
+		.select("users.first_name as firstName", "users.last_name as lastName")
+
+		const pointsOfContact = [...ticketAssignees, ...commenters]
+
+		const prompt = `
+			You are an assistant helping a project manager understand the progress of a software development task.
+
+			Title: ${ticket.title}
+			Description: ${ticket.description}
+
+			Latest Comments:
+			${ticketComments.map((comment, i) => `(${i+1}) ${comment.comment}`).join('\n')}
+
+			Status: ${status?.name ?? ""}
+
+			Points of Contact: ${pointsOfContact.map((user, i) => `(${i+1}) ${user.firstName} ${user.lastName}`).join("\n")}
+
+			Generate a concise 2-3 sentence summary of this task. Include current progress, blockers (if any), points of contact, and next steps.
+		`
 		const response = await ai.models.generateContent({
 			model: process.env.GEMINI_MODEL,
-			contents: "Explain how AI works in a few words"
+			contents: prompt 
 		})
-		res.json({message: response.text})
+		res.json({message: response.text, timestamp: new Date()})
 	}
 	catch (err){
 		console.error(`Error while generating ticket summary: ${err.message}`)

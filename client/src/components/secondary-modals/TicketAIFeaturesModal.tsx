@@ -30,7 +30,7 @@ export const TicketAIFeaturesModal = ({ticketId}: TicketAIFeaturesModalProps) =>
 	// }
 
 	const onClick = () => {
-		trigger({ticketId: ticketId})
+		trigger({ticketId: ticketId}, true)
 	}
 
 	return (
@@ -45,9 +45,12 @@ export const TicketAIFeaturesModal = ({ticketId}: TicketAIFeaturesModalProps) =>
 						<LoadingButton onClick={(e) => onClick()} isLoading={isFetching} className = "button" text="Generate Summary"/>
 					</div>
 					{data && !isFetching ? (
-						<p>
-							{data.message}	
-						</p>
+						<div className = "tw-flex tw-flex-col tw-gap-x-2">
+							<p>
+								{data.message}	
+							</p>
+							<small>Generated on {new Date(data.timestamp).toLocaleString()}</small>
+						</div>
 					) : null}
 				</div>
 			</div>
