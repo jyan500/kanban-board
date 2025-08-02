@@ -18,6 +18,8 @@ import {
 import { IconContext } from "react-icons"
 import { IconClock } from "../icons/IconClock";
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { IconDocumentReport } from "../icons/IconDocumentReport"
+import { Typewriter } from "../page-elements/Typewriter"
 
 export type TicketAIFeaturesModalProps = {
 	ticketId: number
@@ -38,17 +40,18 @@ export const TicketAIFeaturesModal = ({ticketId}: TicketAIFeaturesModalProps) =>
 			<h2>New AI Features</h2>
 			<div className = "tw-flex tw-flex-row tw-justify-center tw-gap-x-2">
 				<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-p-2 tw-border tw-border-gray-300">
-					<h3>Ticket Smart Summary</h3>
-					<p>Don't want to read pages of comments to catch up? Try out the Ticket Smart Summary to receive
+					<div className = "tw-flex tw-items-start tw-flex-row tw-gap-x-1">
+						<IconDocumentReport className = "tw-w-6 tw-h-6"/>
+						<p className = "tw-font-bold tw-text-lg">Ticket Smart Summary</p>
+					</div>
+					<p className = "tw-medium">Don't want to read pages of comments to catch up? Try out the Ticket Smart Summary to receive
 						a summarized report of the ticket's progress! </p>
 					<div>
 						<LoadingButton onClick={(e) => onClick()} isLoading={isFetching} className = "button" text="Generate Summary"/>
 					</div>
 					{data && !isFetching ? (
 						<div className = "tw-flex tw-flex-col tw-gap-x-2">
-							<p>
-								{data.message}	
-							</p>
+							<Typewriter text={data.message} speed={15} className = "tw-text-sm tw-font-mono tw-text-gray-700"/>
 							<small>Generated on {new Date(data.timestamp).toLocaleString()}</small>
 						</div>
 					) : null}

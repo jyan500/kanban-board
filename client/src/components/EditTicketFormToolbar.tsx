@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from "uuid"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../helpers/constants"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps} from "../slices/secondaryModalSlice"
+import { Tooltip } from "./page-elements/Tooltip"
 
 type Props = {
 	ticket: Ticket | null | undefined	
@@ -57,7 +58,11 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 
 	return (
 		<div className = "tw-pt-2 tw-pb-2 tw-flex tw-flex-row tw-justify-end tw-w-full">
-			<div className = "tw-relative tw-inline-block tw-text-left">
+			<Tooltip className = "tw-w-36" handler={() => {
+				dispatch(setSecondaryModalType("TICKET_AI_FEATURES_MODAL"))
+				dispatch(setSecondaryModalProps({ticketId: ticket?.id ?? ""}))
+				dispatch(toggleShowSecondaryModal(true))
+			}} type="ai-features" text="Check out the new AI Features!" button={
 				<button className = "hover:tw-opacity-60" ref = {sparkleButtonRef} onClick={(e) => {
 					e.preventDefault()	
 					dispatch(setSecondaryModalType("TICKET_AI_FEATURES_MODAL"))
@@ -65,10 +70,10 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 					dispatch(toggleShowSecondaryModal(true))
 				}}>
 					<div className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
-						<IconSparkle color={"var(--bs-primary"} className = "tw-ml-3 --l-icon"/>
+						<IconSparkle className = "tw-text-light-purple tw-ml-3 --l-icon"/>
 					</div>
-				</button>
-			</div>
+				</button>	
+			}/>
 			<div className = "tw-relative tw-inline-block tw-text-left">
 				<button className = "hover:tw-opacity-60" ref = {watchButtonRef} onClick={(e) => {
 					e.preventDefault()	

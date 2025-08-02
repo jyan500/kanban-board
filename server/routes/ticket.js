@@ -778,7 +778,7 @@ router.get("/:ticketId/summary", validateGet, handleValidationResult, async (req
 		const prompt = `
 			You are an assistant helping a project manager understand the progress of a software development task.
 
-			Title: ${ticket.title}
+			Title: ${ticket.name}
 			Description: ${ticket.description}
 
 			Latest Comments:
@@ -790,6 +790,7 @@ router.get("/:ticketId/summary", validateGet, handleValidationResult, async (req
 
 			Generate a concise 2-3 sentence summary of this task. Include current progress, blockers (if any), points of contact, and next steps.
 		`
+		console.log("prompt: ", prompt)
 		const response = await ai.models.generateContent({
 			model: process.env.GEMINI_MODEL,
 			contents: prompt 
