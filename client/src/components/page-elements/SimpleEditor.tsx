@@ -28,7 +28,6 @@ export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, m
 			urlParams: 
 			mentionsUrlParams ? {...mentionsUrlParams, isMentions: true, query: searchTerm ?? ""} : {
 				forSelect: true, 
-				filterOnUserRole: true, 
 				query: searchTerm ?? "",
 				isMentions: true,
 			},
