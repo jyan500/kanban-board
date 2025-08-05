@@ -14,6 +14,7 @@ import { priorityReducer } from "./slices/prioritySlice"
 import { notificationTypeReducer } from "./slices/notificationTypeSlice"
 import { statusReducer } from "./slices/statusSlice" 
 import { modalReducer } from "./slices/modalSlice" 
+import { tooltipReducer } from "./slices/tooltipSlice"
 import { secondaryModalReducer } from "./slices/secondaryModalSlice" 
 import { userRoleReducer } from "./slices/userRoleSlice" 
 import { publicApi } from "./services/public"
@@ -56,7 +57,8 @@ export const store = configureStore({
 		"userRole": userRoleReducer,
 		"ticketRelationshipType": ticketRelationshipTypeReducer,
 		"secondaryModal": secondaryModalReducer,
-		"notificationType": notificationTypeReducer
+		"notificationType": notificationTypeReducer,
+		"tooltip": tooltipReducer
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]

@@ -29,6 +29,7 @@ const { handleValidationResult }  = require("../middleware/validationMiddleware"
 const { retryTransaction, parseMentions, insertAndGetId } = require("../helpers/functions")
 const db = require("../db/db")
 const { DEFAULT_PER_PAGE } = require("../constants")
+const { GoogleGenAI } = require("@google/genai")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -750,6 +751,58 @@ router.patch("/:ticketId/status", validateTicketStatusUpdate, handleValidationRe
 	}
 	catch (err) {
 		console.error(`Error while updating ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+/* 
+Generates smart-summary of a ticket by concatenating all text content + ticket activity, and inputting
+into LLM model. 
+*/
+router.get("/:ticketId/summary", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const ai = new GoogleGenAI({})
+		const ticket = await db("tickets").where("id", req.params.ticketId).first()
+		const ticketComments = await db("ticket_comments").where("ticket_id", req.params.ticketId)
+		const status = await db("statuses").where("id", ticket.status_id).first()
+		const ticketAssignees = await db("tickets_to_users").where("ticket_id", req.params.ticketId).join("users", "users.id", "=", "tickets_to_users.user_id").select(
+			"users.first_name as firstName", "users.last_name as lastName"
+		)
+		const commenters = await db("ticket_comments").where("ticket_id", req.params.ticketId)
+		.join("ticket_comments_to_users", "ticket_comments_to_users.ticket_comment_id", "=", "ticket_comments.id")
+		.join("users", "users.id", "=", "ticket_comments_to_users.user_id")
+		.select("users.first_name as firstName", "users.last_name as lastName")
+
+		const pointsOfContact = [...ticketAssignees, ...commenters]
+
+		const prompt = `
+			You are an assistant helping a project manager understand the progress of a software development task.
+
+			Title: ${ticket.name}
+			Description: ${ticket.description}
+
+			Latest Comments:
+			${ticketComments.map((comment, i) => `(${i+1}) ${comment.comment} Timestamp: ${new Date(comment.updatedAt)}`).join('\n')}
+
+			Status: ${status?.name ?? ""}
+
+			Points of Contact: ${pointsOfContact.map((user, i) => `(${i+1}) ${user.firstName} ${user.lastName}`).join("\n")}
+
+			Last Updated: ${new Date(ticket.updatedAt)}
+
+			Generate a concise 2-3 sentence summary of this task. Include current progress, blockers (if any), points of contact, and next steps.
+			The status of the ticket listed next to "Status: " above should take precedence over any statuses mentioned in the "Latest Comments: ".
+
+			Please take into account the order of the comments based on timestamp as well as when the ticket is last updated.
+		`
+		const response = await ai.models.generateContent({
+			model: process.env.GEMINI_MODEL,
+			contents: prompt 
+		})
+		res.json({message: response.text, timestamp: new Date()})
+	}
+	catch (err){
+		console.error(`Error while generating ticket summary: ${err.message}`)
 		next(err)
 	}
 })

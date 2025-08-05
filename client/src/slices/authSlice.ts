@@ -4,7 +4,7 @@ import type { RootState } from '../store'
 
 type AuthState = {
     token: string | null,
-    isTemp: boolean
+    isTemp: boolean,
 }
 
 const initialState: AuthState = {

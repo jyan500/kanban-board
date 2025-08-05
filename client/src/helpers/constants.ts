@@ -39,6 +39,7 @@ export const TAG_TYPES = [
 	"Tickets",
 	"TicketComments",
 	"TicketAssignees",
+    "TicketSummary",
 	"BoardTickets",
 	"Statuses",
 	"BoardStatuses",

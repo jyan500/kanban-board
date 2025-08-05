@@ -31,6 +31,7 @@ export const BOARD_TICKET_URL = (boardId: number | string, ticketId: number | st
 export const BOARD_STATUS_URL = (boardId: number | string, statusId: number | string) => `/${API_VERSION}/board/${boardId}/status` + (statusId !== "" ? `/${statusId}` : "")
 export const BOARD_BULK_EDIT_STATUS_URL = (boardId: number | string) => `/${API_VERSION}/board/${boardId}/status/bulk-edit`
 export const TICKET_ASSIGNEES_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/user/`
+export const TICKET_SUMMARY_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/summary/`
 export const TICKET_BULK_EDIT_ASSIGNEES_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/user/bulk-edit`
 export const TICKET_ASSIGNEE_URL = (ticketId: number | string, userId: number | string) => `/${API_VERSION}/ticket/${ticketId}/user/${userId}`
 export const TICKET_COMMENT_URL = (ticketId: number | string, commentId: number | string) => `/${API_VERSION}/ticket/${ticketId}/comment` + (commentId !== "" ? `/${commentId}` : "")
