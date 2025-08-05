@@ -31,8 +31,6 @@ export const TicketAIFeaturesModal = ({ticketId}: TicketAIFeaturesModalProps) =>
 	const cachedResult = useAppSelector((state) => {
         return ticketApi.endpoints.getTicketSummary.select({ticketId: ticketId})(state)
     })
-	// const onSubmit = async (values: FormValues) => {
-	// }
 
 	const onClick = () => {
 		trigger({ticketId: ticketId}, true)

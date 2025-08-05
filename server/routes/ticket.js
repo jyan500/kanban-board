@@ -795,7 +795,6 @@ router.get("/:ticketId/summary", validateGet, handleValidationResult, async (req
 
 			Please take into account the order of the comments based on timestamp as well as when the ticket is last updated.
 		`
-		console.log("prompt: ", prompt)
 		const response = await ai.models.generateContent({
 			model: process.env.GEMINI_MODEL,
 			contents: prompt 
