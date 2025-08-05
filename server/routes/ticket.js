@@ -782,13 +782,18 @@ router.get("/:ticketId/summary", validateGet, handleValidationResult, async (req
 			Description: ${ticket.description}
 
 			Latest Comments:
-			${ticketComments.map((comment, i) => `(${i+1}) ${comment.comment}`).join('\n')}
+			${ticketComments.map((comment, i) => `(${i+1}) ${comment.comment} Timestamp: ${new Date(comment.updatedAt)}`).join('\n')}
 
 			Status: ${status?.name ?? ""}
 
 			Points of Contact: ${pointsOfContact.map((user, i) => `(${i+1}) ${user.firstName} ${user.lastName}`).join("\n")}
 
+			Last Updated: ${new Date(ticket.updatedAt)}
+
 			Generate a concise 2-3 sentence summary of this task. Include current progress, blockers (if any), points of contact, and next steps.
+			The status of the ticket listed next to "Status: " above should take precedence over any statuses mentioned in the "Latest Comments: ".
+
+			Please take into account the order of the comments based on timestamp as well as when the ticket is last updated.
 		`
 		console.log("prompt: ", prompt)
 		const response = await ai.models.generateContent({
