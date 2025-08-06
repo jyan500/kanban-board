@@ -13,6 +13,8 @@ import { TicketDisplay } from "./pages/tickets/TicketDisplay"
 import { Ticket as TicketPage } from "./pages/tickets/Ticket"
 import { Boards } from "./pages/boards/Boards"
 import { Board } from "./pages/boards/Board" 
+import { BoardChart } from "./pages/boards/BoardChart"
+import { BoardTable } from "./pages/boards/BoardTable"
 import { OrganizationDisplay } from "./pages/organization/OrganizationDisplay"
 import { Organization } from "./pages/organization/Organization"
 import { OrganizationAddEditStatuses } from "./pages/organization/OrganizationAddEditStatuses"
@@ -58,6 +60,8 @@ import {
 	BOARD_ID, 
 	TICKETS, 
 	TICKET_ID, 
+	TABLE,
+	CHART,
 	USER, 
 	USERS, 
 	TEMP,
@@ -200,6 +204,16 @@ const router = createBrowserRouter([
 									<ScrollRestoration/>
 									<Board/>
 								</>,
+								children: [
+									{
+										path: CHART,
+										element: <BoardChart/> 
+									},
+									{
+										path: TABLE,
+										element: <BoardTable/>
+									}
+								]
 							},
 						],
 					},
