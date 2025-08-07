@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom" 
+import { useParams, useNavigate, Outlet } from "react-router-dom" 
 import { 
 	useGetBoardQuery, 
 	useGetBoardTicketsQuery, 
@@ -17,6 +17,7 @@ import { Banner } from "../../components/page-elements/Banner"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPlaceholder"
 import { BoardPlaceholder } from "../../components/placeholders/BoardPlaceholder"
+import { FilterButton } from "../../components/page-elements/FilterButton"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
@@ -63,6 +64,22 @@ export const Board = () => {
 			{ !isGetBoardLoading && !isGetBoardTicketsLoading && !isGetBoardStatusesLoading ? 
 				<>
 					<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>
+					<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
+						<FilterButton isActive={true} onClick={(e) => {
+						}}>
+							Board
+						</FilterButton>
+						<FilterButton 
+							isActive={false} onClick={(e) => {
+						}}>
+							Chart
+						</FilterButton>
+						<FilterButton 
+							isActive={false} onClick={(e) => {
+						}}>
+							Table
+						</FilterButton>
+					</div>	
 					{boardTicketData?.data?.length === boardData?.[0]?.ticketLimit ? (
 						<Banner type = "warning">
 							<Link to={`${TICKETS}?board=${boardData?.[0]?.id}`} className = "hover:tw-opacity-60 tw-font-bold">
@@ -71,8 +88,9 @@ export const Board = () => {
 							</Link>
 						</Banner>
 					) : null}
-					<KanbanBoard
-					/> 
+				{/*	<KanbanBoard
+					/> */}
+					<Outlet/>
 				</>
 				: 
 				<LoadingSkeleton width = "tw-flex tw-flex-col tw-gap-y-4 tw-w-full" height={"tw-h-[1000px]"}>

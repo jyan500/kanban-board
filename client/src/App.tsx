@@ -15,6 +15,7 @@ import { Boards } from "./pages/boards/Boards"
 import { Board } from "./pages/boards/Board" 
 import { BoardChart } from "./pages/boards/BoardChart"
 import { BoardTable } from "./pages/boards/BoardTable"
+import { Kanban } from "./pages/boards/Kanban"
 import { OrganizationDisplay } from "./pages/organization/OrganizationDisplay"
 import { Organization } from "./pages/organization/Organization"
 import { OrganizationAddEditStatuses } from "./pages/organization/OrganizationAddEditStatuses"
@@ -205,6 +206,10 @@ const router = createBrowserRouter([
 									<Board/>
 								</>,
 								children: [
+									{
+										index: true,
+										element: <Kanban/>
+									},
 									{
 										path: CHART,
 										element: <BoardChart/> 
