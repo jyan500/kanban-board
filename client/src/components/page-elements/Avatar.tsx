@@ -31,7 +31,7 @@ export const Avatar = ({size="s", className, imageUrl, isOrg}: Props) => {
 	}
 	return ( 
 		<>
-			{imageUrl ? <img className = {cName} src={imageUrl}/> : defaultIcon()}
+			{imageUrl ? <img className = {`${cName} tw-object-cover`} src={imageUrl}/> : defaultIcon()}
 		</>
 	)
 }

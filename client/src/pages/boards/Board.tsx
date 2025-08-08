@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { useParams, useNavigate, Outlet } from "react-router-dom" 
+import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom" 
 import { 
 	useGetBoardQuery, 
 	useGetBoardTicketsQuery, 
@@ -12,7 +12,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ArrowButton } from "../../components/page-elements/ArrowButton"
 import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { Link } from "react-router-dom"
-import { TICKETS } from "../../helpers/routes"
+import { SCHEDULE, TABLE, BOARDS, TICKETS } from "../../helpers/routes"
 import { Banner } from "../../components/page-elements/Banner"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPlaceholder"
@@ -27,6 +27,7 @@ export const Board = () => {
 	const {data: boardData, isLoading: isGetBoardLoading, isError: isGetBoardError } = useGetBoardQuery(boardId ? {id: boardId, urlParams: {assignees: true}} : skipToken)
 	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError } = useGetBoardTicketsQuery(boardId ? {id: boardId, urlParams: {"skipPaginate": true, "includeAssignees": true, "includeRelationshipInfo": true, "limit": true}} : skipToken)
 	const {data: statusData, isLoading: isGetBoardStatusesLoading, isError: isGetBoardStatusesError } = useGetBoardStatusesQuery(boardId ? {id: boardId, isActive: true} : skipToken)
+	const { pathname } = useLocation()
 	const board = useAppSelector((state) => state.board)
 
 	// only reset the "group by" on the toolbar if we're navigating to this page
@@ -52,6 +53,20 @@ export const Board = () => {
 		}
 	}, [boardData, statusData, boardTicketData])
 
+	const boardPath = `${BOARDS}/${boardId}`
+
+	const defaultLinks = [
+		{
+			pathname: `${boardPath}`, text: "Board",
+		},
+		{
+			pathname: `${boardPath}/${SCHEDULE}`, text: "Schedule",
+		},
+		{
+			pathname: `${boardPath}/${TABLE}`, text: "Table",
+		},
+	]
+
 
 	return (
 		<div className = "tw-space-y-2">
@@ -65,20 +80,17 @@ export const Board = () => {
 				<>
 					<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>
 					<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
-						<FilterButton isActive={true} onClick={(e) => {
-						}}>
-							Board
-						</FilterButton>
-						<FilterButton 
-							isActive={false} onClick={(e) => {
-						}}>
-							Chart
-						</FilterButton>
-						<FilterButton 
-							isActive={false} onClick={(e) => {
-						}}>
-							Table
-						</FilterButton>
+						{
+							defaultLinks.map((link: {pathname: string, text: string}) => {
+							 	return (
+							 		<FilterButton isActive={link.pathname === pathname} onClick={(e) => {
+							 			navigate(link.pathname)
+							 		}}>
+							 			{link.text}
+							 		</FilterButton>
+								)
+							})
+						}
 					</div>	
 					{boardTicketData?.data?.length === boardData?.[0]?.ticketLimit ? (
 						<Banner type = "warning">
@@ -88,8 +100,6 @@ export const Board = () => {
 							</Link>
 						</Banner>
 					) : null}
-				{/*	<KanbanBoard
-					/> */}
 					<Outlet/>
 				</>
 				: 

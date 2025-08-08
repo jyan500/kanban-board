@@ -13,7 +13,7 @@ import { TicketDisplay } from "./pages/tickets/TicketDisplay"
 import { Ticket as TicketPage } from "./pages/tickets/Ticket"
 import { Boards } from "./pages/boards/Boards"
 import { Board } from "./pages/boards/Board" 
-import { BoardChart } from "./pages/boards/BoardChart"
+import { BoardSchedule } from "./pages/boards/BoardSchedule"
 import { BoardTable } from "./pages/boards/BoardTable"
 import { Kanban } from "./pages/boards/Kanban"
 import { OrganizationDisplay } from "./pages/organization/OrganizationDisplay"
@@ -62,7 +62,7 @@ import {
 	TICKETS, 
 	TICKET_ID, 
 	TABLE,
-	CHART,
+	SCHEDULE,
 	USER, 
 	USERS, 
 	TEMP,
@@ -211,8 +211,8 @@ const router = createBrowserRouter([
 										element: <Kanban/>
 									},
 									{
-										path: CHART,
-										element: <BoardChart/> 
+										path: SCHEDULE,
+										element: <BoardSchedule/> 
 									},
 									{
 										path: TABLE,
