@@ -103,6 +103,7 @@ export interface Ticket {
 	hasRelationship?: boolean
 	epicParentTickets?: Array<{id: number, name: string}>
 	assignees?: Array<Pick<UserProfile, "id" | "firstName" | "lastName">>
+	timeSpent?: number
 }
 
 export interface TicketComment {

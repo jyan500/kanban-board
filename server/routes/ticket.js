@@ -117,6 +117,7 @@ router.get("/", async (req, res, next) => {
 					queryBuilder.orderBy("tickets.created_at", req.query.order)
 				}	
 			}
+
 		})
 		// hack to keep the tickets paginate data format into {data, pagination},
 		// which finds the total amount of data and 
@@ -144,6 +145,17 @@ router.get("/", async (req, res, next) => {
 							firstName: assignee.firstName,
 							lastName: assignee.lastName
 						}))
+					}					
+				})
+			)}
+		}
+		if (req.query.includeTimeSpent){
+			tickets = {...tickets, data: await Promise.all(
+				tickets.data.map(async (ticket) => {
+					const timeSpent = await db("ticket_activity").where("ticket_id", ticket.id).sum("minutes_spent as timeSpent").first()
+					return {
+						...ticket,
+						timeSpent: timeSpent
 					}					
 				})
 			)}

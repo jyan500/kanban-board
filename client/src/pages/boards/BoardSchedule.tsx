@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { Scheduler, SchedulerData, SchedulerProjectData } from "@bitnoi.se/react-scheduler";
 import { useGetUserProfilesQuery } from "../../services/private/userProfile"
+import { toggleShowModal, setModalType } from "../../slices/modalSlice"
+import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Ticket, UserProfile } from "../../types/common"
 import { format, toDate, isWithinInterval, isBefore, isAfter } from "date-fns"
@@ -19,11 +21,13 @@ type SchedulerRow = {
 };
 
 export const BoardSchedule = () => {
+	const dispatch = useAppDispatch()
 	const [ filterButtonState, setFilterButtonState ] = useState(0)
 	const { board, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
 	const [ scheduleData, setScheduleData ] = useState<SchedulerData>([])
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { statuses } = useAppSelector((state) => state.status)
+	const completeStatusId = statuses.find((status) => status.name === "Complete")?.id ?? 0
 	const { priorities } = useAppSelector((state) => state.priority)
 	const [ range, setRange ] = useState({
 		startDate: new Date(),
@@ -69,8 +73,9 @@ export const BoardSchedule = () => {
 			const lastName = groupedTickets[0]?.assignees?.[0].lastName
 			const ticketData: Array<SchedulerProjectData> = []
 			groupedTickets.forEach((obj: Ticket) => {
-				if (obj.dueDate){
+				if (obj.dueDate && obj.statusId !== completeStatusId){
 					const priority = priorities.find((priority) => priority.id === obj.priorityId)?.name ?? ""
+					/* occupancy is in seconds, so convert from minutes to seconds */
 					const data = {
 						id: obj.id.toString(),
 						title: obj.name,
@@ -104,7 +109,9 @@ export const BoardSchedule = () => {
 				isLoading={isFetching}
 				onRangeChange={handleRangeChange}
 				onTileClick={(clickedResource) => {
-					console.log(clickedResource)
+					dispatch(toggleShowModal(true))
+					dispatch(setModalType("EDIT_TICKET_FORM"))
+					dispatch(selectCurrentTicketId(Number(clickedResource.id)))
 				}}
 				onFilterData={() => {
 					setFilterButtonState(1)	
@@ -114,6 +121,7 @@ export const BoardSchedule = () => {
 				}}
 				config={{
 					zoom: 0,	
+					showTooltip: false,
 					filterButtonState,
 				}}
 			/>

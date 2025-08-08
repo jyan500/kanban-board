@@ -322,6 +322,17 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 				))
 			}
 		}
+		if (req.query.includeTimeSpent){
+			tickets = {...tickets, data: await Promise.all(
+				tickets.data.map(async (ticket) => {
+					const timeSpent = await db("ticket_activity").where("ticket_id", ticket.id).sum("minutes_spent as timeSpent").first()
+					return {
+						...ticket,
+						timeSpent: !isNaN(Number(timeSpent.timeSpent)) ? Number(timeSpent.timeSpent) : 0
+					}					
+				})
+			)}
+		}
 		res.json(tickets)
 
 	}	
