@@ -18,7 +18,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { SECONDARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
 import { useScreenSize } from "../hooks/useScreenSize"
 
-const avoidAsyncSelectMenuOverflow =  {"modal-container": "tw-top-[50%]", "modal": "!tw-overflow-visible tw-min-h-96"}
+export const avoidAsyncSelectMenuOverflow =  {"modal-container": "tw-top-[50%]", "modal": "!tw-overflow-visible tw-min-h-96"}
 
 export const secondaryModalTypes = {
 	"SHOW_DELETE_COMMENT_WARNING": DeleteCommentWarning,

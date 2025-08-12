@@ -241,6 +241,24 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.limit){
 				queryBuilder.limit(board.ticket_limit)
 			}
+			if (req.query.assignee){
+				queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id").where("tickets_to_users.user_id", req.query.assignee)
+			}
+			if (req.query.ticketTypeId) {
+				queryBuilder.where("tickets.ticket_type_id", req.query.ticketTypeId)
+			}
+			if (req.query.priorityId){
+				queryBuilder.where("tickets.priority_id", req.query.priorityId)
+			}
+			if (req.query.statusId){
+				queryBuilder.where("tickets.status_id", req.query.statusId)
+			}
+			if (req.query.startDate){
+				queryBuilder.whereRaw("DATE(created_at) >= ?", [req.query.startDate])
+			}
+			if (req.query.endDate){
+				queryBuilder.whereRaw("DATE(due_date) <= ?", [req.query.endDate])
+			}	
 		})
 		.select(
 			"tickets.id as id",

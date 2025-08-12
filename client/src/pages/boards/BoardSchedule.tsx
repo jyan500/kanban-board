@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { Scheduler, SchedulerData, SchedulerProjectData } from "@bitnoi.se/react-scheduler";
 import { useGetUserProfilesQuery } from "../../services/private/userProfile"
+import { useGetBoardTicketsQuery } from "../../services/private/board"
 import { toggleShowModal, setModalType } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -23,8 +24,18 @@ type SchedulerRow = {
 export const BoardSchedule = () => {
 	const dispatch = useAppDispatch()
 	const [ filterButtonState, setFilterButtonState ] = useState(0)
-	const { board, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
+	const { filters, data } = useAppSelector((state) => state.boardSchedule)
+	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
+	const { data: boardTicketData, isFetching: isBoardTicketFetching, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo ? {id: boardInfo.id, urlParams: {
+		...filters,
+		"skipPaginate": true, 
+		"includeAssignees": true, 
+		"includeRelationshipInfo": true, 
+		"limit": true,
+	}} : skipToken)
 	const [ scheduleData, setScheduleData ] = useState<SchedulerData>([])
+	const [ filteredScheduleData, setFilteredScheduleData ] = useState<SchedulerData>([])
+	const [ filterUser, setFilterUser ] = useState<string>("")
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { statuses } = useAppSelector((state) => state.status)
 	const completeStatusId = statuses.find((status) => status.name === "Complete")?.id ?? 0
@@ -53,7 +64,8 @@ export const BoardSchedule = () => {
 
 	useEffect(() => {
 		if (!isFetching && users){
-			setScheduleData(parseTicketDataForScheduler())
+			const parsedData = parseTicketDataForScheduler()
+			setScheduleData(parsedData)
 		}
 	}, [isFetching, users])
 
@@ -108,6 +120,8 @@ export const BoardSchedule = () => {
 				data={scheduleData}
 				isLoading={isFetching}
 				onRangeChange={handleRangeChange}
+				onItemClick={(leftItem) => {
+				}}
 				onTileClick={(clickedResource) => {
 					dispatch(toggleShowModal(true))
 					dispatch(setModalType("EDIT_TICKET_FORM"))
@@ -115,6 +129,8 @@ export const BoardSchedule = () => {
 				}}
 				onFilterData={() => {
 					setFilterButtonState(1)	
+					dispatch(toggleShowModal(true))
+					dispatch(setModalType("BOARD_SCHEDULE_FILTER_MODAL"))
 				}}
 				onClearFilterData={() => {
 					setFilterButtonState(0)	
