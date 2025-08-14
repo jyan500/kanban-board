@@ -5,8 +5,10 @@ import { Controller, useForm, FormProvider } from "react-hook-form"
 import { AsyncSelect, LoadOptionsType } from "../AsyncSelect"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { LoadingButton } from "../page-elements/LoadingButton"
-import { setFilters } from "../../slices/boardScheduleSlice"
+import { setFilters, setFilterButtonState } from "../../slices/boardScheduleSlice"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
+import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
+import { skipToken } from '@reduxjs/toolkit/query/react'
 
 export type FormValues = {
 	priorityId: number | null
@@ -35,14 +37,40 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 		startDate: null,
 		endDate: null,
 	}
+	const [ trigger, {data, isLoading, isFetching}] = useLazyGetUserProfilesQuery()
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
 	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = methods
 
+	useEffect(() => {
+		if (filters){
+			const { ticketTypeId, priorityId, statusId, assignee, startDate, endDate } = filters
+			reset({
+				...defaultForm,
+				ticketTypeId, 
+				priorityId,
+				statusId,
+				startDate,
+				endDate
+			})
+			if (assignee){
+				trigger({userIds: [assignee]})
+			}
+		}
+	}, [])
+
+	useEffect(() => {
+		if (!isFetching && data?.data?.length){
+			const user = data?.data?.[0]
+			if (user){
+				setValue("assignee", {value: user.id.toString(), label: user.firstName + " " + user.lastName})
+			}
+		}
+	}, [isFetching, data])
+
 	const onSubmit = async (values: FormValues) => {
-		console.log("assignee value: ", Number(values.assignee.value))
 		dispatch(setFilters({
 			ticketTypeId: values.ticketTypeId !== 0 ? values.ticketTypeId : null,
 			priorityId: values.priorityId !== 0 ? values.priorityId : null,
@@ -51,6 +79,7 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 			endDate: values.endDate,
 			assignee: values.assignee.value !== "" ? Number(values.assignee.value) : null
 		}))
+		dispatch(setFilterButtonState(1))
 		dispatch(toggleShowModal(false))
 		dispatch(setModalProps({}))
 		dispatch(setModalType(undefined))
@@ -119,6 +148,7 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 						<button onClick={(e) => {
 							e.preventDefault()
 							reset(defaultForm)
+							dispatch(setFilterButtonState(0))
 						}} className = "button --secondary">Clear Filters</button>	
 					</div>
 				</div>

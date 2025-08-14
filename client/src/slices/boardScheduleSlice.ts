@@ -15,13 +15,11 @@ export interface BoardScheduleFilters {
 }
 
 interface BoardScheduleState {
-	data: SchedulerData
 	filters: BoardScheduleFilters
 	filterButtonState: number
 }
 
 const initialState: BoardScheduleState = {
-	data: [],
 	filters: {
 		ticketTypeId: null,
 		statusId: null,
@@ -37,9 +35,6 @@ export const boardScheduleSlice = createSlice({
 	name: "boardSchedule",
 	initialState,
 	reducers: {
-		setData(state, action: PayloadAction<SchedulerData>){
-			state.data = action.payload
-		},
 		setFilters(state, action: PayloadAction<BoardScheduleFilters>){
 			state.filters = action.payload	
 		},
@@ -55,7 +50,6 @@ export const boardScheduleSlice = createSlice({
 })
 
 export const { 
-	setData,
 	setFilters,
 	setFilterButtonState,
 } = boardScheduleSlice.actions

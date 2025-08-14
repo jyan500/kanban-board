@@ -9,7 +9,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Ticket, UserProfile } from "../../types/common"
 import { format, toDate, isWithinInterval, isBefore, isAfter } from "date-fns"
 import { colorMap } from "../../components/Ticket"
-import { BoardScheduleFilters } from "../../slices/boardScheduleSlice"
+import { BoardScheduleFilters, setFilterButtonState, setFilters } from "../../slices/boardScheduleSlice"
 import "@bitnoi.se/react-scheduler/dist/style.css";
 
 type SchedulerRow = {
@@ -24,8 +24,7 @@ type SchedulerRow = {
 
 export const BoardSchedule = () => {
 	const dispatch = useAppDispatch()
-	const [ filterButtonState, setFilterButtonState ] = useState(0)
-	const { filters, data } = useAppSelector((state) => state.boardSchedule)
+	const { filters, filterButtonState } = useAppSelector((state) => state.boardSchedule)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { statuses } = useAppSelector((state) => state.status)
@@ -43,6 +42,7 @@ export const BoardSchedule = () => {
 		...(filters.statusId !== completeStatusId ? {"excludeStatusId": completeStatusId} : {}),
 		"skipPaginate": true, 
 		"includeAssignees": true, 
+		"requireDueDate": true,
 		"includeRelationshipInfo": true, 
 		"limit": true,
 	}} : skipToken)
@@ -103,21 +103,19 @@ export const BoardSchedule = () => {
 			const lastName = groupedTickets[0]?.assignees?.[0].lastName
 			const ticketData: Array<SchedulerProjectData> = []
 			groupedTickets.forEach((obj: Ticket) => {
-				if (obj.dueDate){
-					const priority = priorities.find((priority) => priority.id === obj.priorityId)?.name ?? ""
-					/* occupancy is in seconds, so convert from minutes to seconds */
-					const data = {
-						id: obj.id.toString(),
-						title: obj.name,
-						occupancy: 0,
-						startDate: new Date(obj.createdAt),
-						endDate: new Date(obj.dueDate),
-						subtitle: ticketTypes.find((ticketType) => ticketType.id === obj.ticketTypeId)?.name ?? "",
-						description: statuses.find((status) => status.id === obj.statusId)?.name ?? "",
-						bgColor: priority !== "" ? colorMap[priority] : "",
-					}
-					ticketData.push(data)
+				const priority = priorities.find((priority) => priority.id === obj.priorityId)?.name ?? ""
+				/* occupancy is in seconds, so convert from minutes to seconds */
+				const data = {
+					id: obj.id.toString(),
+					title: obj.name,
+					occupancy: 0,
+					startDate: new Date(obj.createdAt),
+					endDate: new Date(obj.dueDate),
+					subtitle: ticketTypes.find((ticketType) => ticketType.id === obj.ticketTypeId)?.name ?? "",
+					description: statuses.find((status) => status.id === obj.statusId)?.name ?? "",
+					bgColor: priority !== "" ? colorMap[priority] : "",
 				}
+				ticketData.push(data)
 			})
 			schedulerData.push({
 				id: id,
@@ -146,16 +144,15 @@ export const BoardSchedule = () => {
 					dispatch(selectCurrentTicketId(Number(clickedResource.id)))
 				}}
 				onFilterData={() => {
-					setFilterButtonState(1)	
 					dispatch(toggleShowModal(true))
 					dispatch(setModalProps({boardId: boardInfo?.id ?? 0}))
 					dispatch(setModalType("BOARD_SCHEDULE_FILTER_MODAL"))
 				}}
 				onClearFilterData={() => {
-					setFilterButtonState(0)	
 				}}
 				config={{
-					zoom: 0,	
+					// default to show days display
+					zoom: 1,	
 					showTooltip: false,
 					filterButtonState,
 				}}
