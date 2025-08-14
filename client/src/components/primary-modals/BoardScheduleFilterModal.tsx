@@ -79,7 +79,10 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 			endDate: values.endDate,
 			assignee: values.assignee.value !== "" ? Number(values.assignee.value) : null
 		}))
-		dispatch(setFilterButtonState(1))
+		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
+		const { assignee, ...assigneeExcluded} = values
+		const filtersApplied = !(Object.values(assigneeExcluded).every((val) => val == null)) || values.assignee.value !== ""
+		dispatch(setFilterButtonState(filtersApplied ? 1 : 0))
 		dispatch(toggleShowModal(false))
 		dispatch(setModalProps({}))
 		dispatch(setModalType(undefined))
