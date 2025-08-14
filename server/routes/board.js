@@ -253,11 +253,14 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.statusId){
 				queryBuilder.where("tickets.status_id", req.query.statusId)
 			}
+			if (req.query.excludeStatusId){
+				queryBuilder.where("tickets.status_id", "!=", req.query.excludeStatusId)
+			}
 			if (req.query.startDate){
-				queryBuilder.whereRaw("DATE(created_at) >= ?", [req.query.startDate])
+				queryBuilder.whereRaw("DATE(tickets.created_at) >= ?", [req.query.startDate])
 			}
 			if (req.query.endDate){
-				queryBuilder.whereRaw("DATE(due_date) <= ?", [req.query.endDate])
+				queryBuilder.whereRaw("DATE(tickets.due_date) <= ?", [req.query.endDate])
 			}	
 		})
 		.select(

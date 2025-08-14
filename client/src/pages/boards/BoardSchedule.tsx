@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { Scheduler, SchedulerData, SchedulerProjectData } from "@bitnoi.se/react-scheduler";
-import { useGetUserProfilesQuery } from "../../services/private/userProfile"
+import { useGetUserProfilesQuery, useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
 import { useGetBoardTicketsQuery } from "../../services/private/board"
-import { toggleShowModal, setModalType } from "../../slices/modalSlice"
+import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Ticket, UserProfile } from "../../types/common"
 import { format, toDate, isWithinInterval, isBefore, isAfter } from "date-fns"
 import { colorMap } from "../../components/Ticket"
+import { BoardScheduleFilters } from "../../slices/boardScheduleSlice"
 import "@bitnoi.se/react-scheduler/dist/style.css";
 
 type SchedulerRow = {
@@ -26,8 +27,20 @@ export const BoardSchedule = () => {
 	const [ filterButtonState, setFilterButtonState ] = useState(0)
 	const { filters, data } = useAppSelector((state) => state.boardSchedule)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
+	const { ticketTypes } = useAppSelector((state) => state.ticketType)
+	const { statuses } = useAppSelector((state) => state.status)
+	const { priorities } = useAppSelector((state) => state.priority)
+	const completeStatusId = statuses.find((status) => status.name === "Complete")?.id ?? 0
 	const { data: boardTicketData, isFetching: isBoardTicketFetching, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo ? {id: boardInfo.id, urlParams: {
-		...filters,
+		// only include the filters that aren't null
+		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
+			const typedKey = key as keyof BoardScheduleFilters
+			if (filters[typedKey] != null){
+				acc[typedKey] = filters[typedKey]
+			}
+			return acc	
+		}, {} as Record<string, any>)),
+		...(filters.statusId !== completeStatusId ? {"excludeStatusId": completeStatusId} : {}),
 		"skipPaginate": true, 
 		"includeAssignees": true, 
 		"includeRelationshipInfo": true, 
@@ -36,17 +49,15 @@ export const BoardSchedule = () => {
 	const [ scheduleData, setScheduleData ] = useState<SchedulerData>([])
 	const [ filteredScheduleData, setFilteredScheduleData ] = useState<SchedulerData>([])
 	const [ filterUser, setFilterUser ] = useState<string>("")
-	const { ticketTypes } = useAppSelector((state) => state.ticketType)
-	const { statuses } = useAppSelector((state) => state.status)
-	const completeStatusId = statuses.find((status) => status.name === "Complete")?.id ?? 0
-	const { priorities } = useAppSelector((state) => state.priority)
 	const [ range, setRange ] = useState({
 		startDate: new Date(),
 		endDate: new Date(),
 	})
 
-	const groupTicketsByAssignee = useCallback(() => {
-		return tickets.reduce((acc: Record<string, Array<Ticket>>, ticket: Ticket) => {
+	const [triggerGetUsers, { data: users, isFetching, isError }] = useLazyGetUserProfilesQuery()
+
+	const groupTicketsByAssignee = (ticketData: Array<Ticket>) => {
+		return ticketData.reduce((acc: Record<string, Array<Ticket>>, ticket: Ticket) => {
 			ticket.assignees?.forEach((user: Pick<UserProfile, "id" | "firstName" | "lastName">) => {
 				if (user.id in acc){
 					acc[user.id].push(ticket)
@@ -57,10 +68,16 @@ export const BoardSchedule = () => {
 			})
 			return acc
 		}, {})
-	}, [tickets])
+	}
 
-	const ticketsGroupedByAssignee = groupTicketsByAssignee()
-	const { data: users, isFetching, isError } = useGetUserProfilesQuery(Object.keys(ticketsGroupedByAssignee).length ? {userIds: Object.keys(ticketsGroupedByAssignee)} : skipToken)
+
+	useEffect(() => {
+		if (!isBoardTicketFetching && boardTicketData){
+			const ticketsGroupedByAssignee = groupTicketsByAssignee(boardTicketData?.data ?? [])
+			triggerGetUsers({userIds: Object.keys(ticketsGroupedByAssignee)})
+		}
+	}, [isBoardTicketFetching])
+
 
 	useEffect(() => {
 		if (!isFetching && users){
@@ -75,17 +92,18 @@ export const BoardSchedule = () => {
 
 	const filterData = useCallback((scheduledData: SchedulerData) => {
 
-	}, [range, tickets])
+	}, [range, boardTicketData])
 
 	const parseTicketDataForScheduler = useCallback(() => {
 		const schedulerData: SchedulerData = []
+		const ticketsGroupedByAssignee = groupTicketsByAssignee(boardTicketData?.data ?? [])
 		Object.keys(ticketsGroupedByAssignee).forEach((id: string) => {
 			const groupedTickets = ticketsGroupedByAssignee[id]
 			const firstName = groupedTickets[0]?.assignees?.[0].firstName
 			const lastName = groupedTickets[0]?.assignees?.[0].lastName
 			const ticketData: Array<SchedulerProjectData> = []
 			groupedTickets.forEach((obj: Ticket) => {
-				if (obj.dueDate && obj.statusId !== completeStatusId){
+				if (obj.dueDate){
 					const priority = priorities.find((priority) => priority.id === obj.priorityId)?.name ?? ""
 					/* occupancy is in seconds, so convert from minutes to seconds */
 					const data = {
@@ -112,13 +130,13 @@ export const BoardSchedule = () => {
 			} as SchedulerRow)
 		})
 		return schedulerData
-	}, [board, tickets, users])
+	}, [board, boardTicketData, users])
 
 	return (
 		<div className = "tw-relative tw-w-full tw-h-[60vh]">
 			<Scheduler 
 				data={scheduleData}
-				isLoading={isFetching}
+				isLoading={isBoardTicketFetching || isFetching}
 				onRangeChange={handleRangeChange}
 				onItemClick={(leftItem) => {
 				}}
@@ -130,6 +148,7 @@ export const BoardSchedule = () => {
 				onFilterData={() => {
 					setFilterButtonState(1)	
 					dispatch(toggleShowModal(true))
+					dispatch(setModalProps({boardId: boardInfo?.id ?? 0}))
 					dispatch(setModalType("BOARD_SCHEDULE_FILTER_MODAL"))
 				}}
 				onClearFilterData={() => {

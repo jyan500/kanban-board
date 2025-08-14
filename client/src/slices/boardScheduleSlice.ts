@@ -5,10 +5,10 @@ import { SchedulerData, SchedulerProjectData } from "@bitnoi.se/react-scheduler"
 import { modalTypes } from "../components/Modal"
 import { logout } from "./authSlice"
 
-interface BoardScheduleFilters {
+export interface BoardScheduleFilters {
 	ticketTypeId: number | null
 	statusId: number | null
-	assignee: OptionType | null 
+	assignee: number | null 
 	priorityId: number | null
 	startDate: Date | null
 	endDate: Date | null
@@ -25,7 +25,7 @@ const initialState: BoardScheduleState = {
 	filters: {
 		ticketTypeId: null,
 		statusId: null,
-		assignee: {label: "", value: ""},
+		assignee: null,
 		priorityId: null,
 		startDate: null,
 		endDate: null,

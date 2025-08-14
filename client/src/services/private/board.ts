@@ -186,6 +186,7 @@ export const {
 	useGetBoardQuery, 
 	useGetBoardsQuery, 
 	useGetBoardTicketsQuery,
+	useLazyGetBoardTicketsQuery,
 	useGetBoardStatusesQuery,
 	useGetBoardStatusQuery,
 	useAddBoardMutation,

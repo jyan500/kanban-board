@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from "react"
+import { USER_PROFILE_URL } from "../../helpers/urls"
 import { TicketType, Priority, Status, OptionType } from "../../types/common"
 import { Controller, useForm, FormProvider } from "react-hook-form"
 import { AsyncSelect, LoadOptionsType } from "../AsyncSelect"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
+import { LoadingButton } from "../page-elements/LoadingButton"
+import { setFilters } from "../../slices/boardScheduleSlice"
+import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 
-type FormValues = {
+export type FormValues = {
 	priorityId: number | null
 	statusId: number | null
 	ticketTypeId: number | null
-	userIdOption: OptionType | null
+	assignee: OptionType
 	startDate: Date | null
 	endDate: Date | null
 }
 
-export const BoardScheduleFilterModal = () => {
+interface Props {
+	boardId: number	
+}
+
+export const BoardScheduleFilterModal = ({boardId}: Props) => {
+	const dispatch = useAppDispatch()
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
@@ -22,9 +31,9 @@ export const BoardScheduleFilterModal = () => {
 		ticketTypeId: 0,
 		priorityId: 0,
 		statusId: 0,
-		userIdOption: {value: "", label: ""},
-		startDate: new Date(),
-		endDate: new Date()
+		assignee: {value: "", label: ""},
+		startDate: null,
+		endDate: null,
 	}
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({
@@ -32,38 +41,88 @@ export const BoardScheduleFilterModal = () => {
 	})
 	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = methods
 
+	const onSubmit = async (values: FormValues) => {
+		console.log("assignee value: ", Number(values.assignee.value))
+		dispatch(setFilters({
+			ticketTypeId: values.ticketTypeId !== 0 ? values.ticketTypeId : null,
+			priorityId: values.priorityId !== 0 ? values.priorityId : null,
+			statusId: values.statusId !== 0 ? values.statusId : null,
+			startDate: values.startDate,
+			endDate: values.endDate,
+			assignee: values.assignee.value !== "" ? Number(values.assignee.value) : null
+		}))
+		dispatch(toggleShowModal(false))
+		dispatch(setModalProps({}))
+		dispatch(setModalType(undefined))
+	}
+
 	return (
 		<div>
 			<p className = "tw-font-semibold tw-text-lg">Filters</p>	
-			<div className = "tw-flex tw-flex-col tw-gap-y-2">
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
-					<select className = "tw-w-full" id = "filters-ticket-type" {...register("ticketTypeId")}>
-						<option value="" disabled></option>
-						{ticketTypes.map((ticketType: TicketType) => {
-							return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
-						})}
-					</select>
+			<form onSubmit={handleSubmit(onSubmit)}>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<div className = "tw-flex tw-flex-col">
+						<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
+						<select className = "tw-w-full" id = "filters-ticket-type" {...register("ticketTypeId")}>
+							<option value="" disabled></option>
+							{ticketTypes.map((ticketType: TicketType) => {
+								return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
+							})}
+						</select>
+					</div>
+					<div className = "tw-flex tw-flex-col">
+						<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
+						<select className = "tw-w-full" id = "filters-ticket-priority" {...register("priorityId")}>
+							<option value="" disabled></option>
+							{priorities.map((priority: Priority) => {
+								return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
+							})}
+						</select>
+					</div>
+					<div className = "tw-flex tw-flex-col">
+						<label className = "label" htmlFor = "filters-ticket-status">Status</label>
+						<select className = "tw-w-full" id = "filters-ticket-status" {...register("statusId")}>
+							<option value="" disabled></option>
+							{statuses.map((status: Status) => {
+								return <option key = {status.id} value = {status.id}>{status.name}</option>
+							})}
+						</select>
+					</div>
+					<div>
+						<label className = "label" htmlFor = "filters-ticket-assignee">Assignee</label>
+						<Controller
+							name={"assignee"}
+							control={control}
+			                render={({ field: { onChange, value, name, ref } }) => (
+		                	<AsyncSelect 
+		                		defaultValue={watch("assignee") ?? null}
+			                	endpoint={USER_PROFILE_URL} 
+			                	urlParams={{forSelect: true}} 
+			                	className={"tw-w-full"}
+			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
+			                		onChange(selectedOption) 	
+			                	}}
+			                />
+			                )}
+						/>
+					</div>
+					<div className = "tw-flex tw-flex-col">
+						<label className = "label" htmlFor = "filters-noti-date-from">Start Date</label>
+						<input {...register("startDate")} id = "filters-noti-date-from" aria-label="Date" type="date"/>
+					</div>
+					<div className = "tw-flex tw-flex-col">
+						<label className = "label" htmlFor = "filters-noti-date-to">End Date</label>
+						<input {...register("endDate")} id = "filters-noti-date-to" aria-label="Date" type="date"/>
+					</div>
+					<div className = "tw-flex tw-flex-row tw-gap-x-2">
+						<LoadingButton type={"submit"} text={"Submit"}/>	
+						<button onClick={(e) => {
+							e.preventDefault()
+							reset(defaultForm)
+						}} className = "button --secondary">Clear Filters</button>	
+					</div>
 				</div>
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
-					<select className = "tw-w-full" id = "filters-ticket-priority" {...register("priorityId")}>
-						<option value="" disabled></option>
-						{priorities.map((priority: Priority) => {
-							return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
-						})}
-					</select>
-				</div>
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "filters-ticket-status">Status</label>
-					<select className = "tw-w-full" id = "filters-ticket-status" {...register("statusId")}>
-						<option value="" disabled></option>
-						{statuses.map((status: Status) => {
-							return <option key = {status.id} value = {status.id}>{status.name}</option>
-						})}
-					</select>
-				</div>
-			</div>
+			</form>
 		</div>
 	)	
 }
