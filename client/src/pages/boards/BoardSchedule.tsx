@@ -34,7 +34,10 @@ export const BoardSchedule = () => {
 		// only include the filters that aren't null
 		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
 			const typedKey = key as keyof BoardScheduleFilters
-			if (filters[typedKey] != null){
+			if (filters[typedKey] == null){
+				acc[typedKey] = "" 
+			}
+			else {
 				acc[typedKey] = filters[typedKey]
 			}
 			return acc	
@@ -70,14 +73,12 @@ export const BoardSchedule = () => {
 		}, {})
 	}
 
-
 	useEffect(() => {
 		if (!isBoardTicketFetching && boardTicketData){
 			const ticketsGroupedByAssignee = groupTicketsByAssignee(boardTicketData?.data ?? [])
 			triggerGetUsers({userIds: Object.keys(ticketsGroupedByAssignee)})
 		}
 	}, [isBoardTicketFetching])
-
 
 	useEffect(() => {
 		if (!isFetching && users){

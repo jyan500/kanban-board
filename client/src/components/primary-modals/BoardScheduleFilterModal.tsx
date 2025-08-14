@@ -9,6 +9,7 @@ import { setFilters, setFilterButtonState } from "../../slices/boardScheduleSlic
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
+import { boardApi } from "../../services/private/board"
 
 export type FormValues = {
 	priorityId: number | null
@@ -81,7 +82,7 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 		}))
 		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
 		const { assignee, ...assigneeExcluded} = values
-		const filtersApplied = !(Object.values(assigneeExcluded).every((val) => val == null)) || values.assignee.value !== ""
+		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.startDate == null && values.endDate == null && values.assignee.value === "")
 		dispatch(setFilterButtonState(filtersApplied ? 1 : 0))
 		dispatch(toggleShowModal(false))
 		dispatch(setModalProps({}))
@@ -151,6 +152,15 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 						<button onClick={(e) => {
 							e.preventDefault()
 							reset(defaultForm)
+							dispatch(setFilters({
+								ticketTypeId: null,
+								priorityId: null,
+								statusId: null,
+								startDate: null,
+								endDate: null,
+								assignee: null
+							}))
+							dispatch(boardApi.util.invalidateTags(["BoardTickets"]))
 							dispatch(setFilterButtonState(0))
 						}} className = "button --secondary">Clear Filters</button>	
 					</div>
