@@ -83,7 +83,7 @@ export const Board = () => {
 						{
 							defaultLinks.map((link: {pathname: string, text: string}) => {
 							 	return (
-							 		<FilterButton isActive={link.pathname === pathname} onClick={(e) => {
+							 		<FilterButton key={`filter_button_${link.text}`} isActive={link.pathname === pathname} onClick={(e) => {
 							 			navigate(link.pathname)
 							 		}}>
 							 			{link.text}

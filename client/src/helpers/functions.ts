@@ -285,8 +285,3 @@ export const validateTimeFormat = (value: string): boolean | string => {
 
     return true
 }
-
-
-
-
-

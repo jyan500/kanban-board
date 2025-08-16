@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { Scheduler, SchedulerData, SchedulerProjectData } from "@bitnoi.se/react-scheduler";
 import { useGetUserProfilesQuery, useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
-import { useGetBoardTicketsQuery } from "../../services/private/board"
+import { boardApi, useGetBoardTicketsQuery } from "../../services/private/board"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -27,6 +27,7 @@ export const BoardSchedule = () => {
 	const { filters, filterButtonState } = useAppSelector((state) => state.boardSchedule)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
+	const [ ticketsGroupedByAssignee, setTicketsGroupedByAssignee ] = useState<Record<string, any>>({})
 	const { statuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const completeStatusId = statuses.find((status) => status.name === "Complete")?.id ?? 0
@@ -138,6 +139,25 @@ export const BoardSchedule = () => {
 				isLoading={isBoardTicketFetching || isFetching}
 				onRangeChange={handleRangeChange}
 				onItemClick={(leftItem) => {
+					// resetting backend filters method
+					if (filterUser === ""){
+						setFilterUser(leftItem.id)
+						dispatch(setFilterButtonState(1))
+						dispatch(setFilters({
+							...filters,
+							assignee: Number(leftItem.id),
+						}))
+					}
+					// click on the item again to unset the filter
+					else if (filterUser === leftItem.id){
+						setFilterUser("")
+						dispatch(setFilters({
+							...filters,
+							assignee: null,
+						}))
+						dispatch(setFilterButtonState(Object.entries(filters).filter((entry) => entry[0] !== "assignee").every((entry) => entry[1] == null) ? 0 : 1))
+						dispatch(boardApi.util.invalidateTags(["BoardTickets"]))
+					}
 				}}
 				onTileClick={(clickedResource) => {
 					dispatch(toggleShowModal(true))
