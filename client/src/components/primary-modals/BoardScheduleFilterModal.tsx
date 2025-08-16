@@ -90,8 +90,8 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 	}
 
 	return (
-		<div>
-			<p className = "tw-font-semibold tw-text-lg">Filters</p>	
+		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-w-[500px]">
+			<p className = "tw-font-semibold tw-text-xl">Filters</p>	
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<div className = "tw-flex tw-flex-col tw-gap-y-2">
 					<div className = "tw-flex tw-flex-col">
@@ -121,7 +121,7 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 							})}
 						</select>
 					</div>
-					<div>
+					<div className = "tw-flex tw-flex-col">
 						<label className = "label" htmlFor = "filters-ticket-assignee">Assignee</label>
 						<Controller
 							name={"assignee"}

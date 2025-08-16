@@ -16,8 +16,9 @@ import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { PRIMARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { avoidAsyncSelectMenuOverflow } from "./SecondaryModal"
+import { getModalWidth } from "../helpers/functions"
 
-const defaultConfig = {"modal-container": "--l-modal-height tw-top-[50%]", "modal": ""}
+const defaultConfig = {"type": "large", "modal-container": "--l-modal-height tw-top-[50%]", "modal": ""}
 export const modalTypes = {
 	"ADD_TICKET_FORM": AddTicketFormModal,
 	"EDIT_TICKET_FORM": EditTicketFormModal,
@@ -50,9 +51,10 @@ export const Modal = () => {
 	const ModalContent = modalTypes[currentModalType as keyof typeof modalTypes] as React.FC 
 	const modalContainerClassName = currentModalType != null && currentModalType in modalClassNames ? modalClassNames[currentModalType as keyof typeof modalClassNames]["modal-container"] : ""
 	const modalClassName = currentModalType != null && currentModalType in modalClassNames ? modalClassNames[currentModalType as keyof typeof modalClassNames]["modal"] : ""
+	const type = currentModalType != null && currentModalType in modalClassNames ? modalClassNames[currentModalType as keyof typeof modalClassNames]["type"] : ""
 	const { width, height } = useScreenSize()
 	const style = {
-		width: `${width <= LG_BREAKPOINT + 140 ? width-40 : LG_BREAKPOINT + 140 }px`
+		width: getModalWidth(width, type) 
 	}
 
 	// define modal handlers type as the partial subset of all keys of modal types
