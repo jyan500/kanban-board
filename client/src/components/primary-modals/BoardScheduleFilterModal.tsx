@@ -78,11 +78,11 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 			statusId: values.statusId !== 0 ? values.statusId : null,
 			startDate: values.startDate,
 			endDate: values.endDate,
-			assignee: values.assignee.value !== "" ? Number(values.assignee.value) : null
+			assignee: values.assignee && values.assignee.value !== "" ? Number(values.assignee.value) : null
 		}))
 		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
 		const { assignee, ...assigneeExcluded} = values
-		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.startDate == null && values.endDate == null && values.assignee.value === "")
+		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.startDate == null && values.endDate == null && values.assignee?.value === "")
 		dispatch(setFilterButtonState(filtersApplied ? 1 : 0))
 		dispatch(toggleShowModal(false))
 		dispatch(setModalProps({}))
@@ -128,10 +128,11 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 							control={control}
 			                render={({ field: { onChange, value, name, ref } }) => (
 		                	<AsyncSelect 
-		                		defaultValue={watch("assignee") ?? null}
+		                		defaultValue={watch("assignee") ?? {value: "", label: ""}}
 			                	endpoint={USER_PROFILE_URL} 
 			                	urlParams={{forSelect: true}} 
 			                	className={"tw-w-full"}
+			                	clearable={false}
 			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 			                		onChange(selectedOption) 	
 			                	}}

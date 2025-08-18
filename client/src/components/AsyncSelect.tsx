@@ -30,7 +30,7 @@ interface AsyncSelectProps {
 export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, GroupBase<OptionType>>, AsyncSelectProps>((
 	{ cacheKey, clearable, className, defaultValue, endpoint, onSelect, urlParams, onBlur }, ref) => {
 	const [searchTerm, setSearchTerm] = useState("")
-	const [val, setVal] = useState<OptionType | null>(defaultValue ?? null)
+	const [val, setVal] = useState<OptionType | null>(defaultValue ?? {label: "", value: ""})
 	const [ genericFetch ] = useLazyGenericFetchQuery()
 
 	const loadOptions = async (
