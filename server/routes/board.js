@@ -241,6 +241,30 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.limit){
 				queryBuilder.limit(board.ticket_limit)
 			}
+			if (req.query.requireDueDate){
+				queryBuilder.whereNotNull("tickets.due_date")
+			}
+			if (req.query.assignee){
+				queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id").where("tickets_to_users.user_id", req.query.assignee)
+			}
+			if (req.query.ticketTypeId) {
+				queryBuilder.where("tickets.ticket_type_id", req.query.ticketTypeId)
+			}
+			if (req.query.priorityId){
+				queryBuilder.where("tickets.priority_id", req.query.priorityId)
+			}
+			if (req.query.statusId){
+				queryBuilder.where("tickets.status_id", req.query.statusId)
+			}
+			if (req.query.excludeStatusId){
+				queryBuilder.where("tickets.status_id", "!=", req.query.excludeStatusId)
+			}
+			if (req.query.startDate){
+				queryBuilder.whereRaw("DATE(tickets.created_at) >= ?", [req.query.startDate])
+			}
+			if (req.query.endDate){
+				queryBuilder.whereRaw("DATE(tickets.due_date) <= ?", [req.query.endDate])
+			}	
 		})
 		.select(
 			"tickets.id as id",
@@ -321,6 +345,17 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 					}
 				))
 			}
+		}
+		if (req.query.includeTimeSpent){
+			tickets = {...tickets, data: await Promise.all(
+				tickets.data.map(async (ticket) => {
+					const timeSpent = await db("ticket_activity").where("ticket_id", ticket.id).sum("minutes_spent as timeSpent").first()
+					return {
+						...ticket,
+						timeSpent: !isNaN(Number(timeSpent.timeSpent)) ? Number(timeSpent.timeSpent) : 0
+					}					
+				})
+			)}
 		}
 		res.json(tickets)
 

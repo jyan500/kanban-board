@@ -238,7 +238,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 								control={control}
 				                render={({ field: { onChange, value, name, ref } }) => (
 			                	<AsyncSelect 
-			                		defaultValue={watch("userIdOption") ?? null}
+			                		defaultValue={watch("userIdOption") ?? {label: "", value: ""}}
 				                	endpoint={USER_PROFILE_URL} 
 				                	urlParams={{forSelect: true}} 
 				                	className={"tw-w-full"}

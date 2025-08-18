@@ -2,6 +2,7 @@ import { createStore } from "redux"
 import { configureStore } from "@reduxjs/toolkit" 
 import { boardReducer } from "./slices/boardSlice" 
 import { boardInfoReducer } from "./slices/boardInfoSlice" 
+import { boardScheduleReducer } from "./slices/boardScheduleSlice"
 import { ticketReducer } from "./slices/ticketSlice" 
 import { navReducer }  from "./slices/navSlice"
 import { authReducer } from "./slices/authSlice" 
@@ -44,6 +45,7 @@ export const store = configureStore({
 		[privateApi.reducerPath]: privateApi.reducer,
 		"board": boardReducer,
 		"boardInfo": boardInfoReducer,
+		"boardSchedule": boardScheduleReducer,
 		"auth": authReducer,
 		"nav": navReducer,
 		"org": organizationReducer,

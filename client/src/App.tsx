@@ -13,6 +13,9 @@ import { TicketDisplay } from "./pages/tickets/TicketDisplay"
 import { Ticket as TicketPage } from "./pages/tickets/Ticket"
 import { Boards } from "./pages/boards/Boards"
 import { Board } from "./pages/boards/Board" 
+import { BoardSchedule } from "./pages/boards/BoardSchedule"
+import { BoardTable } from "./pages/boards/BoardTable"
+import { Kanban } from "./pages/boards/Kanban"
 import { OrganizationDisplay } from "./pages/organization/OrganizationDisplay"
 import { Organization } from "./pages/organization/Organization"
 import { OrganizationAddEditStatuses } from "./pages/organization/OrganizationAddEditStatuses"
@@ -58,6 +61,8 @@ import {
 	BOARD_ID, 
 	TICKETS, 
 	TICKET_ID, 
+	TABLE,
+	SCHEDULE,
 	USER, 
 	USERS, 
 	TEMP,
@@ -200,6 +205,20 @@ const router = createBrowserRouter([
 									<ScrollRestoration/>
 									<Board/>
 								</>,
+								children: [
+									{
+										index: true,
+										element: <Kanban/>
+									},
+									{
+										path: SCHEDULE,
+										element: <BoardSchedule/> 
+									},
+									{
+										path: TABLE,
+										element: <BoardTable/>
+									}
+								]
 							},
 						],
 					},

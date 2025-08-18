@@ -2,7 +2,7 @@ import type { KanbanBoard, Cell, Status, Toast, Ticket, Priority, UserProfile } 
 import { v4 as uuidv4 } from "uuid"
 import { AppDispatch } from "../store"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks" 
-import { MAX_MINUTES, TIME_DISPLAY_FORMAT, MINUTES_PER_WEEK, MINUTES_PER_DAY, MINUTES_PER_HOUR } from "./constants"
+import { LG_BREAKPOINT, MAX_MINUTES, TIME_DISPLAY_FORMAT, MINUTES_PER_WEEK, MINUTES_PER_DAY, MINUTES_PER_HOUR } from "./constants"
 /* 
 
 New Design:
@@ -286,7 +286,13 @@ export const validateTimeFormat = (value: string): boolean | string => {
     return true
 }
 
-
-
-
-
+/**
+ * @param current width of the window
+ * @return width of the modal in px
+ */
+export const getModalWidth = (width: number, type: string) =>{
+	if (type === "small"){
+		return `${width <= LG_BREAKPOINT ? width - 100 : LG_BREAKPOINT - 100 }px`
+	}
+	return `${width <= LG_BREAKPOINT + 140 ? width-40 : LG_BREAKPOINT + 140 }px`
+}

@@ -134,6 +134,7 @@ export const {
 	useGetUserQuery,
 	useGetUserProfileQuery, 
 	useGetUserProfilesQuery, 
+	useLazyGetUserProfilesQuery,
 	useGetUserOrganizationsQuery, 
 	useEditUserProfileMutation,
 	useEditOwnUserProfileMutation,

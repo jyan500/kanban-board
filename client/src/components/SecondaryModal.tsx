@@ -17,8 +17,9 @@ import { TicketAIFeaturesModal } from "./secondary-modals/TicketAIFeaturesModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SECONDARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
 import { useScreenSize } from "../hooks/useScreenSize"
+import { getModalWidth } from "../helpers/functions"
 
-const avoidAsyncSelectMenuOverflow =  {"modal-container": "tw-top-[50%]", "modal": "!tw-overflow-visible tw-min-h-96"}
+export const avoidAsyncSelectMenuOverflow =  {"type": "small", "modal-container": "tw-top-[50%]", "modal": "!tw-overflow-visible tw-min-h-96"}
 
 export const secondaryModalTypes = {
 	"SHOW_DELETE_COMMENT_WARNING": DeleteCommentWarning,
@@ -48,9 +49,10 @@ export const SecondaryModal = () => {
 	const ModalContent = secondaryModalTypes[currentSecondaryModalType as keyof typeof secondaryModalTypes] as React.FC
 	const modalContainerClassName = currentSecondaryModalType != null && currentSecondaryModalType in secondaryModalClassNames ? secondaryModalClassNames[currentSecondaryModalType as keyof typeof secondaryModalClassNames]["modal-container"] : ""
 	const modalClassName = currentSecondaryModalType != null && currentSecondaryModalType in secondaryModalClassNames ? secondaryModalClassNames[currentSecondaryModalType as keyof typeof secondaryModalClassNames]["modal"] : ""
+	const type = currentSecondaryModalType != null && currentSecondaryModalType in secondaryModalClassNames ? secondaryModalClassNames[currentSecondaryModalType as keyof typeof secondaryModalClassNames]["type"] : ""
 	const { width, height } = useScreenSize()
 	const style = {
-		width: `${width <= LG_BREAKPOINT ? width - 100 : LG_BREAKPOINT - 100 }px`
+		width: getModalWidth(width, type) 
 	}
 
 	return (
