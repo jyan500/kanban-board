@@ -23,17 +23,6 @@ interface Props {
 	closeModal: () => void
 }
 
-type Filters = {
-	ticketType: string
-	priority: string
-	status: string
-}
-
-export type FormValues = Filters & {
-	searchBy: string
-	query: string	
-}
-
 export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSelectedIds, closeModal}: Props) => {
 	return (
 		<TicketTable
