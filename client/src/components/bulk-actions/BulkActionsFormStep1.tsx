@@ -1,17 +1,4 @@
 import React, {useState, useEffect} from "react"
-import { useGetTicketsQuery } from "../../services/private/ticket"
-import { skipToken } from '@reduxjs/toolkit/query/react'
-import { Table } from "../Table"
-import { useBoardTicketConfig } from "../../helpers/table-config/useBoardTicketConfig"
-import { PaginationRow } from "../page-elements/PaginationRow"
-import { BOARD_TICKET_URL } from "../../helpers/urls"
-import { BulkEditToolbar } from "../page-elements/BulkEditToolbar"
-import { useForm, FormProvider } from "react-hook-form"
-import { Ticket } from "../../types/common"
-import { LoadingButton } from "../page-elements/LoadingButton"
-import { SearchToolBar } from "../tickets/SearchToolBar"
-import { Filters } from "./Filters"
-import { RowContentLoading } from "../page-elements/RowContentLoading"
 import { TicketTable } from "../tickets/TicketTable"
 
 interface Props {

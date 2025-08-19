@@ -504,7 +504,9 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 			// we can delete all ticket comment mentions
 			await db("ticket_comments_to_users").where("ticket_comment_id", req.params.commentId).del()
 		}
-		res.json({mentions: newMentions.map((obj) => {
+		// make sure to remove any undefined instances in the case we're editing a comment with an existing mention
+		// and no new mentions are added
+		res.json({mentions: newMentions.filter((obj) => obj).map((obj) => {
 			return {
 				ticketCommentId: obj.ticket_comment_id,
 				userId: obj.user_id,
