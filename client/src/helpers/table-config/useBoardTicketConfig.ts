@@ -7,7 +7,7 @@ import { Toast, Ticket  } from "../../types/common"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 
-export type RegistrationRequestConfigType = {
+export type BoardTicketConfigType = {
 	headers: Record<string, any>,
 	modifiers: Record<string, any>
 	bulkEdit: Record<string, any>
