@@ -21,6 +21,7 @@ interface Props {
 	header: string
 	stepButtonRow?: React.ReactNode
 	tableClassName?: string
+	bulkEditAction?: (ids: Array<number>) => void	
 }
 
 type Filters = {
@@ -34,7 +35,16 @@ export type FormValues = Filters & {
 	query: string	
 }
 
-export const TicketTable = ({tableClassName, key, header, boardId, selectedIds, setSelectedIds, stepButtonRow}: Props) => {
+export const TicketTable = ({
+	tableClassName, 
+	key, 
+	header, 
+	boardId, 
+	selectedIds, 
+	setSelectedIds, 
+	stepButtonRow, 
+	bulkEditAction,
+}: Props) => {
 	const [ page, setPage ] = useState(1)
 
 	const filters: Filters = {
@@ -126,6 +136,8 @@ export const TicketTable = ({tableClassName, key, header, boardId, selectedIds, 
 					<>
 						<BulkEditToolbar 
 							updateIds={(ids: Array<number>) => setSelectedIds(ids)} 
+							applyActionToAll={bulkEditAction ? bulkEditAction : undefined}
+							actionText={bulkEditAction ? "Bulk Edit" : undefined}
 							itemIds={selectedIds} 
 						>
 							<>
