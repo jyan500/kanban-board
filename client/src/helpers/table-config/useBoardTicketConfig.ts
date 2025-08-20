@@ -1,22 +1,18 @@
 import React, {useState} from "react"
 import { userProfileModifier, dateModifier, nameModifier } from "../table-modifiers/display-modifiers"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks" 
-import { setModalType, toggleShowModal } from "../../slices/modalSlice" 
+import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice" 
 import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
+import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { Toast, Ticket  } from "../../types/common"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 
-export type BoardTicketConfigType = {
-	headers: Record<string, any>,
-	modifiers: Record<string, any>
-	bulkEdit: Record<string, any>
-}
-
 export const useBoardTicketConfig = (
 	bulkEditMode: boolean,
 	selectedIds: Array<number>,
-	setSelectedIds: (ids: Array<number>) => void
+	setSelectedIds: (ids: Array<number>) => void,
+	includeEditMode=false
 ) => {
 	const { userProfiles, userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
@@ -34,6 +30,7 @@ export const useBoardTicketConfig = (
 			"priorityId": "Priority", 
 			"assignees": "Assignee",
 			"createdAt": "Created At",
+			"edit": "",
 		},
 		modifiers: {
 			"createdAt": { modifier: dateModifier, lookup: [] },
@@ -42,6 +39,15 @@ export const useBoardTicketConfig = (
 			"ticketTypeId": { modifier: nameModifier, lookup: ticketTypes},
 			"assignees": { modifier: userProfileModifier, lookup: []}
 		},
+		...(includeEditMode ? {editCol: {
+			col: "edit", 
+			text: "Edit", 
+			onClick: (id: number) => {
+				dispatch(toggleShowModal(true))
+				dispatch(setModalType("EDIT_TICKET_FORM"))
+				dispatch(selectCurrentTicketId(id))
+			}
+		}} : {}),
 		bulkEdit: {
 			isEnabled: bulkEditMode,
 			canSelect: (ticket: Ticket) => {

@@ -110,7 +110,8 @@ export const TicketTable = ({
 		return (<Filters/>)
 	}
 
-	const config = useBoardTicketConfig(true, selectedIds, setSelectedIds)
+	// if the bulkEditAction is defined, that means we're coming from the board table instead of the bulk actions form
+	const config = useBoardTicketConfig(true, selectedIds, setSelectedIds, bulkEditAction != undefined)
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<h3 className = "tw-m-0">{header}</h3>	
