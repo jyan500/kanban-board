@@ -84,7 +84,7 @@ export const Table = ({config, data, itemIds, tableKey: tKey, hideCheckAllBox}: 
 											const {component: Component, props} = config.renderers[headerKey](row[headerKey])
 											return (
 												<td key = {`${tableKey}-${row.id}-${headerKey}`}>
-													<div className = "tw-flex tw-justify-center">
+													<div className = "tw-flex">
 														<Component {...props}/>
 													</div>
 												</td>
