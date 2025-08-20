@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useGetTicketsQuery } from "../../services/private/ticket" 
+import { ticketApi, useGetTicketsQuery } from "../../services/private/ticket" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { Outlet, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { Ticket, OptionType } from "../../types/common"

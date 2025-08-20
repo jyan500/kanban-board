@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react"
-import { useGetTicketsQuery } from "../../services/private/ticket"
+import { useAppDispatch } from "../../hooks/redux-hooks"
+import { ticketApi, useGetTicketsQuery } from "../../services/private/ticket"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Table } from "../Table"
 import { useBoardTicketConfig } from "../../helpers/table-config/useBoardTicketConfig"
@@ -59,19 +60,13 @@ export const TicketTable = ({
 		...filters
 	}
 
+	const dispatch = useAppDispatch()
+
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
 	const { register, handleSubmit, reset, watch, setValue, formState: {errors} } = methods
 
 	const registerOptions = {
-		searchBy: {"required": "Search By is Required"},
-		query: {"validate": (value: string) => {
-			const allFilters = Object.keys(filters).map((filter: string) => watch(filter as keyof Filters))
-			if (value === "" && allFilters.every((val: string) => val === "")){
-				return "Search Query is required"
-			}
-			return true
-		}},
 	}
 
 	const { data, isLoading, isFetching, isError } = useGetTicketsQuery({
@@ -113,7 +108,7 @@ export const TicketTable = ({
 	// if the bulkEditAction is defined, that means we're coming from the board table instead of the bulk actions form
 	const config = useBoardTicketConfig(true, selectedIds, setSelectedIds, bulkEditAction != undefined)
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-2">
+		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			<h3 className = "tw-m-0">{header}</h3>	
 			<FormProvider {...methods}>
 				<SearchToolBar 
