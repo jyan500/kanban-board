@@ -3,7 +3,8 @@ table {
 	width: 100%;
 
 	& td {
-		border: 1px solid var(--bs-light-gray);
+		border-top: 1px solid var(--bs-light-gray);
+		border-bottom: 1px solid var(--bs-light-gray);
 		padding: var(--s-spacing);
 		max-width: 200px;
 		word-break: break-word;
@@ -19,8 +20,10 @@ table {
 	}
 
 	& th {
-		border: 1px solid var(--bs-light-gray);
+		border-left: none;
+		border-right: none;
 		padding: var(--s-spacing);
 		text-align: left;
 	}
+
 }
