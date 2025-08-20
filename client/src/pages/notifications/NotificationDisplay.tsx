@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useAppDispatch } from "../../hooks/redux-hooks"
-import { useGetNotificationsQuery } from "../../services/private/notification" 
+import { notificationApi, useGetNotificationsQuery } from "../../services/private/notification" 
 import { Outlet, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { Notification, Toast } from "../../types/common"
 import { NOTIFICATIONS } from "../../helpers/routes"

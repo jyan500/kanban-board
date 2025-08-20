@@ -96,6 +96,7 @@ export const SearchToolBar = ({
 										return acc
 									}, {})),
 								})
+								onFormSubmit()
 							}} type = "button" className = "button !tw-bg-secondary">
 								Clear Filters
 							</button>

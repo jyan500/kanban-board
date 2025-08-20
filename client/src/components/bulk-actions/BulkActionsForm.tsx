@@ -17,6 +17,8 @@ import { v4 as uuidv4 } from "uuid"
 
 interface Props {
 	boardId: number | null | undefined
+	initSelectedIds: Array<number> 
+	initStep: number
 }
 
 export interface BulkEditOperation {
@@ -34,14 +36,14 @@ export interface BulkEditFormValues {
 }
 
 
-export const BulkActionsForm = ({boardId}: Props) => {
-	const [step, setStep] = useState(1)
+export const BulkActionsForm = ({boardId, initStep=1, initSelectedIds=[]}: Props) => {
+	const [step, setStep] = useState(initStep)
 	const [submitLoading, setSubmitLoading] = useState(false)
 	const dispatch = useAppDispatch()
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
-	const [selectedIds, setSelectedIds] = useState<Array<number>>([])
+	const [selectedIds, setSelectedIds] = useState<Array<number>>(initSelectedIds)
 	const [operation, setOperation] = useState<BulkEditOperationKey | null | undefined>(null)
 	const [formValues, setFormValues] = useState<BulkEditFormValues>({})
 	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null

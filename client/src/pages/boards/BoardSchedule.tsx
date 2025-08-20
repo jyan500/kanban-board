@@ -133,7 +133,7 @@ export const BoardSchedule = () => {
 	}, [board, boardTicketData, users])
 
 	return (
-		<div className = "tw-relative tw-w-full tw-h-[60vh]">
+		<div className = "tw-relative tw-w-full tw-h-[70vh]">
 			<Scheduler 
 				data={scheduleData}
 				isLoading={isBoardTicketFetching || isFetching}
