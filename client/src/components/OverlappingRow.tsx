@@ -3,6 +3,7 @@ import { CgProfile } from "react-icons/cg";
 import { Avatar } from "./page-elements/Avatar"
 import { LG_BREAKPOINT, AVATAR_SIZES } from "../helpers/constants"
 import { useScreenSize } from "../hooks/useScreenSize"
+import { HoverTooltip } from "./page-elements/HoverTooltip"
 
 /* 
 Create a row of overlapping icons 
@@ -27,9 +28,12 @@ export const OverlappingRow = ({imageUrls, imageSize}: Props) => {
 		return (
 			<div className="tw-flex -tw-space-x-4 rtl:tw-space-x-reverse">
 				{
-					imageUrls.slice(0, amt).map(({imageUrl, initials}: {imageUrl: string, initials: string}) => {
+					imageUrls.slice(0, amt).map(({imageUrl, initials, name}: {imageUrl: string, initials: string, name: string}) => {
 					    return (
-					    	<Avatar userInitials={initials} imageUrl={imageUrl} size={width >= LG_BREAKPOINT ? imageSize : "s"} className = "tw-border-2 tw-border-gray-800 tw-rounded-full"/>
+					    	<div className = "tw-relative tw-group tw-inline-flex">
+						    	<Avatar userInitials={initials} imageUrl={imageUrl} size={width >= LG_BREAKPOINT ? imageSize : "s"} className = "tw-border-2 tw-border-gray-800 tw-rounded-full"/>
+						    	<HoverTooltip text={name}/>
+				    		</div>
 					    )
 					})
 				}
