@@ -173,7 +173,7 @@ export const AVATAR_SIZES: {[k: string]: string} = {
 }
 
 export const AVATAR_FONT_SIZES: {[k: string]: string} = {
-    "s": "tw-text-s",
+    "s": "tw-text-xs",
     "m": "tw-text-l",
     "ml": "tw-text-l",
     "l": "tw-text-xl",
