@@ -234,6 +234,8 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const board = await db("boards").where("id", req.params.boardId).first()
+		const completedStatuses = await db("statuses").where("is_completed", true)
+		const completedStatusIds = completedStatuses.map((status) => status.id)	
 		let tickets = db("tickets_to_boards")
 		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
 		.where("board_id", req.params.boardId)
@@ -256,8 +258,8 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.statusId){
 				queryBuilder.where("tickets.status_id", req.query.statusId)
 			}
-			if (req.query.excludeStatusId){
-				queryBuilder.where("tickets.status_id", "!=", req.query.excludeStatusId)
+			if (req.query.excludeCompleted){
+				queryBuilder.whereNotIn("tickets.status_id", completedStatusIds)
 			}
 			if (req.query.startDate){
 				queryBuilder.whereRaw("DATE(tickets.created_at) >= ?", [req.query.startDate])

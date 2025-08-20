@@ -30,7 +30,7 @@ export const BoardSchedule = () => {
 	const [ ticketsGroupedByAssignee, setTicketsGroupedByAssignee ] = useState<Record<string, any>>({})
 	const { statuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
-	const completeStatusId = statuses.find((status) => status.name === "Complete")?.id ?? 0
+	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
 	const { data: boardTicketData, isFetching: isBoardTicketFetching, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo ? {id: boardInfo.id, urlParams: {
 		// only include the filters that aren't null
 		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
@@ -43,7 +43,7 @@ export const BoardSchedule = () => {
 			}
 			return acc	
 		}, {} as Record<string, any>)),
-		...(filters.statusId !== completeStatusId ? {"excludeStatusId": completeStatusId} : {}),
+		...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeCompleted": true} : {}),
 		"skipPaginate": true, 
 		"includeAssignees": true, 
 		"requireDueDate": true,
