@@ -6,7 +6,7 @@ import { IconClose } from "./icons/IconClose";
 import { Link, useLocation } from 'react-router-dom';
 import { CgProfile } from "react-icons/cg";
 import { LoadingSpinner } from "./LoadingSpinner" 
-import { displayUser } from "../helpers/functions"
+import { displayUser, getUserInitials } from "../helpers/functions"
 import { Logo } from "../components/page-elements/Logo"
 import { useGetUserRolesQuery } from "../services/private/userRole"
 import { useGetUserProfileQuery } from "../services/private/userProfile"
@@ -92,7 +92,7 @@ export const SideBar = () => {
 						<GradientContainer className = "tw-h-20 sidebar__bottom-bar">
 							<div className = "sidebar__bottom-bar__content">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-									<Avatar imageUrl={userProfile?.imageUrl} className = "tw-rounded-full"/>
+									<Avatar userInitials={getUserInitials(userProfile)} imageUrl={userProfile?.imageUrl} className = "tw-rounded-full"/>
 									<div>
 										<span>{displayUser(userProfile)}</span>
 										<small>{userProfile?.organizationName}</small>

@@ -22,7 +22,7 @@ import { OptionType, Mention, Ticket, TicketType, Priority, Status, UserProfile 
 import { FormValues } from "./AddTicketForm" 
 import { addToast } from "../slices/toastSlice" 
 import { v4 as uuidv4 } from "uuid"
-import { displayUser } from "../helpers/functions"
+import { displayUser, getUserInitials } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
 import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
@@ -399,7 +399,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								!isTicketAssigneesLoading && ticketAssignees && ticketAssignees?.length ? (
 									<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
 										<div className = "tw-w-[2em] tw-shrink-0">
-											{selectFieldLoading["assignees"] ? <LoadingSpinner/> : <Avatar imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>}
+											{selectFieldLoading["assignees"] ? <LoadingSpinner/> : <Avatar userInitials={getUserInitials(ticketAssignees?.[0])} imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>}
 										</div>
 										<div className = "tw-flex tw-flex-1">
 											{userProfileSelect}
@@ -411,7 +411,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Reporter"}>
 							<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center">
 								<div className = "tw-w-[2em] tw-shrink-0">
-									<Avatar imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
+									<Avatar userInitials={getUserInitials(reporter)} imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 								</div>
 								<div className = "tw-ml-2.5 tw-flex tw-flex-1">{displayUser(reporter)}</div>
 							</div>

@@ -10,7 +10,7 @@ If there are more than 4 items in a row, display the last circle
 that shows the count of (total num - 4)
 */
 type Props = {
-	imageUrls: Array<string>
+	imageUrls: Array<{imageUrl: string, name: string, initials: string}>
 	imageSize: string
 }
 
@@ -27,9 +27,9 @@ export const OverlappingRow = ({imageUrls, imageSize}: Props) => {
 		return (
 			<div className="tw-flex -tw-space-x-4 rtl:tw-space-x-reverse">
 				{
-					imageUrls.slice(0, amt).map((url: string) => {
+					imageUrls.slice(0, amt).map(({imageUrl, initials}: {imageUrl: string, initials: string}) => {
 					    return (
-					    	<Avatar imageUrl={url} size={width >= LG_BREAKPOINT ? imageSize : "s"} className = "tw-border-2 tw-border-gray-800 tw-rounded-full"/>
+					    	<Avatar userInitials={initials} imageUrl={imageUrl} size={width >= LG_BREAKPOINT ? imageSize : "s"} className = "tw-border-2 tw-border-gray-800 tw-rounded-full"/>
 					    )
 					})
 				}

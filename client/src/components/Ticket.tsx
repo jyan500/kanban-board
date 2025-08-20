@@ -26,6 +26,7 @@ import { BsThreeDots as MenuIcon } from "react-icons/bs";
 import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown"
 import { useClickOutside } from "../hooks/useClickOutside" 
 import { useScreenSize } from "../hooks/useScreenSize"
+import { getUserInitials } from "../helpers/functions"
 import { LG_BREAKPOINT } from "../helpers/constants"
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
@@ -110,7 +111,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 		<div className = {`tw-relative tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2`}>
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1 tw-text-wrap">
 				<span className = "tw-w-4/5 tw-font-medium tw-break-words">{ticket.name}</span>
-				<Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-shrink-0 tw-mt-1 tw-rounded-full"/>
+				<Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-shrink-0 tw-mt-1 tw-rounded-full"/>
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				{

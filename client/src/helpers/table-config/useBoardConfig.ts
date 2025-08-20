@@ -4,6 +4,7 @@ import { setModalType, toggleShowModal } from "../../slices/modalSlice"
 import { UserProfile } from "../../types/common"
 import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
 import { OverlappingRow } from "../../components/OverlappingRow"
+import { displayUser, getUserInitials } from "../../helpers/functions"
 
 export type BoardConfigType = {
 	headers: Record<string, any>,
@@ -29,7 +30,7 @@ export const useBoardConfig = () => {
 				return {
 					component: OverlappingRow,
 					props: {
-						imageUrls: userProfiles.map((profile) => profile.imageUrl),
+						imageUrls: userProfiles.map((profile) => ({name: displayUser(profile), imageUrl: profile.imageUrl, initials: getUserInitials(profile)})),
 						imageSize: "m",
 					}
 				}

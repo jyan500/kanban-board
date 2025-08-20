@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { logout } from "../../slices/authSlice" 
 import { LoadingSpinner } from "../LoadingSpinner"
 import { privateApi } from "../../services/private" 
-import { displayUser } from "../../helpers/functions"
+import { displayUser, getUserInitials } from "../../helpers/functions"
 import { Avatar } from "./Avatar"
 import { useClickOutside } from "../../hooks/useClickOutside" 
 import { IconContext } from "react-icons"
@@ -87,7 +87,7 @@ export const TopNav = () => {
 								e.preventDefault()
 								setShowDropdown(!showDropdown)
 							}}>
-								<Avatar imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
+								<Avatar userInitials={getUserInitials(userProfile)} imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
 								{
 									<Indicator showIndicator={polledNotifications?.data ? polledNotifications?.data.length > 0 : false} className = "tw-h-3 tw-w-3 -tw-bottom-0.5 -tw-right-0.5 tw-bg-red-500"/>
 								}
