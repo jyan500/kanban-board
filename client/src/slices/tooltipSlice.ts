@@ -11,17 +11,19 @@ type TooltipState = {
 }
 
 const initialState: TooltipState = {
-    visibility: {
-        "ai-features": true,
-    }
+    visibility: localStorage.getItem("tooltipVisibility") != null ? JSON.parse(localStorage.getItem("tooltipVisibility") ?? "") : {
+        "ai-features": true
+    },
+    
 }
 
 const tooltipSlice = createSlice({
-    name: 'auth',
+    name: 'tooltip',
     initialState,
     reducers: {
         setVisibility: (state, action: PayloadAction<{tooltipKey: keyof TooltipKeys, value: boolean}>) => {
             state.visibility = {...state.visibility, [action.payload.tooltipKey]: action.payload.value}
+            localStorage.setItem("tooltipVisibility", JSON.stringify(state.visibility))
         },
     },
 })

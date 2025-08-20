@@ -168,12 +168,12 @@ export const FADE_ANIMATION = "tw-transition tw-duration-100 tw-ease-in-out"
 export const AVATAR_SIZES: {[k: string]: string} = {
     "l": "tw-w-32 tw-h-32",
     "ml": "tw-w-16 tw-h-16",
-    "m": "tw-w-12 tw-h-12",
+    "m": "tw-w-10 tw-h-10",
     "s": "tw-w-6 tw-h-6",
 }
 
 export const AVATAR_FONT_SIZES: {[k: string]: string} = {
-    "s": "tw-text-s",
+    "s": "tw-text-xs",
     "m": "tw-text-l",
     "ml": "tw-text-l",
     "l": "tw-text-xl",
