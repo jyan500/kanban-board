@@ -96,12 +96,6 @@ export const sortStatusByOrder = (a: Status, b: Status) => {
 	return 0
 }
 
-export const doTicketsContainStatus = (statusId: number, tickets: Array<number>) => {
-	// const ticketsWithStatus = tickets.filter((ticket) => ticket.status.id === statusId)	
-	// return ticketsWithStatus.length > 0
-	return false
-}
-
 /**
  * @param backend error response as an object
  * @return Array of strings containing the parsed error messages
@@ -141,8 +135,16 @@ export const withUrlParams = (defaultForm: Record<string, any>, searchParams: Re
  * @param user
  * @return string containing the users' first and last name if the user exists, otherwise returns an empty string
  */
-export const displayUser = (user: Pick<UserProfile, "firstName" | "lastName"> | null | undefined) => {
+export const displayUser = (user: Pick<UserProfile, "firstName" | "lastName" | "imageUrl"> | null | undefined) => {
 	return user ? (user.firstName + " " + user.lastName) : ""
+}
+
+/**
+ * @param user
+ * @return string containing the users initials
+ */
+export const getUserInitials = (user: Pick<UserProfile, "firstName" | "lastName" | "imageUrl"> | null | undefined) => {
+	return user ? (user.firstName[0].toUpperCase() + user.lastName[0].toUpperCase()) : ""
 }
 
 /**

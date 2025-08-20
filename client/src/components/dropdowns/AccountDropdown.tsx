@@ -9,7 +9,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { TEMP, NOTIFICATIONS, ACCOUNT, ACCOUNT_SWITCH_ORGANIZATION } from "../../helpers/routes"
 import { SetColumnLimitModalProps } from "../secondary-modals/SetColumnLimitModal"
 import { Avatar } from "../page-elements/Avatar"
-import { displayUser } from "../../helpers/functions"
+import { getUserInitials, displayUser } from "../../helpers/functions"
 import { useNavigate } from "react-router-dom"
 import { Badge } from "../page-elements/Badge"
 import { IconBell } from "../icons/IconBell"
@@ -74,7 +74,7 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 		<Dropdown closeDropdown={closeDropdown} ref = {ref} className = "!tw-w-96">
 			<ul>
 				<li className = "tw-border-b tw-border-gray-200 tw-flex tw-flex-row tw-items-center tw-gap-x-4 tw-px-4 tw-py-2">
-					<Avatar imageUrl = {userProfile?.imageUrl} size = "m" className = "tw-rounded-full"/>
+					<Avatar userInitials={getUserInitials(userProfile)} imageUrl = {userProfile?.imageUrl} size = "m" className = "tw-rounded-full"/>
 					<div className = "tw-flex tw-flex-col">
 						<h3 className = "tw-m-0 tw-font-semibold">{displayUser(userProfile)}</h3>
 						<p className = "tw-text-gray-700">{userProfile?.email}</p>

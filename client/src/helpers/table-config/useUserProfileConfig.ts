@@ -34,13 +34,14 @@ export const useUserProfileConfig = () => {
 			"userRoleId": { modifier: userRoleModifier, lookup: userRoleLookup },
 		},
 		renderers: {
-			imageUrl: (url: string) => {
+			imageUrl: ({url, initials}: {url: string, initials: string}) => {
 				return {
 					component: Avatar,
 					props: {
 						imageUrl: url,
 						size: "m",	
 						className: "tw-rounded-full",
+						userInitials: initials,
 					}
 				}
 			}

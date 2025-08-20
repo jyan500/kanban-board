@@ -10,7 +10,7 @@ import { IconEmail } from "../icons/IconEmail"
 import { IconGear } from "../icons/IconGear"
 import { USER_PROFILE_URL, USER_PROFILE_ORG_URL } from "../../helpers/urls"
 import { ACCOUNT, ACCOUNT_CREATE_ORG, ACCOUNT_SWITCH_ORGANIZATION, ACCOUNT_CHANGE_PASSWORD, ACCOUNT_JOIN_ORGANIZATION, ACCOUNT_NOTIFICATION_SETTINGS, NOTIFICATIONS } from "../../helpers/routes"
-import { displayUser } from "../../helpers/functions"
+import { displayUser, getUserInitials } from "../../helpers/functions"
 import { SettingsCard } from "../page-elements/SettingsCard"
 import { ProfileCard } from "../page-elements/ProfileCard"
 import { Banner } from "../page-elements/Banner"
@@ -36,7 +36,7 @@ export const AccountContainer = ({userProfile, links, uploadImage, setUploadImag
 					<>
 						<div className = "lg:tw-w-1/4 tw-flex tw-flex-col tw-gap-y-4">
 							<>
-								<ProfileCard entityId={userProfile.id} imageUploadUrl={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]} imageUrl={userProfile?.imageUrl}>
+								<ProfileCard initials={getUserInitials(userProfile)} entityId={userProfile.id} imageUploadUrl={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]} imageUrl={userProfile?.imageUrl}>
 									<>
 										<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 								 			<div><IconUser className = "tw-mt-1"/></div>

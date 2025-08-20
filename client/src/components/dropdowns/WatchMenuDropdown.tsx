@@ -14,7 +14,7 @@ import {
 import { useAddNotificationMutation } from "../../services/private/notification"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
-import { displayUser } from "../../helpers/functions"
+import { getUserInitials, displayUser } from "../../helpers/functions"
 import { FiPlus as PlusIcon } from "react-icons/fi";
 import { IconPlus } from "../icons/IconPlus"
 import { TICKETS } from "../../helpers/routes"
@@ -165,7 +165,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 								ticketWatchers?.map((watcher) => {
 									return (
 										<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2 tw-py-1">
-											<Avatar imageUrl={watcher.imageUrl} className = "tw-rounded-full !tw-w-6 !tw-h-6"/>
+											<Avatar userInitials={getUserInitials(watcher)} imageUrl={watcher.imageUrl} className = "tw-rounded-full !tw-w-6 !tw-h-6"/>
 											<p key = {`watcher_${watcher.id}`}>{displayUser(watcher)}
 											</p>
 										</div>

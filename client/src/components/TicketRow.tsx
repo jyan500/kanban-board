@@ -11,6 +11,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Avatar } from "./page-elements/Avatar"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { SM_BREAKPOINT } from "../helpers/constants"
+import { getUserInitials } from "../helpers/functions"
 import { LoadingSpinner } from "./LoadingSpinner"
 
 type Props = {
@@ -50,7 +51,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 					: <></>}	
 				</div>
 				{width >= SM_BREAKPOINT ? 
-					(isLoading ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>) 
+					(isLoading ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>) 
 				: null}
 				<div className = "tw-text-left tw-break-words">{status?.name}</div>
 			</div>

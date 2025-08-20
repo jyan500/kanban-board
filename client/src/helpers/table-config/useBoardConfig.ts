@@ -1,7 +1,10 @@
 import { userProfileModifier, dateModifier } from "../table-modifiers/display-modifiers"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks" 
 import { setModalType, toggleShowModal } from "../../slices/modalSlice" 
+import { UserProfile } from "../../types/common"
 import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
+import { OverlappingRow } from "../../components/OverlappingRow"
+import { displayUser, getUserInitials } from "../../helpers/functions"
 
 export type BoardConfigType = {
 	headers: Record<string, any>,
@@ -22,8 +25,18 @@ export const useBoardConfig = () => {
 			...(isAdminOrBoardAdmin ? {"edit": ""} : {})},
 		linkCol: "name",
 		link: (id: string) => `/boards/${id}`,
+		renderers: {
+			assignees: (userProfiles: Array<Pick<UserProfile, "firstName" | "lastName" | "imageUrl">>) => {
+				return {
+					component: OverlappingRow,
+					props: {
+						imageUrls: userProfiles.map((profile) => ({name: displayUser(profile), imageUrl: profile.imageUrl, initials: getUserInitials(profile)})),
+						imageSize: "m",
+					}
+				}
+			}
+		},
 		modifiers: {
-			"assignees": { modifier: userProfileModifier, object: [] },
 			"lastModified": { modifier: dateModifier, object: [] },
 		},
 		...(isAdminOrBoardAdmin ? {editCol: {col: "edit", text: "Edit", onClick: (id: number) => {

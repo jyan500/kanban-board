@@ -12,7 +12,7 @@ import { USERS } from "../../helpers/routes"
 import { PaginationRow } from "../../components/page-elements/PaginationRow"
 import { BulkEditToolbar } from "../../components/page-elements/BulkEditToolbar"
 import { useForm, FormProvider } from "react-hook-form"
-import { withUrlParams } from "../../helpers/functions"
+import { getUserInitials, withUrlParams } from "../../helpers/functions"
 import { SearchBar } from "../../components/SearchBar"
 import { RowContentLoading } from "../../components/page-elements/RowContentLoading"
 
@@ -79,7 +79,12 @@ const UserForm = ({filters}: UserFormProps) => {
 					</FormProvider>
 				</div>
 				{errors?.userQuery ? <small className = "--text-alert">{errors?.userQuery?.message}</small> : null}
-				<Table tableKey={"display-user"} data={userProfiles?.data} config={userProfileConfig}/>
+				<Table tableKey={"display-user"} data={userProfiles?.data.map((userProfile) => {
+					return {
+						...userProfile,
+						imageUrl: {url: userProfile.imageUrl, initials: getUserInitials(userProfile)}
+					}
+				})} config={userProfileConfig}/>
 				<div className = "tw-p-4 tw-border tw-border-gray-300">
 					<PaginationRow
 						showNumResults={true}
