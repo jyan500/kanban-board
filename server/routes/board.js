@@ -74,8 +74,8 @@ router.get("/", async (req, res, next) => {
 			.groupBy("tickets_to_users.user_id")
 			.groupBy("users.first_name")
 			.groupBy("users.last_name")
-			.select("boards.id as id", "tickets_to_users.user_id as userId", "users.first_name as firstName", "users.last_name as lastName")
-			boardAssigneesRes = mapIdToRowAggregateObjArray(boardAssignees, ["userId", "firstName", "lastName"])
+			.select("boards.id as id", "tickets_to_users.user_id as userId", "users.first_name as firstName", "users.last_name as lastName", "users.image_url as imageUrl")
+			boardAssigneesRes = mapIdToRowAggregateObjArray(boardAssignees, ["userId", "firstName", "lastName", "imageUrl"])
 		}
 
 		let numTickets;

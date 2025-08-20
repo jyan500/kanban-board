@@ -20,8 +20,8 @@ export const Table = ({config, data, itemIds, tableKey: tKey, hideCheckAllBox}: 
 	// we cannot show the checkboxes and the action buttons
 	const showCheckboxes = config.bulkEdit?.isEnabled && config.bulkEdit?.filter && allIds.length > 0
 	return (
-		<div style = {{maxWidth: `${LG_BREAKPOINT}px`}} className = "tw-overflow-x-auto lg:tw-max-w-full lg:overflow-hidden">
-			<table>
+		<div className = "tw-max-w-4xl tw-overflow-x-auto">
+			<table className = "tw-min-w-full tw-w-max">
 				<thead>
 					<tr>
 						{showCheckboxes ? (
