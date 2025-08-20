@@ -19,6 +19,7 @@ const authSlice = createSlice({
         logout: (state) => {
             localStorage.removeItem("token")
             localStorage.removeItem("isTemp")
+            localStorage.removeItem("tooltipVisibility")
             state.token = null
             state.isTemp = false
         },
