@@ -1,0 +1,90 @@
+const express = require("express")
+const router = express.Router()
+const { 
+	validateGet, 
+	validateCreate, 
+	validateUpdate, 
+	validateDelete,
+}  = require("../validation/project")
+const { handleValidationResult }  = require("../middleware/validationMiddleware")
+const db = require("../db/db")
+const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
+const { DEFAULT_PER_PAGE } = require("../constants")
+const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
+
+router.get("/", async (req, res, next) => {
+	try {
+		const data = await db("projects").select(
+			"projects.id as id",
+			"projects.name as name",
+			"projects.user_id as userId",
+			"projects.image_url as imageUrl",
+			"projects.description as description",
+			"projects.created_at as createdAt",
+		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		res.json(data)
+	}
+	catch (err) {
+		console.error(`Error while getting projects: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.get("/:projectId", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const data = await db("projects").where("id", req.params.projectId).select(
+			"projects.id as id",
+			"projects.name as name",
+			"projects.user_id as userId",
+			"projects.image_url as imageUrl",
+			"projects.description as description",
+			"projects.created_at as createdAt",
+		).first()
+		res.json(data)
+	}	
+	catch (err) {
+		console.error(`Error while getting project: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
+	try {
+		const body = {...req.body, organization_id: req.user.organization}
+		const id = await insertAndGetId("projects", body)
+		res.json({id: id, message: "Project created successfully!"})
+	}	
+	catch (err) {
+		console.error(`Error while creating project: ${err.message}`)
+		next(err)
+	}
+})
+
+router.put("/:projectId", validateUpdate, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("projects").where("id", req.params.projectId).update({
+			name: req.body.name,
+			user_id: req.body.user_id,
+			image_url: req.body.image_url,
+			description: req.body.description,
+		})
+		res.json({message: "Project updated successfully!"})
+	}	
+	catch (err) {
+		console.error(`Error while updating project: ${err.message}`)
+		next(err)
+	}
+})
+
+router.delete("/:projectId", validateDelete, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("projects").where("id", req.params.projectId).del()
+		res.json({message: "Project deleted successfully!"})
+	}
+	catch (err){
+		console.error(`Error while deleting project: ${err.message}`)
+		next(err)
+	}
+})
+
+module.exports = router
