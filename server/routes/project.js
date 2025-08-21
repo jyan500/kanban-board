@@ -16,6 +16,7 @@ router.get("/", async (req, res, next) => {
 	try {
 		const data = await db("projects").select(
 			"projects.id as id",
+			"projects.name as name",
 			"projects.user_id as userId",
 			"projects.image_url as imageUrl",
 			"projects.description as description",
@@ -33,6 +34,7 @@ router.get("/:projectId", validateGet, handleValidationResult, async (req, res, 
 	try {
 		const data = await db("projects").where("id", req.params.projectId).select(
 			"projects.id as id",
+			"projects.name as name",
 			"projects.user_id as userId",
 			"projects.image_url as imageUrl",
 			"projects.description as description",
@@ -77,7 +79,7 @@ router.put("/:projectId", validateUpdate, handleValidationResult, async (req, re
 router.delete("/:projectId", validateDelete, handleValidationResult, async (req, res, next) => {
 	try {
 		await db("projects").where("id", req.params.projectId).del()
-		res.json({message: "Board deleted successfully!"})
+		res.json({message: "Project deleted successfully!"})
 	}
 	catch (err){
 		console.error(`Error while deleting project: ${err.message}`)
