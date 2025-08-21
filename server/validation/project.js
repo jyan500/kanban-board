@@ -26,7 +26,7 @@ const projectBoardValidator = (actionType) => {
 	let validationRules = [
 		param("projectId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "project", value, "projects"))
 	]
-	if (actionType === "create"){
+	if (actionType === "create" || actionType === "delete"){
 		validationRules = [
 			...validationRules,
 			body("board_ids.*").custom(async (value, {req}) => await checkEntityExistsIn("board", value, [{
@@ -48,4 +48,5 @@ module.exports = {
 	validateUpdate: projectValidator("update"),
 	validateDelete: projectValidator("delete"),
 	validateCreateProjectBoard: projectBoardValidator("create"),
+	validateDeleteProjectBoard: projectBoardValidator("delete"),
 }

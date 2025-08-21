@@ -6,6 +6,7 @@ const {
 	validateUpdate, 
 	validateDelete,
 	validateCreateProjectBoard,
+	validateDeleteProjectBoard,
 }  = require("../validation/project")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
@@ -51,12 +52,12 @@ router.get("/:projectId", validateGet, handleValidationResult, async (req, res, 
 
 router.get("/:projectId/board", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const data = await db("projects_to_boards").join("boards", "boards.id", "=", "projects_to_boards.project_id").where("project_id", req.params.projectId).select(
+		const data = await db("projects_to_boards").join("boards", "boards.id", "=", "projects_to_boards.board_id").where("project_id", req.params.projectId).select(
 			"boards.id as id",
 			"boards.name as name",
 			"boards.ticket_limit as ticketLimit",
 			"boards.is_sprint as isSprint",
-			"boards.sprint_completed as sprintCompleted",
+			"boards.is_sprint_complete as isSprintComplete",
 			"boards.sprint_debrief as sprintDebrief",
 			"boards.user_id as userId",
 			"boards.description as description",
@@ -84,6 +85,17 @@ router.post("/:projectId/board", validateCreateProjectBoard, handleValidationRes
 	}	
 	catch (err){
 		console.error(`Error while adding board to project: ${err.message}`)
+		next(err)
+	}
+})
+
+router.delete("/:projectId/board", validateDeleteProjectBoard, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("projects_to_boards").whereIn("board_id", req.body.board_ids).del()
+		res.json({message: "Board removed from project successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while deleting board from project: ${err.message}`)
 		next(err)
 	}
 })
