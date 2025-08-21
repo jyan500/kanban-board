@@ -16,7 +16,6 @@ const projectValidator = (actionType) => {
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required"),
-			body("image_url").isURL().withMessage("Must be valid URL"),
 			body("user_id").custom(async (value, {req}) => await checkEntityExistsIn("user", value, [{col: "id", value: value}], "users"))
 		]
 	}
