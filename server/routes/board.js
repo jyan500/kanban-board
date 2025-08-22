@@ -206,8 +206,9 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 			boardAssigneesRes = mapIdToRowAggregateArray(boardAssignees, "user_id")
 		}
 		const resData = boards.map((board) => {
+			let boardRes = {...board}
 			if (req.query.assignees === "true" && board.id in boardAssigneesRes){
-				boardRes = {...board, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : 0}
+				boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : 0}
 			}	
 			return boardRes
 		})
@@ -555,7 +556,16 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 		const id = await insertAndGetId("boards", {
 			name: body.name,
 			ticket_limit: body.ticket_limit,
-			organization_id: body.organization_id
+			organization_id: body.organization_id,
+			...(body.is_sprint ? {
+				is_sprint: body.is_sprint,
+				is_sprint_complete: body.is_sprint_complete,
+				description: body.description,
+				sprint_debrief: body.sprint_debrief,
+				start_date: new Date(body.start_date),
+				end_date: new Date(body.end_date),
+				user_id: body.user_id,
+			} : {})
 		})
 		res.json({id: id, message: "Board inserted successfully!"})
 	}	
@@ -570,6 +580,15 @@ router.put("/:boardId", validateUpdate, handleValidationResult, async (req, res,
 		await db("boards").where("id", req.params.boardId).update({
 			name: req.body.name,
 			ticket_limit: req.body.ticket_limit,
+			...(req.body.is_sprint ? {
+				is_sprint: req.body.is_sprint,
+				is_sprint_complete: req.body.is_sprint_complete,
+				description: req.body.description,
+				sprint_debrief: req.body.sprint_debrief,
+				start_date: new Date(req.body.start_date),
+				end_date: new Date(req.body.end_date),
+				user_id: req.body.user_id,
+			} : {})
 		})
 		res.json({message: "Board updated successfully!"})	
 	}	
