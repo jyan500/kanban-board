@@ -81,6 +81,13 @@ export interface Board {
 	id: number
 	name: string 
 	ticketLimit: number
+	isSprint?: boolean
+	isSprintCompleted?: boolean
+	description?: string
+	userId?: number
+	startDate?: Date | null
+	endDate?: Date | null
+	sprintDebrief?: string
 	organizationId: number
 	lastModified?: Date
 	assignees?: Array<number>

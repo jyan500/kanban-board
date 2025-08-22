@@ -5,6 +5,8 @@ const {
 	validateCreate, 
 	validateUpdate, 
 	validateDelete,
+	validateCreateProjectBoard,
+	validateDeleteProjectBoard,
 }  = require("../validation/project")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
@@ -44,6 +46,56 @@ router.get("/:projectId", validateGet, handleValidationResult, async (req, res, 
 	}	
 	catch (err) {
 		console.error(`Error while getting project: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.get("/:projectId/board", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const data = await db("projects_to_boards").join("boards", "boards.id", "=", "projects_to_boards.board_id").where("project_id", req.params.projectId).select(
+			"boards.id as id",
+			"boards.name as name",
+			"boards.ticket_limit as ticketLimit",
+			"boards.is_sprint as isSprint",
+			"boards.is_sprint_complete as isSprintComplete",
+			"boards.sprint_debrief as sprintDebrief",
+			"boards.user_id as userId",
+			"boards.description as description",
+			"boards.start_date as startDate",
+			"boards.end_date as endDate",
+			"boards.created_at as createdAt"
+		)
+		res.json(data)
+	}	
+	catch (err){
+		console.error(`Error while getting boards: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/:projectId/board", validateCreateProjectBoard, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("projects_to_boards").insert(req.body.board_ids.map((id) => {
+			return {
+				project_id: req.params.projectId,
+				board_id: id,
+			}
+		}))
+		res.json({message: "Board attached to project successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while adding board to project: ${err.message}`)
+		next(err)
+	}
+})
+
+router.delete("/:projectId/board", validateDeleteProjectBoard, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("projects_to_boards").whereIn("board_id", req.body.board_ids).del()
+		res.json({message: "Board removed from project successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while deleting board from project: ${err.message}`)
 		next(err)
 	}
 })

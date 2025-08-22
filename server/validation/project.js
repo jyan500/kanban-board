@@ -16,7 +16,27 @@ const projectValidator = (actionType) => {
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required"),
-			body("user_id").custom(async (value, {req}) => await checkEntityExistsIn("user", value, [{col: "id", value: value}], "users"))
+			body("userId").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
+		]
+	}
+	return validationRules
+}
+
+const projectBoardValidator = (actionType) => {
+	let validationRules = [
+		param("projectId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "project", value, "projects"))
+	]
+	if (actionType === "create" || actionType === "delete"){
+		validationRules = [
+			...validationRules,
+			body("board_ids.*").custom(async (value, {req}) => await checkEntityExistsIn("board", value, [{
+				col: "id",	
+				value: value,
+			},
+			{
+				col: "organization_id",	
+				value: req.user.organization
+			}], "boards"))
 		]
 	}
 	return validationRules
@@ -27,4 +47,6 @@ module.exports = {
 	validateCreate: projectValidator("create"),
 	validateUpdate: projectValidator("update"),
 	validateDelete: projectValidator("delete"),
+	validateCreateProjectBoard: projectBoardValidator("create"),
+	validateDeleteProjectBoard: projectBoardValidator("delete"),
 }

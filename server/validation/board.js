@@ -1,5 +1,5 @@
 const db = require("../db/db")
-const { checkUniqueEntity, entityInOrganization, validateKeyExists } = require("./helper")
+const { checkUniqueEntity, checkEntityExistsIn, entityInOrganization, validateKeyExists } = require("./helper")
 const { BULK_INSERT_LIMIT, MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT, MIN_BOARD_TICKET_LIMIT, MAX_BOARD_TICKET_LIMIT } = require("../constants")
 const { body, param } = require("express-validator")
 
@@ -16,7 +16,11 @@ const boardValidator = (actionType) => {
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required"),
-			body("ticket_limit").isNumeric().withMessage("ticket limit must be a number").isFloat({min: MIN_BOARD_TICKET_LIMIT, max: MAX_BOARD_TICKET_LIMIT}).withMessage(`ticket limit must be between ${MIN_BOARD_TICKET_LIMIT} and ${MAX_BOARD_TICKET_LIMIT}`)
+			body("ticket_limit").isNumeric().withMessage("ticket limit must be a number").isFloat({min: MIN_BOARD_TICKET_LIMIT, max: MAX_BOARD_TICKET_LIMIT}).withMessage(`ticket limit must be between ${MIN_BOARD_TICKET_LIMIT} and ${MAX_BOARD_TICKET_LIMIT}`),
+			body("start_date").if(body("is_sprint").exists()).isISO8601().toDate(),
+			body("end_date").if(body("is_sprint").exists()).isISO8601().toDate(),
+			body("description").if(body("is_sprint").exists()).notEmpty(),
+			body("user_id").if(body("is_sprint").exists()).custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
 		]
 	}
 	return validationRules
