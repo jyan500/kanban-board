@@ -102,6 +102,7 @@ export interface Project {
 	organizationId: number
 	userId: number
 	description?: string
+	createdAt: Date
 }
 
 export interface Ticket {

@@ -157,7 +157,7 @@ router.get("/", async (req, res, next) => {
 					}
 				}
 				if (req.query.assignees === "true" && board.id in boardAssigneesRes){
-					boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : 0}
+					boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : []}
 				}
 				if (req.query.numTickets === "true" && board.id in numTicketsRes){
 					boardRes = {...boardRes, numTickets: Object.keys(numTicketsRes).length > 0 ? numTicketsRes[board.id].numTickets : 0}
@@ -208,7 +208,7 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 		const resData = boards.map((board) => {
 			let boardRes = {...board}
 			if (req.query.assignees === "true" && board.id in boardAssigneesRes){
-				boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : 0}
+				boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : []}
 			}	
 			return boardRes
 		})
