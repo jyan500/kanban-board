@@ -95,6 +95,15 @@ export interface Board {
 	percentComplete?: number
 }
 
+export interface Project {
+	id: number
+	name: string
+	imageUrl?: string
+	organizationId: number
+	userId: number
+	description?: string
+}
+
 export interface Ticket {
 	id: number 
 	priorityId: number
