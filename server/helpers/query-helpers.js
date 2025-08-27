@@ -24,7 +24,22 @@ const getNumTicketsFromBoards = async (organizationId, boardIds) => {
 	.select("tickets_to_boards.board_id as id")
 }
 
+const getLastModified = (queryBuilder) => {
+	return queryBuilder.leftJoin("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
+	.leftJoin("boards_to_statuses","boards_to_statuses.board_id", "=", "boards.id")
+	.max("tickets_to_boards.updated_at as ticketsUpdatedAt")
+	.max("boards_to_statuses.updated_at as boardStatusesUpdatedAt")
+	.groupBy("boards.id")
+	.groupBy("boards.ticket_limit")
+	.groupBy("boards.name")
+	.groupBy("boards.organization_id")
+	.select(
+		"boards.updated_at as boardUpdatedAt",
+	)
+}
+
 module.exports = {
 	getAssigneesFromBoards,
 	getNumTicketsFromBoards,
+	getLastModified,
 }

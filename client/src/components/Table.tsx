@@ -13,6 +13,7 @@ type Props = {
 	data: Array<Record<string, any>> | undefined 
 	itemIds?: Array<number>
 	tableKey?: string
+	fullWidth?: boolean
 	hideCheckAllBox?: boolean
 	isNestedTable?: boolean
 }
@@ -32,23 +33,41 @@ const TableWrapper = ({children}: TableWrapperProps) => {
 }
 
 const InnerTable = (props: Props) => {
-	const { tableKey: tKey } = props
+	const { tableKey: tKey, fullWidth } = props
 	const [tableKey, setTableKey] = useState(tKey ?? uuidv4())
 	return (
-		<>
-			<TableHeader {...props}/>
-			<TableContent showCheckboxes={false} {...props}/>
-		</>
+		// <>
+		// 	<TableHeader {...props}/>
+		// 	<TableContent {...props} showCheckboxes={false} tableKey={tableKey}/>
+		// </>
+		<div className={fullWidth ? "tw-w-full" : ""}>
+			<table className={`tw-bg-white ${fullWidth ? "tw-w-full tw-min-w-full" : "tw-min-w-full tw-w-max"}`}>
+				<thead className="tw-bg-gray-100 tw-border-b tw-border-gray-200">
+					<TableHeader config={props.config} tableKey={tableKey}/>
+				</thead>
+				<tbody className="tw-bg-white tw-divide-y tw-divide-gray-200">
+					<TableContent {...props} showCheckboxes={false} tableKey={tableKey}/>
+				</tbody>
+			</table>
+		</div>
 	)
 }
 
 const TableHeader = ({config, tableKey}: Omit<Props, "data" | "itemIds" | "hideCheckAllBox">) => {
+	const headers = Object.values(config.headers) as Array<string>;
+	const columnWidth = `${100 / headers.length}%`;
 	return (
 		<>
 			<tr>
 			{
 				(Object.values(config.headers) as Array<string>).map((header) => (
-					<th className = "tw-text-xs tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wider" key = {`${tableKey}-${header !== "" ? header : uuidv4()}`}>{header}</th>	
+					<th 	
+						style={{ 
+							width: columnWidth,
+							minWidth: columnWidth,
+							maxWidth: columnWidth
+						}}
+						className = "tw-text-xs tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wider" key = {`${tableKey}-${header !== "" ? header : uuidv4()}`}>{header}</th>	
 				))
 			}
 			</tr>
@@ -70,15 +89,24 @@ const TableContent = ({
 	showCheckboxes?: boolean, 
 	setShowNestedTable?: (showNestedTable: boolean) => void
 } & Omit<Props, "hideCheckAllBox">) => {
+	
+	/* get the colspan to display a row that spans the whole col span for the inner table */	
+	const getColSpan = () => {
+		let cols = Object.keys(config.headers).length;
+		if (showCheckboxes) cols += 1
+		return cols;
+	}	
+
 	return (
 		<>
 		{data?.map((row) => {
-			const {component: Component, idKey} = config.nestedTable ?? {}
+			const {component: Component, idKey, fullWidth} = config.nestedTable ?? {}
 			const props = {
-				[idKey]: row.id
+				[idKey]: row.id,
+				fullWidth,
 			}
 			return (
-				<>
+				<React.Fragment key={`${tableKey}-${row.id}-fragment`}>
 				<tr className = {`${isNestedTable ? "tw-bg-gray-50 hover:tw-bg-gray-100 tw-transition-colors tw-duration-200" : ""}`} key = {`${tableKey}-${row.id}`}>
 					{showCheckboxes ? 
 						(<td>
@@ -159,18 +187,29 @@ const TableContent = ({
 							}
 							else {
 								return (
-									<td key = {`${tableKey}-${row.id}-${headerKey}`}>{row[headerKey]}</td>
+									<td key = {`${tableKey}-${row.id}-${headerKey}`}><span className = "tw-line-clamp-3">{row[headerKey]}</span></td>
 								)
 							}
 						})
 					}
 				</tr>
+				{/* Render nested table in a separate row that spans all columns */}
 				{
-					Component && showNestedTable ? (
-						<><Component {...props}/></>
-					) : null	
+					Component && showNestedTable ? 
+					// Component && showNestedTable ? (
+					// 	<><Component {...props}/></>
+					// ) : null	
+					(
+					<tr key={`${tableKey}-${row.id}-nested`}>
+						<td colSpan={getColSpan()} className="tw-p-0 tw-bg-gray-50">
+							<div className="tw-p-4 tw-border-l-4 tw-border-blue-200 tw-min-w-full">
+								<Component {...props}/>
+							</div>
+						</td>
+					</tr>	
+					) : null
 				}
-				</>
+				</React.Fragment>
 			)	
 		})}
 		</>

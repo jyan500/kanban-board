@@ -13,7 +13,7 @@ const db = require("../db/db")
 const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
-const { getAssigneesFromBoards } = require("../helpers/query-helpers")
+const { getNumTicketsFromBoards, getLastModified, getAssigneesFromBoards } = require("../helpers/query-helpers")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -65,7 +65,11 @@ router.get("/:projectId/board", validateGet, handleValidationResult, async (req,
 			"boards.start_date as startDate",
 			"boards.end_date as endDate",
 			"boards.created_at as createdAt"
-		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})
+		).modify((queryBuilder) => {
+			if (req.query.lastModified === "true"){
+				getLastModified(queryBuilder)	
+			}
+		}).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})
 		let boardAssignees;
 		let boardAssigneesRes = {}
 		let resData = []
@@ -73,11 +77,34 @@ router.get("/:projectId/board", validateGet, handleValidationResult, async (req,
 			boardAssignees = await getAssigneesFromBoards(req.user.organization, data.data.map((board) => board.id))
 			boardAssigneesRes = mapIdToRowAggregateObjArray(boardAssignees, ["userId", "firstName", "lastName", "imageUrl"])
 		}
-		resData = data.data.map((board) => {
-			if (req.query.assignees === "true" && board.id in boardAssigneesRes){
-				return {...board, assignees: Object.keys(boardAssigneesRes).length > -1 ? boardAssigneesRes[board.id] : []}
-			}
-		}).filter((board) => board)	
+		let numTickets;
+		let numTicketsRes = {}
+		if (req.query.numTickets === "true") {
+			numTickets = await getNumTicketsFromBoards(req.user.organization, data.data.map((b) => b.id))
+			numTicketsRes = mapIdToRowObject(numTickets)
+		}
+		if (req.query.lastModified === "true" || req.query.assignees === "true" || req.query.numTickets === "true" || req.query.includeUserDashboardInfo){
+			resData = data.data.map((board) => {
+				let lastUpdated;
+				if (req.query.lastModified === "true"){
+					lastUpdated = new Date(Math.max(board.boardStatusesUpdatedAt, board.ticketsUpdatedAt, board.boardUpdatedAt))
+				}
+				let boardRes = {
+					...board,
+					...(req.query.lastModified === "true" ? {lastModified: lastUpdated ?? null} : {})
+				}
+				if (req.query.assignees === "true" && board.id in boardAssigneesRes){
+					boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > -1 ? boardAssigneesRes[board.id] : []}
+				}
+				if (req.query.numTickets === "true"){
+					boardRes = {...boardRes, numTickets: Object.keys(numTicketsRes).length > 0 ? numTicketsRes[board.id].numTickets : 0}
+				}
+				return boardRes
+			})
+		}
+		else {
+			resData = data
+		}
 		res.json({
 			data: resData,
 			pagination: data.pagination

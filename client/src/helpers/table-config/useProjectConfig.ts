@@ -39,7 +39,8 @@ export const useProjectConfig = () => {
 		},
 		nestedTable: {
 			component: InnerProjectBoardsTable,
-			idKey: "projectId"
+			idKey: "projectId",
+			fullWidth: true
 		},
 		modifiers: {
 			"createdAt": { modifier: dateModifier, object: [] },

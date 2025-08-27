@@ -20,7 +20,7 @@ const db = require("../db/db")
 const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
-const { getAssigneesFromBoards, getNumTicketsFromBoards } = require("../helpers/query-helpers")
+const { getAssigneesFromBoards, getNumTicketsFromBoards, getLastModified } = require("../helpers/query-helpers")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -34,17 +34,7 @@ router.get("/", async (req, res, next) => {
 				queryBuilder.whereNot("boards.id", req.query.ignoreBoard)
 			}
 			if (req.query.lastModified === "true"){
-				queryBuilder.leftJoin("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
-				.leftJoin("boards_to_statuses","boards_to_statuses.board_id", "=", "boards.id")
-				.max("tickets_to_boards.updated_at as ticketsUpdatedAt")
-				.max("boards_to_statuses.updated_at as boardStatusesUpdatedAt")
-				.groupBy("boards.id")
-				.groupBy("boards.ticket_limit")
-				.groupBy("boards.name")
-				.groupBy("boards.organization_id")
-				.select(
-					"boards.updated_at as boardUpdatedAt",
-				)
+				getLastModified(queryBuilder)	
 			}
 			if (req.query.includeUserDashboardInfo){
 				queryBuilder.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")	

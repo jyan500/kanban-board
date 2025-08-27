@@ -6,18 +6,20 @@ import { LoadingSpinner } from "../LoadingSpinner"
 
 interface Props {
 	projectId: number
+	fullWidth: boolean
 }
 
-export const InnerProjectBoardsTable = ({projectId}: Props) => {
+export const InnerProjectBoardsTable = ({projectId, fullWidth}: Props) => {
 	const config = useBoardConfig()
-	const { data, isFetching, isError } = useGetProjectBoardsQuery({id: projectId, urlParams: {"assignees": true}})
+	const { data, isFetching, isError } = useGetProjectBoardsQuery({id: projectId, urlParams: {"assignees": true, "numTickets": true, "lastModified": true}})
 	return (
 		<>
 		{
-			isFetching ? <LoadingSpinner/> :
+			isFetching ? <tr><LoadingSpinner/></tr> :
 			<Table 
 				config={config} 
 				data={data?.data ?? []} 
+				fullWidth={fullWidth}
 				isNestedTable={true}
 				tableKey={"project-boards"}
 			/>
