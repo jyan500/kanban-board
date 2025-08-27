@@ -20,6 +20,7 @@ const db = require("../db/db")
 const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
+const { getAssigneesFromBoards, getNumTicketsFromBoards } = require("../helpers/query-helpers")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -74,29 +75,14 @@ router.get("/", async (req, res, next) => {
 		let boardAssignees;
 		let boardAssigneesRes = {}
 		if (req.query.assignees === "true"){
-			boardAssignees = await db("boards")
-			.where("organization_id", req.user.organization)
-			.whereIn("boards.id", boards.data.map((b) => b.id))
-			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
-			.join("tickets_to_users", "tickets_to_boards.ticket_id", "=", "tickets_to_users.ticket_id")
-			.join("users", "tickets_to_users.user_id", "=", "users.id")
-			.groupBy("boards.id")
-			.groupBy("tickets_to_users.user_id")
-			.groupBy("users.first_name")
-			.groupBy("users.last_name")
-			.select("boards.id as id", "tickets_to_users.user_id as userId", "users.first_name as firstName", "users.last_name as lastName", "users.image_url as imageUrl")
+			boardAssignees = await getAssigneesFromBoards(req.user.organization, boards.data.map((b) => b.id))
 			boardAssigneesRes = mapIdToRowAggregateObjArray(boardAssignees, ["userId", "firstName", "lastName", "imageUrl"])
 		}
 
 		let numTickets;
 		let numTicketsRes = {}
 		if (req.query.numTickets === "true") {
-			numTickets = await db("boards").where("organization_id", req.user.organization)
-			.whereIn("boards.id", boards.data.map((b) => b.id))
-			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
-			.groupBy("tickets_to_boards.board_id")
-			.count("tickets_to_boards.ticket_id as numTickets")
-			.select("tickets_to_boards.board_id as id")
+			numTickets = await getNumTicketsFromBoards(req.user.organization, boards.data.map((b) => b.id))
 			numTicketsRes = mapIdToRowObject(numTickets)
 		}
 

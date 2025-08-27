@@ -73,14 +73,14 @@ export const boardApi = privateApi.injectEndpoints({
 				body: {name: board.name, ticket_limit: board.ticketLimit},
 				method: "PUT",
 			}),
-			invalidatesTags: ["Boards"]
+			invalidatesTags: ["Boards", "ProjectBoards"]
 		}),
 		deleteBoard: builder.mutation<void, number>({
 			query: (id) => ({
 				url: `${BOARD_URL}/${id}`,
 				method: "DELETE",
 			}),
-			invalidatesTags: ["Boards"]
+			invalidatesTags: ["Boards", "ProjectBoards"]
 		}),
 		getBoardTickets: builder.query<ListResponse<Ticket>, {id: number, urlParams: Record<string, any>}>({
 			query: ({id, urlParams}) => ({

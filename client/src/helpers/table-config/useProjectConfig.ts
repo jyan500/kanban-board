@@ -5,6 +5,7 @@ import { UserProfile } from "../../types/common"
 import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
 import { displayUser, getUserInitials } from "../../helpers/functions"
 import { Avatar } from "../../components/page-elements/Avatar"
+import { InnerProjectBoardsTable } from "../../components/projects/InnerProjectBoardsTable"
 
 export const useProjectConfig = () => {
 	const { userProfiles, userProfile } = useAppSelector((state) => state.userProfile)
@@ -31,19 +32,14 @@ export const useProjectConfig = () => {
 					}
 				}
 			}
-			// assignees: (userProfiles: Array<Pick<UserProfile, "firstName" | "lastName" | "imageUrl">> | null | undefined) => {
-			// 	return {
-			// 		component: OverlappingRow,
-			// 		props: {
-			// 			imageUrls: userProfiles?.map((profile) => ({name: displayUser(profile), imageUrl: profile.imageUrl, initials: getUserInitials(profile)})) ?? [],
-			// 			imageSize: "m",
-			// 		}
-			// 	}
-			// }
 		},
 		nestedTableControl: {
 			col: "showBoards",
 			text: "Boards"
+		},
+		nestedTable: {
+			component: InnerProjectBoardsTable,
+			idKey: "projectId"
 		},
 		modifiers: {
 			"createdAt": { modifier: dateModifier, object: [] },

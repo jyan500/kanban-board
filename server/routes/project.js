@@ -13,6 +13,7 @@ const db = require("../db/db")
 const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
+const { getAssigneesFromBoards } = require("../helpers/query-helpers")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -64,8 +65,23 @@ router.get("/:projectId/board", validateGet, handleValidationResult, async (req,
 			"boards.start_date as startDate",
 			"boards.end_date as endDate",
 			"boards.created_at as createdAt"
-		)
-		res.json(data)
+		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})
+		let boardAssignees;
+		let boardAssigneesRes = {}
+		let resData = []
+		if (req.query.assignees === "true"){
+			boardAssignees = await getAssigneesFromBoards(req.user.organization, data.data.map((board) => board.id))
+			boardAssigneesRes = mapIdToRowAggregateObjArray(boardAssignees, ["userId", "firstName", "lastName", "imageUrl"])
+		}
+		resData = data.data.map((board) => {
+			if (req.query.assignees === "true" && board.id in boardAssigneesRes){
+				return {...board, assignees: Object.keys(boardAssigneesRes).length > -1 ? boardAssigneesRes[board.id] : []}
+			}
+		}).filter((board) => board)	
+		res.json({
+			data: resData,
+			pagination: data.pagination
+		})
 	}	
 	catch (err){
 		console.error(`Error while getting boards: ${err.message}`)
