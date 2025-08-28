@@ -143,7 +143,12 @@ router.get("/:projectId/board", validateGet, handleValidationResult, async (req,
 
 router.post("/:projectId/board", validateCreateProjectBoard, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("projects_to_boards").insert(req.body.board_ids.map((id) => {
+		// get existing boards and filter out the boards that have already been added
+		const existingBoards = await db("projects_to_boards").whereIn("board_id", req.body.board_ids)
+		const existingBoardIds = existingBoards.map((board) => board.id)
+		const idsToAdd = req.body.board_ids.filter((id) => !existingBoardIds.includes(id))
+
+		await db("projects_to_boards").insert(idsToAdd.map((id) => {
 			return {
 				project_id: req.params.projectId,
 				board_id: id,
