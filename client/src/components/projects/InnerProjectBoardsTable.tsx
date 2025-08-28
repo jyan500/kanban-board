@@ -31,16 +31,16 @@ export const InnerProjectBoardsTable = ({projectId, fullWidth}: Props) => {
 					isNestedTable={true}
 					tableKey={"project-boards"}
 				/>
-				{
-					data?.pagination ? 
+				{data?.pagination.nextPage || data?.pagination.prevPage ? (
 					<PaginationRow
-						showPageNums={true}
-						paginationData={data.pagination}	
 						showNumResults={true}
-						setPage={setPageFunc}
+						showPageNums={false}
+						setPage={setPageFunc}	
+						paginationData={data?.pagination}
 						currentPage={page}
-					/> : null
-				}
+					/>
+				) : null
+			}
 			</div>
 		}
 		</>
