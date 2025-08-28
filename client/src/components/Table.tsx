@@ -36,10 +36,6 @@ const InnerTable = (props: Props) => {
 	const { tableKey: tKey, fullWidth } = props
 	const [tableKey, setTableKey] = useState(tKey ?? uuidv4())
 	return (
-		// <>
-		// 	<TableHeader {...props}/>
-		// 	<TableContent {...props} showCheckboxes={false} tableKey={tableKey}/>
-		// </>
 		<div className={fullWidth ? "tw-w-full" : ""}>
 			<table className={`tw-bg-white ${fullWidth ? "tw-w-full tw-min-w-full" : "tw-min-w-full tw-w-max"}`}>
 				<thead className="tw-bg-gray-100 tw-border-b tw-border-gray-200">
@@ -57,21 +53,19 @@ const TableHeader = ({config, tableKey}: Omit<Props, "data" | "itemIds" | "hideC
 	const headers = Object.values(config.headers) as Array<string>;
 	const columnWidth = `${100 / headers.length}%`;
 	return (
-		<>
-			<tr>
-			{
-				(Object.values(config.headers) as Array<string>).map((header) => (
-					<th 	
-						style={{ 
-							width: columnWidth,
-							minWidth: columnWidth,
-							maxWidth: columnWidth
-						}}
-						className = "tw-text-xs tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wider" key = {`${tableKey}-${header !== "" ? header : uuidv4()}`}>{header}</th>	
-				))
-			}
-			</tr>
-		</>
+		<tr>
+		{
+			(Object.values(config.headers) as Array<string>).map((header) => (
+				<th 	
+					style={{ 
+						width: columnWidth,
+						minWidth: columnWidth,
+						maxWidth: columnWidth
+					}}
+					className = "tw-text-xs tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wider" key = {`${tableKey}-${header !== "" ? header : uuidv4()}`}>{header}</th>	
+			))
+		}
+		</tr>
 	)
 }
 
