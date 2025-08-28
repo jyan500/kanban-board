@@ -1,8 +1,7 @@
 import { userProfileModifier, dateModifier } from "../table-modifiers/display-modifiers"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks" 
-import { setModalType, toggleShowModal } from "../../slices/modalSlice" 
+import { setModalProps, setModalType, toggleShowModal } from "../../slices/modalSlice" 
 import { UserProfile } from "../../types/common"
-import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
 import { displayUser, getUserInitials } from "../../helpers/functions"
 import { Avatar } from "../../components/page-elements/Avatar"
 import { InnerProjectBoardsTable } from "../../components/projects/InnerProjectBoardsTable"
@@ -46,6 +45,9 @@ export const useProjectConfig = () => {
 			"createdAt": { modifier: dateModifier, object: [] },
 		},
 		...(isAdminOrBoardAdmin ? {editCol: {col: "edit", text: "Edit", onClick: (id: number) => {
+			dispatch(setModalType("PROJECT_FORM"))
+			dispatch(setModalProps({projectId: id}))
+			dispatch(toggleShowModal(true))
 		}}} : {}),
 	}
 }

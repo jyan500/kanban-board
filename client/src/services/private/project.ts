@@ -12,8 +12,8 @@ import { parseURLParams } from "../../helpers/functions"
 export const projectApi = privateApi.injectEndpoints({
 	overrideExisting: false,
 	endpoints: (builder) => ({
-		getProjects: builder.query<ListResponse<Project>, Record<string, any>>({
-			query: (urlParams) => ({
+		getProjects: builder.query<ListResponse<Project>, {urlParams: Record<string, any>}>({
+			query: ({urlParams}) => ({
 				url: `${PROJECT_URL}`,
 				method: "GET",
 				params: urlParams
@@ -28,24 +28,30 @@ export const projectApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Projects"]
 		}),
-		// addProject: builder.mutation<BoardResponse, BoardRequest>({
-		// 	query: (board: BoardRequest) => ({
-		// 		url: BOARD_URL,
-		// 		body: {name: board.name, ticket_limit: board.ticketLimit},
-		// 		method: "POST",
-		// 	}),
-		// 	invalidatesTags: ["Boards"]
-		// }),
-		// updateProject: builder.mutation<void, Record<string,any>>({
-		// 	query: (project: Record<string, any>) => ({
-		// 		url: `${PROJECT_URL}/${board.id}`,
-		// 		body: {
-		// 			name: board.name, ticket_limit: board.ticketLimit
-		// 		},
-		// 		method: "PUT",
-		// 	}),
-		// 	invalidatesTags: ["Boards"]
-		// }),
+		addProject: builder.mutation<Project, Omit<Project, "id" | "createdAt" | "organizationId" | "userId"> & { userId?: number }>({
+			query: ({name, description, userId}) => ({
+				url: PROJECT_URL,
+				body: {
+					name,
+					description,
+					user_id: userId
+				},
+				method: "POST",
+			}),
+			invalidatesTags: ["Projects"]
+		}),
+		updateProject: builder.mutation<void, Pick<Project, "id" | "name" | "description" | "imageUrl"> & { userId?: number }>({
+			query: ({id, name, description, userId}) => ({
+				url: `${PROJECT_URL}/${id}`,
+				body: {
+					name,
+					description,
+					user_id: userId
+				},
+				method: "PUT",
+			}),
+			invalidatesTags: ["Projects"]
+		}),
 		deleteProject: builder.mutation<void, number>({
 			query: (id) => ({
 				url: `${PROJECT_URL}/${id}`,
@@ -87,6 +93,8 @@ export const projectApi = privateApi.injectEndpoints({
 export const { 
 	useGetProjectsQuery,
 	useGetProjectQuery,
+	useAddProjectMutation,
+	useUpdateProjectMutation,
 	useDeleteProjectMutation,
 	useGetProjectBoardsQuery,
 	useAddProjectBoardsMutation,

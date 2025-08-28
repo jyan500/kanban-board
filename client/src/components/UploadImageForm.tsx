@@ -15,13 +15,14 @@ interface Props {
 	endpoint: string
 	invalidatesTags: Array<string>
 	imageUrl?: string
+	onUploadSuccess?: () => void
 }
 
 type FormValues = {
 	imageUrl: string	
 }
 
-export const UploadImageForm = ({id, imageUrl, endpoint, invalidatesTags}: Props) => {
+export const UploadImageForm = ({id, imageUrl, endpoint, invalidatesTags, onUploadSuccess}: Props) => {
 	const defaultForm = {
 		imageUrl: imageUrl ?? "" 
 	}
@@ -39,6 +40,9 @@ export const UploadImageForm = ({id, imageUrl, endpoint, invalidatesTags}: Props
 				animationType: "animation-in",
 				type: "success"
 			}))
+			if (onUploadSuccess) {
+				onUploadSuccess()
+			}
 
 		}
 		catch (e){

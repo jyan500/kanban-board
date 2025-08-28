@@ -100,7 +100,7 @@ export interface Project {
 	name: string
 	imageUrl?: string
 	organizationId: number
-	userId: number
+	userId?: number
 	description?: string
 	createdAt: Date
 }

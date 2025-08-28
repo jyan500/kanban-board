@@ -7,6 +7,7 @@ const {
 	validateDelete,
 	validateCreateProjectBoard,
 	validateDeleteProjectBoard,
+	validateImageUpload,
 }  = require("../validation/project")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
@@ -151,6 +152,19 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 	}	
 	catch (err) {
 		console.error(`Error while creating project: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/image", validateImageUpload, handleValidationResult, async (req, res, next) => {
+	try {
+		await db("projects").where("id", req.body.id).update({
+			image_url: req.body.image_url
+		})
+		res.json({message: "Project image uploaded successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while updating project: ${err.message}`)
 		next(err)
 	}
 })

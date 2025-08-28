@@ -11,11 +11,13 @@ interface Props {
 	invalidatesTags: Array<string>
 	children?: React.ReactNode
 	isOrg?: boolean
+	showUploadImage?: boolean
+	onUploadSuccess?: () => void
 }
 
-export const ProfileCard = ({entityId, imageUrl, imageUploadUrl, invalidatesTags, children, isOrg, initials}: Props) => {
+export const ProfileCard = ({entityId, imageUrl, imageUploadUrl, invalidatesTags, children, isOrg, initials, showUploadImage=false, onUploadSuccess}: Props) => {
 
-	const [uploadImage, setUploadImage] = useState(false)
+	const [uploadImage, setUploadImage] = useState(showUploadImage)
 	return (
 		<div className = "tw-w-full tw-p-4 tw-border tw-border-gray-300 tw-shadow tw-rounded-md tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-flex tw-flex-row tw-justify-center">
@@ -23,7 +25,7 @@ export const ProfileCard = ({entityId, imageUrl, imageUploadUrl, invalidatesTags
 			</div>
 			<div className = "tw-flex tw-flex-col tw-gap-y-2">
 				{
-					uploadImage ? <UploadImageForm id={entityId} imageUrl={imageUrl} endpoint={imageUploadUrl} invalidatesTags={invalidatesTags}/> : null
+					uploadImage ? <UploadImageForm id={entityId} imageUrl={imageUrl} endpoint={imageUploadUrl} invalidatesTags={invalidatesTags} onUploadSuccess={onUploadSuccess}/> : null
 				}
 			</div>
 			{children}
