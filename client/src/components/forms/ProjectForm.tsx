@@ -43,7 +43,6 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 	const [ updateProject ] = useUpdateProjectMutation()
 	const { data: projectInfo, isLoading: isGetProjectDataLoading } = useGetProjectQuery(projectId ? {id: projectId, urlParams: {}} : skipToken)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
-	const { data: owner, isLoading: isOwnerLoading } = useGetUserQuery(projectInfo?.userId ?? skipToken)
 	const [ preloadedValues, setPreloadedValues ] = useState<FormValues>(defaultForm)
 	const { register, handleSubmit, reset, setValue, watch, getValues, control, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
@@ -57,18 +56,15 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 	useEffect(() => {
 		// initialize with current values if the project exists
 		if (projectId && projectInfo){
-			reset({id: projectId, name: projectInfo.name, description: projectInfo.description, imageUrl: projectInfo.imageUrl})
+			reset({id: projectId, userIdOption: {
+				label: displayUser(projectInfo.owner),
+				value: projectInfo.owner.id.toString(),
+			}, name: projectInfo.name, description: projectInfo.description, imageUrl: projectInfo.imageUrl})
 		}
 		else {
 			reset(defaultForm)
 		}
 	}, [showModal, projectInfo, projectId])
-
-	useEffect(() => {
-		if (!isOwnerLoading && owner){
-			setValue("userIdOption", {label: displayUser(owner), value: owner.id.toString()})
-		}
-	}, [isOwnerLoading, owner])
 
     const onSubmit = async (values: FormValues) => {
 		setSubmitLoading(true)
@@ -120,29 +116,26 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 				setValue("userIdOption", currentUserIdOption);
 			}} />
 			<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
-				{
-					!isOwnerLoading ? 
-					<div className = "tw-flex tw-flex-col">
-						<label className = "label">Owner</label>
-						<Controller
-							name={"userIdOption"}
-							control={control}
-							rules={registerOptions.userIdOption}
-							render={({ field: { onChange, value, name, ref } }) => (
-								<AsyncSelect 
-									endpoint={USER_PROFILE_URL} 
-									clearable={true}
-									defaultValue={watch("userIdOption") ?? null}
-									urlParams={{forSelect: true}} 
-									onSelect={async (selectedOption: OptionType | null) => {
-										onChange(selectedOption)
-									}}
-								/>
-							)}
-						/>
-						{errors?.userIdOption && <small className = "--text-alert">{errors.userIdOption.message}</small>}
-					</div> : <LoadingSpinner/> 
-				}
+				<div className = "tw-flex tw-flex-col">
+					<label className = "label">Owner</label>
+					<Controller
+						name={"userIdOption"}
+						control={control}
+						rules={registerOptions.userIdOption}
+						render={({ field: { onChange, value, name, ref } }) => (
+							<AsyncSelect 
+								endpoint={USER_PROFILE_URL} 
+								clearable={true}
+								defaultValue={watch("userIdOption") ?? null}
+								urlParams={{forSelect: true}} 
+								onSelect={async (selectedOption: OptionType | null) => {
+									onChange(selectedOption)
+								}}
+							/>
+						)}
+					/>
+					{errors?.userIdOption && <small className = "--text-alert">{errors.userIdOption.message}</small>}
+				</div>
 				<div className = "tw-flex tw-flex-col">
 					<label className = "label" htmlFor = "project-name">Name</label>
 					<input id = "project-name" type = "text"

@@ -28,7 +28,7 @@ export const projectApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Projects"]
 		}),
-		addProject: builder.mutation<Project, Omit<Project, "id" | "createdAt" | "organizationId" | "userId"> & { userId?: number }>({
+		addProject: builder.mutation<Project, Omit<Project, "id" | "owner" | "createdAt" | "organizationId">>({
 			query: ({name, description, userId}) => ({
 				url: PROJECT_URL,
 				body: {
@@ -40,7 +40,7 @@ export const projectApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Projects"]
 		}),
-		updateProject: builder.mutation<void, Pick<Project, "id" | "name" | "description" | "imageUrl"> & { userId?: number }>({
+		updateProject: builder.mutation<void, Pick<Project, "id" | "name" | "description" | "imageUrl" | "userId">>({
 			query: ({id, name, description, userId}) => ({
 				url: `${PROJECT_URL}/${id}`,
 				body: {

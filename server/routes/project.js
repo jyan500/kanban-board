@@ -26,7 +26,22 @@ router.get("/", async (req, res, next) => {
 			"projects.description as description",
 			"projects.created_at as createdAt",
 		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		res.json(data)
+		const resData = await Promise.all(data.data.map(async (project) => {
+			const user = await db("users").where("id", project.userId).first()
+			return {
+				...project,
+				owner: {
+					id: project.user_id,
+					firstName: user.first_name,
+					lastName: user.last_name,
+					imageUrl: user.image_url,
+				}
+			}
+		}))
+		res.json({
+			data: resData,
+			pagination: data.pagination
+		})
 	}
 	catch (err) {
 		console.error(`Error while getting projects: ${err.message}`)	
@@ -44,7 +59,16 @@ router.get("/:projectId", validateGet, handleValidationResult, async (req, res, 
 			"projects.description as description",
 			"projects.created_at as createdAt",
 		).first()
-		res.json(data)
+		const user = await db("users").where("id", data.userId).first()
+		res.json({
+			...data,
+			owner: {
+				id: user.id,
+				firstName: user.first_name,
+				lastName: user.last_name,
+				imageUrl: user.image_url,
+			}
+		})
 	}	
 	catch (err) {
 		console.error(`Error while getting project: ${err.message}`)	

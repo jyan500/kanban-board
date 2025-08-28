@@ -100,7 +100,8 @@ export interface Project {
 	name: string
 	imageUrl?: string
 	organizationId: number
-	userId?: number
+	userId: number
+	owner: Pick<UserProfile, "id" | "imageUrl" | "firstName" | "lastName">
 	description?: string
 	createdAt: Date
 }
