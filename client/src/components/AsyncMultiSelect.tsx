@@ -83,7 +83,7 @@ export const AsyncMultiSelect = React.forwardRef<SelectInstance<OptionType, true
 		<AsyncPaginate
 			selectRef={ref}
 			loadOptions={loadOptions}
-			value={val}
+			value={defaultValue}
 			onInputChange={handleInputChange}
 			onBlur={onBlur}
 			additional={{page: 1}}

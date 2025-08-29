@@ -121,14 +121,14 @@ router.get("/:projectId/board", validateGet, handleValidationResult, async (req,
 				if (req.query.assignees === "true" && board.id in boardAssigneesRes){
 					boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > -1 ? boardAssigneesRes[board.id] : []}
 				}
-				if (req.query.numTickets === "true"){
+				if (req.query.numTickets === "true" && board.id in numTicketsRes){
 					boardRes = {...boardRes, numTickets: Object.keys(numTicketsRes).length > 0 ? numTicketsRes[board.id].numTickets : 0}
 				}
 				return boardRes
 			})
 		}
 		else {
-			resData = data
+			resData = data.data
 		}
 		res.json({
 			data: resData,
@@ -144,16 +144,22 @@ router.get("/:projectId/board", validateGet, handleValidationResult, async (req,
 router.post("/:projectId/board", validateCreateProjectBoard, handleValidationResult, async (req, res, next) => {
 	try {
 		// get existing boards and filter out the boards that have already been added
-		const existingBoards = await db("projects_to_boards").whereIn("board_id", req.body.board_ids)
-		const existingBoardIds = existingBoards.map((board) => board.id)
+		const existingBoards = await db("projects_to_boards").where("project_id", req.params.projectId)
+		const existingBoardIds = existingBoards.map((board) => board.board_id)
 		const idsToAdd = req.body.board_ids.filter((id) => !existingBoardIds.includes(id))
-
-		await db("projects_to_boards").insert(idsToAdd.map((id) => {
-			return {
-				project_id: req.params.projectId,
-				board_id: id,
-			}
-		}))
+		// the ids to delete are the ones present in existing board ids but are not present in the request board ids
+		const idsToDelete = existingBoardIds.filter((id) => !req.body.board_ids.includes(id))
+		if (idsToAdd.length){
+			await db("projects_to_boards").insert(idsToAdd.map((id) => {
+				return {
+					project_id: req.params.projectId,
+					board_id: id,
+				}
+			}))
+		}
+		if (idsToDelete.length){
+			await db("projects_to_boards").where("project_id", req.params.projectId).whereIn("board_id", idsToDelete).del()
+		}
 		res.json({message: "Board attached to project successfully!"})
 	}	
 	catch (err){
@@ -164,7 +170,7 @@ router.post("/:projectId/board", validateCreateProjectBoard, handleValidationRes
 
 router.delete("/:projectId/board", validateDeleteProjectBoard, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("projects_to_boards").whereIn("board_id", req.body.board_ids).del()
+		await db("projects_to_boards").where("projectId", req.params.projectId).whereIn("board_id", req.body.board_ids).del()
 		res.json({message: "Board removed from project successfully!"})
 	}	
 	catch (err){

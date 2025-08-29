@@ -13,7 +13,7 @@ import {
 import { v4 as uuidv4 } from "uuid"
 import { addToast } from "../../slices/toastSlice"
 import { LoadingButton } from "../page-elements/LoadingButton"
-import { Project, OptionType, UserProfile } from "../../types/common"
+import { Board, Project, OptionType, UserProfile } from "../../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ProfileCard } from "../page-elements/ProfileCard"
 import { PROJECT_URL, BOARD_URL } from "../../helpers/urls"
@@ -47,7 +47,6 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 		id: undefined,
 		name: "",
 		description: "",
-		imageUrl: "",
 		userIdOption: {label: "", value: ""},
 		boardIdOptions: []
 	}
@@ -72,16 +71,25 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 
 	useEffect(() => {
 		// initialize with current values if the project exists
-		if (projectId && projectInfo){
-			reset({id: projectId, userIdOption: {
+		if (projectBoards && projectInfo){
+			const options: Array<OptionType> = projectBoards.data.map((board: Board) => {
+				const option: OptionType = {
+					label: board.name,
+					value: board.id.toString()
+				}
+				return option
+			})
+			reset({id: projectId, 
+				boardIdOptions: options,
+				userIdOption: {
 				label: displayUser(projectInfo.owner),
 				value: projectInfo.owner.id.toString(),
-			}, name: projectInfo.name, description: projectInfo.description, imageUrl: projectInfo.imageUrl})
+			}, name: projectInfo.name, description: projectInfo.description})
 		}
 		else {
 			reset(defaultForm)
 		}
-	}, [showModal, projectInfo, projectId])
+	}, [showModal, projectInfo, projectBoards, projectId])
 
     const onSubmit = async (values: FormValues) => {
 		setSubmitLoading(true)
@@ -91,7 +99,6 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 					id: projectId,
 					name: values.name,
 					description: values.description,
-					imageUrl: values.imageUrl,
 					userId: !isNaN(parseInt(values.userIdOption.value)) ? parseInt(values.userIdOption.value) : 0
 				}).unwrap()
     		}
@@ -99,10 +106,17 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
     			await addProject({
 					name: values.name,
 					description: values.description,
-					imageUrl: values.imageUrl,
 					userId: !isNaN(parseInt(values.userIdOption.value)) ? parseInt(values.userIdOption.value) : 0
 				}).unwrap()
     		}
+			if (values.boardIdOptions.length && projectId){
+				await addProjectBoards({
+					id: projectId,
+					boardIds: values.boardIdOptions.map((option) => {
+						return parseInt(option.value)
+					})
+				}).unwrap()
+			}
     		dispatch(toggleShowModal(false))
     		dispatch(addToast({
 				id: uuidv4(),
@@ -126,7 +140,7 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-w-[80%] tw-w-full">
-			<ProfileCard showUploadImage={true} entityId={projectId ?? 0} imageUrl={watch("imageUrl")} imageUploadUrl={`${PROJECT_URL}/image`} invalidatesTags={["Projects"]} />
+			<ProfileCard showUploadImage={true} entityId={projectId ?? 0} imageUrl={projectInfo?.imageUrl ?? ""} imageUploadUrl={`${PROJECT_URL}/image`} invalidatesTags={["Projects"]} />
 			<form onSubmit={handleSubmit(onSubmit)} className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
 				<div className = "tw-flex tw-flex-col">
 					<label className = "label">Owner</label>
