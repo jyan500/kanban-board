@@ -221,45 +221,6 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 					<LoadingButton isLoading={submitLoading} type="submit" text="Submit" className = "button"/>
 				</div>
 			</form>
-		{/*	<div className = "tw-flex tw-flex-col tw-gap-y-4">
-				<p className = "tw-font-bold">Add Boards</p>		
-				{!isProjectBoardsLoading ? (
-					<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
-						<Controller
-							name={"boardId"}
-							control={control}
-			                render={({ field: { onChange, value, name, ref } }) => (
-			                	<AsyncSelect 
-				            		ref={selectRef}
-				                	endpoint={BOARD_URL} 
-				                	cacheKey={cacheKey}
-				                	className={"tw-w-64"}
-				                	urlParams={{forSelect: true}} 
-				                	onSelect={(selectedOption: {label: string, value: string} | null) => {
-				                		onChange(selectedOption?.value ?? "") 	
-				                	}}
-				                />
-			                )}
-						/>
-						<button onClick={(e) => {
-							e.preventDefault()
-						}} type="button" text={"Submit"} className = "button"/>
-					</form>
-				) : null} 
-				{isProjectBoardsLoading ? <LoadingSpinner/> : (
-				// <div className = "tw-flex tw-flex-row tw-gap-x-2">
-				// 	{ ticketWatchers?.filter(watcher => watcher.id !== ticketAssigneeId).map((watcher) => 
-				// 		<button onClick={(e) => deleteWatcher(watcher.id)}>
-				// 			<Badge className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center tw-justify-between tw-text-white tw-bg-primary">
-				// 				<span>{displayUser(watcher)}</span>
-				// 				{isDeleteTicketAssigneeLoading ? <LoadingSpinner/> : <IoMdClose className = "icon"/>}
-				// 			</Badge>	
-				// 		</button>
-				// 	)}
-				// </div>
-					<div></div>
-				)}
-			</div>*/}
 		</div>
 	)
 }

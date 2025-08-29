@@ -55,11 +55,6 @@ export const ProjectTable = () => {
             ...values
         })  
     }
-    // return (
-    //     <div className = "">
-    //         <Table config={config} data={data?.data ?? []} tableKey={"projects"}/>
-    //     </div>
-    // )
     return (
     <div className = "tw-space-y-4">
         <div>
