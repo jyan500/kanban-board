@@ -1,18 +1,18 @@
-import React, {useRef, useState} from "react"
-import { AsyncSelect } from "../AsyncSelect"
+import React, {useRef, useEffect, useState} from "react"
+import { AsyncMultiSelect } from "../AsyncMultiSelect"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { useForm, Controller } from "react-hook-form"
 import { IoMdClose } from "react-icons/io";
 import { TICKET_ASSIGNEE_URL, USER_PROFILE_URL } from "../../helpers/urls" 
 import { addToast } from "../../slices/toastSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
-import { GroupBase, SelectInstance } from "react-select"
+import { GroupBase, SelectInstance, MultiValue } from "react-select"
 import { 
 	useGetTicketAssigneesQuery,
 	useAddTicketAssigneeMutation,
 	useDeleteTicketAssigneeMutation, 
 } from "../../services/private/ticket"
-import { useAddNotificationMutation } from "../../services/private/notification"
+import { useBulkCreateNotificationsMutation } from "../../services/private/notification"
 import { OptionType, Toast } from "../../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Badge } from "../page-elements/Badge"
@@ -28,7 +28,7 @@ type Props = {
 }
 
 type FormValues = {
-	userId: number | string
+	userIdOptions: Array<OptionType>
 }
 
 export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
@@ -41,15 +41,15 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 	const { data: ticketWatchers, isLoading: isTicketWatchersLoading } = useGetTicketAssigneesQuery(ticketId ? {ticketId: ticketId, params: {isWatcher: true}} : skipToken)
 	const [ addTicketAssignee, {isLoading: addTicketAssigneeLoading} ] = useAddTicketAssigneeMutation()
 	const [ deleteTicketAssignee, {isLoading: isDeleteTicketAssigneeLoading}] = useDeleteTicketAssigneeMutation()
-	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
-	const selectRef = useRef<SelectInstance<OptionType, false, GroupBase<OptionType>>>(null) 
+	const [ bulkCreateNotifications, {isLoading: isAddNotificationLoading}] = useBulkCreateNotificationsMutation()
+	const selectRef = useRef<SelectInstance<OptionType, true, GroupBase<OptionType>>>(null) 
 
 	const defaultForm = {
-		userId: "",
+		userIdOptions: [],
 	}
 
 	const registerOptions = {
-		userId: { required: "User is required"},
+		userIdOptions: { /* Watchers are optional */ },
     }
 
     const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
@@ -57,33 +57,50 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 		defaultValues: preloadedValues
 	})
 
+	useEffect(() => {
+		if (ticketWatchers){
+			reset({
+				userIdOptions: ticketWatchers.map((watcher) => {
+					return {
+						label: displayUser(watcher),
+						value: watcher.id.toString(),
+					}
+				}) as Array<OptionType>
+			})
+		}
+	}, [isTicketWatchersLoading, ticketWatchers])
+
 	const onSubmit = async (values: FormValues) => {
 		let defaultToast: Toast = {
 			id: uuidv4(),
-			message: "Something went wrong while linking ticket.",
+			message: "Something went wrong while assigning user to the ticket.",
 			animationType: "animation-in",
 			type: "failure"
 		}
 		setSubmitLoading(true)
 		if (watchNotificationType && userProfile && ticketId){
 	    	try {
-		    	await addTicketAssignee({
-		    		ticketId: ticketId,
-		    		userIds: [Number(values.userId) ?? 0],
-		    		isWatcher: true
-			    	}).unwrap()
-	    		await addNotification({
-					recipientId: Number(values.userId) ?? 0,
-					senderId: userProfile.id,
+				const selectedUserIds = values.userIdOptions.map(option => Number(option.value))
+				await addTicketAssignee({
 					ticketId: ticketId,
-					objectLink: `${TICKETS}/${ticketId}`,
-					notificationTypeId: watchNotificationType.id,
+					userIds: selectedUserIds,
+					isWatcher: true
 				}).unwrap()
-		    	dispatch(addToast({
-		    		...defaultToast,
-		    		message: "You are now watching this ticket!",
-		    		type: "success"
-		    	}))
+				await bulkCreateNotifications(
+					selectedUserIds.map((userId) => {
+					return {
+						recipientId: userId,
+						senderId: userProfile.id,
+						ticketId: ticketId,
+						objectLink: `${TICKETS}/${ticketId}`,
+						notificationTypeId: watchNotificationType.id,
+					}
+				})).unwrap()
+				dispatch(addToast({
+					...defaultToast,
+					message: "Watcher(s) added successfully!",
+					type: "success"
+				}))
 	    	}
 	    	catch (e){
 	    		dispatch(addToast(defaultToast))
@@ -92,78 +109,43 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
     	else {
     		dispatch(addToast(defaultToast))
     	}
-    	// dispatch(toggleShowSecondaryModal(false))
-    	// dispatch(setSecondaryModalType(undefined))
-    	// dispatch(setSecondaryModalProps({}))
     	// flush cached options after submitting
-    	selectRef.current?.clearValue()
-    	setCacheKey(uuidv4())
+    	// selectRef.current?.clearValue()
+    	// setCacheKey(uuidv4())
 		setSubmitLoading(false)
-	}
-
-	const deleteWatcher = async (userId: number) => {
-		let defaultToast: Toast = {
-			id: uuidv4(),
-			message: "Something went wrong when un-watching ticket.",
-			animationType: "animation-in",
-			type: "failure"
-		}
-		if (ticketId){
-			try {
-				await deleteTicketAssignee({ticketId: ticketId, userId: userId, isWatcher: true}).unwrap()
-			 	dispatch(addToast({
-		    		...defaultToast,
-		    		message: "Ticket watcher deleted successfully!",
-		    		type: "success"
-		    	}))
-			}
-			catch (e){
-				dispatch(addToast(defaultToast))
-			}
-		}
-    	// flush cached options after submitting
-    	selectRef.current?.clearValue()
-    	setCacheKey(uuidv4())
 	}
 
 	return (
 		<>
-			<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-p-4">
+			<div className = "tw-flex tw-flex-col lg:tw-w-[80%] tw-w-full tw-gap-y-4 tw-p-4">
 				<p className = "tw-font-bold">Add Watchers</p>		
 				{!isTicketWatchersLoading ? (
+					<>
 					<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
 						<Controller
-							name={"userId"}
+							name={"userIdOptions"}
 							control={control}
 			                render={({ field: { onChange, value, name, ref } }) => (
-			                	<AsyncSelect 
-				            		ref={selectRef}
-				                	endpoint={USER_PROFILE_URL} 
-				                	cacheKey={cacheKey}
-				                	className={"tw-w-64"}
-				                	urlParams={{forSelect: true, excludeUsers: [ticketAssigneeId, ticketWatchers?.map((watcher) => watcher.id)]}} 
-				                	onSelect={(selectedOption: {label: string, value: string} | null) => {
-				                		onChange(selectedOption?.value ?? "") 	
-				                	}}
-				                />
+			                	<AsyncMultiSelect 
+									ref={selectRef}
+									endpoint={USER_PROFILE_URL} 
+									cacheKey={cacheKey}
+									className={"tw-w-full"}
+									defaultValue={watch("userIdOptions") ?? null}
+									urlParams={{forSelect: true, excludeUsers: [ticketAssigneeId, ticketWatchers?.map((watcher) => watcher.id)]}} 
+									onSelect={async (selectedOption: MultiValue<OptionType> | null) => {
+										onChange(selectedOption)
+									}}
+								/>
 			                )}
 						/>
-						<LoadingButton type="submit" isLoading={submitLoading} text={"Submit"} className = "button"/>
+						<div>
+							<LoadingButton type="submit" isLoading={submitLoading} text={"Submit"} className = "button"/>
+						</div>
 					</form>
+					</>
 				) : null} 
 			</div>
-			{isTicketWatchersLoading ? <LoadingSpinner/> : (
-				<div className = "tw-flex tw-flex-row tw-gap-x-2">
-					{ ticketWatchers?.filter(watcher => watcher.id !== ticketAssigneeId).map((watcher) => 
-						<button onClick={(e) => deleteWatcher(watcher.id)}>
-							<Badge className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center tw-justify-between tw-text-white tw-bg-primary">
-								<span>{displayUser(watcher)}</span>
-								{isDeleteTicketAssigneeLoading ? <LoadingSpinner/> : <IoMdClose className = "icon"/>}
-							</Badge>	
-						</button>
-					)}
-				</div>
-			)}
 		</>
 	)		
 }

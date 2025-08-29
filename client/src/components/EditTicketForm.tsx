@@ -234,6 +234,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 			const assigneeId = ticketAssignees?.[0] ? ticketAssignees?.[0]?.id.toString() : ""
 			setValue("userIdOption", {label: displayUser(ticketAssignees[0]), value: assigneeId}, { shouldDirty: true })
 		}
+		else if (ticketAssignees?.length === 0){
+			setValue("userIdOption", {label: "", value: ""}, { shouldDirty: true })
+		}
 	}, [isTicketAssigneesLoading, ticketAssignees])
 
 	const onSubmit = async (values: EditFormValues) => {
@@ -348,7 +351,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
             render={({ field: { onChange, value, name, ref } }) => (
             	<AsyncSelect 
                 	endpoint={USER_PROFILE_URL} 
-					className = {`${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
+					className = {`tw-w-32 ${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
                 	clearable={false}
                 	onBlur={(e) => toggleFieldVisibility("assignees", false)}
                 	defaultValue={watch("userIdOption") ?? null}
@@ -396,7 +399,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<span className = "tw-font-bold tw-text-xl">Details</span>
 						<RightSectionRow title={"Assignee"}>
 							{
-								!isTicketAssigneesLoading && ticketAssignees && ticketAssignees?.length ? (
+								!isTicketAssigneesLoading && ticketAssignees ? (
 									<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
 										<div className = "tw-w-[2em] tw-shrink-0">
 											{selectFieldLoading["assignees"] ? <LoadingSpinner/> : <Avatar userInitials={getUserInitials(ticketAssignees?.[0])} imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>}
