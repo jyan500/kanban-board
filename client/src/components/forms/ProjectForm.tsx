@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { toggleShowModal } from "../../slices/modalSlice"
-import { GroupBase, SelectInstance } from "react-select"
+import { GroupBase, SelectInstance, MultiValue } from "react-select"
 import { 
 	useAddProjectMutation, 
 	useGetProjectQuery,
@@ -10,7 +10,6 @@ import {
 	useDeleteProjectBoardsMutation,
 	useUpdateProjectMutation 
 } from "../../services/private/project"
-import { useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
 import { addToast } from "../../slices/toastSlice"
 import { LoadingButton } from "../page-elements/LoadingButton"
@@ -19,7 +18,8 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ProfileCard } from "../page-elements/ProfileCard"
 import { PROJECT_URL, BOARD_URL } from "../../helpers/urls"
 import { AsyncSelect } from "../AsyncSelect"
-import { Controller } from "react-hook-form"
+import { AsyncMultiSelect } from "../AsyncMultiSelect"
+import { useForm, Controller } from "react-hook-form"
 import { USER_PROFILE_URL } from "../../helpers/urls"
 import { displayUser } from "../../helpers/functions"
 import { useGetUserQuery } from "../../services/private/userProfile"
@@ -30,7 +30,8 @@ type FormValues = {
 	name: string
 	description?: string
 	imageUrl?: string
-	userIdOption: OptionType
+	userIdOption: OptionType,
+	boardIdOptions: Array<OptionType>
 }
 
 interface ProjectFormProps {
@@ -47,7 +48,8 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 		name: "",
 		description: "",
 		imageUrl: "",
-		userIdOption: {label: "", value: ""}
+		userIdOption: {label: "", value: ""},
+		boardIdOptions: []
 	}
 	const [ addProject ] = useAddProjectMutation()
 	const [ updateProject ] = useUpdateProjectMutation()
@@ -64,7 +66,8 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 	const [ attachedBoardIds, setAttachedBoardIds ] = useState<Array<number>>([])
 	const registerOptions = {
 	    name: { required: "Name is required" },
-	    userIdOption: { /* Owner is optional */ }
+	    userIdOption: { /* Owner is optional */ },
+		boardIdOptions: { /* boards are optional */}
 	}
 
 	useEffect(() => {
@@ -159,6 +162,25 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 					<textarea id = "project-description"
 					{...register("description")}
 					className="tw-w-full"
+					/>
+				</div>
+				<div className = "tw-flex tw-flex-col">
+					<label className = "label">Boards</label>
+					<Controller
+						name={"boardIdOptions"}
+						control={control}
+						rules={registerOptions.boardIdOptions}
+						render={({ field: { onChange, value, name, ref } }) => (
+							<AsyncMultiSelect 
+								endpoint={BOARD_URL} 
+								clearable={true}
+								defaultValue={watch("boardIdOptions") ?? null}
+								urlParams={{forSelect: true}} 
+								onSelect={async (selectedOption: MultiValue<OptionType> | null) => {
+									onChange(selectedOption)
+								}}
+							/>
+						)}
 					/>
 				</div>
 				<div className = "tw-flex tw-flex-col">
