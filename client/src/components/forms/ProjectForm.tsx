@@ -46,6 +46,7 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 	const defaultForm: FormValues = {
 		id: undefined,
 		name: "",
+		imageUrl: "",
 		description: "",
 		userIdOption: {label: "", value: ""},
 		boardIdOptions: []
@@ -94,6 +95,7 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
     const onSubmit = async (values: FormValues) => {
 		setSubmitLoading(true)
     	try {
+			let newProjectId = 0
     		if (values.id != null && projectId){
 				await updateProject({
 					id: projectId,
@@ -103,15 +105,17 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 				}).unwrap()
     		}
     		else {
-    			await addProject({
+    			const res = await addProject({
 					name: values.name,
 					description: values.description,
+					imageUrl: values.imageUrl,
 					userId: !isNaN(parseInt(values.userIdOption.value)) ? parseInt(values.userIdOption.value) : 0
 				}).unwrap()
+				newProjectId = res.id
     		}
-			if (values.boardIdOptions.length && projectId){
+			if (values.boardIdOptions.length && (projectId || newProjectId)){
 				await addProjectBoards({
-					id: projectId,
+					id: projectId ?? newProjectId,
 					boardIds: values.boardIdOptions.map((option) => {
 						return parseInt(option.value)
 					})
@@ -140,8 +144,20 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-w-[80%] tw-w-full">
-			<ProfileCard showUploadImage={true} entityId={projectId ?? 0} imageUrl={projectInfo?.imageUrl ?? ""} imageUploadUrl={`${PROJECT_URL}/image`} invalidatesTags={["Projects"]} />
+			{
+				projectId ? 
+				<ProfileCard isOrg={true} showUploadImage={true} entityId={projectId ?? 0} imageUrl={projectInfo?.imageUrl ?? ""} imageUploadUrl={`${PROJECT_URL}/image`} invalidatesTags={["Projects"]} />
+				: null
+			}
 			<form onSubmit={handleSubmit(onSubmit)} className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
+				{
+					!projectId ? 
+					<div className = "tw-flex tw-flex-col">
+						<label htmlFor="project-image-url" className = "label">Image URL</label>
+						<input id={"project-image-url"} {...register("imageUrl")} type = "text"/>
+					</div>
+					: null
+				}
 				<div className = "tw-flex tw-flex-col">
 					<label className = "label">Owner</label>
 					<Controller

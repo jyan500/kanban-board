@@ -18,14 +18,21 @@ const { getNumTicketsFromBoards, getLastModified, getAssigneesFromBoards } = req
 
 router.get("/", async (req, res, next) => {
 	try {
-		const data = await db("projects").select(
+		const data = await db("projects").modify(
+			(queryBuilder) => {
+				if (req.query.query){
+					queryBuilder.whereILike("name",	`%${req.query.query}%`)
+				}	
+			}
+		).select(
 			"projects.id as id",
 			"projects.name as name",
 			"projects.user_id as userId",
 			"projects.image_url as imageUrl",
 			"projects.description as description",
 			"projects.created_at as createdAt",
-		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		)
+		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		const resData = await Promise.all(data.data.map(async (project) => {
 			const user = await db("users").where("id", project.userId).first()
 			return {

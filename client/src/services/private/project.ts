@@ -29,11 +29,12 @@ export const projectApi = privateApi.injectEndpoints({
 			providesTags: ["Projects"]
 		}),
 		addProject: builder.mutation<Project, Omit<Project, "id" | "owner" | "createdAt" | "organizationId">>({
-			query: ({name, description, userId}) => ({
+			query: ({name, description, imageUrl, userId}) => ({
 				url: PROJECT_URL,
 				body: {
 					name,
 					description,
+					image_url: imageUrl,
 					user_id: userId
 				},
 				method: "POST",

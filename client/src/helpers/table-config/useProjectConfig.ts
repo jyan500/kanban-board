@@ -28,6 +28,7 @@ export const useProjectConfig = () => {
 						imageUrl: url,
 						size: "m",	
 						className: "tw-rounded-full",
+						isOrg: true
 					}
 				}
 			}

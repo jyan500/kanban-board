@@ -76,12 +76,12 @@ const TableContent = ({
 	showCheckboxes, 
 	itemIds, 
 	isNestedTable, 
-	showNestedTable,
-	setShowNestedTable, 
+	nestedTableSet,
+	setNestedTableSet, 
 }: {
-	showNestedTable?: boolean, 
+	nestedTableSet?: Set<number>, 
 	showCheckboxes?: boolean, 
-	setShowNestedTable?: (showNestedTable: boolean) => void
+	setNestedTableSet?: (nestedTableSet: Set<number>) => void
 } & Omit<Props, "hideCheckAllBox">) => {
 	
 	/* get the colspan to display a row that spans the whole col span for the inner table */	
@@ -121,9 +121,13 @@ const TableContent = ({
 								return (
 									<td key={`${tableKey}-${row.id}-${headerKey}`}>	
 										{
-											<IconButton onClick={setShowNestedTable ? () => setShowNestedTable(!showNestedTable) : () => {}} className = "tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md tw-text-gray-700 tw-bg-white hover:tw-bg-gray-50 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200">
+											<IconButton onClick={setNestedTableSet && nestedTableSet ? () => {
+												const newNestedTableSet = new Set(nestedTableSet)
+												newNestedTableSet.has(row.id) ? newNestedTableSet.delete(row.id) : newNestedTableSet.add(row.id)
+												setNestedTableSet(newNestedTableSet)
+											} : () => {}} className = "tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md tw-text-gray-700 tw-bg-white hover:tw-bg-gray-50 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200">
 												{
-													showNestedTable ? 
+													nestedTableSet?.has(row.id) ? 
 													<>
 														<IconArrowDown className="tw-h-4 tw-w-4 tw-mr-1" />
 														<span>Hide {config.nestedTableControl.text}</span>
@@ -189,7 +193,7 @@ const TableContent = ({
 				</tr>
 				{/* Render nested table in a separate row that spans all columns */}
 				{
-					Component && showNestedTable ? 
+					Component && nestedTableSet && nestedTableSet.has(row.id) ? 
 					// Component && showNestedTable ? (
 					// 	<><Component {...props}/></>
 					// ) : null	
@@ -214,7 +218,7 @@ const TableContent = ({
 const MainTable = (props: Props) => {
 	const {config, data, itemIds, tableKey: tKey, hideCheckAllBox, isNestedTable=false} = props
 	const [tableKey, setTableKey] = useState(tKey ?? uuidv4())
-	const [showNestedTable, setShowNestedTable] = useState(false)
+	const [nestedTableSet, setNestedTableSet] = useState<Set<number>>(new Set())
 	const allIds = config.bulkEdit?.isEnabled && config.bulkEdit?.filter ? config.bulkEdit?.filter(data).map((row: Record<string, any>) => row.id) : data?.map((row) => row.id)
 	// if there any actions we can take on each row, but the row is not selectable due to a specific condition from the config,
 	// we cannot show the checkboxes and the action buttons
@@ -227,8 +231,8 @@ const MainTable = (props: Props) => {
 			</thead>
 			<tbody className={"tw-bg-white tw-divide-y tw-divide-gray-200"}>
 				<TableContent 
-					showNestedTable={showNestedTable} 
-					setShowNestedTable={setShowNestedTable} 
+					nestedTableSet={nestedTableSet} 
+					setNestedTableSet={setNestedTableSet} 
 					showCheckboxes={showCheckboxes} 
 					tableKey={tableKey}
 					{...props}
