@@ -20,6 +20,7 @@ const db = require("../db/db")
 const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
+const { getAssigneesFromBoards, getNumTicketsFromBoards, getLastModified } = require("../helpers/query-helpers")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -33,17 +34,7 @@ router.get("/", async (req, res, next) => {
 				queryBuilder.whereNot("boards.id", req.query.ignoreBoard)
 			}
 			if (req.query.lastModified === "true"){
-				queryBuilder.leftJoin("tickets_to_boards","tickets_to_boards.board_id", "=", "boards.id")
-				.leftJoin("boards_to_statuses","boards_to_statuses.board_id", "=", "boards.id")
-				.max("tickets_to_boards.updated_at as ticketsUpdatedAt")
-				.max("boards_to_statuses.updated_at as boardStatusesUpdatedAt")
-				.groupBy("boards.id")
-				.groupBy("boards.ticket_limit")
-				.groupBy("boards.name")
-				.groupBy("boards.organization_id")
-				.select(
-					"boards.updated_at as boardUpdatedAt",
-				)
+				getLastModified(queryBuilder)	
 			}
 			if (req.query.includeUserDashboardInfo){
 				queryBuilder.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")	
@@ -74,29 +65,14 @@ router.get("/", async (req, res, next) => {
 		let boardAssignees;
 		let boardAssigneesRes = {}
 		if (req.query.assignees === "true"){
-			boardAssignees = await db("boards")
-			.where("organization_id", req.user.organization)
-			.whereIn("boards.id", boards.data.map((b) => b.id))
-			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
-			.join("tickets_to_users", "tickets_to_boards.ticket_id", "=", "tickets_to_users.ticket_id")
-			.join("users", "tickets_to_users.user_id", "=", "users.id")
-			.groupBy("boards.id")
-			.groupBy("tickets_to_users.user_id")
-			.groupBy("users.first_name")
-			.groupBy("users.last_name")
-			.select("boards.id as id", "tickets_to_users.user_id as userId", "users.first_name as firstName", "users.last_name as lastName", "users.image_url as imageUrl")
+			boardAssignees = await getAssigneesFromBoards(req.user.organization, boards.data.map((b) => b.id))
 			boardAssigneesRes = mapIdToRowAggregateObjArray(boardAssignees, ["userId", "firstName", "lastName", "imageUrl"])
 		}
 
 		let numTickets;
 		let numTicketsRes = {}
 		if (req.query.numTickets === "true") {
-			numTickets = await db("boards").where("organization_id", req.user.organization)
-			.whereIn("boards.id", boards.data.map((b) => b.id))
-			.join("tickets_to_boards", "tickets_to_boards.board_id", "=", "boards.id")
-			.groupBy("tickets_to_boards.board_id")
-			.count("tickets_to_boards.ticket_id as numTickets")
-			.select("tickets_to_boards.board_id as id")
+			numTickets = await getNumTicketsFromBoards(req.user.organization, boards.data.map((b) => b.id))
 			numTicketsRes = mapIdToRowObject(numTickets)
 		}
 
@@ -157,7 +133,7 @@ router.get("/", async (req, res, next) => {
 					}
 				}
 				if (req.query.assignees === "true" && board.id in boardAssigneesRes){
-					boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : 0}
+					boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : []}
 				}
 				if (req.query.numTickets === "true" && board.id in numTicketsRes){
 					boardRes = {...boardRes, numTickets: Object.keys(numTicketsRes).length > 0 ? numTicketsRes[board.id].numTickets : 0}
@@ -208,7 +184,7 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 		const resData = boards.map((board) => {
 			let boardRes = {...board}
 			if (req.query.assignees === "true" && board.id in boardAssigneesRes){
-				boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : 0}
+				boardRes = {...boardRes, assignees: Object.keys(boardAssigneesRes).length > 0 ? boardAssigneesRes[board.id] : []}
 			}	
 			return boardRes
 		})

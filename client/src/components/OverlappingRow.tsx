@@ -30,7 +30,7 @@ export const OverlappingRow = ({imageUrls, imageSize}: Props) => {
 				{
 					imageUrls.slice(0, amt).map(({imageUrl, initials, name}: {imageUrl: string, initials: string, name: string}) => {
 					    return (
-					    	<div className = "tw-relative tw-group tw-inline-flex">
+					    	<div key={`avatar_${initials}_${name}`} className = "tw-relative tw-group tw-inline-flex">
 						    	<Avatar userInitials={initials} imageUrl={imageUrl} size={width >= LG_BREAKPOINT ? imageSize : "s"} className = "tw-border-2 tw-border-gray-800 tw-rounded-full"/>
 						    	<HoverTooltip text={name}/>
 				    		</div>

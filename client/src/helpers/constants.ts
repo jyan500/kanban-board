@@ -44,6 +44,8 @@ export const TAG_TYPES = [
 	"Statuses",
 	"BoardStatuses",
 	"Boards",
+    "Projects",
+    "ProjectBoards",
 	"TicketTypes",
 	"Priorities",
 	"TicketRelationshipTypes",

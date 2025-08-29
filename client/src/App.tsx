@@ -33,6 +33,8 @@ import { SwitchOrganization } from "./pages/account/SwitchOrganization"
 import { RegistrationRequests } from "./pages/account/RegistrationRequests"
 import { NotificationSettings } from "./pages/account/NotificationSettings"
 import { NotificationDisplay } from "./pages/notifications/NotificationDisplay"
+import { ProjectDisplay } from "./pages/projects/ProjectDisplay"
+import { ProjectTable } from "./pages/projects/ProjectTable"
 import { LandingPage } from "./pages/LandingPage"
 import AuthLayout from "./layouts/AuthLayout"
 import DefaultLayout from "./layouts/DefaultLayout"
@@ -72,6 +74,7 @@ import {
 	FORGOT_PASSWORD,
 	RESET_PASSWORD,
 	LANDING_PAGE,
+	PROJECTS,
 } from "./helpers/routes"
 
 // Define routes using createBrowserRouter
@@ -271,7 +274,16 @@ const router = createBrowserRouter([
 					}
 				]
 			},
-
+			{
+				path: PROJECTS,
+				element: <ProjectDisplay/>,
+				children: [
+					{
+						index: true,
+						element: <ProjectTable/>
+					}	
+				]
+			},
 			{
 				path: ACCOUNT,
 				element: <AccountDisplay/>,

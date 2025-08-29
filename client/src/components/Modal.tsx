@@ -8,6 +8,7 @@ import { AddTicketFormModal } from "./primary-modals/AddTicketFormModal"
 import { EditTicketFormModal } from "./primary-modals/EditTicketFormModal" 
 import { EditUserFormModal } from "./primary-modals/EditUserFormModal"
 import { BoardForm } from "./BoardForm" 
+import { ProjectForm } from "./forms/ProjectForm"
 import { BoardStatusModal } from "./primary-modals/BoardStatusModal"
 import { OrganizationStatusModal } from "./primary-modals/OrganizationStatusModal"
 import { BoardScheduleFilterModal } from "./primary-modals/BoardScheduleFilterModal"
@@ -25,6 +26,7 @@ export const modalTypes = {
 	"BOARD_STATUS_FORM": BoardStatusModal,
 	"ORGANIZATION_STATUS_FORM": OrganizationStatusModal,
 	"BOARD_FORM": BoardForm,
+	"PROJECT_FORM": ProjectForm,
 	"USER_FORM": EditUserFormModal,
 	"BULK_ACTIONS_MODAL": BulkActionsModal,
 	"BOARD_SCHEDULE_FILTER_MODAL": BoardScheduleFilterModal
@@ -38,6 +40,7 @@ export const modalClassNames = {
 	"EDIT_TICKET_FORM": defaultConfig,
 	"ORGANIZATION_STATUS_FORM": defaultConfig,
 	"BOARD_FORM": defaultConfig,
+	"PROJECT_FORM": avoidAsyncSelectMenuOverflow,
 	"BULK_ACTIONS_MODAL": defaultConfig,
 	"BOARD_SCHEDULE_FILTER_MODAL": avoidAsyncSelectMenuOverflow
 }

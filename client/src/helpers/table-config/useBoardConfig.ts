@@ -26,11 +26,11 @@ export const useBoardConfig = () => {
 		linkCol: "name",
 		link: (id: string) => `/boards/${id}`,
 		renderers: {
-			assignees: (userProfiles: Array<Pick<UserProfile, "firstName" | "lastName" | "imageUrl">>) => {
+			assignees: (userProfiles: Array<Pick<UserProfile, "firstName" | "lastName" | "imageUrl">> | null | undefined) => {
 				return {
 					component: OverlappingRow,
 					props: {
-						imageUrls: userProfiles.map((profile) => ({name: displayUser(profile), imageUrl: profile.imageUrl, initials: getUserInitials(profile)})),
+						imageUrls: userProfiles?.map((profile) => ({name: displayUser(profile), imageUrl: profile.imageUrl, initials: getUserInitials(profile)})) ?? [],
 						imageSize: "m",
 					}
 				}

@@ -13,7 +13,7 @@ import { useGetUserProfileQuery } from "../services/private/userProfile"
 import { Avatar } from "./page-elements/Avatar"
 import { NavLink } from "./page-elements/NavLink"
 import { GradientContainer } from "./page-elements/GradientContainer"
-import { ORGANIZATION, USERS, ACCOUNT, BOARDS, HOME, TICKETS } from "../helpers/routes"
+import { PROJECTS, ORGANIZATION, USERS, ACCOUNT, BOARDS, HOME, TICKETS } from "../helpers/routes"
 
 export const SideBar = () => {
 	const sideBar = useAppSelector((state) => state.nav)
@@ -26,6 +26,9 @@ export const SideBar = () => {
 		{
 			pathname: HOME, text: "Dashboard",
 		},
+		{
+			pathname: PROJECTS, text: "Projects",
+		},			
 		{
 			pathname: BOARDS, text: "Boards",
 		},
@@ -85,7 +88,7 @@ export const SideBar = () => {
 						<div className = "sidebar__links">
 							{ 
 								links.map((link) => 
-									<NavLink key={`sidebar_${link.text}`} text={link.text} url={link.pathname} onClick={() => dispatch(toggleSideBar(false))}/>
+									<NavLink isActive={link.pathname === pathname} key={`sidebar_${link.text}`} text={link.text} url={link.pathname} onClick={() => dispatch(toggleSideBar(false))}/>
 								)
 							}
 						</div>
