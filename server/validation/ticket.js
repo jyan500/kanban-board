@@ -177,26 +177,6 @@ const ticketUserValidator = (actionType) => {
 				value: req.user.organization
 			}], "organization_user_roles"))
 		]
-		// if (actionType === "create"){
-		// 	validationRules = [
-		// 		...validationRules, 
-		// 		body("user_ids.*")
-		// 		.custom(async (value, {req}) => await checkUniqueEntity("user", value, [
-		// 		{
-		// 			"col": "user_id",
-		// 			"value": value,
-		// 		},
-		// 		{
-		// 			"col": "ticket_id",
-		// 			"value": req.params.ticketId
-		// 		},
-		// 		{
-		// 			"col": "is_watcher",
-		// 			"value": true
-		// 		},
-		// 		], "tickets_to_users"))
-		// 	]
-		// }
 	}
 
 	return validationRules
