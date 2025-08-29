@@ -368,16 +368,19 @@ router.post("/:ticketId/user/", validateTicketUserCreate, handleValidationResult
 		const toDelete = existingUserIds.filter((id) => !userIds.includes(id))
 
 		// add any assigned users that are present in the new list of ids but not present in the existing list
-		await db("tickets_to_users").insert(toAdd.map((id) => {
-			return {
-				user_id: id,
-				is_watcher: isWatcher,
-				ticket_id: ticketId
-			}
-		}))
-		
+		if (toAdd.length){
+			await db("tickets_to_users").insert(toAdd.map((id) => {
+				return {
+					user_id: id,
+					is_watcher: isWatcher,
+					ticket_id: ticketId
+				}
+			}))
+		}
 		// delete any assigned users that are present in the existing ids but not in the new list of ids
-		await db("tickets_to_users").where("ticket_id", ticketId).whereIn("user_id", toDelete).del()
+		if (toDelete.length){
+			await db("tickets_to_users").where("ticket_id", ticketId).whereIn("user_id", toDelete).del()
+		}
 
 		res.json({message: "users assigned to tickets successfully!"})
 	}	

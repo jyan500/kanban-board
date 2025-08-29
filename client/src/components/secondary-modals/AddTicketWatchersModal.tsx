@@ -49,7 +49,6 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 	}
 
 	const registerOptions = {
-		userIdOptions: { /* Watchers are optional */ },
     }
 
     const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)

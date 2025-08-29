@@ -66,7 +66,7 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 	const [ attachedBoardIds, setAttachedBoardIds ] = useState<Array<number>>([])
 	const registerOptions = {
 	    name: { required: "Name is required" },
-	    userIdOption: { /* Owner is optional */ },
+	    userIdOption: { required: "Owner is required" },
 		boardIdOptions: { /* boards are optional */}
 	}
 
@@ -113,7 +113,7 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 				}).unwrap()
 				newProjectId = res.id
     		}
-			if (values.boardIdOptions.length && (projectId || newProjectId)){
+			if (projectId || newProjectId){
 				await addProjectBoards({
 					id: projectId ?? newProjectId,
 					boardIds: values.boardIdOptions.map((option) => {
@@ -159,7 +159,9 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 					: null
 				}
 				<div className = "tw-flex tw-flex-col">
-					<label className = "label">Owner</label>
+					<label className = "label">
+						Owner <span className = "tw-font-bold tw-text-red-500">*</span>
+					</label>
 					<Controller
 						name={"userIdOption"}
 						control={control}
@@ -180,7 +182,9 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 				</div>
 				
 				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "project-name">Name</label>
+					<label className = "label" htmlFor = "project-name">
+						Name <span className = "tw-font-bold tw-text-red-500">*</span>
+					</label>
 					<input id = "project-name" type = "text"
 					{...register("name", registerOptions.name)}
 					className="tw-w-full"
