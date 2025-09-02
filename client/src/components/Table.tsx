@@ -7,6 +7,7 @@ import { LG_BREAKPOINT } from "../helpers/constants"
 import { IconButton } from "./page-elements/IconButton"
 import { IconArrowRight } from "./icons/IconArrowRight"
 import { IconArrowDown } from "./icons/IconArrowDown"
+import { IconPencil } from "./icons/IconPencil"
 
 type Props = {
 	config: Record<string, any>
@@ -49,22 +50,26 @@ const InnerTable = (props: Props) => {
 	)
 }
 
-const TableHeader = ({config, tableKey}: Omit<Props, "data" | "itemIds" | "hideCheckAllBox">) => {
+const TableHeader = ({showCheckboxes, config, tableKey}: Omit<Props, "data" | "itemIds" | "hideCheckAllBox"> & {showCheckboxes?: boolean}) => {
 	const headers = Object.values(config.headers) as Array<string>;
-	const columnWidth = `${100 / headers.length}%`;
+	// leave a small space for the checkbox column, while all other columns have the same width
+	const columnWidth = `${(showCheckboxes ? 95 : 100) / headers.length}%`;
 	return (
 		<tr>
-		{
-			(Object.values(config.headers) as Array<string>).map((header) => (
-				<th 	
-					style={{ 
-						width: columnWidth,
-						minWidth: columnWidth,
-						maxWidth: columnWidth
-					}}
-					className = "tw-text-xs tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wider" key = {`${tableKey}-${header !== "" ? header : uuidv4()}`}>{header}</th>	
-			))
-		}
+			{
+				showCheckboxes ? <th></th> : null
+			}
+			{
+				(Object.values(config.headers) as Array<string>).map((header) => (
+					<th 	
+						style={{ 
+							width: columnWidth,
+							minWidth: columnWidth,
+							maxWidth: columnWidth
+						}}
+						className = "tw-text-xs tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wider" key = {`${tableKey}-${header !== "" ? header : uuidv4()}`}>{header}</th>	
+				))
+			}
 		</tr>
 	)
 }
@@ -147,8 +152,9 @@ const TableContent = ({
 									<td key = {`${tableKey}-${row.id}-${headerKey}`}>
 										{
 											!config.editCol.shouldShow || (config.editCol.shouldShow && config.editCol.shouldShow(row)) ? (
-												<button className = "button" onClick={() => config.editCol?.onClick(row.id)}>{config.editCol?.text}
-												</button>
+												<IconButton onClick={() => config.editCol?.onClick(row.id)}>
+													<IconPencil className = "tw-w-6 tw-h-6"/>
+												</IconButton>
 											) : null	
 										}
 									</td>
@@ -194,9 +200,6 @@ const TableContent = ({
 				{/* Render nested table in a separate row that spans all columns */}
 				{
 					Component && nestedTableSet && nestedTableSet.has(row.id) ? 
-					// Component && showNestedTable ? (
-					// 	<><Component {...props}/></>
-					// ) : null	
 					(
 					<tr key={`${tableKey}-${row.id}-nested`}>
 						<td colSpan={getColSpan()} className="tw-p-0 tw-bg-gray-50">
@@ -227,7 +230,7 @@ const MainTable = (props: Props) => {
 	return (
 		<>
 			<thead className={`${isNestedTable ? "tw-bg-gray-100" : "tw-bg-gray-50"} tw-border-b tw-border-gray-200`}>
-				<TableHeader config={config} tableKey={tableKey}/>
+				<TableHeader showCheckboxes={showCheckboxes} config={config} tableKey={tableKey}/>
 			</thead>
 			<tbody className={"tw-bg-white tw-divide-y tw-divide-gray-200"}>
 				<TableContent 
