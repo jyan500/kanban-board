@@ -52,6 +52,7 @@ const InnerTable = (props: Props) => {
 
 const TableHeader = ({showCheckboxes, config, tableKey}: Omit<Props, "data" | "itemIds" | "hideCheckAllBox"> & {showCheckboxes?: boolean}) => {
 	const headers = Object.values(config.headers) as Array<string>;
+	// leave a small space for the checkbox column, while all other columns have the same width
 	const columnWidth = `${(showCheckboxes ? 95 : 100) / headers.length}%`;
 	return (
 		<tr>
