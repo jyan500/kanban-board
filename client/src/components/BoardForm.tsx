@@ -76,7 +76,7 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 		projectIdOptions: {}
     }
 
-	// New useEffect to reset state when modal opens for a new board
+	// reset state when modal opens for a new board
 	useEffect(() => {
 		if (showModal && boardId === undefined) {
 			setCurrentBoard(null);
