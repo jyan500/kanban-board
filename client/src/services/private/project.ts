@@ -68,7 +68,7 @@ export const projectApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["ProjectBoards"],
 		}),
-		addProjectBoards: builder.mutation<{message: string}, {id: number, boardIds: Array<number>}>({
+		updateProjectBoards: builder.mutation<{message: string}, {id: number, boardIds: Array<number>}>({
 			query: ({id, boardIds}) => ({
 				url: PROJECT_BOARD_URL(id),
 				body: {
@@ -98,6 +98,6 @@ export const {
 	useUpdateProjectMutation,
 	useDeleteProjectMutation,
 	useGetProjectBoardsQuery,
-	useAddProjectBoardsMutation,
+	useUpdateProjectBoardsMutation,
 	useDeleteProjectBoardsMutation,
 } = projectApi 

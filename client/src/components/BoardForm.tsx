@@ -7,25 +7,35 @@ import {
 	useGetBoardQuery,
 	useUpdateBoardMutation, 
 	useBulkEditBoardStatusesMutation, 
-	useGetBoardStatusesQuery 
+	useGetBoardStatusesQuery,
+	useGetBoardProjectsQuery,
+	useUpdateBoardProjectsMutation,
 } from "../services/private/board" 
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
+import { MultiValue } from "react-select"
 import { v4 as uuidv4 } from "uuid" 
 import { addToast } from "../slices/toastSlice" 
 import { LoadingSpinner } from "./LoadingSpinner"
-import { Board, Status } from "../types/common"
+import { Board, OptionType, Project, Status } from "../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { MIN_BOARD_TICKET_LIMIT, MAX_BOARD_TICKET_LIMIT } from "../helpers/constants"
 import { Switch } from "./page-elements/Switch"
 import { LoadingButton } from "./page-elements/LoadingButton"
+import { AsyncMultiSelect } from "./AsyncMultiSelect"
+import { PROJECT_URL } from "../helpers/urls"
+
+interface Props {
+	projectId?: number
+}
 
 type FormValues = {
 	id?: number
 	name: string
 	ticketLimit: number
+	projectIdOptions: Array<OptionType>
 }
 
-export const BoardForm = () => {
+export const BoardForm = ({projectId}: Props) => {
 	const dispatch = useAppDispatch()
 	const {
 		showModal
@@ -36,15 +46,18 @@ export const BoardForm = () => {
 		id: undefined,
 		ticketLimit: MAX_BOARD_TICKET_LIMIT,
 		name: "",
+		projectIdOptions: []
 	}
 	const [ addBoard ] = useAddBoardMutation() 
 	const [ updateBoard ] = useUpdateBoardMutation()
+	const [ updateBoardProjects ] = useUpdateBoardProjectsMutation()
 	const { data: boardInfo, isLoading: isGetBoardDataLoading  } = useGetBoardQuery(currentBoardId ? {id: currentBoardId, urlParams: {}} : skipToken)
 	const { data: statusData, isLoading: isStatusDataLoading } = useGetBoardStatusesQuery(currentBoardId ? {id: currentBoardId, isActive: true } : skipToken)
+	const { data: boardProjects, isLoading: isBoardProjectsLoading } = useGetBoardProjectsQuery(currentBoardId ? {boardId: currentBoardId, urlParams: {}} : skipToken)
 	const [ preloadedValues, setPreloadedValues ] = useState<FormValues>(defaultForm)
 	const [ formStatuses, setFormStatuses ] = useState<Array<Status>>([])
 	const [ bulkEditBoardStatuses, {isLoading: isLoading, error: isError} ] =  useBulkEditBoardStatusesMutation() 
-	const { register , handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
+	const { register , handleSubmit, reset, control, setValue, getValues, watch, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
 	const [ submitLoading ,setSubmitLoading ] = useState(false)
@@ -55,17 +68,28 @@ export const BoardForm = () => {
 		    valueAsNumber: true,
 	        min: { value: MIN_BOARD_TICKET_LIMIT, message: `Must be at least ${MIN_BOARD_TICKET_LIMIT}` },
 	        max: { value: MAX_BOARD_TICKET_LIMIT, message: `Must be at most ${MAX_BOARD_TICKET_LIMIT}` }
-	    }
+	    },
+		projectIdOptions: {}
     }
 	useEffect(() => {
 		// initialize with current values if the board exists
 		if (currentBoardId && boardInfo?.length){
+			let options: Array<OptionType> = []
+			if (boardProjects){
+				options = boardProjects.data.map((project: Project) => {
+					const option: OptionType = {
+						label: project.name,
+						value: project.id.toString()
+					}
+					return option
+				})
+			}
 			reset({id: currentBoardId, ticketLimit: boardInfo?.[0].ticketLimit, name: boardInfo?.[0].name})
 		}
 		else {
 			reset(defaultForm)
 		}
-	}, [showModal, boardInfo, currentBoardId])
+	}, [showModal, boardInfo, boardProjects, projectId, currentBoardId])
 
 	useEffect(() => {
 		if (!isStatusDataLoading && statusData){
@@ -84,6 +108,9 @@ export const BoardForm = () => {
     			const res = await addBoard(values).unwrap()
 				await bulkEditBoardStatuses({boardId: res.id, statusIds: formStatuses.map((status) => status.id)}).unwrap()
     		}
+			if (values.projectIdOptions && currentBoardId){
+				await updateBoardProjects({boardId: currentBoardId, ids: values.projectIdOptions.map((optionType) => Number(optionType.value))})
+			}
     		dispatch(toggleShowModal(false))
     		dispatch(addToast({
     			id: uuidv4(),
@@ -137,6 +164,25 @@ export const BoardForm = () => {
 				{...register("ticketLimit", registerOptions.ticketLimit)}
 				/>
 		        {errors?.ticketLimit && <small className = "--text-alert">{errors.ticketLimit.message}</small>}
+			</div>
+			<div className = "tw-flex tw-flex-col">
+				<label className = "label">Projects</label>
+				<Controller
+					name={"projectIdOptions"}
+					control={control}
+					rules={registerOptions.projectIdOptions}
+					render={({ field: { onChange, value, name, ref } }) => (
+						<AsyncMultiSelect 
+							endpoint={PROJECT_URL} 
+							clearable={true}
+							defaultValue={watch("projectIdOptions") ?? null}
+							urlParams={{forSelect: true}} 
+							onSelect={async (selectedOption: MultiValue<OptionType> | null) => {
+								onChange(selectedOption)
+							}}
+						/>
+					)}
+				/>
 			</div>
 			<div className = "tw-flex tw-flex-col">
 			{ !isStatusDataLoading ? (statuses.filter((status) => status.isActive).map((status) => (
