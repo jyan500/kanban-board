@@ -111,6 +111,25 @@ const boardStatusValidator = (actionType) => {
 	return validationRules
 }
 
+const boardProjectValidator = (actionType) => {
+	let validationRules = [
+		param("boardId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "board", value, "boards")),
+	]
+	if (actionType === "update") {
+		validationRules = [
+			...validationRules,
+			// must be an array of length > 0
+			body("ids").isArray({ min: 0, max: BULK_INSERT_LIMIT })
+			.withMessage("ids must be an array")
+			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			body("ids.*")
+				.custom(async (value, {req}) => await entityInOrganization(req.user.organization, "project", value, "projects"))
+				
+		]		
+	}
+	return validationRules
+}
+
 module.exports = {
 	validateGet: boardValidator("get"),
 	validateCreate: boardValidator("create"),
@@ -125,4 +144,6 @@ module.exports = {
 	validateBoardStatusDelete: boardStatusValidator("delete"),
 	validateBoardStatusUpdate: boardStatusValidator("update"),
 	validateBoardStatusBulkEdit: boardStatusValidator("bulk-edit"),
+	validateBoardProjectsGet: boardProjectValidator("get"),
+	validateBoardProjectsUpdate: boardProjectValidator("update"),
 }

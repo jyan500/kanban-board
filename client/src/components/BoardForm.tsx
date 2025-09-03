@@ -11,6 +11,7 @@ import {
 	useGetBoardProjectsQuery,
 	useUpdateBoardProjectsMutation,
 } from "../services/private/board" 
+import { useGetProjectQuery } from "../services/private/project"
 import { useForm, Controller } from "react-hook-form"
 import { MultiValue } from "react-select"
 import { v4 as uuidv4 } from "uuid" 
@@ -54,6 +55,7 @@ export const BoardForm = ({projectId}: Props) => {
 	const { data: boardInfo, isLoading: isGetBoardDataLoading  } = useGetBoardQuery(currentBoardId ? {id: currentBoardId, urlParams: {}} : skipToken)
 	const { data: statusData, isLoading: isStatusDataLoading } = useGetBoardStatusesQuery(currentBoardId ? {id: currentBoardId, isActive: true } : skipToken)
 	const { data: boardProjects, isLoading: isBoardProjectsLoading } = useGetBoardProjectsQuery(currentBoardId ? {boardId: currentBoardId, urlParams: {}} : skipToken)
+	const { data: project, isLoading: isGetProjectDataLoading } = useGetProjectQuery(projectId ? {id: projectId, urlParams: {}}: skipToken)
 	const [ preloadedValues, setPreloadedValues ] = useState<FormValues>(defaultForm)
 	const [ formStatuses, setFormStatuses ] = useState<Array<Status>>([])
 	const [ bulkEditBoardStatuses, {isLoading: isLoading, error: isError} ] =  useBulkEditBoardStatusesMutation() 
@@ -75,7 +77,7 @@ export const BoardForm = ({projectId}: Props) => {
 		// initialize with current values if the board exists
 		if (currentBoardId && boardInfo?.length){
 			let options: Array<OptionType> = []
-			if (boardProjects){
+			if (boardProjects?.data?.length){
 				options = boardProjects.data.map((project: Project) => {
 					const option: OptionType = {
 						label: project.name,
@@ -84,12 +86,16 @@ export const BoardForm = ({projectId}: Props) => {
 					return option
 				})
 			}
-			reset({id: currentBoardId, ticketLimit: boardInfo?.[0].ticketLimit, name: boardInfo?.[0].name})
+			reset({id: currentBoardId, ticketLimit: boardInfo?.[0].ticketLimit, name: boardInfo?.[0].name, projectIdOptions: options})
 		}
 		else {
-			reset(defaultForm)
+			let options: Array<OptionType> = []
+			if (project){
+				options = [{label: project.name, value: project.id.toString()} as OptionType]
+			}
+			reset({...defaultForm, projectIdOptions: options})
 		}
-	}, [showModal, boardInfo, boardProjects, projectId, currentBoardId])
+	}, [showModal, boardInfo, boardProjects, project, projectId, currentBoardId])
 
 	useEffect(() => {
 		if (!isStatusDataLoading && statusData){
@@ -109,7 +115,7 @@ export const BoardForm = ({projectId}: Props) => {
 				await bulkEditBoardStatuses({boardId: res.id, statusIds: formStatuses.map((status) => status.id)}).unwrap()
     		}
 			if (values.projectIdOptions && currentBoardId){
-				await updateBoardProjects({boardId: currentBoardId, ids: values.projectIdOptions.map((optionType) => Number(optionType.value))})
+				await updateBoardProjects({boardId: currentBoardId, ids: values.projectIdOptions.map((optionType) => Number(optionType.value))}).unwrap()
 			}
     		dispatch(toggleShowModal(false))
     		dispatch(addToast({

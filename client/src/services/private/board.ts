@@ -184,11 +184,9 @@ export const boardApi = privateApi.injectEndpoints({
 			query: ({boardId, urlParams}) => ({
 				url: BOARD_PROJECT_URL(boardId),
 				method: "GET",
-				body: {
-					params: urlParams
-				}
+				params: urlParams
 			}),
-			providesTags: ["BoardProjects"]
+			providesTags: ["ProjectBoards"]
 		}),
 		updateBoardProjects: builder.mutation<{message: string}, {boardId: number, ids: Array<number>}>({
 			query: ({boardId, ids}) => ({
@@ -198,7 +196,7 @@ export const boardApi = privateApi.injectEndpoints({
 					project_ids: ids
 				}
 			}),
-			invalidatesTags: ["BoardProjects"]
+			invalidatesTags: ["ProjectBoards"]
 		})
 	}),
 })
