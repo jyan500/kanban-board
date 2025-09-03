@@ -550,9 +550,9 @@ router.post("/:boardId/project", validateBoardProjectsUpdate, handleValidationRe
 		// get existing projects and filter out the projects that have already been added
 		const existingProjects = await db("projects_to_boards").where("board_id", req.params.boardId)
 		const existingProjectIds = existingProjects.map((project) => project.project_id)
-		const idsToAdd = req.body.project_ids.filter((id) => !existingProjectIds.includes(id))
+		const idsToAdd = req.body.ids.filter((id) => !existingProjectIds.includes(id))
 		// the ids to delete are the ones present in existing project ids but are not present in the request project ids
-		const idsToDelete = existingProjectIds.filter((id) => !req.body.project_ids.includes(id))
+		const idsToDelete = existingProjectIds.filter((id) => !req.body.ids.includes(id))
 		if (idsToAdd.length){
 			await db("projects_to_boards").insert(idsToAdd.map((id) => {
 				return {

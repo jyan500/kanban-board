@@ -119,7 +119,7 @@ const boardProjectValidator = (actionType) => {
 		validationRules = [
 			...validationRules,
 			// must be an array of length > 0
-			body("ids").isArray({ min: 0, max: BULK_INSERT_LIMIT })
+			body("ids").isArray({ max: BULK_INSERT_LIMIT })
 			.withMessage("ids must be an array")
 			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
 			body("ids.*")

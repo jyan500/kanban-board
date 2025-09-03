@@ -193,7 +193,7 @@ export const boardApi = privateApi.injectEndpoints({
 				url: BOARD_PROJECT_URL(boardId),
 				method: "POST",
 				body: {
-					project_ids: ids
+					ids: ids
 				}
 			}),
 			invalidatesTags: ["ProjectBoards"]
