@@ -1,6 +1,6 @@
 import { userProfileModifier, dateModifier } from "../table-modifiers/display-modifiers"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks" 
-import { setModalType, toggleShowModal } from "../../slices/modalSlice" 
+import { setModalType, toggleShowModal, setModalProps } from "../../slices/modalSlice" 
 import { UserProfile } from "../../types/common"
 import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
 import { OverlappingRow } from "../../components/OverlappingRow"
@@ -41,7 +41,7 @@ export const useBoardConfig = () => {
 		},
 		...(isAdminOrBoardAdmin ? {editCol: {col: "edit", text: "Edit", onClick: (id: number) => {
 			dispatch(setModalType("BOARD_FORM"))
-			dispatch(setCurrentBoardId(id))
+			dispatch(setModalProps({boardId: id}))
 			dispatch(toggleShowModal(true))
 		}}} : {}),
 	}

@@ -43,7 +43,6 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 	} = useAppSelector((state) => state.modal)
 	const [showPassword, setShowPassword] = useState(false)
 	const { userRoles } = useAppSelector((state) => state.userRole)
-	const { currentBoardId } = useAppSelector((state) => state.boardInfo)
 	const defaultForm: FormValues = {
 		id: undefined,
 		firstName: "",

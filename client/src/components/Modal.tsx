@@ -83,7 +83,6 @@ export const Modal = () => {
 				dispatch(toggleShowModal(false))
 				dispatch(setModalType(undefined))
 				dispatch(setModalProps({}))
-				dispatch(setCurrentBoardId(null))
 			}
 		}
 

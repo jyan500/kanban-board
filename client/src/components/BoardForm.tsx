@@ -22,11 +22,13 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { MIN_BOARD_TICKET_LIMIT, MAX_BOARD_TICKET_LIMIT } from "../helpers/constants"
 import { Switch } from "./page-elements/Switch"
 import { LoadingButton } from "./page-elements/LoadingButton"
+import { AsyncSelect } from "./AsyncSelect"
 import { AsyncMultiSelect } from "./AsyncMultiSelect"
-import { PROJECT_URL } from "../helpers/urls"
+import { BOARD_URL, PROJECT_URL } from "../helpers/urls"
 
 interface Props {
 	projectId?: number
+	boardId?: number
 }
 
 type FormValues = {
@@ -36,19 +38,19 @@ type FormValues = {
 	projectIdOptions: Array<OptionType>
 }
 
-export const BoardForm = ({projectId}: Props) => {
+export const BoardForm = ({boardId, projectId}: Props) => {
 	const dispatch = useAppDispatch()
 	const {
 		showModal
 	} = useAppSelector((state) => state.modal)
 	const { statuses } = useAppSelector((state) => state.status)
-	const { currentBoardId } = useAppSelector((state) => state.boardInfo)
 	const defaultForm: FormValues = {
 		id: undefined,
 		ticketLimit: MAX_BOARD_TICKET_LIMIT,
 		name: "",
 		projectIdOptions: []
 	}
+	const [currentBoardId, setCurrentBoard] = useState(boardId ?? null)
 	const [ addBoard ] = useAddBoardMutation() 
 	const [ updateBoard ] = useUpdateBoardMutation()
 	const [ updateBoardProjects ] = useUpdateBoardProjectsMutation()
@@ -95,7 +97,7 @@ export const BoardForm = ({projectId}: Props) => {
 			}
 			reset({...defaultForm, projectIdOptions: options})
 		}
-	}, [showModal, boardInfo, boardProjects, project, projectId, currentBoardId])
+	}, [showModal, boardInfo, boardProjects, project, projectId, boardId, currentBoardId])
 
 	useEffect(() => {
 		if (!isStatusDataLoading && statusData){
@@ -154,6 +156,25 @@ export const BoardForm = ({projectId}: Props) => {
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
+			{
+				!boardId ? 
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<label className = "label" htmlFor = "existing-board">Board</label>
+					<span className = "tw-text-xs">Prefill information with existing board</span>
+					<AsyncSelect 
+						endpoint={BOARD_URL} 
+						clearable={true}
+						urlParams={{forSelect: true}} 
+						onSelect={async (selectedOption: OptionType | null) => {
+							if (!selectedOption){
+								reset(defaultForm)
+								setFormStatuses([])
+							}
+							setCurrentBoard(selectedOption ? Number(selectedOption.value) : null)
+						}}
+					/>
+				</div> : null
+			}
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "board-name">Name</label>
 				<input id = "board-name" type = "text"
