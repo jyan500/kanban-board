@@ -14,6 +14,8 @@ const {
 	validateBoardStatusUpdate,
 	validateBoardStatusDelete,
 	validateBoardStatusBulkEdit,
+	validateBoardProjectsGet,
+	validateBoardProjectsUpdate,
 }  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
@@ -522,6 +524,50 @@ router.delete("/:boardId/status/:statusId", validateBoardStatusDelete, handleVal
 	}
 	catch (err) {
 		console.error(`Error while deleting status: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:boardId/project", validateBoardProjectsGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const data = await db("projects_to_boards").where("board_id", req.params.boardId).join("projects", "projects.id", "=", "projects_to_boards.project_id").select(
+			"projects.id as id",
+			"projects.name as name",
+			"projects.user_id as userId",
+			"projects.description as description",
+			"projects.created_at as createdAt"
+		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		res.json(data)
+	}
+	catch (err){
+		console.error(`Error while getting projects: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/:boardId/project", validateBoardProjectsUpdate, handleValidationResult, async (req, res, next) => {
+	try {
+		// get existing projects and filter out the projects that have already been added
+		const existingProjects = await db("projects_to_boards").where("board_id", req.params.boardId)
+		const existingProjectIds = existingProjects.map((project) => project.project_id)
+		const idsToAdd = req.body.ids.filter((id) => !existingProjectIds.includes(id))
+		// the ids to delete are the ones present in existing project ids but are not present in the request project ids
+		const idsToDelete = existingProjectIds.filter((id) => !req.body.ids.includes(id))
+		if (idsToAdd.length){
+			await db("projects_to_boards").insert(idsToAdd.map((id) => {
+				return {
+					project_id: id,
+					board_id: req.params.boardId,
+				}
+			}))
+		}
+		if (idsToDelete.length){
+			await db("projects_to_boards").where("board_id", req.params.boardId).whereIn("project_id", idsToDelete).del()
+		}
+		res.json({message: "Projects attached to board successfully!"})
+	}
+	catch (err){
+		console.error(`Error while adding projects to board: ${err.message}`)
 		next(err)
 	}
 })

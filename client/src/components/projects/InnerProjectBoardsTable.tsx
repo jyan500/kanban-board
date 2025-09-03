@@ -1,9 +1,12 @@
 import React, {useState} from "react"
 import { Table } from "../Table"
+import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { useGetProjectBoardsQuery } from "../../services/private/project"
 import { useBoardConfig } from "../../helpers/table-config/useBoardConfig"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { PaginationRow } from "../../components/page-elements/PaginationRow"
+import { Button } from "../../components/page-elements/Button"
+import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice"
 
 interface Props {
 	projectId: number
@@ -11,9 +14,21 @@ interface Props {
 }
 
 export const InnerProjectBoardsTable = ({projectId, fullWidth}: Props) => {
+	const dispatch = useAppDispatch()
 	const [page, setPage] = useState(1)
 	const config = useBoardConfig()
+	const { userRoleLookup } = useAppSelector((state) => state.userRole)
+	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { data, isFetching, isError } = useGetProjectBoardsQuery({id: projectId, urlParams: {"assignees": true, "numTickets": true, "lastModified": true, "page": page}})
+
+	const addNewBoard = () => {
+		dispatch(toggleShowModal(true))
+		dispatch(setModalProps({
+			"projectId": projectId
+		}))
+		dispatch(setModalType("BOARD_FORM"))
+	}
+
 
 	const setPageFunc = (page: number) => {
 		setPage(page)
@@ -24,6 +39,12 @@ export const InnerProjectBoardsTable = ({projectId, fullWidth}: Props) => {
 		{
 			isFetching ? <LoadingSpinner/> :
 			<div className = "tw-space-y-2">
+				{
+
+					userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN") ? (
+						<Button onClick={addNewBoard} theme={"secondary"}>Add Board</Button>
+					) : null
+				}
 				<Table 
 					config={config} 
 					data={data?.data ?? []} 

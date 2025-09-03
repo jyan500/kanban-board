@@ -5,9 +5,10 @@ import {
 	BOARD_URL, 
 	BOARD_TICKET_URL, 
 	BOARD_STATUS_URL, 
-	BOARD_BULK_EDIT_STATUS_URL 
+	BOARD_BULK_EDIT_STATUS_URL,
+	BOARD_PROJECT_URL,
 } from "../../helpers/urls" 
-import { CustomError, Board, ListResponse, Status, Ticket } from "../../types/common" 
+import { CustomError, Board, ListResponse, Project, Status, Ticket } from "../../types/common" 
 import { privateApi } from "../private"
 import { parseURLParams } from "../../helpers/functions" 
 
@@ -178,6 +179,24 @@ export const boardApi = privateApi.injectEndpoints({
 				}
 			}),
 			invalidatesTags: ["Boards", "BoardStatuses"]
+		}),
+		getBoardProjects: builder.query<ListResponse<Project>, {boardId: number, urlParams: Record<string, any>}>({
+			query: ({boardId, urlParams}) => ({
+				url: BOARD_PROJECT_URL(boardId),
+				method: "GET",
+				params: urlParams
+			}),
+			providesTags: ["ProjectBoards"]
+		}),
+		updateBoardProjects: builder.mutation<{message: string}, {boardId: number, ids: Array<number>}>({
+			query: ({boardId, ids}) => ({
+				url: BOARD_PROJECT_URL(boardId),
+				method: "POST",
+				body: {
+					ids: ids
+				}
+			}),
+			invalidatesTags: ["ProjectBoards"]
 		})
 	}),
 })
@@ -198,4 +217,6 @@ export const {
 	useDeleteBoardStatusMutation,
 	useUpdateBoardStatusMutation,
 	useBulkEditBoardStatusesMutation,
+	useGetBoardProjectsQuery,
+	useUpdateBoardProjectsMutation,
 } = boardApi 

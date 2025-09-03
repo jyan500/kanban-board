@@ -30,6 +30,7 @@ export const NOTIFICATION_TYPE_URL = `/${API_VERSION}/notification-type`
 export const GROUP_BY_URL = `/${API_VERSION}/group-by`
 export const PROJECT_BOARD_URL = (projectId: number | string) => `/${API_VERSION}/project/${projectId}/board`
 export const BOARD_TICKET_URL = (boardId: number | string, ticketId: number | string) => `/${API_VERSION}/board/${boardId}/ticket` + (ticketId !== "" ? `/${ticketId}` : "")
+export const BOARD_PROJECT_URL = (boardId: number) => `/${API_VERSION}/board/${boardId}/project`
 export const BOARD_STATUS_URL = (boardId: number | string, statusId: number | string) => `/${API_VERSION}/board/${boardId}/status` + (statusId !== "" ? `/${statusId}` : "")
 export const BOARD_BULK_EDIT_STATUS_URL = (boardId: number | string) => `/${API_VERSION}/board/${boardId}/status/bulk-edit`
 export const TICKET_ASSIGNEES_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/user/`

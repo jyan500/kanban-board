@@ -8,6 +8,7 @@ import { IconButton } from "./page-elements/IconButton"
 import { IconArrowRight } from "./icons/IconArrowRight"
 import { IconArrowDown } from "./icons/IconArrowDown"
 import { IconPencil } from "./icons/IconPencil"
+import { Button } from "./page-elements/Button"
 
 type Props = {
 	config: Record<string, any>
@@ -126,7 +127,7 @@ const TableContent = ({
 								return (
 									<td key={`${tableKey}-${row.id}-${headerKey}`}>	
 										{
-											<IconButton onClick={setNestedTableSet && nestedTableSet ? () => {
+											<Button theme={"secondary"} onClick={setNestedTableSet && nestedTableSet ? () => {
 												const newNestedTableSet = new Set(nestedTableSet)
 												newNestedTableSet.has(row.id) ? newNestedTableSet.delete(row.id) : newNestedTableSet.add(row.id)
 												setNestedTableSet(newNestedTableSet)
@@ -142,7 +143,7 @@ const TableContent = ({
 														<span>Show {config.nestedTableControl.text}</span>
 													</>
 												}	
-											</IconButton>
+											</Button>
 										}
 									</td>
 								)

@@ -6,7 +6,7 @@ import {
 	useAddProjectMutation, 
 	useGetProjectQuery,
 	useGetProjectBoardsQuery, 
-	useAddProjectBoardsMutation, 
+	useUpdateProjectBoardsMutation, 
 	useDeleteProjectBoardsMutation,
 	useUpdateProjectMutation 
 } from "../../services/private/project"
@@ -55,7 +55,7 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 	const [ updateProject ] = useUpdateProjectMutation()
 	const { data: projectInfo, isLoading: isGetProjectDataLoading } = useGetProjectQuery(projectId ? {id: projectId, urlParams: {}} : skipToken)
 	const { data: projectBoards, isLoading: isProjectBoardsLoading } = useGetProjectBoardsQuery(projectId ? {id: projectId, urlParams: {}} : skipToken)
-	const [ addProjectBoards, { isLoading: isAddProjectBoardsLoading }] = useAddProjectBoardsMutation()
+	const [ updateProjectBoards, { isLoading: isUpdateProjectBoardsLoading }] = useUpdateProjectBoardsMutation()
 	const [ deleteProjectBoards, { isLoading: isDeleteProjectBoardsLoading }] = useDeleteProjectBoardsMutation()
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const [ preloadedValues, setPreloadedValues ] = useState<FormValues>(defaultForm)
@@ -114,7 +114,7 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 				newProjectId = res.id
     		}
 			if (projectId || newProjectId){
-				await addProjectBoards({
+				await updateProjectBoards({
 					id: projectId ?? newProjectId,
 					boardIds: values.boardIdOptions.map((option) => {
 						return parseInt(option.value)
