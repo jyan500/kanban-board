@@ -50,7 +50,7 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 		name: "",
 		projectIdOptions: []
 	}
-	const [currentBoardId, setCurrentBoard] = useState(boardId ?? null)
+	const [currentBoardId, setCurrentBoard] = useState<number | null>(boardId ?? null)
 	const [ addBoard ] = useAddBoardMutation() 
 	const [ updateBoard ] = useUpdateBoardMutation()
 	const [ updateBoardProjects ] = useUpdateBoardProjectsMutation()
@@ -75,6 +75,16 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 	    },
 		projectIdOptions: {}
     }
+
+	// New useEffect to reset state when modal opens for a new board
+	useEffect(() => {
+		if (showModal && boardId === undefined) {
+			setCurrentBoard(null);
+			reset(defaultForm);
+			setFormStatuses([]);
+		}
+	}, [showModal, boardId]);
+
 	useEffect(() => {
 		// initialize with current values if the board exists
 		if (currentBoardId && boardInfo?.length){
@@ -88,6 +98,12 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 					return option
 				})
 			}
+			if (project){
+				const existingProject = options.find((option) => option.value === project.id.toString())
+				if (!existingProject){
+					options = [...options, {label: project.name, value: project.id.toString()} as OptionType]
+				}
+			}
 			reset({id: currentBoardId, ticketLimit: boardInfo?.[0].ticketLimit, name: boardInfo?.[0].name, projectIdOptions: options})
 		}
 		else {
@@ -97,13 +113,13 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 			}
 			reset({...defaultForm, projectIdOptions: options})
 		}
-	}, [showModal, boardInfo, boardProjects, project, projectId, boardId, currentBoardId])
+	}, [showModal, boardInfo, boardProjects, project, currentBoardId])
 
 	useEffect(() => {
 		if (!isStatusDataLoading && statusData){
 			setFormStatuses(statusData)
 		}
-	}, [isStatusDataLoading, statusData])
+	}, [showModal, isStatusDataLoading, statusData])
 
     const onSubmit = async (values: FormValues) => {
 		setSubmitLoading(true)
@@ -155,15 +171,16 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 	}
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
+		<form onSubmit={handleSubmit(onSubmit)} className = "lg:tw-w-[80%] tw-w-full tw-flex tw-flex-col tw-gap-y-2">
 			{
 				!boardId ? 
 				<div className = "tw-flex tw-flex-col tw-gap-y-2">
 					<label className = "label" htmlFor = "existing-board">Board</label>
-					<span className = "tw-text-xs">Prefill information with existing board</span>
+					<span className = "tw-text-xs">Select this to use an existing board</span>
 					<AsyncSelect 
 						endpoint={BOARD_URL} 
 						clearable={true}
+						defaultValue={boardInfo && currentBoardId ? {label: boardInfo?.[0].name, value: boardInfo?.[0].id.toString()} : null}
 						urlParams={{forSelect: true}} 
 						onSelect={async (selectedOption: OptionType | null) => {
 							if (!selectedOption){
