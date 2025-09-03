@@ -3,9 +3,10 @@ import { Table } from "../Table"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { useGetProjectBoardsQuery } from "../../services/private/project"
 import { useBoardConfig } from "../../helpers/table-config/useBoardConfig"
-import { LoadingSpinner } from "../LoadingSpinner"
-import { PaginationRow } from "../../components/page-elements/PaginationRow"
-import { Button } from "../../components/page-elements/Button"
+import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
+import { RowPlaceholder } from "../placeholders/RowPlaceholder"
+import { PaginationRow } from "../page-elements/PaginationRow"
+import { Button } from "../page-elements/Button"
 import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice"
 
 interface Props {
@@ -19,7 +20,7 @@ export const InnerProjectBoardsTable = ({projectId, fullWidth}: Props) => {
 	const config = useBoardConfig()
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
-	const { data, isFetching, isError } = useGetProjectBoardsQuery({id: projectId, urlParams: {"assignees": true, "numTickets": true, "lastModified": true, "page": page}})
+	const { data, isLoading, isError } = useGetProjectBoardsQuery({id: projectId, urlParams: {"assignees": true, "numTickets": true, "lastModified": true, "page": page}})
 
 	const addNewBoard = () => {
 		dispatch(toggleShowModal(true))
@@ -37,7 +38,10 @@ export const InnerProjectBoardsTable = ({projectId, fullWidth}: Props) => {
 	return (
 		<>
 		{
-			isFetching ? <LoadingSpinner/> :
+			isLoading ?
+			 <LoadingSkeleton width="tw-w-full" height="tw-h-48">
+				<RowPlaceholder/>	
+			</LoadingSkeleton> :
 			<div className = "tw-space-y-2">
 				{
 

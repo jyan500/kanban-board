@@ -1,7 +1,6 @@
 import { userRoleModifier } from "../table-modifiers/display-modifiers"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks" 
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice" 
-import { setCurrentBoardId } from "../../slices/boardInfoSlice" 
 import { Toast, UserRegistrationRequest } from "../../types/common"
 import { useBulkEditRegistrationRequestsMutation, useUpdateRegistrationRequestMutation } from "../../services/private/organization"
 import { addToast } from "../../slices/toastSlice"
