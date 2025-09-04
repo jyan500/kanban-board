@@ -20,6 +20,7 @@ const groupByRouter = require("./routes/groupBy")
 const auth = require("./middleware/authMiddleware")
 const {authenticateUserActivated} = require("./middleware/userActivatedMiddleware")
 const { asyncHandler } = require("./helpers/functions")
+const sprintRouter = require("./routes/sprint")
 
 const api = (route, apiVersion = "") => {
 	return `/api${apiVersion}/${route}`
@@ -53,6 +54,7 @@ app.use(api("user-role"), auth.authenticateApprovedToken, userRoleRouter)
 app.use(api("notification"), auth.authenticateApprovedToken, notificationRouter)
 app.use(api("notification-type"), auth.authenticateApprovedToken, notificationTypeRouter)
 app.use(api("group-by"), auth.authenticateApprovedToken, asyncHandler(authenticateUserActivated), groupByRouter)
+app.use(api("sprint"), auth.authenticateApprovedToken, asyncHandler(authenticateUserActivated), sprintRouter)
 
 /* Partially Protected Endpoints */
 app.use(api("user"), userRouter)

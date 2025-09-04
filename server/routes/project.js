@@ -89,13 +89,8 @@ router.get("/:projectId/board", validateGet, handleValidationResult, async (req,
 			"boards.id as id",
 			"boards.name as name",
 			"boards.ticket_limit as ticketLimit",
-			"boards.is_sprint as isSprint",
-			"boards.is_sprint_complete as isSprintComplete",
-			"boards.sprint_debrief as sprintDebrief",
 			"boards.user_id as userId",
 			"boards.description as description",
-			"boards.start_date as startDate",
-			"boards.end_date as endDate",
 			"boards.created_at as createdAt"
 		).modify((queryBuilder) => {
 			if (req.query.lastModified === "true"){
