@@ -1,12 +1,17 @@
-const db = require("./db")
+const db = require("../db/db")
 const { checkUniqueEntity, checkEntityExistsIn, entityInOrganization, validateKeyExists } = require("./helper")
 const { BULK_INSERT_LIMIT, MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT, MIN_BOARD_TICKET_LIMIT, MAX_BOARD_TICKET_LIMIT } = require("../constants")
 const { body, param } = require("express-validator")
 
 const sprintValidator = (actionType) => {
 	let validationRules = [
-		param("sprintId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "sprint", value, "sprints"))
 	]
+    if (actionType === "getById"){
+        validationRules = [
+            ...validationRules,
+            param("sprintId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "sprint", value, "sprints"))
+        ]
+    }
 
 	if (actionType === "create" || actionType === "update"){
 		validationRules = [
@@ -62,6 +67,7 @@ module.exports = {
 	validateSprintCreate: sprintValidator("create"),
 	validateSprintUpdate: sprintValidator("update"),
 	validateSprintDelete: sprintValidator("delete"),
-	validateSprintTicketCreate: sprintTicketValidator("create"),
+	validateSprintTicketGet: sprintTicketValidator("get"),
+    validateSprintTicketGetById: sprintTicketValidator("getById"),
 	validateSprintTicketUpdate: sprintTicketValidator("update"),
 }

@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const {
 	validateSprintGet,
+    validateSprintGetById,
 	validateSprintCreate,
 	validateSprintUpdate,
 	validateSprintDelete,
@@ -22,7 +23,7 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 	}
 })
 
-router.get("/:sprintId", validateSprintGet, handleValidationResult, async (req, res, next) => {
+router.get("/:sprintId", validateSprintGetById, handleValidationResult, async (req, res, next) => {
 	try {
 		res.json({message: "GET /sprint/:sprintId endpoint"})
 	}
