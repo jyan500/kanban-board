@@ -127,6 +127,20 @@ const boardProjectValidator = (actionType) => {
 	return validationRules
 }
 
+const boardSprintValidator = (actionType) => {
+	let validationRules = [
+		param("boardId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "board", value, "boards"))
+	]
+
+	if (actionType === "getById"){
+		validationRules = [
+			...validationRules,
+			param("sprintId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "sprint", value, "sprints")),
+		]
+	}
+	return validationRules
+}
+
 module.exports = {
 	validateGet: boardValidator("get"),
 	validateCreate: boardValidator("create"),
@@ -143,4 +157,6 @@ module.exports = {
 	validateBoardStatusBulkEdit: boardStatusValidator("bulk-edit"),
 	validateBoardProjectsGet: boardProjectValidator("get"),
 	validateBoardProjectsUpdate: boardProjectValidator("update"),
+	validateBoardSprintGet: boardSprintValidator("get"),
+	validateBoardSprintGetById: boardSprintValidator("getById"),
 }

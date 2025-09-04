@@ -16,6 +16,8 @@ const {
 	validateBoardStatusBulkEdit,
 	validateBoardProjectsGet,
 	validateBoardProjectsUpdate,
+	validateBoardSprintGet,
+	validateBoardSprintGetById,
 }  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
@@ -558,6 +560,26 @@ router.post("/:boardId/project", validateBoardProjectsUpdate, handleValidationRe
 	}
 	catch (err){
 		console.error(`Error while adding projects to board: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:boardId/sprint", validateBoardSprintGet, handleValidationResult, async (req, res, next) => {
+	try {
+		res.json({message: "GET /:boardId/sprint endpoint"})
+	}
+	catch (err) {
+		console.error(`Error while getting sprints: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:boardId/sprint/:sprintId", validateBoardSprintGetById, handleValidationResult, async (req, res, next) => {
+	try {
+		res.json({message: "GET /:boardId/sprint/:sprintId endpoint"})
+	}
+	catch (err) {
+		console.error(`Error while getting sprint: ${err.message}`)
 		next(err)
 	}
 })
