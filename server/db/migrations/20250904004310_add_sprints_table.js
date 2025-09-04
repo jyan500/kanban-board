@@ -14,6 +14,8 @@ exports.up = function(knex) {
         table.foreign("organization_id").references("organizations.id").onDelete("cascade")
 		table.integer("user_id").unsigned()
 		table.foreign("user_id").references("users.id").onDelete("cascade")
+		table.integer("board_id").unsigned()
+		table.foreign("board_id").references("boards.id").onDelete("cascade")
 		table.timestamp("start_date").nullable()
 		table.timestamp("end_date").nullable()
 		table.timestamp('created_at').defaultTo(knex.fn.now());	
