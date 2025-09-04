@@ -64,7 +64,7 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 	const { register , handleSubmit, reset, control, setValue, getValues, watch, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
-	const [ submitLoading ,setSubmitLoading ] = useState(false)
+	const [ submitLoading, setSubmitLoading ] = useState(false)
 	const registerOptions = {
 	    name: { required: "Name is required" },
 	    ticketLimit: { 
