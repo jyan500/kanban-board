@@ -17,10 +17,7 @@ const boardValidator = (actionType) => {
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required"),
 			body("ticket_limit").isNumeric().withMessage("ticket limit must be a number").isFloat({min: MIN_BOARD_TICKET_LIMIT, max: MAX_BOARD_TICKET_LIMIT}).withMessage(`ticket limit must be between ${MIN_BOARD_TICKET_LIMIT} and ${MAX_BOARD_TICKET_LIMIT}`),
-			body("start_date").if(body("is_sprint").exists()).isISO8601().toDate(),
-			body("end_date").if(body("is_sprint").exists()).isISO8601().toDate(),
-			body("description").if(body("is_sprint").exists()).notEmpty(),
-			body("user_id").if(body("is_sprint").exists()).custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
+			body("user_id").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
 		]
 	}
 	return validationRules

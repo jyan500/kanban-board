@@ -54,14 +54,9 @@ router.get("/", async (req, res, next) => {
 			"boards.id as id", 
 			"boards.ticket_limit as ticketLimit", 
 			"boards.name as name", 
+			"boards.user_id as userId",
 			"boards.organization_id as organizationId",
 			"boards.description as description",
-			"boards.is_sprint as isSprint",
-			"boards.is_sprint_complete as isSprintComplete",
-			"boards.sprint_debrief as sprintDebrief",
-			"boards.user_id as userId",
-			"boards.start_date as startDate",
-			"boards.end_date as endDate",
 		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 
 		let boardAssignees;
@@ -162,13 +157,8 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 			"boards.name as name",
 			"boards.ticket_limit as ticketLimit",
 			"boards.organization_id as organizationId",
-			"boards.description as description",
-			"boards.is_sprint as isSprint",
-			"boards.is_sprint_complete as isSprintComplete",
-			"boards.sprint_debrief as sprintDebrief",
 			"boards.user_id as userId",
-			"boards.start_date as startDate",
-			"boards.end_date as endDate",
+			"boards.description as description",
 		)
 		let boardAssignees;
 		let boardAssigneesRes = {}
@@ -580,12 +570,7 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			ticket_limit: body.ticket_limit,
 			organization_id: body.organization_id,
 			...(body.is_sprint ? {
-				is_sprint: body.is_sprint,
-				is_sprint_complete: body.is_sprint_complete,
 				description: body.description,
-				sprint_debrief: body.sprint_debrief,
-				start_date: new Date(body.start_date),
-				end_date: new Date(body.end_date),
 				user_id: body.user_id,
 			} : {})
 		})
