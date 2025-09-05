@@ -33,14 +33,14 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 	const { data, isLoading } = useGetUserQuery(ticket?.assignees?.[0].id ?? skipToken)
 	const { width, height } = useScreenSize()
 	return (
-		<div className = {`hover:tw-bg-gray-50 tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full ${borderless ? "" : "tw-border tw-border-gray-200"} tw-rounded-md`}>
-			<div className = "tw-w-3/5 lg:tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4">
+		<div className = {`hover:tw-bg-gray-50 tw-p-1 lg:tw-p-1.5 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full ${borderless ? "" : "tw-border tw-border-gray-200"} tw-rounded-md`}>
+			<div className = {`${showUnlink && onUnlink && ticketRelationshipId ? "tw-w-[60%]" : "tw-w-[70%]"} lg:tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4`}>
 				<div>
 					{ticketType ? (
 							<TicketTypeIcon type={ticketType} />	
 						) : <></>}
 				</div>
-				<div className = "tw-w-3/4 tw-text-left tw-break-words"><p className = "tw-font-medium">{ticket?.name}</p></div>
+				<div className = "tw-line-clamp-2 tw-w-3/4 tw-text-left tw-break-words"><p className = "tw-font-medium">{ticket?.name}</p></div>
 			</div>
 			<div className = "lg:tw-p-1 tw-flex tw-flex-1 tw-flex-row tw-justify-start tw-items-center tw-gap-x-2">
 				<div>
@@ -53,11 +53,11 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 				{width >= SM_BREAKPOINT ? 
 					(isLoading ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>) 
 				: null}
-				<div className = "tw-text-left tw-break-words">{status?.name}</div>
+				<div className = "tw-line-clamp-1 tw-text-left tw-break-words">{status?.name}</div>
 			</div>
-			<div className = "tw-flex tw-flex-row tw-justify-end">
-				{
-					showUnlink && onUnlink && ticketRelationshipId ? (
+			{
+				showUnlink && onUnlink && ticketRelationshipId ? (
+				<div className = "tw-flex tw-flex-row tw-justify-end">
 						<IconButton onClick={(e) => {
 							// prevent click on this component from triggering an onclick of the parent component
 							e.stopPropagation()
@@ -66,9 +66,9 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 						}}>
 							<Unlink className = "tw-w-6 tw-h-6 tw-shrink-0"/>	
 						</IconButton>
-					) : null
-				}	
-			</div>
+				</div>
+				) : null
+			}
 		</div>
 	)
 }

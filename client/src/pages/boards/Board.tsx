@@ -12,7 +12,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ArrowButton } from "../../components/page-elements/ArrowButton"
 import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { Link } from "react-router-dom"
-import { SCHEDULE, TABLE, BOARDS, TICKETS } from "../../helpers/routes"
+import { SCHEDULE, TABLE, BACKLOG, BOARDS, TICKETS } from "../../helpers/routes"
 import { Banner } from "../../components/page-elements/Banner"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPlaceholder"
@@ -65,6 +65,9 @@ export const Board = () => {
 		{
 			pathname: `${boardPath}/${TABLE}`, text: "Table",
 		},
+		{
+			pathname: `${boardPath}/${BACKLOG}`, text: "Backlog"
+		}
 	]
 
 
