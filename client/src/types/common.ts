@@ -90,6 +90,19 @@ export interface Board {
 	percentComplete?: number
 }
 
+export interface Sprint {
+	id: number
+	name: string
+	goal: string
+	debrief?: string
+	organizationId: number
+	userId: number
+	boardId: number
+	startDate: Date | string
+	endDate: Date | string
+	isCompleted: boolean
+}
+
 export interface Project {
 	id: number
 	name: string

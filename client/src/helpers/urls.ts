@@ -28,6 +28,7 @@ export const TICKET_RELATIONSHIP_TYPE_URL = `/${API_VERSION}/ticket-relationship
 export const NOTIFICATION_URL = `/${API_VERSION}/notification`
 export const NOTIFICATION_TYPE_URL = `/${API_VERSION}/notification-type`
 export const GROUP_BY_URL = `/${API_VERSION}/group-by`
+export const SPRINT_URL = `/${API_VERSION}/sprint`
 export const PROJECT_BOARD_URL = (projectId: number | string) => `/${API_VERSION}/project/${projectId}/board`
 export const BOARD_TICKET_URL = (boardId: number | string, ticketId: number | string) => `/${API_VERSION}/board/${boardId}/ticket` + (ticketId !== "" ? `/${ticketId}` : "")
 export const BOARD_PROJECT_URL = (boardId: number) => `/${API_VERSION}/board/${boardId}/project`

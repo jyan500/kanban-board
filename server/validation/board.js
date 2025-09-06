@@ -17,7 +17,6 @@ const boardValidator = (actionType) => {
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required"),
 			body("ticket_limit").isNumeric().withMessage("ticket limit must be a number").isFloat({min: MIN_BOARD_TICKET_LIMIT, max: MAX_BOARD_TICKET_LIMIT}).withMessage(`ticket limit must be between ${MIN_BOARD_TICKET_LIMIT} and ${MAX_BOARD_TICKET_LIMIT}`),
-			body("user_id").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
 		]
 	}
 	return validationRules

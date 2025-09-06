@@ -56,9 +56,7 @@ router.get("/", async (req, res, next) => {
 			"boards.id as id", 
 			"boards.ticket_limit as ticketLimit", 
 			"boards.name as name", 
-			"boards.user_id as userId",
 			"boards.organization_id as organizationId",
-			"boards.description as description",
 		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 
 		let boardAssignees;
@@ -159,8 +157,6 @@ router.get("/:boardId", validateGet, handleValidationResult, async (req, res, ne
 			"boards.name as name",
 			"boards.ticket_limit as ticketLimit",
 			"boards.organization_id as organizationId",
-			"boards.user_id as userId",
-			"boards.description as description",
 		)
 		let boardAssignees;
 		let boardAssigneesRes = {}
@@ -591,10 +587,7 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			name: body.name,
 			ticket_limit: body.ticket_limit,
 			organization_id: body.organization_id,
-			...(body.is_sprint ? {
-				description: body.description,
-				user_id: body.user_id,
-			} : {})
+			user_id: req.user.id,
 		})
 		res.json({id: id, message: "Board inserted successfully!"})
 	}	
@@ -609,15 +602,6 @@ router.put("/:boardId", validateUpdate, handleValidationResult, async (req, res,
 		await db("boards").where("id", req.params.boardId).update({
 			name: req.body.name,
 			ticket_limit: req.body.ticket_limit,
-			...(req.body.is_sprint ? {
-				is_sprint: req.body.is_sprint,
-				is_sprint_complete: req.body.is_sprint_complete,
-				description: req.body.description,
-				sprint_debrief: req.body.sprint_debrief,
-				start_date: new Date(req.body.start_date),
-				end_date: new Date(req.body.end_date),
-				user_id: req.body.user_id,
-			} : {})
 		})
 		res.json({message: "Board updated successfully!"})	
 	}	

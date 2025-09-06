@@ -37,7 +37,7 @@ const sprintTicketValidator = (actionType) => {
 		param("ticketId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "ticket", value, "tickets"))
     }
 
-	if (actionType === "update") {
+	if (actionType === "update" || actionType === "delete") {
 		validationRules = [
 			...validationRules,
 			body("ticket_ids").isArray({ min: 0, max: BULK_INSERT_LIMIT })
@@ -70,4 +70,5 @@ module.exports = {
 	validateSprintTicketGet: sprintTicketValidator("get"),
     validateSprintTicketGetById: sprintTicketValidator("getById"),
 	validateSprintTicketUpdate: sprintTicketValidator("update"),
+	validateSprintTicketDelete: sprintTicketValidator("delete")
 }
