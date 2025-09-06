@@ -1,6 +1,7 @@
 import React from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
+import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useGetBoardTicketsQuery } from "../../services/private/board"
 import { BulkEditTicketContainer } from "./BulkEditTicketContainer"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
@@ -12,11 +13,11 @@ interface Props {
 
 export const BacklogContainer = ({boardId}: Props) => {
     const dispatch = useAppDispatch()
-    const { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError } = useGetBoardTicketsQuery({id: boardId, urlParams: {
+    const { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardId !== 0 ? {id: boardId, urlParams: {
 		"includeAssignees": true, 
 		"includeRelationshipInfo": true, 
 		"limit": true,
-	}})
+	}} : skipToken)
 
 	const createSprint = () => {
 		dispatch(setModalType("SPRINT_FORM"))

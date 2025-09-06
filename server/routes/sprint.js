@@ -67,11 +67,13 @@ router.get("/:sprintId", validateSprintGetById, handleValidationResult, async (r
 router.post("/", validateSprintCreate, handleValidationResult, async (req, res, next) => {
 	try {
 		const { name, goal, startDate, endDate, boardId } = req.body
-		const id = insertAndGetId({
+		const id = await insertAndGetId("sprints", {
 			name,
 			goal,
 			start_date: startDate,
 			end_date: endDate,
+			user_id: req.user.id, 
+			organization_id: req.user.organization,
 			board_id: boardId,
 		})
 		res.json({id: id, message: "Sprint is created successfully!"})

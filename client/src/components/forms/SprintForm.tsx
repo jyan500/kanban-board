@@ -6,9 +6,10 @@ import { addToast } from "../../slices/toastSlice"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { Sprint } from "../../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, FormProvider } from "react-hook-form"
 import { useAddSprintMutation, useGetSprintQuery, useUpdateSprintMutation } from "../../services/private/sprint"
 import { Switch } from "../page-elements/Switch"
+import { SimpleEditor } from "../page-elements/SimpleEditor"
 
 interface SprintFormProps {
     sprintId?: number;
@@ -32,8 +33,8 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
         id: undefined,
         name: "",
         goal: "",
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: new Date().toISOString().split('T')[0],
+        startDate: "",
+        endDate: "",
         debrief: "",
         isCompleted: false,
     }
@@ -43,9 +44,10 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
     const { data: sprintInfo, isLoading: isGetSprintDataLoading } = useGetSprintQuery(sprintId ? { id: sprintId, urlParams: {} } : skipToken)
 
     const [preloadedValues, setPreloadedValues] = useState<SprintFormValues>(defaultForm)
-    const { register, control, handleSubmit, reset, watch, formState: { errors } } = useForm<SprintFormValues>({
+    const methods  = useForm<SprintFormValues>({
         defaultValues: preloadedValues
     })
+    const { register, control, handleSubmit, reset, watch, formState: { errors } } = methods
     const [submitLoading, setSubmitLoading] = useState(false)
 
     const registerOptions = {
@@ -53,6 +55,7 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
         goal: { required: "Goal is required" },
         startDate: { required: "Start Date is required" },
         endDate: { required: "End Date is required" },
+        debrief: {}
     }
 
     useEffect(() => {
@@ -69,7 +72,7 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
         } else {
             reset(defaultForm)
         }
-    }, [showModal, sprintInfo, sprintId, reset, defaultForm])
+    }, [showModal, sprintInfo, sprintId])
 
     const onSubmit = async (values: SprintFormValues) => {
         setSubmitLoading(true)
@@ -119,83 +122,81 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
 
     return (
         <div className="tw-flex tw-flex-col tw-gap-y-2 lg:tw-w-[80%] tw-w-full">
-            <form onSubmit={handleSubmit(onSubmit)} className="tw-w-full tw-flex tw-flex-col tw-gap-y-2">
-                <div className="tw-flex tw-flex-col">
-                    <label className="label" htmlFor="sprint-name">
-                        Name <span className="tw-font-bold tw-text-red-500">*</span>
-                    </label>
-                    <input id="sprint-name" type="text"
-                        {...register("name", registerOptions.name)}
-                        className="tw-w-full"
-                    />
-                    {errors?.name && <small className="--text-alert">{errors.name.message}</small>}
-                </div>
-                <div className="tw-flex tw-flex-col">
-                    <label className="label" htmlFor="sprint-goal">
-                        Goal <span className="tw-font-bold tw-text-red-500">*</span>
-                    </label>
-                    <textarea id="sprint-goal"
-                        {...register("goal", registerOptions.goal)}
-                        className="tw-w-full"
-                    />
-                    {errors?.goal && <small className="--text-alert">{errors.goal.message}</small>}
-                </div>
-                <div className="tw-flex tw-flex-col">
-                    <label className="label" htmlFor="sprint-start-date">
-                        Start Date <span className="tw-font-bold tw-text-red-500">*</span>
-                    </label>
-                    <input id="sprint-start-date" type="date"
-                        {...register("startDate", {
-                            ...registerOptions.startDate,
-                        })}
-                        className="tw-w-full"
-                    />
-                    {errors?.startDate && <small className="--text-alert">{errors.startDate.message}</small>}
-                </div>
-                <div className="tw-flex tw-flex-col">
-                    <label className="label" htmlFor="sprint-end-date">
-                        End Date <span className="tw-font-bold tw-text-red-500">*</span>
-                    </label>
-                    <input id="sprint-end-date" type="date"
-                        {...register("endDate", {
-                            ...registerOptions.endDate,
-                        })}
-                        className="tw-w-full"
-                    />
-                    {errors?.endDate && <small className="--text-alert">{errors.endDate.message}</small>}
-                </div>
-                {sprintId && (
+            <FormProvider {...methods}>
+                <form onSubmit={handleSubmit(onSubmit)} className="tw-w-full tw-flex tw-flex-col tw-gap-y-2">
                     <div className="tw-flex tw-flex-col">
-                        <div className="tw-flex tw-flex-row tw-items-center tw-gap-x-2 tw-py-2">
-                            <Controller 
-                                name={"isCompleted"}
-                                control={control}
-                                render={({ field: { onChange, value, name, ref } }) => {
-                                return (
-                                    <Switch onChange={onChange} checked={value == true} id = {"sprint-is-completed"}/>
-                                )
-                            }}/>
-                            <label className="label" htmlFor="sprint-is-completed">
-                                Completed
-                            </label>
-                        </div>
-                    </div>
-                )}
-                {sprintId && isCompleted && (
-                    <div className="tw-flex tw-flex-col">
-                        <label className="label" htmlFor="sprint-debrief">
-                            Debrief
+                        <label className="label" htmlFor="sprint-name">
+                            Name <span className="tw-font-bold tw-text-red-500">*</span>
                         </label>
-                        <textarea id="sprint-debrief"
-                            {...register("debrief")}
+                        <input id="sprint-name" type="text"
+                            {...register("name", registerOptions.name)}
                             className="tw-w-full"
                         />
+                        {errors?.name && <small className="--text-alert">{errors.name.message}</small>}
                     </div>
-                )}
-                <div className="tw-flex tw-flex-col">
-                    <LoadingButton isLoading={submitLoading} type="submit" text="Submit" className="button" />
-                </div>
-            </form>
+                    <div className="tw-flex tw-flex-col">
+                        <label className="label" htmlFor="sprint-goal">
+                            Goal <span className="tw-font-bold tw-text-red-500">*</span>
+                        </label>
+                        <SimpleEditor
+                            registerField={"goal"}
+                            registerOptions={registerOptions.goal}
+                        />
+                        {errors?.goal && <small className="--text-alert">{errors.goal.message}</small>}
+                    </div>
+                    <div className="tw-flex tw-flex-col">
+                        <label className="label" htmlFor="sprint-start-date">
+                            Start Date <span className="tw-font-bold tw-text-red-500">*</span>
+                        </label>
+                        <input id="sprint-start-date" type="date"
+                            {...register("startDate", registerOptions.startDate)}
+                            className="tw-w-full"
+                        />
+                        {errors?.startDate && <small className="--text-alert">{errors.startDate.message}</small>}
+                    </div>
+                    <div className="tw-flex tw-flex-col">
+                        <label className="label" htmlFor="sprint-end-date">
+                            End Date <span className="tw-font-bold tw-text-red-500">*</span>
+                        </label>
+                        <input id="sprint-end-date" type="date"
+                            {...register("endDate", registerOptions.endDate)}
+                            className="tw-w-full"
+                        />
+                        {errors?.endDate && <small className="--text-alert">{errors.endDate.message}</small>}
+                    </div>
+                    {sprintId && (
+                        <div className="tw-flex tw-flex-col">
+                            <div className="tw-flex tw-flex-row tw-items-center tw-gap-x-2 tw-py-2">
+                                <Controller 
+                                    name={"isCompleted"}
+                                    control={control}
+                                    render={({ field: { onChange, value, name, ref } }) => {
+                                    return (
+                                        <Switch onChange={onChange} checked={value == true} id = {"sprint-is-completed"}/>
+                                    )
+                                }}/>
+                                <label className="label" htmlFor="sprint-is-completed">
+                                    Completed
+                                </label>
+                            </div>
+                        </div>
+                    )}
+                    {sprintId && isCompleted && (
+                        <div className="tw-flex tw-flex-col">
+                            <label className="label" htmlFor="sprint-debrief">
+                                Debrief
+                            </label>
+                            <SimpleEditor
+                                registerField={"debrief"}
+                                registerOptions={registerOptions.debrief}
+                            />
+                        </div>
+                    )}
+                    <div className="tw-flex tw-flex-col">
+                        <LoadingButton isLoading={submitLoading} type="submit" text="Submit" className="button" />
+                    </div>
+                </form>
+            </FormProvider>
         </div>
     )
 }

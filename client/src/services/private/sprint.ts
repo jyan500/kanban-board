@@ -63,7 +63,7 @@ export const sprintApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Sprints"]
 		}),
-        getSprintTicketsQuery: builder.query<ListResponse<Ticket>, {sprintId: number, urlParams: Record<string, any>}>({
+        getSprintTickets: builder.query<ListResponse<Ticket>, {sprintId: number, urlParams: Record<string, any>}>({
             query: ({sprintId, urlParams}) => ({
                 url: `${SPRINT_URL}/${sprintId}/ticket`,
                 method: "GET",
@@ -71,7 +71,7 @@ export const sprintApi = privateApi.injectEndpoints({
             }),
             providesTags: ["SprintTickets"]
         }),
-        updateSprintTicketsQuery: builder.mutation<{message: string}, {sprintId: number, ticketIds: Array<number>}>({
+        updateSprintTickets: builder.mutation<{message: string}, {sprintId: number, ticketIds: Array<number>}>({
             query: ({sprintId, ticketIds}) => ({
                 url: `${SPRINT_URL}/${sprintId}/ticket`,
                 method: "POST",
@@ -81,7 +81,7 @@ export const sprintApi = privateApi.injectEndpoints({
             }),
             invalidatesTags: ["SprintTickets"]
         }),
-        deleteSprintTicketsQuery: builder.mutation<{message: string}, {sprintId: number, ticketIds: Array<number>}>({
+        deleteSprintTickets: builder.mutation<{message: string}, {sprintId: number, ticketIds: Array<number>}>({
             query: ({sprintId, ticketIds}) => ({
                 url: `${SPRINT_URL}/${sprintId}/ticket`,
                 method: "DELETE",
@@ -100,4 +100,7 @@ export const {
 	useAddSprintMutation,
 	useUpdateSprintMutation,
 	useDeleteSprintMutation,
+	useGetSprintTicketsQuery,
+	useUpdateSprintTicketsMutation,
+	useDeleteSprintTicketsMutation,
 } = sprintApi
