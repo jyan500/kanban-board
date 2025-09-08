@@ -37,18 +37,28 @@ export const BacklogContainer = ({boardId}: Props) => {
             </LoadingSkeleton>
         ) : (
             <div className = "tw-flex tw-flex-col tw-gap-y-4">
-                <BulkEditTicketContainer action={createSprint} actionText={"Create Sprint"} title={"Backlog"} totalTickets={boardTicketData?.pagination.total ?? 0} tickets={boardTicketData?.data ?? []}/>
-                {
-                    boardTicketData?.pagination.nextPage || boardTicketData?.pagination.prevPage ? (
-                        <PaginationRow
-                            showNumResults={true}
-                            showPageNums={false}
-                            setPage={setPage}	
-                            paginationData={boardTicketData?.pagination}
-                            currentPage={page}
-                        />
-                    ) : null
-                }
+                <BulkEditTicketContainer 
+                    action={createSprint} 
+                    actionText={"Create Sprint"} 
+                    title={"Backlog"} 
+                    totalTickets={boardTicketData?.pagination.total ?? 0} 
+                    tickets={boardTicketData?.data ?? []}
+                    pagination={
+                        <>
+                        {
+                            boardTicketData?.pagination.nextPage || boardTicketData?.pagination.prevPage ? (
+                                <PaginationRow
+                                    showNumResults={true}
+                                    showPageNums={false}
+                                    setPage={setPage}	
+                                    paginationData={boardTicketData?.pagination}
+                                    currentPage={page}
+                                />
+                            ) : null
+                        }
+                        </>
+                    }
+                />
             </div>
         )
     )
