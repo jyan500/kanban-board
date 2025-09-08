@@ -64,8 +64,8 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
                 id: sprintId,
                 name: sprintInfo.name,
                 goal: sprintInfo.goal,
-                startDate: new Date(sprintInfo.startDate).toISOString().split('T')[0],
-                endDate: new Date(sprintInfo.endDate).toISOString().split('T')[0],
+                startDate: sprintInfo.startDate ? new Date(sprintInfo.startDate).toISOString().split('T')[0] : "",
+                endDate: sprintInfo.endDate ? new Date(sprintInfo.endDate).toISOString().split('T')[0] : "",
                 debrief: sprintInfo.debrief || "",
                 isCompleted: sprintInfo.isCompleted || false,
             })
