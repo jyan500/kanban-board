@@ -43,7 +43,7 @@ export const SprintContainer = ({boardId}: Props) => {
             </LoadingSkeleton>
         ) : (
             sprintData && sprintData.data.length ? (
-                <BulkEditTicketContainer action={editSprint} actionText={"Edit Sprint"} title={sprintData?.data?.[0]?.name ?? ""} tickets={sprintTicketData?.data ?? []}/>
+                <BulkEditTicketContainer action={editSprint} actionText={"Edit Sprint"} title={sprintData?.data?.[0]?.name ?? ""} totalTickets={sprintTicketData?.pagination.total ?? 0} tickets={sprintTicketData?.data ?? []}/>
             ) : null
         )
     )

@@ -19,6 +19,9 @@ const sprintValidator = (actionType) => {
 			body("name").notEmpty().withMessage("name is required"),
 			body("start_date").isISO8601().toDate().withMessage("start_date must be a valid date"),
 			body("goal").notEmpty().withMessage("goal is required"),
+			...(actionType === "create" ? [
+				body("board_id").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "board", value, "boards"))
+			] : []),
 			body("end_date").isISO8601().toDate().withMessage("end_date must be a valid date"),
 			...(actionType === "update" ? [
 				body("is_completed").isBoolean().withMessage("is_completed must be a boolean"),

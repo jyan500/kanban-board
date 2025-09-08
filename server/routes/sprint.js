@@ -74,15 +74,15 @@ router.get("/:sprintId", validateSprintGetById, handleValidationResult, async (r
 
 router.post("/", validateSprintCreate, handleValidationResult, async (req, res, next) => {
 	try {
-		const { name, goal, startDate, endDate, boardId } = req.body
+		const { name, goal, start_date, end_date, board_id } = req.body
 		const id = await insertAndGetId("sprints", {
 			name,
 			goal,
-			start_date: startDate,
-			end_date: endDate,
+			start_date,
+			end_date,
 			user_id: req.user.id, 
 			organization_id: req.user.organization,
-			board_id: boardId,
+			board_id,
 		})
 		res.json({id: id, message: "Sprint is created successfully!"})
 	}
@@ -95,14 +95,14 @@ router.post("/", validateSprintCreate, handleValidationResult, async (req, res, 
 router.put("/:sprintId", validateSprintUpdate, handleValidationResult, async (req, res, next) => {
 	try {
 		const { sprintId } = req.params
-		const { name, goal, startDate, endDate, debrief, isCompleted } = req.body
+		const { name, goal, start_date, end_date, debrief, is_completed } = req.body
 		const updatedRows = await db("sprints").where({ id: sprintId }).update({
 			name,
 			goal,
-			start_date: startDate,
-			end_date: endDate,
+			start_date,
+			end_date,
 			debrief,
-			is_completed: isCompleted,
+			is_completed,
 		})
 		res.json({ message: "Sprint updated successfully." })
 	}

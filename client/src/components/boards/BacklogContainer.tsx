@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -6,6 +6,7 @@ import { useGetBoardTicketsQuery } from "../../services/private/board"
 import { BulkEditTicketContainer } from "./BulkEditTicketContainer"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
+import { PaginationRow } from "../page-elements/PaginationRow"
 
 interface Props {
     boardId: number
@@ -13,7 +14,9 @@ interface Props {
 
 export const BacklogContainer = ({boardId}: Props) => {
     const dispatch = useAppDispatch()
+    const [page, setPage] = useState(1)
     const { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardId !== 0 ? {id: boardId, urlParams: {
+        page,
 		"includeAssignees": true, 
 		"includeRelationshipInfo": true, 
 		"limit": true,
@@ -33,7 +36,20 @@ export const BacklogContainer = ({boardId}: Props) => {
                 <RowPlaceholder/>
             </LoadingSkeleton>
         ) : (
-            <BulkEditTicketContainer action={createSprint} actionText={"Create Sprint"} title={"Backlog"} tickets={boardTicketData?.data ?? []}/>
+            <div className = "tw-flex tw-flex-col tw-gap-y-4">
+                <BulkEditTicketContainer action={createSprint} actionText={"Create Sprint"} title={"Backlog"} totalTickets={boardTicketData?.pagination.total ?? 0} tickets={boardTicketData?.data ?? []}/>
+                {
+                    boardTicketData?.pagination.nextPage || boardTicketData?.pagination.prevPage ? (
+                        <PaginationRow
+                            showNumResults={true}
+                            showPageNums={false}
+                            setPage={setPage}	
+                            paginationData={boardTicketData?.pagination}
+                            currentPage={page}
+                        />
+                    ) : null
+                }
+            </div>
         )
     )
 }

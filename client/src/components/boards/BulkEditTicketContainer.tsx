@@ -9,12 +9,13 @@ import { Button } from "../page-elements/Button"
 
 interface Props {
     title: string
+    totalTickets: number
     tickets: Array<Ticket>
     action: () => void
     actionText: string
 }
 
-export const BulkEditTicketContainer = ({action, actionText, title, tickets}: Props) => {
+export const BulkEditTicketContainer = ({action, actionText, title, totalTickets, tickets}: Props) => {
     const { statuses } = useAppSelector((state) => state.status)
     const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id)
     const numIncompleteTickets = tickets.filter((ticket) => !completedStatuses.includes(ticket.statusId)).length
@@ -25,11 +26,11 @@ export const BulkEditTicketContainer = ({action, actionText, title, tickets}: Pr
                     <input type = "checkbox"/>
                     <IconArrowDown/>
                     <span className = "tw-font-medium">{title}</span>
-                    <span>({tickets.length} items)</span>
+                    <span>({totalTickets} items)</span>
                 </div>
                 <div className = "tw-flex tw-flex-row tw-gap-x-2">
-                    <Badge className = "tw-bg-gray-300">{numIncompleteTickets}</Badge>
-                    <Badge className = "tw-text-white tw-bg-success">{tickets.length - numIncompleteTickets}</Badge>
+                    {/* <Badge className = "tw-bg-gray-300">{numIncompleteTickets}</Badge>
+                    <Badge className = "tw-text-white tw-bg-success">{tickets.length - numIncompleteTickets}</Badge> */}
                     <Button onClick={(e) => action()}>{actionText}</Button>
                 </div>
             </div>
