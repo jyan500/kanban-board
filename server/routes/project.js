@@ -90,7 +90,6 @@ router.get("/:projectId/board", validateGet, handleValidationResult, async (req,
 			"boards.name as name",
 			"boards.ticket_limit as ticketLimit",
 			"boards.user_id as userId",
-			"boards.description as description",
 			"boards.created_at as createdAt"
 		).modify((queryBuilder) => {
 			if (req.query.lastModified === "true"){
