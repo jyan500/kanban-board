@@ -100,6 +100,7 @@ export const {
 	useAddSprintMutation,
 	useUpdateSprintMutation,
 	useDeleteSprintMutation,
+	useLazyGetSprintTicketsQuery,
 	useGetSprintTicketsQuery,
 	useUpdateSprintTicketsMutation,
 	useDeleteSprintTicketsMutation,

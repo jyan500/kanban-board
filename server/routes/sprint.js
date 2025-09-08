@@ -20,6 +20,14 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 	try {
 		const { page } = req.query
 		const sprints = await db("sprints")
+		.modify((queryBuilder) => {
+			if (req.query.boardId){
+				queryBuilder.where("board_id", req.query.boardId)
+			}
+			if (req.query.recent){
+				queryBuilder.orderBy("created_at", "desc")
+			}
+		})
 		.select(
 			"sprints.id",
 			"sprints.name",

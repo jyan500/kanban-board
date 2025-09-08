@@ -2,6 +2,7 @@ import React from "react"
 import { TicketRow } from "../../components/TicketRow"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { BacklogContainer } from "../../components/boards/BacklogContainer"
+import { SprintContainer } from "../../components/boards/SprintContainer"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
@@ -17,11 +18,11 @@ export const BoardBacklog = () => {
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
-	const { data: sprints, isFetching, isLoading, isError} = useGetSprintsQuery({urlParams: {}})
 	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
 
     return (
-		<div className = "tw-w-full tw-flex tw-flex-row">
+		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
+			<SprintContainer boardId={boardInfo?.id ?? 0}/>
 			<BacklogContainer boardId={boardInfo?.id ?? 0}/>
 		</div>
     )
