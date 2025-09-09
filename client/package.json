@@ -35,7 +35,7 @@
     "typescript": "^5.8.2"
   },
   "scripts": {
-    "dev": "set PORT=3006 && react-scripts --max_old_space_size=4096 start",
+    "dev": "set PORT=3006 && react-scripts start",
     "start": "serve -s build",
     "build": "react-scripts build",
     "test": "react-scripts test",
