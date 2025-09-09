@@ -71,7 +71,7 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 
 
 	return (
-		<Dropdown closeDropdown={closeDropdown} ref = {ref} className = "!tw-w-96">
+		<Dropdown closeDropdown={closeDropdown} ref = {ref} className = "lg:!tw-w-96 !tw-w-92">
 			<ul>
 				<li className = "tw-border-b tw-border-gray-200 tw-flex tw-flex-row tw-items-center tw-gap-x-4 tw-px-4 tw-py-2">
 					<Avatar userInitials={getUserInitials(userProfile)} imageUrl = {userProfile?.imageUrl} size = "m" className = "tw-rounded-full"/>

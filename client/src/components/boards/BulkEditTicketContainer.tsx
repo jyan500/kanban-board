@@ -12,21 +12,21 @@ interface Props {
     title: string
     totalTickets: number
     tickets: Array<Ticket>
+    onCheck: (id: number) => void
     action: () => void
     actionText: string
     pagination?: React.ReactNode
 }
 
-export const BulkEditTicketContainer = ({action, actionText, title, totalTickets, tickets, pagination}: Props) => {
+export const BulkEditTicketContainer = ({action, actionText, onCheck, title, totalTickets, tickets, pagination}: Props) => {
     const [ showTickets, setShowTickets ] = useState(true)
     const { statuses } = useAppSelector((state) => state.status)
     const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id)
     const numIncompleteTickets = tickets.filter((ticket) => !completedStatuses.includes(ticket.statusId)).length
     return (
-        <div className = "tw-p-2 tw-w-full lg:tw-w-[80%] tw-flex tw-flex-col tw-gap-y-2 tw-bg-gray-100">
-            <div className = "tw-p-4 tw-w-full tw-flex tw-flex-row tw-justify-between">
+        <div className = "lg:tw-p-2 tw-p-0.5 tw-w-full lg:tw-w-[80%] tw-flex tw-flex-col tw-gap-y-2 tw-bg-gray-100">
+            <div className = "lg:tw-p-4 tw-p-2 tw-w-full tw-flex tw-flex-row tw-justify-between">
                 <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
-                    <input type = "checkbox"/>
                     <IconButton onClick={() => setShowTickets(!showTickets)}>
                         {showTickets ? <IconArrowDown/> : <IconArrowRight/>}
                     </IconButton>
@@ -42,17 +42,17 @@ export const BulkEditTicketContainer = ({action, actionText, title, totalTickets
             </div>
             {
                 pagination ? 
-                    <div className = "tw-pr-4 tw-w-full tw-flex tw-flex-row tw-justify-end">
+                    <div className = "lg:tw-pr-4 tw-pb-2 tw-pl-2 tw-w-full tw-flex tw-flex-row lg:tw-justify-end">
                         {pagination}
                     </div>
                 : null
             }
             {
                 showTickets ? 
-                <div className = "tw-bg-white tw-flex tw-flex-col tw-gap-y-2">
+                <div className = {`${tickets.length ? "tw-border" : ""} tw-bg-white tw-flex tw-flex-col tw-gap-y-2`}>
                     {tickets.map((ticket) => 
                         <div className = "tw-pl-4 tw-flex tw-flex-row tw-gap-x-2"> 
-                            <input type = "checkbox"/>
+                            <input onChange={(e) => onCheck(ticket.id)} type = "checkbox"/>
                             <TicketRow ticket={ticket} borderless={true}/>
                         </div>
                     )}

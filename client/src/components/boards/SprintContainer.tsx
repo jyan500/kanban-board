@@ -36,6 +36,10 @@ export const SprintContainer = ({boardId}: Props) => {
         }
 	}
 
+    const onCheck = (id: number) => {
+
+    }
+
     return (
         isSprintTicketLoading && isSprintLoading && !sprintTicketData && !sprintData ? (
             <LoadingSkeleton>
@@ -43,7 +47,7 @@ export const SprintContainer = ({boardId}: Props) => {
             </LoadingSkeleton>
         ) : (
             sprintData && sprintData.data.length ? (
-                <BulkEditTicketContainer action={editSprint} actionText={"Edit Sprint"} title={sprintData?.data?.[0]?.name ?? ""} totalTickets={sprintTicketData?.pagination.total ?? 0} tickets={sprintTicketData?.data ?? []}/>
+                <BulkEditTicketContainer action={editSprint} onCheck={onCheck} actionText={"Edit Sprint"} title={sprintData?.data?.[0]?.name ?? ""} totalTickets={sprintTicketData?.pagination.total ?? 0} tickets={sprintTicketData?.data ?? []}/>
             ) : null
         )
     )

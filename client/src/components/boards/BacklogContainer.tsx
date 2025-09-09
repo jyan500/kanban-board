@@ -7,6 +7,7 @@ import { BulkEditTicketContainer } from "./BulkEditTicketContainer"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 import { PaginationRow } from "../page-elements/PaginationRow"
+import { setItemIds, setToolbarType, setToolbarProps, toggleShowToolbar } from "../../slices/toolbarSlice"
 
 interface Props {
     boardId: number
@@ -14,6 +15,7 @@ interface Props {
 
 export const BacklogContainer = ({boardId}: Props) => {
     const dispatch = useAppDispatch()
+    const { itemIds, showToolbar } = useAppSelector((state) => state.toolbar)
     const [page, setPage] = useState(1)
     const { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardId !== 0 ? {id: boardId, urlParams: {
         page,
@@ -30,6 +32,17 @@ export const BacklogContainer = ({boardId}: Props) => {
 		dispatch(toggleShowModal(true))
 	}
 
+    const onCheck = (id: number) => {
+        if (itemIds.includes(id)){
+            dispatch(setItemIds(itemIds.filter((itemId) => itemId !== id)))
+        }
+        else {
+            dispatch(setItemIds([...itemIds, id]))
+        }
+        dispatch(setToolbarType("BULK_EDIT_BACKLOG"))    
+        dispatch(toggleShowToolbar(true))
+    }
+
     return (
         isBoardTicketLoading && !boardTicketData ? (
             <LoadingSkeleton>
@@ -42,6 +55,7 @@ export const BacklogContainer = ({boardId}: Props) => {
                     actionText={"Create Sprint"} 
                     title={"Backlog"} 
                     totalTickets={boardTicketData?.pagination.total ?? 0} 
+                    onCheck={onCheck}
                     tickets={boardTicketData?.data ?? []}
                     pagination={
                         <>
