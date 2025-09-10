@@ -85,7 +85,7 @@ export const BacklogContainer = ({
                         <>
                         {
                             boardTicketData?.pagination.nextPage || boardTicketData?.pagination.prevPage ? (
-                                <div className="lg:tw-pr-4 tw-pb-2 tw-pl-2 tw-w-full tw-flex tw-flex-row lg:tw-justify-end">
+                                <div className="">
                                     <PaginationRow
                                         showNumResults={true}
                                         showPageNums={false}
