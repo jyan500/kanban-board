@@ -127,7 +127,32 @@ router.get("/:sprintId/ticket", validateSprintTicketGet, handleValidationResult,
 			"tickets.user_id as userId",
 			"tickets.created_at as createdAt",
 		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		res.json(data)
+
+		let tickets = {}
+		if (req.query.includeAssignees){
+			tickets =  await Promise.all(
+				data.data.map(async (ticket) => {
+					const assignees = await db("tickets_to_users").join("users", "users.id", "=", "tickets_to_users.user_id").where("ticket_id", ticket.id).where("is_watcher", false).where("is_mention", false).select(
+						"users.id as id",
+						"users.first_name as firstName",
+						"users.last_name as lastName",
+					)
+					return {
+						...ticket,
+						assignees: assignees.map((assignee) => ({
+							id: assignee.id,
+							firstName: assignee.firstName,
+							lastName: assignee.lastName,
+						}
+						))
+					}					
+				})
+			)
+		}
+		res.json({
+			data: tickets,
+			pagination: data.pagination
+		})
 	}
 	catch (err) {
 		console.error(`Error while getting sprint ticket: ${err.message}`)
