@@ -8,6 +8,9 @@ import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 import { PaginationRow } from "../page-elements/PaginationRow"
 import { ListResponse, Ticket } from "../../types/common"
+import { useForm, FormProvider, useFormContext } from "react-hook-form"
+import { SearchToolBar } from "../tickets/SearchToolBar"
+import { FormValues } from "../../pages/boards/BoardBacklog"
 
 interface Props {
     itemIds: Array<number>
@@ -15,6 +18,7 @@ interface Props {
     setPage: (page: number) => void
     boardTicketData?: ListResponse<Ticket>
     setItemId: (id: number) => void
+    onSubmit: (values: FormValues) => void
     isLoading?: boolean
     boardId: number
 }
@@ -26,9 +30,16 @@ export const BacklogContainer = ({
     boardTicketData, 
     setItemId, 
     boardId,
+    onSubmit,
     isLoading
 }: Props) => {
     const dispatch = useAppDispatch()
+
+	const methods = useFormContext<FormValues>()
+    const { handleSubmit } = methods
+
+	const registerOptions = {
+	}
 
 	const createSprint = () => {
 		dispatch(setModalType("SPRINT_FORM"))
@@ -55,22 +66,38 @@ export const BacklogContainer = ({
                 isLoading={isLoading}
                 itemIds={itemIds}
                 tickets={boardTicketData?.data ?? []}
-                pagination={
-                    <>
-                    {
-                        boardTicketData?.pagination.nextPage || boardTicketData?.pagination.prevPage ? (
-                            <div className="lg:tw-pr-4 tw-pb-2 tw-pl-2 tw-w-full tw-flex tw-flex-row lg:tw-justify-end">
-                                <PaginationRow
-                                    showNumResults={true}
-                                    showPageNums={false}
-                                    setPage={setPage}	
-                                    paginationData={boardTicketData?.pagination}
-                                    currentPage={page}
-                                />
-                            </div>
-                        ) : null
-                    }
-                    </>
+                searchBar={
+                    <div className = "tw-flex tw-flex-row tw-justify-between">
+                        <FormProvider {...methods}>
+                            <SearchToolBar 
+                                paginationData={boardTicketData?.pagination} 
+                                setPage={setPage} 
+                                currentPage={page ?? 1}
+                                registerOptions={registerOptions}
+                                searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+                                onFormSubmit={async () => {
+                                    await handleSubmit(onSubmit)()
+                                }}
+                                hidePagination={true}
+                            >
+                            </SearchToolBar>
+                        </FormProvider>
+                        <>
+                        {
+                            boardTicketData?.pagination.nextPage || boardTicketData?.pagination.prevPage ? (
+                                <div className="lg:tw-pr-4 tw-pb-2 tw-pl-2 tw-w-full tw-flex tw-flex-row lg:tw-justify-end">
+                                    <PaginationRow
+                                        showNumResults={true}
+                                        showPageNums={false}
+                                        setPage={setPage}	
+                                        paginationData={boardTicketData?.pagination}
+                                        currentPage={page}
+                                    />
+                                </div>
+                            ) : null
+                        }
+                        </>
+                    </div>
                 }
             />
         </div>

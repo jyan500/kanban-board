@@ -10,6 +10,8 @@ import { IconButton } from "../page-elements/IconButton"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { toggleShowModal, setModalType } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
+import { useForm, FormProvider } from "react-hook-form"
+import { SearchToolBar } from "../tickets/SearchToolBar"
 
 interface Props {
     totalTickets: number
@@ -21,6 +23,12 @@ interface Props {
     pagination?: React.ReactNode
     title: React.ReactNode 
     isLoading?: boolean
+    searchBar?: React.ReactNode
+}
+
+export type FormValues = {
+	searchBy: string
+	query: string	
 }
 
 export const BulkEditTicketContainer = ({
@@ -32,13 +40,15 @@ export const BulkEditTicketContainer = ({
     totalTickets, 
     tickets, 
     pagination,
+    searchBar,
     isLoading
 }: Props) => {
     const [ showTickets, setShowTickets ] = useState(true)
+
     const dispatch = useAppDispatch()
     return (
         <div className = "lg:tw-p-2 tw-p-0.5 tw-w-full lg:tw-w-[80%] tw-flex tw-flex-col tw-gap-y-2 tw-border tw-bg-gray-100">
-            <div className = "lg:tw-p-4 tw-p-2 tw-w-full tw-flex tw-flex-row tw-justify-between">
+            <div className = "tw-w-full tw-flex tw-flex-row tw-justify-between">
                 <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
                     <IconButton onClick={() => setShowTickets(!showTickets)}>
                         {showTickets ? <IconArrowDown/> : <IconArrowRight/>}
@@ -52,6 +62,9 @@ export const BulkEditTicketContainer = ({
                     <Button onClick={(e) => action()}>{actionText}</Button>
                 </div>
             </div>
+            {
+                searchBar ? searchBar : null
+            }
             {
                 pagination ? 
                     pagination

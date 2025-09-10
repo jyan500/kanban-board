@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
 import { useGetSprintsQuery, useLazyGetSprintTicketsQuery } from "../../services/private/sprint"
@@ -7,6 +7,9 @@ import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 import { ListResponse, Sprint, Ticket } from "../../types/common"
 import { PaginationRow } from "../page-elements/PaginationRow"
+import { useForm, FormProvider, useFormContext} from "react-hook-form"
+import { SearchToolBar } from "../tickets/SearchToolBar"
+import { FormValues } from "../../pages/boards/BoardBacklog"
 
 interface Props {
     itemIds: Array<number>
@@ -16,11 +19,25 @@ interface Props {
     sprintData?: ListResponse<Sprint>
     isLoading?: boolean
     sprintTicketData?: ListResponse<Ticket>
+    onSubmit: (values: FormValues) => void
     boardId: number
 }
 
-export const SprintContainer = ({page, setPage, isLoading, itemIds, setItemId, sprintData, sprintTicketData, boardId}: Props) => {
+export const SprintContainer = ({
+    page, 
+    setPage, 
+    isLoading, 
+    itemIds, 
+    setItemId, 
+    sprintData, 
+    sprintTicketData, 
+    boardId,
+    onSubmit
+}: Props) => {
     const dispatch = useAppDispatch()
+
+    const methods = useFormContext<FormValues>()
+    const { handleSubmit } = methods
 
 	const editSprint = () => {
         if (sprintData?.data.length){
@@ -53,22 +70,36 @@ export const SprintContainer = ({page, setPage, isLoading, itemIds, setItemId, s
                 } 
                 totalTickets={sprintTicketData?.pagination?.total ?? 0} 
                 tickets={sprintTicketData?.data ?? []}
-                pagination={
-                    <>
-                    {
-                        sprintTicketData?.pagination.nextPage || sprintTicketData?.pagination.prevPage ? (
-                            <div className="lg:tw-pr-4 tw-pb-2 tw-pl-2 tw-w-full tw-flex tw-flex-row lg:tw-justify-end">
-                                <PaginationRow
-                                    showNumResults={true}
-                                    showPageNums={false}
-                                    setPage={setPage}	
-                                    paginationData={sprintTicketData?.pagination}
-                                    currentPage={page}
-                                />
-                            </div>
-                        ) : null
-                    }
-                    </>
+                searchBar={
+                    <div className = "tw-flex tw-flex-row tw-justify-between">
+                        <FormProvider {...methods}>
+                            <SearchToolBar 
+                                paginationData={sprintTicketData?.pagination} 
+                                setPage={setPage} 
+                                currentPage={page ?? 1}
+                                registerOptions={{}}
+                                searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+                                onFormSubmit={async () => {
+                                    await handleSubmit(onSubmit)()
+                                }}
+                                hidePagination={true}
+                            >
+                            </SearchToolBar>
+                        </FormProvider>
+                        {
+                            sprintTicketData?.pagination.nextPage || sprintTicketData?.pagination.prevPage ? (
+                                <div className="">
+                                    <PaginationRow
+                                        showNumResults={true}
+                                        showPageNums={false}
+                                        setPage={setPage}	
+                                        paginationData={sprintTicketData?.pagination}
+                                        currentPage={page}
+                                    />
+                                </div>
+                            ) : null
+                        }
+                    </div>
                 }
                 />
         ) : null

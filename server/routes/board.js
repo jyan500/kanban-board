@@ -24,7 +24,7 @@ const db = require("../db/db")
 const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
-const { getAssigneesFromBoards, getNumTicketsFromBoards, getLastModified } = require("../helpers/query-helpers")
+const { getAssigneesFromBoards, getNumTicketsFromBoards, getLastModified, searchTicketByAssignee } = require("../helpers/query-helpers")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -216,6 +216,15 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
 		.where("board_id", req.params.boardId)
 		.modify((queryBuilder) => {
+			if (req.query.searchBy === "title"){
+				queryBuilder.whereILike("tickets.name", `%${req.query.query}%`)
+			}
+			else if (req.query.searchBy === "assignee"){
+				searchTicketByAssignee(queryBuilder, req.query.query)
+			}
+			else if (req.query.searchBy === "reporter"){
+				queryBuilder.join("users", "users.id", "=", "tickets.user_id").whereILike("users.first_name", `%${req.query.query}%`)
+			}
 			if (req.query.limit){
 				queryBuilder.limit(board.ticket_limit)
 			}

@@ -16,15 +16,32 @@ import { LoadingButton } from "../../components/page-elements/LoadingButton"
 import { addToast } from "../../slices/toastSlice"
 import { Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
+import { useForm, FormProvider } from "react-hook-form"
 
 interface BacklogBulkItem {
 	id: number
 	type: "sprint" | "backlog"
 }
 
+export type FormValues = {
+	searchBy: string
+	query: string	
+}
+
 export const BoardBacklog = () => {
     const dispatch = useAppDispatch()
-	const { filters, filterButtonState } = useAppSelector((state) => state.boardSchedule)
+	const sprintDefaultForm: FormValues = {
+		query: "",
+		searchBy: "title",
+	}
+	const backlogDefaultForm: FormValues = {
+		query: "",
+		searchBy: "title",
+	}
+    const [sprintPreloadedValues, setSprintPreloadedValues] = useState<FormValues>(sprintDefaultForm)
+    const [backlogPreloadedValues, setBacklogPreloadedValues] = useState<FormValues>(backlogDefaultForm)
+	const sprintMethods = useForm<FormValues>({defaultValues: sprintPreloadedValues})
+	const backlogMethods = useForm<FormValues>({defaultValues: backlogPreloadedValues})
 	const [ backlogPage, setBacklogPage ] = useState(1)
 	const [ sprintPage, setSprintPage ] = useState(1)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
@@ -62,19 +79,26 @@ export const BoardBacklog = () => {
 
 	useEffect(() => {
         if (sprintData && !isSprintLoading && sprintData.data.length){
-			trigger({sprintId: sprintData.data[0].id, urlParams: {page: sprintPage, includeAssignees: true}})
+			trigger({
+				sprintId: sprintData.data[0].id, urlParams: {
+					...sprintPreloadedValues,
+					page: sprintPage,
+					includeAssignees: true}
+			}, true
+			)
 		}
-	}, [sprintPage])
+	}, [sprintPreloadedValues, sprintPage])
 
 	useEffect(() => {
 		triggerGetBoardTicketData({id: boardId, urlParams: {
+			...backlogPreloadedValues,
 			page: backlogPage,
 			"includeAssignees": true, 
 			"includeRelationshipInfo": true, 
 			"excludeSprintId": sprintData?.data?.[0]?.id,
 			"limit": true,
-		}})
-	}, [backlogPage])
+		}}, true)
+	}, [backlogPreloadedValues, backlogPage])
 	// in order for ease of use with the existing bulk edit toolbar, track a "combined" array of both 
 	// selected backlog and sprint tickets
 	const setId = (id: number, type: "sprint" | "backlog", items: Array<BacklogBulkItem>, setter: (items: Array<BacklogBulkItem>) => void) => {
@@ -83,6 +107,24 @@ export const BoardBacklog = () => {
 		}
 		else {
 			setter([...items, {id, type}])
+		}
+	}
+
+	const onSearchSprint = (values: FormValues, page=1) => {
+        if (sprintData && !isSprintLoading && sprintData.data.length){
+			setSprintPreloadedValues(values)
+			// re-trigger a query when re-setting the page value with the
+			// updated search params
+			setSprintPage(1)
+		}
+	}
+
+	const onSearchBacklog = (values: FormValues, page=1) => {
+		// re-trigger a query when re-setting the page value
+		// updated search params
+        if (sprintData && !isSprintLoading && sprintData.data.length){
+			setBacklogPreloadedValues(values)
+			setBacklogPage(1)
 		}
 	}
 
@@ -199,15 +241,18 @@ export const BoardBacklog = () => {
 						<RowPlaceholder/>
 					</LoadingSkeleton>
 				) : (
-				<SprintContainer 
-					page={sprintPage}
-					setPage={setSprintPage}
-					sprintData={sprintData}
-					isLoading={isUpdateTicketsLoading}
-					sprintTicketData={sprintTicketData}
-					setItemId={(id: number) => {
-						setId(id, "sprint", itemIds, setItemIds)
-				}} itemIds={sprintTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 0}/>
+				<FormProvider {...sprintMethods}>
+					<SprintContainer 
+						page={sprintPage}
+						setPage={setSprintPage}
+						onSubmit={onSearchSprint}
+						sprintData={sprintData}
+						isLoading={isUpdateTicketsLoading}
+						sprintTicketData={sprintTicketData}
+						setItemId={(id: number) => {
+							setId(id, "sprint", itemIds, setItemIds)
+					}} itemIds={sprintTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 0}/>
+				</FormProvider>
 			)
 			}
 			{
@@ -216,14 +261,17 @@ export const BoardBacklog = () => {
 						<RowPlaceholder/>
 					</LoadingSkeleton>
 				) : (
-					<BacklogContainer 
-						page={backlogPage}
-						setPage={setBacklogPage}
-						isLoading={isDeleteTicketsLoading}
-						boardTicketData={boardTicketData}
-						setItemId={(id: number) => {
-							setId(id, "backlog", itemIds, setItemIds)
-					}} itemIds={backlogTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 0}/>
+					<FormProvider {...backlogMethods}>
+						<BacklogContainer 
+							page={backlogPage}
+							setPage={setBacklogPage}
+							onSubmit={onSearchBacklog}
+							isLoading={isDeleteTicketsLoading}
+							boardTicketData={boardTicketData}
+							setItemId={(id: number) => {
+								setId(id, "backlog", itemIds, setItemIds)
+						}} itemIds={backlogTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 0}/>
+					</FormProvider>
 				)
 			}
 		</div>
