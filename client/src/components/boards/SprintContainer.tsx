@@ -7,10 +7,12 @@ import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 
 interface Props {
+    itemIds: Array<number>
+    setItemId: (id: number) => void
     boardId: number
 }
 
-export const SprintContainer = ({boardId}: Props) => {
+export const SprintContainer = ({itemIds, setItemId, boardId}: Props) => {
     const dispatch = useAppDispatch()
     const { data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading} = useGetSprintsQuery({urlParams: {
         boardId: boardId,
@@ -37,7 +39,7 @@ export const SprintContainer = ({boardId}: Props) => {
 	}
 
     const onCheck = (id: number) => {
-
+        setItemId(id)
     }
 
     return (
@@ -47,7 +49,7 @@ export const SprintContainer = ({boardId}: Props) => {
             </LoadingSkeleton>
         ) : (
             sprintData && sprintData.data.length ? (
-                <BulkEditTicketContainer action={editSprint} onCheck={onCheck} actionText={"Edit Sprint"} title={sprintData?.data?.[0]?.name ?? ""} totalTickets={sprintTicketData?.pagination.total ?? 0} tickets={sprintTicketData?.data ?? []}/>
+                <BulkEditTicketContainer itemIds={itemIds} action={editSprint} onCheck={onCheck} actionText={"Edit Sprint"} title={sprintData?.data?.[0]?.name ?? ""} totalTickets={sprintTicketData?.pagination.total ?? 0} tickets={sprintTicketData?.data ?? []}/>
             ) : null
         )
     )

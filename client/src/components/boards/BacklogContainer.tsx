@@ -7,15 +7,15 @@ import { BulkEditTicketContainer } from "./BulkEditTicketContainer"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 import { PaginationRow } from "../page-elements/PaginationRow"
-import { setItemIds, setToolbarType, setToolbarProps, toggleShowToolbar } from "../../slices/toolbarSlice"
 
 interface Props {
+    itemIds: Array<number>
+    setItemId: (id: number) => void
     boardId: number
 }
 
-export const BacklogContainer = ({boardId}: Props) => {
+export const BacklogContainer = ({itemIds, setItemId, boardId}: Props) => {
     const dispatch = useAppDispatch()
-    const { itemIds, showToolbar } = useAppSelector((state) => state.toolbar)
     const [page, setPage] = useState(1)
     const { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardId !== 0 ? {id: boardId, urlParams: {
         page,
@@ -33,14 +33,13 @@ export const BacklogContainer = ({boardId}: Props) => {
 	}
 
     const onCheck = (id: number) => {
-        if (itemIds.includes(id)){
-            dispatch(setItemIds(itemIds.filter((itemId) => itemId !== id)))
-        }
-        else {
-            dispatch(setItemIds([...itemIds, id]))
-        }
-        dispatch(setToolbarType("BULK_EDIT_BACKLOG"))    
-        dispatch(toggleShowToolbar(true))
+        setItemId(id)
+        // if (itemIds.includes(id)){
+        //     setItemIds(itemIds.filter((itemId) => itemId !== id))
+        // }
+        // else {
+        //     setItemIds([...itemIds, id])
+        // }
     }
 
     return (
@@ -56,6 +55,7 @@ export const BacklogContainer = ({boardId}: Props) => {
                     title={"Backlog"} 
                     totalTickets={boardTicketData?.pagination.total ?? 0} 
                     onCheck={onCheck}
+                    itemIds={itemIds}
                     tickets={boardTicketData?.data ?? []}
                     pagination={
                         <>

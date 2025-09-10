@@ -46,7 +46,6 @@ import TempLoginProtectedLayout from "./layouts/TempLoginProtectedLayout"
 import { useAppSelector, useAppDispatch } from "./hooks/redux-hooks" 
 import "./styles/common.css" 
 import { ToastList } from "./components/ToastList" 
-import { BottomToolbar } from "./components/page-elements/BottomToolbar"
 import { 
 	ACCOUNT, 
 	ACTIVATION,
@@ -343,7 +342,6 @@ function App() {
 		<div>
 			<RouterProvider router={router}/>	
 			<ToastList/>
-			<BottomToolbar/>
 		</div>
 	)
 }
