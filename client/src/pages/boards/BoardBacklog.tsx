@@ -35,10 +35,10 @@ export const BoardBacklog = () => {
 	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
 	const [ deleteSprintTickets, { isLoading: isDeleteTicketsLoading }] = useDeleteSprintTicketsMutation()
 	const [ updateSprintTickets, { isLoading: isUpdateTicketsLoading }] = useUpdateSprintTicketsMutation()
-	const { data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading} = useGetSprintsQuery({urlParams: {
+	const { data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading} = useGetSprintsQuery(boardId !== 0 ? {urlParams: {
         boardId: boardId,
         recent: true
-    }})
+    }} : skipToken)
     const [trigger, { data: sprintTicketData, isFetching: isSprintTicketFetching, isLoading: isSprintTicketLoading, isError: isSprintTicketError }] = useLazyGetSprintTicketsQuery()
 	const [triggerGetBoardTicketData, { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError }] = useLazyGetBoardTicketsQuery()
 	const [ itemIds, setItemIds ] = useState<Array<BacklogBulkItem>>([])
@@ -47,11 +47,11 @@ export const BoardBacklog = () => {
 	const sprintTickets = itemIds.filter((obj) => obj.type === "sprint")
 
     useEffect(() => {
-        if (sprintData && !isSprintLoading){
+        if (sprintData && !isSprintLoading && sprintData.data.length){
             // get the tickets for the most recent sprint
-            trigger({sprintId: sprintData?.data?.[0]?.id ?? 0, urlParams: {page: sprintPage, includeAssignees: true}})
+            trigger({sprintId: sprintData.data[0].id, urlParams: {page: 1, includeAssignees: true}})
 			triggerGetBoardTicketData({id: boardId, urlParams: {
-				backlogPage,
+				page: 1,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
 				"excludeSprintId": sprintData?.data?.[0]?.id,
@@ -60,6 +60,21 @@ export const BoardBacklog = () => {
         }
     }, [sprintData, isSprintLoading])
 
+	useEffect(() => {
+        if (sprintData && !isSprintLoading && sprintData.data.length){
+			trigger({sprintId: sprintData.data[0].id, urlParams: {page: sprintPage, includeAssignees: true}})
+		}
+	}, [sprintPage])
+
+	useEffect(() => {
+		triggerGetBoardTicketData({id: boardId, urlParams: {
+			page: backlogPage,
+			"includeAssignees": true, 
+			"includeRelationshipInfo": true, 
+			"excludeSprintId": sprintData?.data?.[0]?.id,
+			"limit": true,
+		}})
+	}, [backlogPage])
 	// in order for ease of use with the existing bulk edit toolbar, track a "combined" array of both 
 	// selected backlog and sprint tickets
 	const setId = (id: number, type: "sprint" | "backlog", items: Array<BacklogBulkItem>, setter: (items: Array<BacklogBulkItem>) => void) => {
@@ -122,6 +137,21 @@ export const BoardBacklog = () => {
 			}}>
 				<>
 					<button onClick={(e) => {
+						const allSprintTickets = sprintTicketData?.data ? sprintTicketData?.data.map((sprintTicket) => {
+							return {
+								id: sprintTicket.id,
+								type: "sprint"
+							} as BacklogBulkItem
+						}) : []
+						const allBacklogTickets = boardTicketData?.data ? boardTicketData?.data.map((boardTicket) => {
+							return {
+								id: boardTicket.id,
+								type: "backlog"
+							} as BacklogBulkItem
+						}) : []
+						setItemIds([...allSprintTickets, ...allBacklogTickets])
+					}} className = "button --secondary">Select All</button>
+					<button onClick={(e) => {
 						dispatch(setModalType("BULK_ACTIONS_MODAL"))
 						dispatch(setModalProps({
 							boardId: boardInfo?.id ?? 0,
@@ -137,6 +167,12 @@ export const BoardBacklog = () => {
 							await onUpdateSprintTickets()
 							// filter out the selected backlog tickets
 							setItemIds(itemIds.filter((obj) => obj.type !== "backlog"))
+							// if the current pagination page no longer has any items due to being removed, 
+							// go back to the previous page
+							// this will re-trigger a query to grab the previous page of results
+							if (boardTicketData?.pagination.prevPage){
+								setBacklogPage(boardTicketData?.pagination.prevPage)
+							}
 						}} className = "button"/>
 						: null
 					}
@@ -146,6 +182,12 @@ export const BoardBacklog = () => {
 							await onDeleteSprintTickets()	
 							// filter out the selected sprint tickets
 							setItemIds(itemIds.filter((obj) => obj.type !== "sprint"))
+							// if the current pagination page no longer has any items due to being removed, 
+							// go back to the previous page
+							// this will re-trigger a query to grab the previous page of results
+							if (sprintTicketData?.data.length === 0 && sprintTicketData?.pagination.prevPage){
+								setSprintPage(sprintTicketData?.pagination.prevPage)
+							}
 						}} className = "button"/>
 						: null
 					}
@@ -158,6 +200,8 @@ export const BoardBacklog = () => {
 					</LoadingSkeleton>
 				) : (
 				<SprintContainer 
+					page={sprintPage}
+					setPage={setSprintPage}
 					sprintData={sprintData}
 					isLoading={isUpdateTicketsLoading}
 					sprintTicketData={sprintTicketData}

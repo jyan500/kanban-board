@@ -6,9 +6,12 @@ import { BulkEditTicketContainer } from "./BulkEditTicketContainer"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 import { ListResponse, Sprint, Ticket } from "../../types/common"
+import { PaginationRow } from "../page-elements/PaginationRow"
 
 interface Props {
     itemIds: Array<number>
+    page: number
+    setPage: (page: number) => void
     setItemId: (id: number) => void
     sprintData?: ListResponse<Sprint>
     isLoading?: boolean
@@ -16,7 +19,7 @@ interface Props {
     boardId: number
 }
 
-export const SprintContainer = ({isLoading, itemIds, setItemId, sprintData, sprintTicketData, boardId}: Props) => {
+export const SprintContainer = ({page, setPage, isLoading, itemIds, setItemId, sprintData, sprintTicketData, boardId}: Props) => {
     const dispatch = useAppDispatch()
 
 	const editSprint = () => {
@@ -49,7 +52,25 @@ export const SprintContainer = ({isLoading, itemIds, setItemId, sprintData, spri
                     </div>
                 } 
                 totalTickets={sprintTicketData?.pagination?.total ?? 0} 
-                tickets={sprintTicketData?.data ?? []}/>
+                tickets={sprintTicketData?.data ?? []}
+                pagination={
+                    <>
+                    {
+                        sprintTicketData?.pagination.nextPage || sprintTicketData?.pagination.prevPage ? (
+                            <div className="lg:tw-pr-4 tw-pb-2 tw-pl-2 tw-w-full tw-flex tw-flex-row lg:tw-justify-end">
+                                <PaginationRow
+                                    showNumResults={true}
+                                    showPageNums={false}
+                                    setPage={setPage}	
+                                    paginationData={sprintTicketData?.pagination}
+                                    currentPage={page}
+                                />
+                            </div>
+                        ) : null
+                    }
+                    </>
+                }
+                />
         ) : null
     )
 }
