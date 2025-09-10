@@ -1,13 +1,15 @@
 import React, { useState} from "react"
 import { TicketRow } from "../TicketRow"
-import { useAppSelector } from "../../hooks/redux-hooks"
 import { IconArrowDown } from "../icons/IconArrowDown"
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { IconArrowRight } from "../icons/IconArrowRight"
 import { Ticket } from "../../types/common"
 import { Badge } from "../page-elements/Badge"
 import { Button } from "../page-elements/Button"
 import { IconButton } from "../page-elements/IconButton"
 import { LoadingSpinner } from "../LoadingSpinner"
+import { toggleShowModal, setModalType } from "../../slices/modalSlice"
+import { selectCurrentTicketId } from "../../slices/boardSlice"
 
 interface Props {
     totalTickets: number
@@ -33,9 +35,7 @@ export const BulkEditTicketContainer = ({
     isLoading
 }: Props) => {
     const [ showTickets, setShowTickets ] = useState(true)
-    const { statuses } = useAppSelector((state) => state.status)
-    const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id)
-    const numIncompleteTickets = tickets.filter((ticket) => !completedStatuses.includes(ticket.statusId)).length
+    const dispatch = useAppDispatch()
     return (
         <div className = "lg:tw-p-2 tw-p-0.5 tw-w-full lg:tw-w-[80%] tw-flex tw-flex-col tw-gap-y-2 tw-border tw-bg-gray-100">
             <div className = "lg:tw-p-4 tw-p-2 tw-w-full tw-flex tw-flex-row tw-justify-between">
@@ -49,8 +49,6 @@ export const BulkEditTicketContainer = ({
                 </div>
 
                 <div className = "tw-flex tw-flex-row tw-gap-x-2">
-                    {/* <Badge className = "tw-bg-gray-300">{numIncompleteTickets}</Badge>
-                    <Badge className = "tw-text-white tw-bg-success">{tickets.length - numIncompleteTickets}</Badge> */}
                     <Button onClick={(e) => action()}>{actionText}</Button>
                 </div>
             </div>
@@ -65,7 +63,11 @@ export const BulkEditTicketContainer = ({
                     {tickets.map((ticket) => 
                         <div className = "tw-pl-4 tw-flex tw-flex-row tw-gap-x-2"> 
                             <input checked={itemIds.includes(ticket.id)} onChange={(e) => onCheck(ticket.id)} type = "checkbox"/>
-                            <TicketRow ticket={ticket} borderless={true}/>
+                            <button className = "tw-w-full" onClick={(e) => {
+                                dispatch(toggleShowModal(true))
+                                dispatch(setModalType("EDIT_TICKET_FORM"))
+                                dispatch(selectCurrentTicketId(ticket.id))
+                            }}><TicketRow ticket={ticket} borderless={true}/></button>
                         </div>
                     )}
                 </div> : null
