@@ -7,9 +7,9 @@ import { Ticket } from "../../types/common"
 import { Badge } from "../page-elements/Badge"
 import { Button } from "../page-elements/Button"
 import { IconButton } from "../page-elements/IconButton"
+import { LoadingSpinner } from "../LoadingSpinner"
 
 interface Props {
-    title: string
     totalTickets: number
     tickets: Array<Ticket>
     onCheck: (id: number) => void
@@ -17,9 +17,21 @@ interface Props {
     actionText: string
     itemIds: Array<number>
     pagination?: React.ReactNode
+    title: React.ReactNode 
+    isLoading?: boolean
 }
 
-export const BulkEditTicketContainer = ({action, actionText, itemIds, onCheck, title, totalTickets, tickets, pagination}: Props) => {
+export const BulkEditTicketContainer = ({
+    action, 
+    actionText, 
+    itemIds, 
+    onCheck, 
+    title, 
+    totalTickets, 
+    tickets, 
+    pagination,
+    isLoading
+}: Props) => {
     const [ showTickets, setShowTickets ] = useState(true)
     const { statuses } = useAppSelector((state) => state.status)
     const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id)
@@ -31,8 +43,9 @@ export const BulkEditTicketContainer = ({action, actionText, itemIds, onCheck, t
                     <IconButton onClick={() => setShowTickets(!showTickets)}>
                         {showTickets ? <IconArrowDown/> : <IconArrowRight/>}
                     </IconButton>
-                    <span className = "tw-font-medium">{title}</span>
+                    {title}
                     <span>({totalTickets} items)</span>
+                    {isLoading ? <LoadingSpinner/>: null}
                 </div>
 
                 <div className = "tw-flex tw-flex-row tw-gap-x-2">

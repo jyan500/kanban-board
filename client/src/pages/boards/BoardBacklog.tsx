@@ -159,6 +159,7 @@ export const BoardBacklog = () => {
 				) : (
 				<SprintContainer 
 					sprintData={sprintData}
+					isLoading={isUpdateTicketsLoading}
 					sprintTicketData={sprintTicketData}
 					setItemId={(id: number) => {
 						setId(id, "sprint", itemIds, setItemIds)
@@ -174,6 +175,7 @@ export const BoardBacklog = () => {
 					<BacklogContainer 
 						page={backlogPage}
 						setPage={setBacklogPage}
+						isLoading={isDeleteTicketsLoading}
 						boardTicketData={boardTicketData}
 						setItemId={(id: number) => {
 							setId(id, "backlog", itemIds, setItemIds)

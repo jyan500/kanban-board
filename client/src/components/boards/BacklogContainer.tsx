@@ -15,10 +15,19 @@ interface Props {
     setPage: (page: number) => void
     boardTicketData?: ListResponse<Ticket>
     setItemId: (id: number) => void
+    isLoading?: boolean
     boardId: number
 }
 
-export const BacklogContainer = ({itemIds, page, setPage, boardTicketData, setItemId, boardId}: Props) => {
+export const BacklogContainer = ({
+    itemIds, 
+    page, 
+    setPage, 
+    boardTicketData, 
+    setItemId, 
+    boardId,
+    isLoading
+}: Props) => {
     const dispatch = useAppDispatch()
 
 	const createSprint = () => {
@@ -38,9 +47,12 @@ export const BacklogContainer = ({itemIds, page, setPage, boardTicketData, setIt
             <BulkEditTicketContainer 
                 action={createSprint} 
                 actionText={"Create Sprint"} 
-                title={"Backlog"} 
+                title={
+                    <span className = "tw-font-medium">Backlog</span>
+                } 
                 totalTickets={boardTicketData?.pagination.total ?? 0} 
                 onCheck={onCheck}
+                isLoading={isLoading}
                 itemIds={itemIds}
                 tickets={boardTicketData?.data ?? []}
                 pagination={

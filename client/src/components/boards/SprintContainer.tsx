@@ -11,11 +11,12 @@ interface Props {
     itemIds: Array<number>
     setItemId: (id: number) => void
     sprintData?: ListResponse<Sprint>
+    isLoading?: boolean
     sprintTicketData?: ListResponse<Ticket>
     boardId: number
 }
 
-export const SprintContainer = ({itemIds, setItemId, sprintData, sprintTicketData, boardId}: Props) => {
+export const SprintContainer = ({isLoading, itemIds, setItemId, sprintData, sprintTicketData, boardId}: Props) => {
     const dispatch = useAppDispatch()
 
 	const editSprint = () => {
@@ -35,7 +36,20 @@ export const SprintContainer = ({itemIds, setItemId, sprintData, sprintTicketDat
 
     return (
         sprintData && sprintData.data.length ? (
-            <BulkEditTicketContainer itemIds={itemIds} action={editSprint} onCheck={onCheck} actionText={"Edit Sprint"} title={sprintData?.data?.[0]?.name ?? ""} totalTickets={sprintTicketData?.pagination?.total ?? 0} tickets={sprintTicketData?.data ?? []}/>
+            <BulkEditTicketContainer 
+                itemIds={itemIds} 
+                action={editSprint} 
+                onCheck={onCheck} 
+                actionText={"Edit Sprint"} 
+                isLoading={isLoading}
+                title={
+                    <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                        <span className = "tw-font-medium">{sprintData?.data?.[0]?.name ?? ""}</span>
+                        <span className = "tw-text-gray-600">{new Date(sprintData?.data?.[0]?.startDate).toLocaleDateString()} to {new Date(sprintData?.data?.[0]?.endDate).toLocaleDateString()}</span>
+                    </div>
+                } 
+                totalTickets={sprintTicketData?.pagination?.total ?? 0} 
+                tickets={sprintTicketData?.data ?? []}/>
         ) : null
     )
 }
