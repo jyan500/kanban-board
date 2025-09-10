@@ -17,6 +17,11 @@ import { addToast } from "../../slices/toastSlice"
 import { Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 
+interface BacklogBulkItem {
+	id: number
+	type: "sprint" | "backlog"
+}
+
 export const BoardBacklog = () => {
     const dispatch = useAppDispatch()
 	const { filters, filterButtonState } = useAppSelector((state) => state.boardSchedule)
@@ -36,9 +41,10 @@ export const BoardBacklog = () => {
     }})
     const [trigger, { data: sprintTicketData, isFetching: isSprintTicketFetching, isLoading: isSprintTicketLoading, isError: isSprintTicketError }] = useLazyGetSprintTicketsQuery()
 	const [triggerGetBoardTicketData, { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError }] = useLazyGetBoardTicketsQuery()
-	const [ backlogTicketIds, setBacklogTicketIds ] = useState<Array<number>>([])
-	const [ sprintTicketIds, setSprintTicketIds ] = useState<Array<number>>([])
-	const [ itemIds, setItemIds ] = useState<Array<number>>([])
+	const [ itemIds, setItemIds ] = useState<Array<BacklogBulkItem>>([])
+
+	const backlogTickets = itemIds.filter((obj) => obj.type === "backlog")
+	const sprintTickets = itemIds.filter((obj) => obj.type === "sprint")
 
     useEffect(() => {
         if (sprintData && !isSprintLoading){
@@ -56,17 +62,17 @@ export const BoardBacklog = () => {
 
 	// in order for ease of use with the existing bulk edit toolbar, track a "combined" array of both 
 	// selected backlog and sprint tickets
-	const setId = (id: number, items: Array<number>, setter: (items: Array<number>) => void) => {
-		if (items.includes(id)){
-			setter(items.filter((itemId) => itemId !== id))
+	const setId = (id: number, type: "sprint" | "backlog", items: Array<BacklogBulkItem>, setter: (items: Array<BacklogBulkItem>) => void) => {
+		if (items.find((obj) => obj.id === id) != null){
+			setter(items.filter((obj) => obj.id !== id))
 		}
 		else {
-			setter([...items, id])
+			setter([...items, {id, type}])
 		}
 	}
 
 	const onUpdateSprintTickets = async () => {
-		if (sprintData && backlogTicketIds.length){
+		if (sprintData && itemIds.length){
 			const defaultToast = {
 				id: uuidv4(),
     			type: "success",
@@ -74,7 +80,7 @@ export const BoardBacklog = () => {
     			message: `Ticket added to sprint successfully!`,
 			} as Toast
 			try {
-				await updateSprintTickets({sprintId: sprintData?.data?.[0].id ?? 0, ticketIds: backlogTicketIds}).unwrap()
+				await updateSprintTickets({sprintId: sprintData?.data?.[0].id ?? 0, ticketIds: backlogTickets.map((obj) => obj.id)}).unwrap()
 				dispatch(addToast(defaultToast))
 			}
 			catch {
@@ -96,7 +102,7 @@ export const BoardBacklog = () => {
     			message: `Ticket added to sprint successfully!`,
 			} as Toast
 			try {
-				await deleteSprintTickets({sprintId: sprintData?.data?.[0].id, ticketIds: sprintTicketIds}).unwrap()
+				await deleteSprintTickets({sprintId: sprintData?.data?.[0].id, ticketIds: sprintTickets.map((obj) => obj.id)}).unwrap()
 				dispatch(addToast(defaultToast))
 			}
 			catch {
@@ -111,24 +117,35 @@ export const BoardBacklog = () => {
 
     return (
 		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
-			<BulkEditToolbar itemIds={itemIds} updateIds={(ids: Array<number>) => {
-				setItemIds(ids)
-				setSprintTicketIds(ids)
-				setBacklogTicketIds(ids)
+			<BulkEditToolbar itemIds={itemIds.map((obj) => obj.id)} updateIds={(ids: Array<number>) => {
+				setItemIds([])
 			}}>
 				<>
-					<button className = "button">Edit Tickets</button>
+					<button onClick={(e) => {
+						dispatch(setModalType("BULK_ACTIONS_MODAL"))
+						dispatch(setModalProps({
+							boardId: boardInfo?.id ?? 0,
+							initSelectedIds: itemIds,
+							// default to step 2 since we've selected ids to edit
+							initStep: 2
+						}))
+						dispatch(toggleShowModal(true))
+					}} className = "button">Edit Tickets</button>
 					{
-						backlogTicketIds.length ?
-						<LoadingButton text={`Move ${backlogTicketIds.length} ticket(s) to Sprint`} onClick={async (e) => {
+						backlogTickets.length ?
+						<LoadingButton isLoading={isUpdateTicketsLoading} text={`Move ${backlogTickets.length} ticket(s) to Sprint`} onClick={async (e) => {
 							await onUpdateSprintTickets()
+							// filter out the selected backlog tickets
+							setItemIds(itemIds.filter((obj) => obj.type !== "backlog"))
 						}} className = "button"/>
 						: null
 					}
 					{
-						sprintTicketIds.length ? 
-						<LoadingButton text={`Remove ${sprintTicketIds.length} ticket(s) from Sprint`} isLoading={isDeleteTicketsLoading} onClick={async (e) => {
+						sprintTickets.length ? 
+						<LoadingButton isLoading={isDeleteTicketsLoading} text={`Remove ${sprintTickets.length} ticket(s) from Sprint`} onClick={async (e) => {
 							await onDeleteSprintTickets()	
+							// filter out the selected sprint tickets
+							setItemIds(itemIds.filter((obj) => obj.type !== "sprint"))
 						}} className = "button"/>
 						: null
 					}
@@ -144,9 +161,8 @@ export const BoardBacklog = () => {
 					sprintData={sprintData}
 					sprintTicketData={sprintTicketData}
 					setItemId={(id: number) => {
-					setId(id, sprintTicketIds, setSprintTicketIds)
-					setId(id, itemIds, setItemIds)
-				}} itemIds={sprintTicketIds} boardId={boardInfo?.id ?? 0}/>
+						setId(id, "sprint", itemIds, setItemIds)
+				}} itemIds={sprintTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 0}/>
 			)
 			}
 			{
@@ -160,9 +176,8 @@ export const BoardBacklog = () => {
 						setPage={setBacklogPage}
 						boardTicketData={boardTicketData}
 						setItemId={(id: number) => {
-							setId(id, backlogTicketIds, setBacklogTicketIds)
-							setId(id, itemIds, setItemIds)
-					}} itemIds={backlogTicketIds} boardId={boardInfo?.id ?? 0}/>
+							setId(id, "backlog", itemIds, setItemIds)
+					}} itemIds={backlogTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 0}/>
 				)
 			}
 		</div>

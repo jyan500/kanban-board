@@ -47,13 +47,15 @@ export const BacklogContainer = ({itemIds, page, setPage, boardTicketData, setIt
                     <>
                     {
                         boardTicketData?.pagination.nextPage || boardTicketData?.pagination.prevPage ? (
-                            <PaginationRow
-                                showNumResults={true}
-                                showPageNums={false}
-                                setPage={setPage}	
-                                paginationData={boardTicketData?.pagination}
-                                currentPage={page}
-                            />
+                            <div className="lg:tw-pr-4 tw-pb-2 tw-pl-2 tw-w-full tw-flex tw-flex-row lg:tw-justify-end">
+                                <PaginationRow
+                                    showNumResults={true}
+                                    showPageNums={false}
+                                    setPage={setPage}	
+                                    paginationData={boardTicketData?.pagination}
+                                    currentPage={page}
+                                />
+                            </div>
                         ) : null
                     }
                     </>

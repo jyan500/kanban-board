@@ -79,7 +79,7 @@ export const sprintApi = privateApi.injectEndpoints({
                     ticket_ids: ticketIds
                 }
             }),
-            invalidatesTags: ["SprintTickets"]
+            invalidatesTags: ["SprintTickets", "BoardTickets"]
         }),
         deleteSprintTickets: builder.mutation<{message: string}, {sprintId: number, ticketIds: Array<number>}>({
             query: ({sprintId, ticketIds}) => ({
@@ -89,7 +89,7 @@ export const sprintApi = privateApi.injectEndpoints({
                     ticket_ids: ticketIds
                 }
             }),
-            invalidatesTags: ["SprintTickets"]
+            invalidatesTags: ["SprintTickets", "BoardTickets"]
         })
 	}),
 })

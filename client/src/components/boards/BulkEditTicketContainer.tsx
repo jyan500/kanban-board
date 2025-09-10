@@ -43,9 +43,7 @@ export const BulkEditTicketContainer = ({action, actionText, itemIds, onCheck, t
             </div>
             {
                 pagination ? 
-                    <div className = "lg:tw-pr-4 tw-pb-2 tw-pl-2 tw-w-full tw-flex tw-flex-row lg:tw-justify-end">
-                        {pagination}
-                    </div>
+                    pagination
                 : null
             }
             {
