@@ -60,7 +60,7 @@ export const store = configureStore({
 		"ticketRelationshipType": ticketRelationshipTypeReducer,
 		"secondaryModal": secondaryModalReducer,
 		"notificationType": notificationTypeReducer,
-		"tooltip": tooltipReducer
+		"tooltip": tooltipReducer,
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]

@@ -30,6 +30,7 @@ const { retryTransaction, parseMentions, insertAndGetId } = require("../helpers/
 const db = require("../db/db")
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { GoogleGenAI } = require("@google/genai")
+const { searchTicketByAssignee } = require("../helpers/query-helpers")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -52,11 +53,7 @@ router.get("/", async (req, res, next) => {
 				queryBuilder.whereILike("name", `%${req.query.query}%`)
 			}
 			else if (req.query.searchBy === "assignee"){
-				queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
-				.join("users", "tickets_to_users.user_id", "=", "users.id")
-				.where("tickets_to_users.is_mention", false)
-				.where("tickets_to_users.is_watcher", false)
-				.where((queryBuilder2) => queryBuilder2.whereILike("users.first_name", `%${req.query.query}%`).orWhereILike("users.last_name", `%${req.query.query}%`))
+				searchTicketByAssignee(queryBuilder, req.query.query)
 			}
 			else if (req.query.searchBy === "reporter"){
 				queryBuilder.join("users", "users.id", "=", "tickets.user_id").whereILike("users.first_name", `%${req.query.query}%`)

@@ -8,6 +8,7 @@ exports.up = function(knex) {
         table.dropColumn("is_sprint")
         table.dropColumn("sprint_debrief")
 		table.dropColumn("start_date")
+		table.dropColumn("description")
 		table.dropColumn("end_date")
 	}) 
 };
@@ -24,5 +25,6 @@ exports.down = function(knex) {
 		table.text("sprint_debrief").nullable()
 		table.timestamp("start_date").nullable()
 		table.timestamp("end_date").nullable()
+		table.text("description")
 	}) 
 };

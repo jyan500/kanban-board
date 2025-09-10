@@ -38,8 +38,17 @@ const getLastModified = (queryBuilder) => {
 	)
 }
 
+const searchTicketByAssignee = (queryBuilder, query) => {
+	return queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
+	.join("users", "tickets_to_users.user_id", "=", "users.id")
+	.where("tickets_to_users.is_mention", false)
+	.where("tickets_to_users.is_watcher", false)
+	.where((queryBuilder2) => queryBuilder2.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`))
+}
+
 module.exports = {
 	getAssigneesFromBoards,
 	getNumTicketsFromBoards,
 	getLastModified,
+	searchTicketByAssignee,
 }

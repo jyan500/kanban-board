@@ -34,6 +34,8 @@ export const DROPDOWN_Z_INDEX = "tw-z-30"
 
 export const SECONDARY_MODAL_Z_INDEX = "tw-z-40" 
 
+export const TOOLBAR_Z_INDEX = "tw-z-50"
+
 export const TAG_TYPES = [
 	"Organizations",
 	"Tickets",
@@ -57,6 +59,8 @@ export const TAG_TYPES = [
 	"PollNotifications",
 	"UserNotificationTypes",
 	"UserOrganizations",
+    "Sprints",
+    "SprintTickets",
 ]
 
 export const EMAIL_PATTERN = /\S+@\S+\.\S+/

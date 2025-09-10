@@ -17,11 +17,15 @@ const sprintValidator = (actionType) => {
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required"),
-			body("description").notEmpty().withMessage("description is required"),
 			body("start_date").isISO8601().toDate().withMessage("start_date must be a valid date"),
+			body("goal").notEmpty().withMessage("goal is required"),
+			...(actionType === "create" ? [
+				body("board_id").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "board", value, "boards"))
+			] : []),
 			body("end_date").isISO8601().toDate().withMessage("end_date must be a valid date"),
-			body("user_id").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles")),
-			body("is_completed").isBoolean().withMessage("is_completed must be a boolean"),
+			...(actionType === "update" ? [
+				body("is_completed").isBoolean().withMessage("is_completed must be a boolean"),
+			] : [])
 		]
 	}
 
@@ -37,7 +41,7 @@ const sprintTicketValidator = (actionType) => {
 		param("ticketId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "ticket", value, "tickets"))
     }
 
-	if (actionType === "update") {
+	if (actionType === "update" || actionType === "delete") {
 		validationRules = [
 			...validationRules,
 			body("ticket_ids").isArray({ min: 0, max: BULK_INSERT_LIMIT })
@@ -70,4 +74,5 @@ module.exports = {
 	validateSprintTicketGet: sprintTicketValidator("get"),
     validateSprintTicketGetById: sprintTicketValidator("getById"),
 	validateSprintTicketUpdate: sprintTicketValidator("update"),
+	validateSprintTicketDelete: sprintTicketValidator("delete")
 }

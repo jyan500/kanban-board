@@ -15,6 +15,7 @@ import { Boards } from "./pages/boards/Boards"
 import { Board } from "./pages/boards/Board" 
 import { BoardSchedule } from "./pages/boards/BoardSchedule"
 import { BoardTable } from "./pages/boards/BoardTable"
+import { BoardBacklog } from "./pages/boards/BoardBacklog"
 import { Kanban } from "./pages/boards/Kanban"
 import { OrganizationDisplay } from "./pages/organization/OrganizationDisplay"
 import { Organization } from "./pages/organization/Organization"
@@ -65,6 +66,7 @@ import {
 	TICKET_ID, 
 	TABLE,
 	SCHEDULE,
+	BACKLOG,
 	USER, 
 	USERS, 
 	TEMP,
@@ -220,6 +222,10 @@ const router = createBrowserRouter([
 									{
 										path: TABLE,
 										element: <BoardTable/>
+									},
+									{
+										path: BACKLOG,
+										element: <BoardBacklog/>
 									}
 								]
 							},
