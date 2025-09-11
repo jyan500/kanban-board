@@ -65,7 +65,7 @@ export const BoardBacklog = () => {
 	const sprintTickets = itemIds.filter((obj) => obj.type === "sprint")
 
     useEffect(() => {
-        if (sprintData && !isSprintLoading && sprintData.data.length){
+        if (sprintData && !isSprintLoading && sprintData.data.length && boardId !== 0){
             // get the tickets for the most recent sprint
             trigger({sprintId: sprintData.data[0].id, urlParams: {page: 1, includeAssignees: true}})
 			triggerGetBoardTicketData({id: boardId, urlParams: {
@@ -76,7 +76,7 @@ export const BoardBacklog = () => {
 				"limit": true,
 			}})
         }
-    }, [sprintData, isSprintLoading])
+    }, [sprintData, isSprintLoading, boardId])
 
 	useEffect(() => {
         if (sprintData && !isSprintLoading && sprintData.data.length){
@@ -237,7 +237,7 @@ export const BoardBacklog = () => {
 				</>
 			</BulkEditToolbar>
 			{
-				isSprintTicketLoading && isSprintLoading && !sprintTicketData && !sprintData ? (
+				!sprintTicketData && !sprintData ? (
 					<LoadingSkeleton>
 						<RowPlaceholder/>
 					</LoadingSkeleton>
@@ -257,7 +257,7 @@ export const BoardBacklog = () => {
 			)
 			}
 			{
-				 isBoardTicketLoading && !boardTicketData ? (
+				 !boardTicketData ? (
 					<LoadingSkeleton>
 						<RowPlaceholder/>
 					</LoadingSkeleton>

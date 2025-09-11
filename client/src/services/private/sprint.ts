@@ -56,6 +56,18 @@ export const sprintApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Sprints"]
 		}),
+		completeSprint: builder.mutation<{message: string}, Pick<Sprint, "id" | "debrief" | "isCompleted"> & {"moveItemsOption": string}>({
+			query: ({ id, debrief, isCompleted, moveItemsOption}) => ({
+				url: `${SPRINT_URL}/${id}/complete`,
+				body: {
+					debrief,
+					is_completed: isCompleted,
+					move_items_option: moveItemsOption,
+				},
+				method: "POST"
+			}),
+			invalidatesTags: ["Sprints", "SprintTickets"]
+		}),
 		deleteSprint: builder.mutation<{message: string}, number>({
 			query: (id) => ({
 				url: `${SPRINT_URL}/${id}`,
@@ -99,6 +111,7 @@ export const {
 	useGetSprintQuery,
 	useAddSprintMutation,
 	useUpdateSprintMutation,
+	useCompleteSprintMutation,
 	useDeleteSprintMutation,
 	useLazyGetSprintTicketsQuery,
 	useGetSprintTicketsQuery,

@@ -6,7 +6,7 @@ const { body, param } = require("express-validator")
 const sprintValidator = (actionType) => {
 	let validationRules = [
 	]
-    if (actionType === "getById"){
+    if (actionType === "getById" || actionType === "complete" || actionType === "update"){
         validationRules = [
             ...validationRules,
             param("sprintId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "sprint", value, "sprints"))
@@ -26,6 +26,13 @@ const sprintValidator = (actionType) => {
 			...(actionType === "update" ? [
 				body("is_completed").isBoolean().withMessage("is_completed must be a boolean"),
 			] : [])
+		]
+	}
+	if (actionType === "complete"){
+		validationRules = [
+			...validationRules,
+			body("is_completed").isBoolean().withMessage("is_completed must be a boolean"),
+			body("move_items_option").notEmpty().withMessage("move items option is required")
 		]
 	}
 
@@ -70,6 +77,7 @@ module.exports = {
 	validateSprintGetById: sprintValidator("getById"),
 	validateSprintCreate: sprintValidator("create"),
 	validateSprintUpdate: sprintValidator("update"),
+	validateSprintComplete: sprintValidator("complete"),
 	validateSprintDelete: sprintValidator("delete"),
 	validateSprintTicketGet: sprintTicketValidator("get"),
     validateSprintTicketGetById: sprintTicketValidator("getById"),

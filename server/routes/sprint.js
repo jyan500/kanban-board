@@ -10,6 +10,7 @@ const {
 	validateSprintTicketDelete,
     validateSprintTicketGetById,
 	validateSprintTicketUpdate,
+	validateSprintComplete,
 }  = require("../validation/sprint")
 const { insertAndGetId } = require("../helpers/functions") 
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
@@ -112,6 +113,55 @@ router.put("/:sprintId", validateSprintUpdate, handleValidationResult, async (re
 	}
 	catch (err) {
 		console.error(`Error while updating sprint: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/:sprintId/complete", validateSprintComplete, handleValidationResult, async (req, res, next) => {
+	try {
+		const { move_items_option, debrief, is_completed } = req.body
+		const { sprintId } = req.params
+		const existingSprint = await db("sprints").where("id", sprintId).first()
+		if (!existingSprint){
+			res.status(400).json({message: "Something has gone wrong!"})
+		}
+		// update the existing sprint values
+		await db("sprints").where("id", sprintId).update({
+			debrief: debrief,
+			is_completed: is_completed,
+		})
+
+		if (move_items_option === "NEW SPRINT"){
+			const newSprintId = await insertAndGetId("sprints", {
+				name: "New Sprint",
+				start_date: null,
+				end_date: null,
+				board_id: existingSprint.board_id,
+				user_id: existingSprint.user_id,
+				organization_id: existingSprint.organization_id,
+				goal: existingSprint.goal,
+				debrief: "",
+				is_completed: false
+			})
+			// get all existing ticketids for this sprint
+			const existingTickets = await db("tickets_to_sprints").where("sprint_id", sprintId)
+			const toInsert = existingTickets.map((obj) => {
+				return {
+					ticket_id: obj.ticket_id,
+					sprint_id: newSprintId
+				}
+			})
+			// insert existing tickets into the new sprint
+			await db("tickets_to_sprints").insert(toInsert)
+		}
+		// if moving to the backlog (OR we're done inserting tickets into the new sprint), delete
+		// the tickets from the old sprint
+		await db("tickets_to_sprints").where("sprint_id", sprintId).del()
+
+		res.json({message: "Sprint completed successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while completing sprint: ${err.message}`)
 		next(err)
 	}
 })

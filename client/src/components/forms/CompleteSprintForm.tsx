@@ -7,7 +7,10 @@ import { LoadingButton } from "../page-elements/LoadingButton"
 import { Sprint } from "../../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Controller, useForm, FormProvider } from "react-hook-form"
-import { useAddSprintMutation, useGetSprintQuery, useUpdateSprintMutation, useUpdateSprintTicketsMutation } from "../../services/private/sprint"
+import { 
+    useGetSprintQuery, 
+    useCompleteSprintMutation,
+} from "../../services/private/sprint"
 import { Switch } from "../page-elements/Switch"
 import { SimpleEditor } from "../page-elements/SimpleEditor"
 import { MOVE_OPEN_ITEM_OPTIONS } from "../../helpers/constants"
@@ -18,24 +21,22 @@ interface CompleteSprintFormProps {
 }
 
 interface CompleteSprintFormValues {
-    id?: number;
+    id: number;
     debrief?: string;
-    moveOpenItemsOption?: string
+    moveItemsOption: string
 }
 
 export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProps) => {
     const dispatch = useAppDispatch()
     const { showModal } = useAppSelector((state) => state.modal)
     const defaultForm: CompleteSprintFormValues = {
-        id: undefined,
+        id: sprintId ?? 0,
         debrief: "",
-        moveOpenItemsOption: "NEW_SPRINT"
+        moveItemsOption: ""
     }
 
-    const [addSprint] = useAddSprintMutation()
-    const [updateSprint] = useUpdateSprintMutation()
+    const [completeSprint] = useCompleteSprintMutation()
     const { data: sprintInfo, isLoading: isGetSprintDataLoading } = useGetSprintQuery(sprintId ? { id: sprintId, urlParams: {} } : skipToken)
-    const [ updateSprintTickets, { isLoading: isUpdateSprintTicketsLoading }] = useUpdateSprintTicketsMutation()
 
     const [preloadedValues, setPreloadedValues] = useState<CompleteSprintFormValues>(defaultForm)
     const methods  = useForm<CompleteSprintFormValues>({
@@ -45,35 +46,14 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
     const [submitLoading, setSubmitLoading] = useState(false)
 
     const registerOptions = {
-        moveOpenItemsOption: {"required": "Option is required"},
+        moveItemsOption: {"required": "Option is required"},
         debrief: {}
     }
-
-    useEffect(() => {
-        if (sprintInfo) {
-            reset({
-                id: sprintId,
-                debrief: sprintInfo.debrief || "",
-            })
-        } else {
-            reset(defaultForm)
-        }
-    }, [showModal, sprintInfo, sprintId])
 
     const onSubmit = async (values: CompleteSprintFormValues) => {
         setSubmitLoading(true)
         try {
-            if (sprintInfo && sprintId){
-                await updateSprint({
-                    id: sprintId,
-                    name: sprintInfo.name,
-                    goal: sprintInfo.goal,
-                    startDate: new Date(sprintInfo.startDate),
-                    endDate: new Date(sprintInfo.endDate),
-                    debrief: values.debrief,
-                    isCompleted: true,
-                }).unwrap()
-            }
+            await completeSprint({...values, isCompleted: true}).unwrap()
             dispatch(toggleShowModal(false))
             dispatch(addToast({
                 id: uuidv4(),
@@ -117,14 +97,14 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
                     </div>
                     <div className = "tw-flex tw-flex-col">
                         <label className = "label" htmlFor="move-open-work-items">Move open work items to</label>
-                        <select id={"move-open-work-items"} {...register("moveOpenItemsOption", registerOptions.moveOpenItemsOption)}>
+                        <select id={"move-open-work-items"} {...register("moveItemsOption", registerOptions.moveItemsOption)}>
                             {
                                 MOVE_OPEN_ITEM_OPTIONS.map((obj) => {
                                     return <option value={obj.value} key={obj.label}>{obj.label}</option>
                                 })
                             }
                         </select>
-                        {errors?.moveOpenItemsOption && <small className = "--text-alert">{errors.moveOpenItemsOption.message}</small>}
+                        {errors?.moveItemsOption && <small className = "--text-alert">{errors.moveItemsOption.message}</small>}
                     </div>
                     <div className="tw-flex tw-flex-col">
                         <label className="label" htmlFor="sprint-debrief">

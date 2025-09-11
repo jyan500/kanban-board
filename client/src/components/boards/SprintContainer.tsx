@@ -74,15 +74,27 @@ export const SprintContainer = ({
                 isLoading={isLoading}
                 actionButtons={
                     <div className = "tw-flex tw-flex-row tw-gap-x-2">
-                        <Button theme="primary" onClick={(e) => completeSprint()}>Complete Sprint</Button>
+                        {
+                            sprintData?.data.length && sprintTicketData?.data.length ? 
+                            <Button theme="primary" onClick={(e) => completeSprint()}>Complete Sprint</Button>
+                            : null
+                        }
                         <Button onClick={(e) => editSprint()}>Edit Sprint</Button>
                     </div>
                     
                 }
                 title={
-                    <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                    <div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
                         <span className = "tw-font-medium">{sprintData?.data?.[0]?.name ?? ""}</span>
-                        <span className = "tw-text-gray-600">{new Date(sprintData?.data?.[0]?.startDate).toLocaleDateString()} to {new Date(sprintData?.data?.[0]?.endDate).toLocaleDateString()}</span>
+                        <span className = "tw-text-gray-600">
+                            {
+                                !sprintData?.data?.[0]?.startDate && !sprintData?.data?.[0]?.endDate ?
+                                <Button onClick={(e) => editSprint()}>Add Dates</Button> :
+                                <>
+                                    {new Date(sprintData.data[0].startDate).toLocaleDateString()} to {new Date(sprintData.data[0].endDate).toLocaleDateString()}
+                                </>
+                            }
+                        </span>
                     </div>
                 } 
                 totalTickets={sprintTicketData?.pagination?.total ?? 0} 
