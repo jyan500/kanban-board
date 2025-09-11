@@ -101,6 +101,8 @@ export interface Sprint {
 	startDate: Date | string
 	endDate: Date | string
 	isCompleted: boolean
+	numCompletedTickets?: number
+	numOpenTickets?: number
 }
 
 export interface Project {

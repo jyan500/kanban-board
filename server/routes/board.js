@@ -252,7 +252,7 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.endDate){
 				queryBuilder.whereRaw("DATE(tickets.due_date) <= ?", [req.query.endDate])
 			}	
-			// exclude any tickets that are attached to the sprints to tickets table using
+			// exclude any tickets that are attached to a specific sprint using
 			// a subquery
 			if (req.query.excludeSprintId){
 				queryBuilder.whereNotIn("tickets.id", db("tickets_to_sprints").where("tickets_to_sprints.sprint_id", req.query.excludeSprintId).select("tickets_to_sprints.ticket_id as id"))

@@ -36,7 +36,7 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
     }
 
     const [completeSprint] = useCompleteSprintMutation()
-    const { data: sprintInfo, isLoading: isGetSprintDataLoading } = useGetSprintQuery(sprintId ? { id: sprintId, urlParams: {} } : skipToken)
+    const { data: sprintInfo, isLoading: isGetSprintDataLoading } = useGetSprintQuery(sprintId ? { id: sprintId, urlParams: {includeTicketStats: true} } : skipToken)
 
     const [preloadedValues, setPreloadedValues] = useState<CompleteSprintFormValues>(defaultForm)
     const methods  = useForm<CompleteSprintFormValues>({
