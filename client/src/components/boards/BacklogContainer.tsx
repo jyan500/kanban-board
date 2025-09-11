@@ -11,6 +11,7 @@ import { ListResponse, Ticket } from "../../types/common"
 import { useForm, FormProvider, useFormContext } from "react-hook-form"
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import { FormValues } from "../../pages/boards/BoardBacklog"
+import { Button } from "../page-elements/Button"
 
 interface Props {
     itemIds: Array<number>
@@ -56,8 +57,12 @@ export const BacklogContainer = ({
     return (
         <div className = "tw-flex tw-flex-col tw-gap-y-4">
             <BulkEditTicketContainer 
-                action={createSprint} 
-                actionText={"Create Sprint"} 
+                actionButtons={
+                    <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                        <Button onClick={(e) => createSprint()}>Create Sprint</Button>
+                    </div>
+                    
+                }
                 title={
                     <span className = "tw-font-medium">Backlog</span>
                 } 

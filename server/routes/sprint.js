@@ -28,6 +28,9 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 			if (req.query.recent){
 				queryBuilder.orderBy("created_at", "desc")
 			}
+			if (req.query.filterInProgress){
+				queryBuilder.where("is_completed", false)
+			}
 		})
 		.select(
 			"sprints.id",

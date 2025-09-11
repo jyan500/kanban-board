@@ -10,6 +10,7 @@ import { PaginationRow } from "../page-elements/PaginationRow"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import { FormValues } from "../../pages/boards/BoardBacklog"
+import { Button } from "../page-elements/Button"
 
 interface Props {
     itemIds: Array<number>
@@ -38,13 +39,24 @@ export const SprintContainer = ({
 
     const methods = useFormContext<FormValues>()
     const { handleSubmit } = methods
+    
+    const completeSprint = () => {
+        if (sprintData?.data.length && sprintTicketData?.data.length){
+            dispatch(setModalType("COMPLETE_SPRINT_FORM"))
+            dispatch(setModalProps({
+                boardId: boardId,
+                sprintId: sprintData.data[0].id,
+            }))
+            dispatch(toggleShowModal(true))
+        }
+    }
 
 	const editSprint = () => {
         if (sprintData?.data.length){
             dispatch(setModalType("SPRINT_FORM"))
             dispatch(setModalProps({
                 boardId: boardId,
-                sprintId: sprintData.data?.[0]?.id ?? 0
+                sprintId: sprintData.data?.[0]?.id ?? 0,
             }))
             dispatch(toggleShowModal(true))
         }
@@ -58,10 +70,15 @@ export const SprintContainer = ({
         sprintData && sprintData.data.length ? (
             <BulkEditTicketContainer 
                 itemIds={itemIds} 
-                action={editSprint} 
                 onCheck={onCheck} 
-                actionText={"Edit Sprint"} 
                 isLoading={isLoading}
+                actionButtons={
+                    <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                        <Button theme="primary" onClick={(e) => completeSprint()}>Complete Sprint</Button>
+                        <Button onClick={(e) => editSprint()}>Edit Sprint</Button>
+                    </div>
+                    
+                }
                 title={
                     <div className = "tw-flex tw-flex-row tw-gap-x-2">
                         <span className = "tw-font-medium">{sprintData?.data?.[0]?.name ?? ""}</span>

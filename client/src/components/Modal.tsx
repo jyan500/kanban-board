@@ -10,6 +10,7 @@ import { EditUserFormModal } from "./primary-modals/EditUserFormModal"
 import { BoardForm } from "./BoardForm" 
 import { ProjectForm } from "./forms/ProjectForm"
 import { SprintForm } from "./forms/SprintForm"
+import { CompleteSprintForm } from "./forms/CompleteSprintForm"
 import { BoardStatusModal } from "./primary-modals/BoardStatusModal"
 import { OrganizationStatusModal } from "./primary-modals/OrganizationStatusModal"
 import { BoardScheduleFilterModal } from "./primary-modals/BoardScheduleFilterModal"
@@ -31,7 +32,8 @@ export const modalTypes = {
 	"SPRINT_FORM": SprintForm,
 	"USER_FORM": EditUserFormModal,
 	"BULK_ACTIONS_MODAL": BulkActionsModal,
-	"BOARD_SCHEDULE_FILTER_MODAL": BoardScheduleFilterModal
+	"BOARD_SCHEDULE_FILTER_MODAL": BoardScheduleFilterModal,
+	"COMPLETE_SPRINT_FORM": CompleteSprintForm,
 }
 
 export const modalClassNames = {
@@ -46,6 +48,7 @@ export const modalClassNames = {
 	"BULK_ACTIONS_MODAL": defaultConfig,
 	"BOARD_SCHEDULE_FILTER_MODAL": avoidAsyncSelectMenuOverflow,
 	"SPRINT_FORM": defaultConfig,
+	"COMPLETE_SPRINT_FORM": defaultConfig
 }
 
 // type for partial subset of keys

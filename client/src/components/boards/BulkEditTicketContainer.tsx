@@ -17,13 +17,12 @@ interface Props {
     totalTickets: number
     tickets: Array<Ticket>
     onCheck: (id: number) => void
-    action: () => void
-    actionText: string
     itemIds: Array<number>
     pagination?: React.ReactNode
     title: React.ReactNode 
     isLoading?: boolean
     searchBar?: React.ReactNode
+    actionButtons?: React.ReactNode
 }
 
 export type FormValues = {
@@ -32,8 +31,7 @@ export type FormValues = {
 }
 
 export const BulkEditTicketContainer = ({
-    action, 
-    actionText, 
+    actionButtons,
     itemIds, 
     onCheck, 
     title, 
@@ -57,10 +55,7 @@ export const BulkEditTicketContainer = ({
                     <span>({totalTickets} items)</span>
                     {isLoading ? <LoadingSpinner/>: null}
                 </div>
-
-                <div className = "tw-flex tw-flex-row tw-gap-x-2">
-                    <Button onClick={(e) => action()}>{actionText}</Button>
-                </div>
+                {actionButtons}
             </div>
             {
                 searchBar ? searchBar : null
