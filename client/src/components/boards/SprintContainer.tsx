@@ -12,6 +12,7 @@ import { SearchToolBar } from "../tickets/SearchToolBar"
 import { FormValues } from "../../pages/boards/BoardBacklog"
 import { Badge } from "../page-elements/Badge"
 import { Button } from "../page-elements/Button"
+import { HoverTooltip } from "../page-elements/HoverTooltip"
 
 interface Props {
     itemIds: Array<number>
@@ -78,8 +79,14 @@ export const SprintContainer = ({
                         {
                             sprintData?.data?.[0]?.numCompletedTickets != null && sprintData?.data?.[0]?.numOpenTickets != null ? 
                             <>
-                                <Badge className = "tw-flex tw-justify-center tw-items-center tw-w-8 tw-h-8 tw-bg-secondary tw-text-gray-50">{sprintData?.data?.[0]?.numOpenTickets}</Badge>
-                                <Badge className = "tw-flex tw-justify-center tw-items-center tw-w-8 tw-h-8 tw-bg-green-500 tw-text-gray-50">{sprintData?.data?.[0]?.numCompletedTickets}</Badge>
+                                <div className = "tw-relative tw-group">
+                                    <Badge className = "tw-flex tw-justify-center tw-items-center tw-w-8 tw-h-8 tw-bg-secondary tw-text-gray-50">{sprintData?.data?.[0]?.numOpenTickets}</Badge>
+                                    <HoverTooltip text={`${sprintData?.data?.[0]?.numOpenTickets} open tickets`}/>
+                                </div>
+                                <div className = "tw-relative tw-group">
+                                    <Badge className = "tw-flex tw-justify-center tw-items-center tw-w-8 tw-h-8 tw-bg-green-500 tw-text-gray-50">{sprintData?.data?.[0]?.numCompletedTickets}</Badge>
+                                    <HoverTooltip text={`${sprintData?.data?.[0]?.numCompletedTickets} completed tickets`}/>
+                                </div>
                             </> : null
                         }
                         {
