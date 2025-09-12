@@ -12,6 +12,8 @@ import { useForm, FormProvider, useFormContext } from "react-hook-form"
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import { FormValues } from "../../pages/boards/BoardBacklog"
 import { Button } from "../page-elements/Button"
+import { Badge } from "../page-elements/Badge"
+import { HoverTooltip } from "../page-elements/HoverTooltip"
 
 interface Props {
     itemIds: Array<number>
@@ -59,6 +61,19 @@ export const BacklogContainer = ({
             <BulkEditTicketContainer 
                 actionButtons={
                     <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                         {
+                            boardTicketData?.additional != null ? 
+                            <>
+                                <div className = "tw-relative tw-group">
+                                    <Badge className = "tw-flex tw-justify-center tw-items-center tw-w-8 tw-h-8 tw-bg-secondary tw-text-gray-50">{boardTicketData.additional.numOpenTickets}</Badge>
+                                    <HoverTooltip text={`${boardTicketData.additional.numOpenTickets} open tickets`}/>
+                                </div>
+                                <div className = "tw-relative tw-group">
+                                    <Badge className = "tw-flex tw-justify-center tw-items-center tw-w-8 tw-h-8 tw-bg-green-500 tw-text-gray-50">{boardTicketData.additional.numCompletedTickets}</Badge>
+                                    <HoverTooltip text={`${boardTicketData.additional.numCompletedTickets} completed tickets`}/>
+                                </div>
+                            </> : null
+                        }
                         <Button onClick={(e) => createSprint()}>Create Sprint</Button>
                     </div>
                     

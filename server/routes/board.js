@@ -274,13 +274,34 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 		// hack to keep the tickets paginate data format into {data, pagination},
 		// which finds the total amount of data and 
 		// loads all data into one page. Should prioritize using pagination when possible.
-		if (req.query.skipPaginate){
+		let ticketStats = {}
+		if (req.query.skipPaginate || req.query.includeTicketStats){
 			const ticketsForAmt = await tickets
 			const total = ticketsForAmt.length
-			tickets = await retryTransaction(tickets.paginate({ perPage: total, currentPage: 1, isLengthAware: true}))
+			if (req.query.includeTicketStats){
+				const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
+				const completedStatusIds = completedStatuses.map((status) => status.id)
+				const numCompletedTickets = ticketsForAmt.filter((ticket) => completedStatusIds.includes(ticket.statusId)).length
+				const numOpenTickets = ticketsForAmt.length - numCompletedTickets
+				ticketStats = {
+					numOpenTickets,
+					numCompletedTickets
+				}
+				tickets = await retryTransaction(tickets.paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true}));
+			}
+			else {
+				tickets = await retryTransaction(tickets.paginate({ perPage: total, currentPage: 1, isLengthAware: true}))
+			}
 		}
 		else {
 			tickets = await retryTransaction(tickets.paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true}));
+		}
+
+		if (req.query.includeTicketStats){
+			tickets = {
+				...tickets,
+				additional: ticketStats
+			}
 		}
 
 		if (req.query.includeAssignees){
@@ -306,6 +327,7 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			)
 			}
 		}
+
 		if (req.query.includeRelationshipInfo){
 			const epicTicketRelationshipType = await db("ticket_relationship_types").where("name" , "Epic").first()
 			const epicTicketType = await db("ticket_types").where("name", "Epic").first()

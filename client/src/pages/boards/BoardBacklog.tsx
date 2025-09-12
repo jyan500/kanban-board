@@ -72,6 +72,7 @@ export const BoardBacklog = () => {
             trigger({sprintId: sprintData.data[0].id, urlParams: {page: 1, includeAssignees: true}})
 			triggerGetBoardTicketData({id: boardInfo.id, urlParams: {
 				page: 1,
+				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
 				"excludeSprintId": sprintData?.data?.[0]?.id,
@@ -97,6 +98,7 @@ export const BoardBacklog = () => {
 			triggerGetBoardTicketData({id: boardInfo.id, urlParams: {
 				...backlogPreloadedValues,
 				page: backlogPage,
+				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
 				"excludeSprintId": sprintData?.data?.[0]?.id,
@@ -258,12 +260,12 @@ export const BoardBacklog = () => {
 						sprintTicketData={sprintTicketData}
 						setItemId={(id: number) => {
 							setId(id, "sprint", itemIds, setItemIds)
-					}} itemIds={sprintTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 9}/>
+					}} itemIds={sprintTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 0}/>
 				</FormProvider>
 			)
 			}
 			{
-				 !boardTicketData && !boardInfo ? (
+				 !boardTicketData && boardInfo ? (
 					<LoadingSkeleton>
 						<RowPlaceholder/>
 					</LoadingSkeleton>
