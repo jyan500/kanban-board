@@ -10,6 +10,7 @@ import { PaginationRow } from "../page-elements/PaginationRow"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import { FormValues } from "../../pages/boards/BoardBacklog"
+import { Badge } from "../page-elements/Badge"
 import { Button } from "../page-elements/Button"
 
 interface Props {
@@ -74,6 +75,13 @@ export const SprintContainer = ({
                 isLoading={isLoading}
                 actionButtons={
                     <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                        {
+                            sprintData?.data?.[0]?.numCompletedTickets != null && sprintData?.data?.[0]?.numOpenTickets != null ? 
+                            <>
+                                <Badge className = "tw-flex tw-justify-center tw-items-center tw-w-8 tw-h-8 tw-bg-secondary tw-text-gray-50">{sprintData?.data?.[0]?.numOpenTickets}</Badge>
+                                <Badge className = "tw-flex tw-justify-center tw-items-center tw-w-8 tw-h-8 tw-bg-green-500 tw-text-gray-50">{sprintData?.data?.[0]?.numCompletedTickets}</Badge>
+                            </> : null
+                        }
                         {
                             sprintData?.data.length && sprintTicketData?.data.length ? 
                             <Button theme="primary" onClick={(e) => completeSprint()}>Complete Sprint</Button>

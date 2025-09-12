@@ -54,6 +54,7 @@ export const BulkEditTicketContainer = ({
                     {title}
                     <span>({totalTickets} items)</span>
                     {isLoading ? <LoadingSpinner/>: null}
+                    <div></div>
                 </div>
                 {actionButtons}
             </div>
@@ -69,7 +70,7 @@ export const BulkEditTicketContainer = ({
                 showTickets ? 
                 <div className = {`${tickets.length ? "tw-border" : ""} tw-bg-white tw-flex tw-flex-col tw-gap-y-2`}>
                     {tickets.map((ticket) => 
-                        <div className = "tw-pl-4 tw-flex tw-flex-row tw-gap-x-2"> 
+                        <div key={`bulk-edit-ticket-${ticket.id}`} className = "tw-pl-4 tw-flex tw-flex-row tw-gap-x-2"> 
                             <input checked={itemIds.includes(ticket.id)} onChange={(e) => onCheck(ticket.id)} type = "checkbox"/>
                             <button className = "tw-w-full" onClick={(e) => {
                                 dispatch(toggleShowModal(true))

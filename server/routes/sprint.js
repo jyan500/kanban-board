@@ -22,7 +22,7 @@ const db = require("../db/db")
 router.get("/", validateSprintGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const { page } = req.query
-		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true)
+		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
 		const completedStatusIds = completedStatuses.map((status) => status.id)
 		const sprints = await db("sprints")
 		.modify((queryBuilder) => {
@@ -47,14 +47,13 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 			"sprints.board_id as boardId",
 			"sprints.created_at as createdAt",
 			"sprints.num_open_tickets as numOpenTickets",
-			"sprints.num_completed_tickets as numCompletedTickets",
+			"sprints.num_completed_tickets as numCompletedTickets"
 		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		let data = sprint.data
+		let data = sprints.data
 		if (req.query.includeTicketStats){
-			data = Promise.all(sprint.data.map(async (sprint) => {
-				// if the sprint isn't completed,
-				// show the updated ticket stats over the stats listed in the db record
-				if (!sprint.is_completed){
+			data = await Promise.all(sprints.data.map(async (sprint) => {
+				if (!sprint.isCompleted){
+					// show the updated ticket stats over the stats listed in the db record
 					const { numCompletedTickets, numOpenTickets } = await aggregateCompletedAndOpenSprintTickets(sprint.id, completedStatusIds)	
 					return {
 						...sprint,
@@ -63,11 +62,14 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 					}
 				}
 				return {
-					...sprint,
+					...sprint
 				}
 			}))
 		}
-		res.json(sprints)
+		res.json({
+			data: data,
+			pagination: sprints.pagination
+		})
 	}
 	catch (err) {
 		console.error(`Error while getting sprints: ${err.message}`)
@@ -78,7 +80,7 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 router.get("/:sprintId", validateSprintGetById, handleValidationResult, async (req, res, next) => {
 	try {
 		const { sprintId } = req.params
-		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true)
+		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
 		const completedStatusIds = completedStatuses.map((status) => status.id)
 		const sprint = await db("sprints")
 		.where("sprints.id", sprintId)
@@ -91,16 +93,20 @@ router.get("/:sprintId", validateSprintGetById, handleValidationResult, async (r
 			"sprints.end_date as endDate",
 			"sprints.is_completed as isCompleted",
 			"sprints.board_id as boardId",
-			"sprints.created_at as createdAt"
+			"sprints.created_at as createdAt",
+			"sprints.num_open_tickets as numOpenTickets",
+			"sprints.num_created_tickets as numCreatedTickets",
 		)
 		.first()
 		let data = sprint
 		if (req.query.includeTicketStats){
-			const { numCompletedTickets, numOpenTickets } = await aggregateCompletedAndOpenSprintTickets(sprint.id, completedStatusIds)	
-			return {
-				...data,
-				numCompletedTickets: numCompletedTickets,
-				numOpenTickets: numOpenTickets,
+			if (!data.isCompleted){
+				const { numCompletedTickets, numOpenTickets } = await aggregateCompletedAndOpenSprintTickets(sprint.id, completedStatusIds)	
+				data = {
+					...data,
+					numCompletedTickets: numCompletedTickets,
+					numOpenTickets: numOpenTickets,
+				}
 			}
 		}
 		res.json(data)
@@ -158,13 +164,12 @@ router.post("/:sprintId/complete", validateSprintComplete, handleValidationResul
 		const existingSprint = await db("sprints").where("id", sprintId).first()
 		if (!existingSprint){
 			res.status(400).json({message: "Something has gone wrong!"})
+
 		}
 		// get the most updated current ticket statistics, which
-		// will be written into the db as a "final" statistic. So even if the actual tickets that 
-		// were formerly attached to the sprint are changed, the statistic remains
-
-		// update the existing sprint values
-		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true)
+		// will be written into the db as a "final" statistic. So even if the statuses of the actual tickets that 
+		// were attached to the sprint are changed, the statistic remains
+		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
 		const completedStatusIds = completedStatuses.map((status) => status.id)
 		const { numCompletedTickets, numOpenTickets } = await aggregateCompletedAndOpenSprintTickets(sprintId, completedStatusIds)	
 		await db("sprints").where("id", sprintId).update({

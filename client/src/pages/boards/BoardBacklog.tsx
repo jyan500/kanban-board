@@ -45,15 +45,17 @@ export const BoardBacklog = () => {
 	const [ backlogPage, setBacklogPage ] = useState(1)
 	const [ sprintPage, setSprintPage ] = useState(1)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
-	const boardId = boardInfo?.id ?? 0
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
 	const [ deleteSprintTickets, { isLoading: isDeleteTicketsLoading }] = useDeleteSprintTicketsMutation()
 	const [ updateSprintTickets, { isLoading: isUpdateTicketsLoading }] = useUpdateSprintTicketsMutation()
-	const { data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading} = useGetSprintsQuery(boardId !== 0 ? {urlParams: {
-        boardId: boardId,
+	const { data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading} = useGetSprintsQuery(boardInfo ? {urlParams: {
+		// get only the most recent sprint
+		perPage: 1,
+		includeTicketStats: true,
+        boardId: boardInfo.id,
 		filterInProgress: true,
         recent: true,
     }} : skipToken)
@@ -65,10 +67,10 @@ export const BoardBacklog = () => {
 	const sprintTickets = itemIds.filter((obj) => obj.type === "sprint")
 
     useEffect(() => {
-        if (sprintData && !isSprintLoading && sprintData.data.length && boardId !== 0){
+        if (sprintData && !isSprintLoading && sprintData.data.length && boardInfo){
             // get the tickets for the most recent sprint
             trigger({sprintId: sprintData.data[0].id, urlParams: {page: 1, includeAssignees: true}})
-			triggerGetBoardTicketData({id: boardId, urlParams: {
+			triggerGetBoardTicketData({id: boardInfo.id, urlParams: {
 				page: 1,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
@@ -76,7 +78,7 @@ export const BoardBacklog = () => {
 				"limit": true,
 			}})
         }
-    }, [sprintData, isSprintLoading, boardId])
+    }, [sprintData, isSprintLoading, boardInfo])
 
 	useEffect(() => {
         if (sprintData && !isSprintLoading && sprintData.data.length){
@@ -91,14 +93,16 @@ export const BoardBacklog = () => {
 	}, [sprintPreloadedValues, sprintPage])
 
 	useEffect(() => {
-		triggerGetBoardTicketData({id: boardId, urlParams: {
-			...backlogPreloadedValues,
-			page: backlogPage,
-			"includeAssignees": true, 
-			"includeRelationshipInfo": true, 
-			"excludeSprintId": sprintData?.data?.[0]?.id,
-			"limit": true,
-		}}, true)
+		if (boardInfo){
+			triggerGetBoardTicketData({id: boardInfo.id, urlParams: {
+				...backlogPreloadedValues,
+				page: backlogPage,
+				"includeAssignees": true, 
+				"includeRelationshipInfo": true, 
+				"excludeSprintId": sprintData?.data?.[0]?.id,
+				"limit": true,
+			}}, true)
+		}
 	}, [backlogPreloadedValues, backlogPage])
 	// in order for ease of use with the existing bulk edit toolbar, track a "combined" array of both 
 	// selected backlog and sprint tickets
@@ -195,14 +199,16 @@ export const BoardBacklog = () => {
 						setItemIds([...allSprintTickets, ...allBacklogTickets])
 					}} className = "button --secondary">Select All</button>
 					<button onClick={(e) => {
-						dispatch(setModalType("BULK_ACTIONS_MODAL"))
-						dispatch(setModalProps({
-							boardId: boardInfo?.id ?? 0,
-							initSelectedIds: itemIds,
-							// default to step 2 since we've selected ids to edit
-							initStep: 2
-						}))
-						dispatch(toggleShowModal(true))
+						if (boardInfo){
+							dispatch(setModalType("BULK_ACTIONS_MODAL"))
+							dispatch(setModalProps({
+								boardId: boardInfo.id,
+								initSelectedIds: itemIds,
+								// default to step 2 since we've selected ids to edit
+								initStep: 2
+							}))
+							dispatch(toggleShowModal(true))
+						}
 					}} className = "button">Edit Tickets</button>
 					{
 						backlogTickets.length ?
@@ -237,7 +243,7 @@ export const BoardBacklog = () => {
 				</>
 			</BulkEditToolbar>
 			{
-				!sprintTicketData && !sprintData ? (
+				!sprintTicketData && !sprintData && !boardInfo ? (
 					<LoadingSkeleton>
 						<RowPlaceholder/>
 					</LoadingSkeleton>
@@ -252,12 +258,12 @@ export const BoardBacklog = () => {
 						sprintTicketData={sprintTicketData}
 						setItemId={(id: number) => {
 							setId(id, "sprint", itemIds, setItemIds)
-					}} itemIds={sprintTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 0}/>
+					}} itemIds={sprintTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 9}/>
 				</FormProvider>
 			)
 			}
 			{
-				 !boardTicketData ? (
+				 !boardTicketData && !boardInfo ? (
 					<LoadingSkeleton>
 						<RowPlaceholder/>
 					</LoadingSkeleton>
