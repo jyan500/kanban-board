@@ -35,6 +35,9 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 			if (req.query.filterInProgress){
 				queryBuilder.where("is_completed", false)
 			}
+			if (req.query.searchBy === "name"){
+				queryBuilder.whereILike("name", `%${req.query.query}%`)
+			}
 		})
 		.select(
 			"sprints.id",
@@ -95,7 +98,7 @@ router.get("/:sprintId", validateSprintGetById, handleValidationResult, async (r
 			"sprints.board_id as boardId",
 			"sprints.created_at as createdAt",
 			"sprints.num_open_tickets as numOpenTickets",
-			"sprints.num_created_tickets as numCreatedTickets",
+			"sprints.num_completed_tickets as numCompletedTickets",
 		)
 		.first()
 		let data = sprint
@@ -141,11 +144,15 @@ router.put("/:sprintId", validateSprintUpdate, handleValidationResult, async (re
 	try {
 		const { sprintId } = req.params
 		const { name, goal, start_date, end_date, debrief, is_completed } = req.body
+		const existingSprint = await db("sprints").where("id", sprintId).first()
 		const updatedRows = await db("sprints").where({ id: sprintId }).update({
 			name,
 			goal,
-			start_date,
-			end_date,
+			// cannot update the start and end date if the sprint is already completed
+			...(existingSprint?.is_completed ? {
+				start_date,
+				end_date,
+			} : {}),
 			debrief,
 			is_completed,
 		})

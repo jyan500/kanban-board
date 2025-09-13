@@ -144,7 +144,7 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
                         <label className="label" htmlFor="sprint-start-date">
                             Start Date <span className="tw-font-bold tw-text-red-500">*</span>
                         </label>
-                        <input id="sprint-start-date" type="date"
+                        <input disabled={sprintInfo?.isCompleted} id="sprint-start-date" type="date"
                             {...register("startDate", registerOptions.startDate)}
                             className="tw-w-full"
                         />
@@ -154,7 +154,7 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
                         <label className="label" htmlFor="sprint-end-date">
                             End Date <span className="tw-font-bold tw-text-red-500">*</span>
                         </label>
-                        <input id="sprint-end-date" type="date"
+                        <input disabled={sprintInfo?.isCompleted} id="sprint-end-date" type="date"
                             {...register("endDate", registerOptions.endDate)}
                             className="tw-w-full"
                         />

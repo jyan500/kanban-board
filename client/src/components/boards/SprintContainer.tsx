@@ -58,7 +58,7 @@ export const SprintContainer = ({
             dispatch(setModalType("SPRINT_FORM"))
             dispatch(setModalProps({
                 boardId: boardId,
-                sprintId: sprintData.data?.[0]?.id ?? 0,
+                sprintId: sprintData.data[0].id,
             }))
             dispatch(toggleShowModal(true))
         }

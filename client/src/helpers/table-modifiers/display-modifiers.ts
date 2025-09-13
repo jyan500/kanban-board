@@ -28,3 +28,7 @@ export const dateModifier = (date: string | undefined) => {
 	}
 	return ""
 }
+
+export const booleanModifier = (booleanValue: boolean) => {
+	return booleanValue ? "Yes" : "No"
+}

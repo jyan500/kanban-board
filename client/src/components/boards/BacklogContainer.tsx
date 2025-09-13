@@ -7,6 +7,7 @@ import { BulkEditTicketContainer } from "./BulkEditTicketContainer"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 import { PaginationRow } from "../page-elements/PaginationRow"
+import { useNavigate } from "react-router-dom"
 import { ListResponse, Ticket } from "../../types/common"
 import { useForm, FormProvider, useFormContext } from "react-hook-form"
 import { SearchToolBar } from "../tickets/SearchToolBar"
@@ -14,6 +15,7 @@ import { FormValues } from "../../pages/boards/BoardBacklog"
 import { Button } from "../page-elements/Button"
 import { Badge } from "../page-elements/Badge"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
+import { BOARDS, SPRINTS } from "../../helpers/routes"
 
 interface Props {
     itemIds: Array<number>
@@ -37,9 +39,12 @@ export const BacklogContainer = ({
     isLoading
 }: Props) => {
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
 
 	const methods = useFormContext<FormValues>()
     const { handleSubmit } = methods
+
+    const boardPath = `${BOARDS}/${boardId}`
 
 	const registerOptions = {
 	}
@@ -60,7 +65,7 @@ export const BacklogContainer = ({
         <div className = "tw-flex tw-flex-col tw-gap-y-4">
             <BulkEditTicketContainer 
                 actionButtons={
-                    <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                    <div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
                          {
                             boardTicketData?.additional != null ? 
                             <>

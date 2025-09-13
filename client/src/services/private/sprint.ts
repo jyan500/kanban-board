@@ -109,6 +109,7 @@ export const sprintApi = privateApi.injectEndpoints({
 export const {
 	useGetSprintsQuery,
 	useGetSprintQuery,
+	useLazyGetSprintQuery,
 	useAddSprintMutation,
 	useUpdateSprintMutation,
 	useCompleteSprintMutation,

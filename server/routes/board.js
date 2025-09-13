@@ -210,7 +210,7 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const board = await db("boards").where("id", req.params.boardId).first()
-		const completedStatuses = await db("statuses").where("is_completed", true)
+		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
 		const completedStatusIds = completedStatuses.map((status) => status.id)	
 		let tickets = db("tickets_to_boards")
 		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")

@@ -10,18 +10,21 @@ import { useUpdateSprintTicketsMutation, useDeleteSprintTicketsMutation } from "
 import { BoardScheduleFilters } from "../../slices/boardScheduleSlice"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { useLazyGetBoardTicketsQuery } from "../../services/private/board"
-import { useGetSprintsQuery, useLazyGetSprintTicketsQuery } from "../../services/private/sprint"
+import { useGetSprintsQuery, useLazyGetSprintQuery, useLazyGetSprintTicketsQuery } from "../../services/private/sprint"
 import { BulkEditToolbar } from "../../components/page-elements/BulkEditToolbar"
 import { LoadingButton } from "../../components/page-elements/LoadingButton"
 import { addToast } from "../../slices/toastSlice"
-import { Toast } from "../../types/common"
+import { OptionType, Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
-import { useForm, FormProvider } from "react-hook-form"
+import { useForm, Controller, FormProvider } from "react-hook-form"
+import { useLocation } from "react-router-dom"
+import { AsyncSelect } from "../../components/AsyncSelect"
 
 interface BacklogBulkItem {
 	id: number
 	type: "sprint" | "backlog"
 }
+
 
 export type FormValues = {
 	searchBy: string
@@ -30,6 +33,7 @@ export type FormValues = {
 
 export const BoardBacklog = () => {
     const dispatch = useAppDispatch()
+    const location = useLocation()
 	const sprintDefaultForm: FormValues = {
 		query: "",
 		searchBy: "title",
@@ -51,6 +55,7 @@ export const BoardBacklog = () => {
 	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
 	const [ deleteSprintTickets, { isLoading: isDeleteTicketsLoading }] = useDeleteSprintTicketsMutation()
 	const [ updateSprintTickets, { isLoading: isUpdateTicketsLoading }] = useUpdateSprintTicketsMutation()
+	const [ triggerGetSprint, { isLoading: isLazyGetSprintLoading }] = useLazyGetSprintQuery()
 	const { data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading} = useGetSprintsQuery(boardInfo ? {urlParams: {
 		// get only the most recent sprint
 		perPage: 1,
@@ -66,6 +71,17 @@ export const BoardBacklog = () => {
 	const backlogTickets = itemIds.filter((obj) => obj.type === "backlog")
 	const sprintTickets = itemIds.filter((obj) => obj.type === "sprint")
 
+	useEffect(() => {
+		// if we're coming from the past sprints page to create a sprint, pop up the create sprints modal
+		if (location.state?.createSprint === true){
+			dispatch(setModalType("SPRINT_FORM"))
+			dispatch(setModalProps({
+				boardId: boardInfo?.id ?? 0
+			}))
+			dispatch(toggleShowModal(true))
+		}
+	}, [location.state])
+
     useEffect(() => {
         if (sprintData && !isSprintLoading && sprintData.data.length && boardInfo){
             // get the tickets for the most recent sprint
@@ -75,6 +91,7 @@ export const BoardBacklog = () => {
 				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
+				"excludeCompleted": true,
 				"excludeSprintId": sprintData?.data?.[0]?.id,
 				"limit": true,
 			}})
@@ -101,6 +118,7 @@ export const BoardBacklog = () => {
 				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
+				"excludeCompleted": true,
 				"excludeSprintId": sprintData?.data?.[0]?.id,
 				"limit": true,
 			}}, true)
@@ -213,7 +231,7 @@ export const BoardBacklog = () => {
 						}
 					}} className = "button">Edit Tickets</button>
 					{
-						backlogTickets.length ?
+						backlogTickets.length && sprintData ?
 						<LoadingButton isLoading={isUpdateTicketsLoading} text={`Move ${backlogTickets.length} ticket(s) to Sprint`} onClick={async (e) => {
 							await onUpdateSprintTickets()
 							// filter out the selected backlog tickets

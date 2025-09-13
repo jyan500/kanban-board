@@ -14,6 +14,8 @@ import {
 import { Switch } from "../page-elements/Switch"
 import { SimpleEditor } from "../page-elements/SimpleEditor"
 import { MOVE_OPEN_ITEM_OPTIONS } from "../../helpers/constants"
+import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
+import { TicketFormPlaceholder } from "../placeholders/TicketFormPlaceholder"
 
 interface CompleteSprintFormProps {
     sprintId?: number;
@@ -84,7 +86,7 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
                 <form onSubmit={handleSubmit(onSubmit)} className="tw-w-full tw-flex tw-flex-col tw-gap-y-2">
                     <div className = "tw-border tw-p-2">
                         <p className = "tw-font-semibold tw-text-gray-500">
-                            This sprint contains 0 completed work items and 2 open work items. 
+                            This sprint contains <span className = "tw-font-bold tw-text-green-500">{sprintInfo?.numCompletedTickets}</span> completed work items and <span className="tw-font-bold">{sprintInfo?.numOpenTickets}</span> open work items. 
                         </p>
                         <ul>
                             <li>
@@ -119,9 +121,7 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
                         <LoadingButton isLoading={submitLoading} type="submit" text="Submit" className="button" />
                     </div>
                 </form>
-            </FormProvider>
-           
-
+            </FormProvider>     
         </div>
     )
 }

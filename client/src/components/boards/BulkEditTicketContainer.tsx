@@ -45,8 +45,8 @@ export const BulkEditTicketContainer = ({
 
     const dispatch = useAppDispatch()
     return (
-        <div className = "lg:tw-p-2 tw-p-0.5 tw-w-full lg:tw-w-[80%] tw-flex tw-flex-col tw-gap-y-2 tw-border tw-bg-gray-100">
-            <div className = "tw-w-full tw-flex tw-flex-row tw-justify-between">
+        <div className = "lg:tw-p-2 tw-p-0.5 tw-w-full lg:tw-w-[90%] tw-flex tw-flex-col tw-gap-y-2 tw-border tw-bg-gray-100">
+            <div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
                 <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
                     <IconButton onClick={() => setShowTickets(!showTickets)}>
                         {showTickets ? <IconArrowDown/> : <IconArrowRight/>}
