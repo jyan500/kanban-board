@@ -118,7 +118,7 @@ export const TicketDisplay = () => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
-			<h1>Backlog</h1>
+			<h1>Tickets</h1>
 			<FormProvider {...methods}>
 				<SearchToolBar 
 					paginationData={data?.pagination} 
@@ -158,7 +158,7 @@ export const TicketDisplay = () => {
 				</div>
 				{
 					data?.pagination?.prevPage || data?.pagination?.nextPage ? 
-					<div className = "tw-p-4 tw-border tw-border-gray-300">
+					<div className = "tw-w-fit tw-p-4 tw-border tw-border-gray-300">
 						<PaginationRow
 							showNumResults={true}
 							showPageNums={true}

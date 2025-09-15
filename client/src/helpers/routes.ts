@@ -9,6 +9,7 @@ export const TABLE = `table`
 export const BOARD_ID = ":boardId"
 export const TICKETS = "/tickets"
 export const TICKET_ID = ":ticketId"
+export const SPRINTS = "sprints"
 export const USERS = "/users"
 export const USER = "/user"
 export const PROJECTS = "/projects"

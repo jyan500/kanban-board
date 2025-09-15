@@ -51,7 +51,7 @@ export const SearchToolBar = ({
 	const {register, reset, getValues, control, formState: {errors}} = methods
 
 	return (
-		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
+		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-justify-between">
 				<FormProvider {...methods}>
 					<form onSubmit={(e) => {
@@ -104,22 +104,21 @@ export const SearchToolBar = ({
 						{additionalButtons ? additionalButtons() : null}
 					</form>
 				</FormProvider>
-
 			</div>
 			{/* 
 			For some reason, error messages when retrieved from useFormContext() have to be converted to strings explicitly, see below:
 			https://stackoverflow.com/questions/73222938/type-mergefielderror-fielderrorsimpldeeprequiredany-undefined-is-not 
 			*/}
 			{errors?.query ? <small className = "--text-alert">{errors?.query?.message?.toString()}</small> : null}
-			<div>
 			{
 				filters && renderFilter && showFilter ? (
-					<FormProvider {...methods}>
-						{renderFilter()}
-					</FormProvider>
+					<div>
+						<FormProvider {...methods}>
+							{renderFilter()}
+						</FormProvider>
+					</div>
 				) : null
 			}
-			</div>
 			{
 				!hidePagination ? (
 					<div className = "tw-w-full lg:tw-w-1/3 tw-p-4 tw-rounded-md tw-border tw-border-gray-300">

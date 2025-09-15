@@ -159,6 +159,17 @@ const parseMentions = async (body, bodyParams, organizationId) => {
 	return mappedObjArray.filter((obj) => obj)
 }
 
+/*  Queries for all sprint tickets, and then filters out the tickets with a completed status */
+const aggregateCompletedAndOpenSprintTickets = async (sprintId, completedStatusIds) => {
+	const sprintTickets = await db("tickets_to_sprints").where("sprint_id", sprintId).join("tickets", "tickets.id", "=", "tickets_to_sprints.ticket_id").select("tickets.*")
+	const numCompletedTickets = sprintTickets.filter((ticket) => completedStatusIds.includes(ticket.status_id)).length
+	const numOpenTickets = sprintTickets.length - numCompletedTickets
+	return {
+		numCompletedTickets,
+		numOpenTickets,
+	}
+}
+
 /* 
 	convert string dot notation into the syntax to retrieve an object 
 	i.e 
@@ -252,4 +263,5 @@ module.exports = {
 	asyncHandler,
 	insertAndGetId,
 	retryTransaction,
+	aggregateCompletedAndOpenSprintTickets
 }

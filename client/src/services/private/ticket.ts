@@ -195,7 +195,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					status_id: ticket.statusId
 				}
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary"]
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary", "Sprints", "SprintTickets"]
 			// invalidatesTags: (result, error, arg) => [{type: "Tickets", id: arg.id}, {type: "BoardTickets", id: arg.id}]
 		}),
 		bulkEditTickets: builder.mutation<{message: string}, {ticketIds: Array<number>, priorityId: number, userIds: Array<number>, statusId: number}>({

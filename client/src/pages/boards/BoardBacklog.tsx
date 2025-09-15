@@ -10,18 +10,21 @@ import { useUpdateSprintTicketsMutation, useDeleteSprintTicketsMutation } from "
 import { BoardScheduleFilters } from "../../slices/boardScheduleSlice"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { useLazyGetBoardTicketsQuery } from "../../services/private/board"
-import { useGetSprintsQuery, useLazyGetSprintTicketsQuery } from "../../services/private/sprint"
+import { useGetSprintsQuery, useLazyGetSprintQuery, useLazyGetSprintTicketsQuery } from "../../services/private/sprint"
 import { BulkEditToolbar } from "../../components/page-elements/BulkEditToolbar"
 import { LoadingButton } from "../../components/page-elements/LoadingButton"
 import { addToast } from "../../slices/toastSlice"
-import { Toast } from "../../types/common"
+import { OptionType, Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
-import { useForm, FormProvider } from "react-hook-form"
+import { useForm, Controller, FormProvider } from "react-hook-form"
+import { useLocation } from "react-router-dom"
+import { AsyncSelect } from "../../components/AsyncSelect"
 
 interface BacklogBulkItem {
 	id: number
 	type: "sprint" | "backlog"
 }
+
 
 export type FormValues = {
 	searchBy: string
@@ -30,6 +33,7 @@ export type FormValues = {
 
 export const BoardBacklog = () => {
     const dispatch = useAppDispatch()
+    const location = useLocation()
 	const sprintDefaultForm: FormValues = {
 		query: "",
 		searchBy: "title",
@@ -45,16 +49,20 @@ export const BoardBacklog = () => {
 	const [ backlogPage, setBacklogPage ] = useState(1)
 	const [ sprintPage, setSprintPage ] = useState(1)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
-	const boardId = boardInfo?.id ?? 0
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
 	const [ deleteSprintTickets, { isLoading: isDeleteTicketsLoading }] = useDeleteSprintTicketsMutation()
 	const [ updateSprintTickets, { isLoading: isUpdateTicketsLoading }] = useUpdateSprintTicketsMutation()
-	const { data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading} = useGetSprintsQuery(boardId !== 0 ? {urlParams: {
-        boardId: boardId,
-        recent: true
+	const [ triggerGetSprint, { isLoading: isLazyGetSprintLoading }] = useLazyGetSprintQuery()
+	const { data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading} = useGetSprintsQuery(boardInfo ? {urlParams: {
+		// get only the most recent sprint
+		perPage: 1,
+		includeTicketStats: true,
+        boardId: boardInfo.id,
+		filterInProgress: true,
+        recent: true,
     }} : skipToken)
     const [trigger, { data: sprintTicketData, isFetching: isSprintTicketFetching, isLoading: isSprintTicketLoading, isError: isSprintTicketError }] = useLazyGetSprintTicketsQuery()
 	const [triggerGetBoardTicketData, { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError }] = useLazyGetBoardTicketsQuery()
@@ -63,19 +71,32 @@ export const BoardBacklog = () => {
 	const backlogTickets = itemIds.filter((obj) => obj.type === "backlog")
 	const sprintTickets = itemIds.filter((obj) => obj.type === "sprint")
 
+	useEffect(() => {
+		// if we're coming from the past sprints page to create a sprint, pop up the create sprints modal
+		if (location.state?.createSprint === true){
+			dispatch(setModalType("SPRINT_FORM"))
+			dispatch(setModalProps({
+				boardId: boardInfo?.id ?? 0
+			}))
+			dispatch(toggleShowModal(true))
+		}
+	}, [location.state])
+
     useEffect(() => {
-        if (sprintData && !isSprintLoading && sprintData.data.length){
+        if (sprintData && !isSprintLoading && sprintData.data.length && boardInfo){
             // get the tickets for the most recent sprint
             trigger({sprintId: sprintData.data[0].id, urlParams: {page: 1, includeAssignees: true}})
-			triggerGetBoardTicketData({id: boardId, urlParams: {
+			triggerGetBoardTicketData({id: boardInfo.id, urlParams: {
 				page: 1,
+				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
+				"excludeCompleted": true,
 				"excludeSprintId": sprintData?.data?.[0]?.id,
 				"limit": true,
 			}})
         }
-    }, [sprintData, isSprintLoading])
+    }, [sprintData, isSprintLoading, boardInfo])
 
 	useEffect(() => {
         if (sprintData && !isSprintLoading && sprintData.data.length){
@@ -90,14 +111,18 @@ export const BoardBacklog = () => {
 	}, [sprintPreloadedValues, sprintPage])
 
 	useEffect(() => {
-		triggerGetBoardTicketData({id: boardId, urlParams: {
-			...backlogPreloadedValues,
-			page: backlogPage,
-			"includeAssignees": true, 
-			"includeRelationshipInfo": true, 
-			"excludeSprintId": sprintData?.data?.[0]?.id,
-			"limit": true,
-		}}, true)
+		if (boardInfo){
+			triggerGetBoardTicketData({id: boardInfo.id, urlParams: {
+				...backlogPreloadedValues,
+				page: backlogPage,
+				"includeTicketStats": true,
+				"includeAssignees": true, 
+				"includeRelationshipInfo": true, 
+				"excludeCompleted": true,
+				"excludeSprintId": sprintData?.data?.[0]?.id,
+				"limit": true,
+			}}, true)
+		}
 	}, [backlogPreloadedValues, backlogPage])
 	// in order for ease of use with the existing bulk edit toolbar, track a "combined" array of both 
 	// selected backlog and sprint tickets
@@ -194,17 +219,19 @@ export const BoardBacklog = () => {
 						setItemIds([...allSprintTickets, ...allBacklogTickets])
 					}} className = "button --secondary">Select All</button>
 					<button onClick={(e) => {
-						dispatch(setModalType("BULK_ACTIONS_MODAL"))
-						dispatch(setModalProps({
-							boardId: boardInfo?.id ?? 0,
-							initSelectedIds: itemIds,
-							// default to step 2 since we've selected ids to edit
-							initStep: 2
-						}))
-						dispatch(toggleShowModal(true))
+						if (boardInfo){
+							dispatch(setModalType("BULK_ACTIONS_MODAL"))
+							dispatch(setModalProps({
+								boardId: boardInfo.id,
+								initSelectedIds: itemIds,
+								// default to step 2 since we've selected ids to edit
+								initStep: 2
+							}))
+							dispatch(toggleShowModal(true))
+						}
 					}} className = "button">Edit Tickets</button>
 					{
-						backlogTickets.length ?
+						backlogTickets.length && sprintData ?
 						<LoadingButton isLoading={isUpdateTicketsLoading} text={`Move ${backlogTickets.length} ticket(s) to Sprint`} onClick={async (e) => {
 							await onUpdateSprintTickets()
 							// filter out the selected backlog tickets
@@ -236,7 +263,7 @@ export const BoardBacklog = () => {
 				</>
 			</BulkEditToolbar>
 			{
-				isSprintTicketLoading && isSprintLoading && !sprintTicketData && !sprintData ? (
+				!sprintTicketData && !sprintData && !boardInfo ? (
 					<LoadingSkeleton>
 						<RowPlaceholder/>
 					</LoadingSkeleton>
@@ -256,7 +283,7 @@ export const BoardBacklog = () => {
 			)
 			}
 			{
-				 isBoardTicketLoading && !boardTicketData ? (
+				 !boardTicketData && boardInfo ? (
 					<LoadingSkeleton>
 						<RowPlaceholder/>
 					</LoadingSkeleton>

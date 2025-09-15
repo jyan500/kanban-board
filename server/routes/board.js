@@ -210,7 +210,7 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const board = await db("boards").where("id", req.params.boardId).first()
-		const completedStatuses = await db("statuses").where("is_completed", true)
+		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
 		const completedStatusIds = completedStatuses.map((status) => status.id)	
 		let tickets = db("tickets_to_boards")
 		.join("tickets", "tickets.id", "=", "tickets_to_boards.ticket_id")
@@ -252,7 +252,7 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.endDate){
 				queryBuilder.whereRaw("DATE(tickets.due_date) <= ?", [req.query.endDate])
 			}	
-			// exclude any tickets that are attached to the sprints to tickets table using
+			// exclude any tickets that are attached to a specific sprint using
 			// a subquery
 			if (req.query.excludeSprintId){
 				queryBuilder.whereNotIn("tickets.id", db("tickets_to_sprints").where("tickets_to_sprints.sprint_id", req.query.excludeSprintId).select("tickets_to_sprints.ticket_id as id"))
@@ -274,13 +274,34 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 		// hack to keep the tickets paginate data format into {data, pagination},
 		// which finds the total amount of data and 
 		// loads all data into one page. Should prioritize using pagination when possible.
-		if (req.query.skipPaginate){
+		let ticketStats = {}
+		if (req.query.skipPaginate || req.query.includeTicketStats){
 			const ticketsForAmt = await tickets
 			const total = ticketsForAmt.length
-			tickets = await retryTransaction(tickets.paginate({ perPage: total, currentPage: 1, isLengthAware: true}))
+			if (req.query.includeTicketStats){
+				const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
+				const completedStatusIds = completedStatuses.map((status) => status.id)
+				const numCompletedTickets = ticketsForAmt.filter((ticket) => completedStatusIds.includes(ticket.statusId)).length
+				const numOpenTickets = ticketsForAmt.length - numCompletedTickets
+				ticketStats = {
+					numOpenTickets,
+					numCompletedTickets
+				}
+				tickets = await retryTransaction(tickets.paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true}));
+			}
+			else {
+				tickets = await retryTransaction(tickets.paginate({ perPage: total, currentPage: 1, isLengthAware: true}))
+			}
 		}
 		else {
 			tickets = await retryTransaction(tickets.paginate({ perPage: req.query.perPage ?? DEFAULT_PER_PAGE, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true}));
+		}
+
+		if (req.query.includeTicketStats){
+			tickets = {
+				...tickets,
+				additional: ticketStats
+			}
 		}
 
 		if (req.query.includeAssignees){
@@ -306,6 +327,7 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			)
 			}
 		}
+
 		if (req.query.includeRelationshipInfo){
 			const epicTicketRelationshipType = await db("ticket_relationship_types").where("name" , "Epic").first()
 			const epicTicketType = await db("ticket_types").where("name", "Epic").first()

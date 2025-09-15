@@ -17,13 +17,13 @@ interface Props {
     totalTickets: number
     tickets: Array<Ticket>
     onCheck: (id: number) => void
-    action: () => void
-    actionText: string
     itemIds: Array<number>
     pagination?: React.ReactNode
     title: React.ReactNode 
     isLoading?: boolean
     searchBar?: React.ReactNode
+    actionButtons?: React.ReactNode
+    createButton?: React.ReactNode
 }
 
 export type FormValues = {
@@ -32,8 +32,7 @@ export type FormValues = {
 }
 
 export const BulkEditTicketContainer = ({
-    action, 
-    actionText, 
+    actionButtons,
     itemIds, 
     onCheck, 
     title, 
@@ -41,14 +40,15 @@ export const BulkEditTicketContainer = ({
     tickets, 
     pagination,
     searchBar,
-    isLoading
+    isLoading,
+    createButton,
 }: Props) => {
     const [ showTickets, setShowTickets ] = useState(true)
 
     const dispatch = useAppDispatch()
     return (
-        <div className = "lg:tw-p-2 tw-p-0.5 tw-w-full lg:tw-w-[80%] tw-flex tw-flex-col tw-gap-y-2 tw-border tw-bg-gray-100">
-            <div className = "tw-w-full tw-flex tw-flex-row tw-justify-between">
+        <div className = "lg:tw-p-2 tw-p-0.5 tw-w-full lg:tw-w-[90%] tw-flex tw-flex-col tw-gap-y-2 tw-border tw-bg-gray-100">
+            <div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
                 <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
                     <IconButton onClick={() => setShowTickets(!showTickets)}>
                         {showTickets ? <IconArrowDown/> : <IconArrowRight/>}
@@ -56,11 +56,9 @@ export const BulkEditTicketContainer = ({
                     {title}
                     <span>({totalTickets} items)</span>
                     {isLoading ? <LoadingSpinner/>: null}
+                    <div></div>
                 </div>
-
-                <div className = "tw-flex tw-flex-row tw-gap-x-2">
-                    <Button onClick={(e) => action()}>{actionText}</Button>
-                </div>
+                {actionButtons}
             </div>
             {
                 searchBar ? searchBar : null
@@ -74,7 +72,7 @@ export const BulkEditTicketContainer = ({
                 showTickets ? 
                 <div className = {`${tickets.length ? "tw-border" : ""} tw-bg-white tw-flex tw-flex-col tw-gap-y-2`}>
                     {tickets.map((ticket) => 
-                        <div className = "tw-pl-4 tw-flex tw-flex-row tw-gap-x-2"> 
+                        <div key={`bulk-edit-ticket-${ticket.id}`} className = "tw-pl-4 tw-flex tw-flex-row tw-gap-x-2"> 
                             <input checked={itemIds.includes(ticket.id)} onChange={(e) => onCheck(ticket.id)} type = "checkbox"/>
                             <button className = "tw-w-full" onClick={(e) => {
                                 dispatch(toggleShowModal(true))
@@ -84,6 +82,9 @@ export const BulkEditTicketContainer = ({
                         </div>
                     )}
                 </div> : null
+            }
+            {
+                createButton ?? null
             }
         </div>
     )

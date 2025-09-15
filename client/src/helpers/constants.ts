@@ -95,6 +95,11 @@ export const GROUP_BY_OPTIONS = {
 	"PRIORITY": "Priority",
 }
 
+export const MOVE_OPEN_ITEM_OPTIONS = [
+    {value: "NEW SPRINT", label: "New Sprint"},
+    {value: "BACKLOG", label: "Backlog"},
+]
+
 export const SM_BREAKPOINT = 640
 export const MD_BREAKPOINT = 768
 export const LG_BREAKPOINT = 1024

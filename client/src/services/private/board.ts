@@ -95,7 +95,8 @@ export const boardApi = privateApi.injectEndpoints({
 				if (!arg.urlParams.sortByCreatedAt){
 					return {
 						data: response.data.sort((a,b) => a.name.localeCompare(b.name)),
-						pagination: response.pagination
+						pagination: response.pagination,
+						additional: response.additional
 					}
 				}
 				return response

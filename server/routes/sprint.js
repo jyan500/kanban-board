@@ -10,16 +10,20 @@ const {
 	validateSprintTicketDelete,
     validateSprintTicketGetById,
 	validateSprintTicketUpdate,
+	validateSprintComplete,
 }  = require("../validation/sprint")
 const { insertAndGetId } = require("../helpers/functions") 
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { searchTicketByAssignee } = require("../helpers/query-helpers")
+const { aggregateCompletedAndOpenSprintTickets } = require("../helpers/functions")
 const db = require("../db/db")
 
 router.get("/", validateSprintGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const { page } = req.query
+		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
+		const completedStatusIds = completedStatuses.map((status) => status.id)
 		const sprints = await db("sprints")
 		.modify((queryBuilder) => {
 			if (req.query.boardId){
@@ -27,6 +31,12 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 			}
 			if (req.query.recent){
 				queryBuilder.orderBy("created_at", "desc")
+			}
+			if (req.query.filterInProgress){
+				queryBuilder.where("is_completed", false)
+			}
+			if (req.query.searchBy === "name"){
+				queryBuilder.whereILike("name", `%${req.query.query}%`)
 			}
 		})
 		.select(
@@ -38,9 +48,31 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 			"sprints.end_date as endDate",
 			"sprints.is_completed as isCompleted",
 			"sprints.board_id as boardId",
-			"sprints.created_at as createdAt"
+			"sprints.created_at as createdAt",
+			"sprints.num_open_tickets as numOpenTickets",
+			"sprints.num_completed_tickets as numCompletedTickets"
 		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
-		res.json(sprints)
+		let data = sprints.data
+		if (req.query.includeTicketStats){
+			data = await Promise.all(sprints.data.map(async (sprint) => {
+				if (!sprint.isCompleted){
+					// show the updated ticket stats over the stats listed in the db record
+					const { numCompletedTickets, numOpenTickets } = await aggregateCompletedAndOpenSprintTickets(sprint.id, completedStatusIds)	
+					return {
+						...sprint,
+						numCompletedTickets: numCompletedTickets,
+						numOpenTickets: numOpenTickets,
+					}
+				}
+				return {
+					...sprint
+				}
+			}))
+		}
+		res.json({
+			data: data,
+			pagination: sprints.pagination
+		})
 	}
 	catch (err) {
 		console.error(`Error while getting sprints: ${err.message}`)
@@ -51,6 +83,8 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 router.get("/:sprintId", validateSprintGetById, handleValidationResult, async (req, res, next) => {
 	try {
 		const { sprintId } = req.params
+		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
+		const completedStatusIds = completedStatuses.map((status) => status.id)
 		const sprint = await db("sprints")
 		.where("sprints.id", sprintId)
 		.select(
@@ -62,10 +96,23 @@ router.get("/:sprintId", validateSprintGetById, handleValidationResult, async (r
 			"sprints.end_date as endDate",
 			"sprints.is_completed as isCompleted",
 			"sprints.board_id as boardId",
-			"sprints.created_at as createdAt"
+			"sprints.created_at as createdAt",
+			"sprints.num_open_tickets as numOpenTickets",
+			"sprints.num_completed_tickets as numCompletedTickets",
 		)
 		.first()
-		res.json(sprint)
+		let data = sprint
+		if (req.query.includeTicketStats){
+			if (!data.isCompleted){
+				const { numCompletedTickets, numOpenTickets } = await aggregateCompletedAndOpenSprintTickets(sprint.id, completedStatusIds)	
+				data = {
+					...data,
+					numCompletedTickets: numCompletedTickets,
+					numOpenTickets: numOpenTickets,
+				}
+			}
+		}
+		res.json(data)
 	}
 	catch (err) {
 		console.error(`Error while getting sprint: ${err.message}`)
@@ -79,8 +126,8 @@ router.post("/", validateSprintCreate, handleValidationResult, async (req, res, 
 		const id = await insertAndGetId("sprints", {
 			name,
 			goal,
-			start_date,
-			end_date,
+			start_date: new Date(start_date),
+			end_date: new Date(end_date),
 			user_id: req.user.id, 
 			organization_id: req.user.organization,
 			board_id,
@@ -97,11 +144,15 @@ router.put("/:sprintId", validateSprintUpdate, handleValidationResult, async (re
 	try {
 		const { sprintId } = req.params
 		const { name, goal, start_date, end_date, debrief, is_completed } = req.body
+		const existingSprint = await db("sprints").where("id", sprintId).first()
 		const updatedRows = await db("sprints").where({ id: sprintId }).update({
 			name,
 			goal,
-			start_date,
-			end_date,
+			// cannot update the start and end date if the sprint is already completed
+			...(!existingSprint?.is_completed ? {
+				start_date: new Date(start_date),
+				end_date: new Date(end_date),
+			} : {}),
 			debrief,
 			is_completed,
 		})
@@ -109,6 +160,63 @@ router.put("/:sprintId", validateSprintUpdate, handleValidationResult, async (re
 	}
 	catch (err) {
 		console.error(`Error while updating sprint: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/:sprintId/complete", validateSprintComplete, handleValidationResult, async (req, res, next) => {
+	try {
+		const { move_items_option, debrief, is_completed } = req.body
+		const { sprintId } = req.params
+		const existingSprint = await db("sprints").where("id", sprintId).first()
+		if (!existingSprint){
+			res.status(400).json({message: "Something has gone wrong!"})
+
+		}
+		// get the most updated current ticket statistics, which
+		// will be written into the db as a "final" statistic. So even if the statuses of the actual tickets that 
+		// were attached to the sprint are changed, the statistic remains
+		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
+		const completedStatusIds = completedStatuses.map((status) => status.id)
+		const { numCompletedTickets, numOpenTickets } = await aggregateCompletedAndOpenSprintTickets(sprintId, completedStatusIds)	
+		await db("sprints").where("id", sprintId).update({
+			debrief: debrief,
+			is_completed: is_completed,
+			num_completed_tickets: numCompletedTickets,
+			num_open_tickets: numOpenTickets,
+		})
+
+		if (move_items_option === "NEW SPRINT"){
+			const newSprintId = await insertAndGetId("sprints", {
+				name: "New Sprint",
+				start_date: null,
+				end_date: null,
+				board_id: existingSprint.board_id,
+				user_id: existingSprint.user_id,
+				organization_id: existingSprint.organization_id,
+				goal: existingSprint.goal,
+				debrief: "",
+				is_completed: false
+			})
+			// get all existing ticketids for this sprint
+			const existingTickets = await db("tickets_to_sprints").where("sprint_id", sprintId)
+			const toInsert = existingTickets.map((obj) => {
+				return {
+					ticket_id: obj.ticket_id,
+					sprint_id: newSprintId
+				}
+			})
+			// insert existing tickets into the new sprint
+			await db("tickets_to_sprints").insert(toInsert)
+		}
+		// if moving to the backlog (OR we're done inserting tickets into the new sprint),
+		// we actually don't do anything since we want to keep the tickets attached to the sprint to keep a record
+		// of which tickets were in there.
+
+		res.json({message: "Sprint completed successfully!"})
+	}	
+	catch (err){
+		console.error(`Error while completing sprint: ${err.message}`)
 		next(err)
 	}
 })
