@@ -85,12 +85,12 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
             <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)} className="tw-w-full tw-flex tw-flex-col tw-gap-y-2">
                     <div className = "tw-border tw-p-2">
-                        <p className = "tw-font-semibold tw-text-gray-500">
-                            This sprint contains <span className = "tw-font-bold tw-text-green-500">{sprintInfo?.numCompletedTickets}</span> completed work items and <span className="tw-font-bold">{sprintInfo?.numOpenTickets}</span> open work items. 
+                        <p className = "tw-font-semibold">
+                            This sprint contains <span className = "tw-font-bold tw-text-green-500">{sprintInfo?.numCompletedTickets}</span> completed work items and <span className="tw-font-bold tw-text-gray-800">{sprintInfo?.numOpenTickets}</span> open work items. 
                         </p>
                         <ul>
                             <li>
-                                Completed work items includes everything in the last column on the board, Done.
+                                Completed work items includes everything in the last column on the board (i.e Completed).
                             </li>
                             <li>
                                 Open work items includes everything from any other column on the board. Move these to a new sprint or the backlog.

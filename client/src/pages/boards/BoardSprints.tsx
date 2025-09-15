@@ -82,6 +82,17 @@ export const BoardSprints = () => {
 							data={data.data}
 							config={config}
 						/>
+						<div className = "tw-w-fit tw-p-4 tw-border tw-border-gray-300">
+							<PaginationRow
+								showNumResults={true}
+								showPageNums={true}
+								setPage={setPage}	
+								paginationData={data?.pagination}
+								currentPage={page}
+								urlParams={defaultForm}
+								url={BOARDS}	
+							/>
+						</div>
 					</div>
 				)
 			}
