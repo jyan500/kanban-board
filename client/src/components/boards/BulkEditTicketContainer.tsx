@@ -23,6 +23,7 @@ interface Props {
     isLoading?: boolean
     searchBar?: React.ReactNode
     actionButtons?: React.ReactNode
+    createButton?: React.ReactNode
 }
 
 export type FormValues = {
@@ -39,7 +40,8 @@ export const BulkEditTicketContainer = ({
     tickets, 
     pagination,
     searchBar,
-    isLoading
+    isLoading,
+    createButton,
 }: Props) => {
     const [ showTickets, setShowTickets ] = useState(true)
 
@@ -80,6 +82,9 @@ export const BulkEditTicketContainer = ({
                         </div>
                     )}
                 </div> : null
+            }
+            {
+                createButton ?? null
             }
         </div>
     )

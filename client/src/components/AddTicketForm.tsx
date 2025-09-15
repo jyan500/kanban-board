@@ -12,6 +12,7 @@ import {
 	useBulkEditTicketsMutation,
 } 
 from "../services/private/ticket"
+import { useUpdateSprintTicketsMutation } from "../services/private/sprint"
 import { TICKETS } from "../helpers/routes" 
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
@@ -45,6 +46,7 @@ type Props = {
 	boardId?: number | null | undefined
 	ticket?: Ticket | null | undefined
 	statusId?: number | null | undefined
+	sprintId?: number | null | undefined
 	statusesToDisplay?: Array<Status>
 	isBulkAction?: boolean
 	title?: string
@@ -54,7 +56,7 @@ type Props = {
 	step?: number
 }
 
-export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isBulkAction, title, buttonBar, step, formValues, onSubmit: propsOnSubmit}: Props) => {
+export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, sprintId, isBulkAction, title, buttonBar, step, formValues, onSubmit: propsOnSubmit}: Props) => {
 	const dispatch = useAppDispatch()
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
@@ -68,6 +70,7 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 	const [ addTicket, {isLoading: isAddTicketLoading, error: isAddTicketError} ] = useAddTicketMutation() 
 	const [ addBoardTickets, {isLoading: isAddBoardTicketsLoading, error: isAddBoardTicketsError} ] = useAddBoardTicketsMutation() 
 	const [ bulkCreateNotifications, {isLoading: isBulkCreateNotificationLoading}] = useBulkCreateNotificationsMutation()
+	const [ updateSprintTickets, { isLoading: isUpdateSprintTicketsLoading }] = useUpdateSprintTicketsMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
 	const [ submitLoading, setSubmitLoading ] = useState(false) 
 	const defaultForm: AddTicketFormValues = {
@@ -146,7 +149,6 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 	    	if (boardId){
 		    	await addBoardTickets({boardId: boardId, ticketIds: [insertedTicketId]}).unwrap()
 	    	}
-	    	
 	    	// update ticket assignees
 	    	if (assigneeId){
 	    		await bulkEditTicketAssignees({ticketId: insertedTicketId, isWatcher: false, userIds: [assigneeId]}).unwrap()
@@ -162,6 +164,11 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, isB
 					notificationTypeId: assigneeNotificationType.id,
 				}).unwrap()	
 			}
+
+			if (sprintId){
+				await updateSprintTickets({sprintId: sprintId, ticketIds: [insertedTicketId]}).unwrap()
+			}
+
 			dispatch(toggleShowModal(false))
 			dispatch(setModalType(undefined))
 			dispatch(setModalProps({}))

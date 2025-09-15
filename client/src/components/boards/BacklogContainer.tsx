@@ -16,6 +16,7 @@ import { Button } from "../page-elements/Button"
 import { Badge } from "../page-elements/Badge"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
 import { BOARDS, SPRINTS } from "../../helpers/routes"
+import { IconPlus } from "../icons/IconPlus"
 
 interface Props {
     itemIds: Array<number>
@@ -40,6 +41,7 @@ export const BacklogContainer = ({
 }: Props) => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+	const { statuses } = useAppSelector((state) => state.status)
 
 	const methods = useFormContext<FormValues>()
     const { handleSubmit } = methods
@@ -91,6 +93,20 @@ export const BacklogContainer = ({
                 isLoading={isLoading}
                 itemIds={itemIds}
                 tickets={boardTicketData?.data ?? []}
+                createButton={
+                    <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                        <Button onClick={(e) => {
+                            dispatch(setModalType("ADD_TICKET_FORM"))
+                            dispatch(setModalProps({
+                                boardId: boardId,
+                                statusesToDisplay: statuses,
+                            }))
+                            dispatch(toggleShowModal(true))
+                        }}>
+                            Add Ticket
+                        </Button>
+                    </div>
+                }
                 searchBar={
                     <div className = "tw-flex tw-flex-row tw-justify-between">
                         <FormProvider {...methods}>
