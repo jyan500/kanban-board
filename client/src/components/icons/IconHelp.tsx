@@ -1,4 +1,4 @@
-import { LuListFilter } from "react-icons/lu";
+import { IoIosHelpCircleOutline } from "react-icons/io";
 import { BaseIcon } from "./BaseIcon"
 
 interface Props {
@@ -6,10 +6,10 @@ interface Props {
 	className?: string
 }
 
-export const IconFilter = ({color, className}: Props) => {
+export const IconHelp = ({color, className}: Props) => {
 	return (
 		<BaseIcon color={color} className={className}>
-			<LuListFilter/>
+			<IoIosHelpCircleOutline/>
 		</BaseIcon>
 	)
 }
