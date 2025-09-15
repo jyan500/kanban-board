@@ -126,8 +126,8 @@ router.post("/", validateSprintCreate, handleValidationResult, async (req, res, 
 		const id = await insertAndGetId("sprints", {
 			name,
 			goal,
-			start_date,
-			end_date,
+			start_date: new Date(start_date),
+			end_date: new Date(end_date),
 			user_id: req.user.id, 
 			organization_id: req.user.organization,
 			board_id,
@@ -149,9 +149,9 @@ router.put("/:sprintId", validateSprintUpdate, handleValidationResult, async (re
 			name,
 			goal,
 			// cannot update the start and end date if the sprint is already completed
-			...(existingSprint?.is_completed ? {
-				start_date,
-				end_date,
+			...(!existingSprint?.is_completed ? {
+				start_date: new Date(start_date),
+				end_date: new Date(end_date),
 			} : {}),
 			debrief,
 			is_completed,
