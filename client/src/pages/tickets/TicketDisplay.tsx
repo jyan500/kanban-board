@@ -118,7 +118,7 @@ export const TicketDisplay = () => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
-			<h1>Backlog</h1>
+			<h1>Tickets</h1>
 			<FormProvider {...methods}>
 				<SearchToolBar 
 					paginationData={data?.pagination} 

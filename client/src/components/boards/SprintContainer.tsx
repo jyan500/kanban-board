@@ -132,7 +132,7 @@ export const SprintContainer = ({
                     </div>
                 }
                 searchBar={
-                    <div className = "tw-flex tw-flex-row tw-justify-between">
+                    <div className = "tw-flex tw-flex-row tw-justify-between tw-items-center">
                         <FormProvider {...methods}>
                             <SearchToolBar 
                                 paginationData={sprintTicketData?.pagination} 
