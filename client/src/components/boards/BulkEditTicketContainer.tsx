@@ -60,7 +60,7 @@ export const BulkEditTicketContainer = ({
                     {title}
                     <span>({totalTickets} items)</span>
                     <div className = "tw-group tw-relative">
-                        <IconHelp className = "tw-w-4 tw-h-4"/>
+                        <IconHelp className = "tw-w-5 tw-h-5"/>
                         <HoverTooltip width={"tw-w-64 lg:tw-w-96"} text={helpText}/>
                     </div>
                     {isLoading ? <LoadingSpinner/>: null}
