@@ -14,6 +14,7 @@ import { Badge } from "../page-elements/Badge"
 import { Button } from "../page-elements/Button"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
 import { IconPlus } from "../icons/IconPlus"
+import { IconHelp } from "../icons/IconHelp"
 
 interface Props {
     itemIds: Array<number>
@@ -114,6 +115,8 @@ export const SprintContainer = ({
                         </span>
                     </div>
                 } 
+                helpText={`This is your current sprint. To add tickets, click on the "Add Ticket" button below, or check off a ticket under the "Backlog" section to
+                    add it to the current sprint.`}
                 totalTickets={sprintTicketData?.pagination?.total ?? 0} 
                 tickets={sprintTicketData?.data ?? []}
                 createButton={
@@ -132,7 +135,7 @@ export const SprintContainer = ({
                     </div>
                 }
                 searchBar={
-                    <div className = "tw-flex tw-flex-row tw-justify-between tw-items-center">
+                    <div className = "tw-flex tw-flex-col sm:tw-w-full lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
                         <FormProvider {...methods}>
                             <SearchToolBar 
                                 paginationData={sprintTicketData?.pagination} 
