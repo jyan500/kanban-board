@@ -88,6 +88,8 @@ export const BacklogContainer = ({
                 title={
                     <span className = "tw-font-medium">Backlog</span>
                 } 
+                helpText={`This backlog contains all open tickets. Click on the "Add Ticket" button below to add a ticket, or check off a ticket under the "Backlog" section to
+                    add it to the current sprint.`}
                 totalTickets={boardTicketData?.pagination.total ?? 0} 
                 onCheck={onCheck}
                 isLoading={isLoading}
@@ -108,7 +110,7 @@ export const BacklogContainer = ({
                     </div>
                 }
                 searchBar={
-                    <div className = "tw-flex tw-flex-row tw-justify-between tw-items-center">
+                    <div className = "tw-flex tw-flex-col tw-gap-y-2 sm:tw-w-full lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
                         <FormProvider {...methods}>
                             <SearchToolBar 
                                 paginationData={boardTicketData?.pagination} 
