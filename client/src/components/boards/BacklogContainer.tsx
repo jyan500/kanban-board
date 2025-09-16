@@ -110,7 +110,7 @@ export const BacklogContainer = ({
                     </div>
                 }
                 searchBar={
-                    <div className = "tw-flex tw-flex-col sm:tw-w-full lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
+                    <div className = "tw-flex tw-flex-col tw-gap-y-2 sm:tw-w-full lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
                         <FormProvider {...methods}>
                             <SearchToolBar 
                                 paginationData={boardTicketData?.pagination} 
