@@ -4,16 +4,14 @@ import { IconArrowDown } from "../icons/IconArrowDown"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { IconArrowRight } from "../icons/IconArrowRight"
 import { Ticket } from "../../types/common"
-import { Badge } from "../page-elements/Badge"
-import { Button } from "../page-elements/Button"
 import { IconButton } from "../page-elements/IconButton"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { toggleShowModal, setModalType } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
-import { useForm, FormProvider } from "react-hook-form"
-import { SearchToolBar } from "../tickets/SearchToolBar"
 import { IconHelp } from "../icons/IconHelp"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
+import { useScreenSize } from "../../hooks/useScreenSize"
+import { LG_BREAKPOINT } from "../../helpers/constants"
 
 interface Props {
     totalTickets: number
@@ -48,25 +46,49 @@ export const BulkEditTicketContainer = ({
     createButton,
 }: Props) => {
     const [ showTickets, setShowTickets ] = useState(true)
-
     const dispatch = useAppDispatch()
+    const { width, height } = useScreenSize()
     return (
         <div className = "tw-p-2 tw-w-full lg:tw-w-[90%] tw-flex tw-flex-col tw-gap-y-2 tw-border tw-bg-gray-100">
             <div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
-                <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
-                    <IconButton onClick={() => setShowTickets(!showTickets)}>
-                        {showTickets ? <IconArrowDown/> : <IconArrowRight/>}
-                    </IconButton>
-                    {title}
-                    <span>({totalTickets} items)</span>
-                    <div className = "tw-group tw-relative">
-                        <IconHelp className = "tw-w-5 tw-h-5"/>
-                        <HoverTooltip width={"tw-w-64 lg:tw-w-96"} text={helpText}/>
-                    </div>
-                    {isLoading ? <LoadingSpinner/>: null}
-                    <div></div>
-                </div>
-                {actionButtons}
+                {
+                    width >= LG_BREAKPOINT ? (
+                        <>
+                            <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
+                                <IconButton onClick={() => setShowTickets(!showTickets)}>
+                                    {showTickets ? <IconArrowDown/> : <IconArrowRight/>}
+                                </IconButton>
+                                {title}
+                                <span>({totalTickets} items)</span>
+                                <div className = "tw-group tw-relative">
+                                    <IconHelp className = "tw-w-5 tw-h-5"/>
+                                    <HoverTooltip direction={"top"} width={"tw-w-64 lg:tw-w-96"} text={helpText}/>
+                                </div>
+                                {isLoading ? <LoadingSpinner/>: null}
+                            </div>
+                            {actionButtons}
+                        </>
+                    ) : (
+                        <>
+                            <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
+                                <IconButton onClick={() => setShowTickets(!showTickets)}>
+                                    {showTickets ? <IconArrowDown/> : <IconArrowRight/>}
+                                </IconButton>
+                                {title}
+                            </div>
+                            <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
+                                <span>({totalTickets} items)</span>
+                                <div className = "tw-group tw-relative">
+                                    <IconHelp className = "tw-w-5 tw-h-5"/>
+                                    <HoverTooltip direction={"right"} width={"tw-w-64 lg:tw-w-96"} text={helpText}/>
+                                </div>
+                                {isLoading ? <LoadingSpinner/>: null}
+                            </div>
+                            {actionButtons}
+                        </>
+                    )
+                }
+
             </div>
             {
                 searchBar ? searchBar : null

@@ -47,8 +47,8 @@ export const modalClassNames = {
 	"PROJECT_FORM": avoidAsyncSelectMenuOverflow,
 	"BULK_ACTIONS_MODAL": defaultConfig,
 	"BOARD_SCHEDULE_FILTER_MODAL": avoidAsyncSelectMenuOverflow,
-	"SPRINT_FORM": defaultConfig,
-	"COMPLETE_SPRINT_FORM": defaultConfig
+	"SPRINT_FORM": avoidAsyncSelectMenuOverflow,
+	"COMPLETE_SPRINT_FORM": avoidAsyncSelectMenuOverflow,
 }
 
 // type for partial subset of keys

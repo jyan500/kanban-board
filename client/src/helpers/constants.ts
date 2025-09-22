@@ -36,6 +36,8 @@ export const SECONDARY_MODAL_Z_INDEX = "tw-z-40"
 
 export const TOOLBAR_Z_INDEX = "tw-z-50"
 
+export const HOVER_Z_INDEX = "tw-z-[999]"
+
 export const TAG_TYPES = [
 	"Organizations",
 	"Tickets",

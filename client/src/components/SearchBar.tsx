@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import { FaSearch } from "react-icons/fa";
 import { IconContext } from "react-icons"
 import { useFormContext } from "react-hook-form" 
+import { SELECT_Z_INDEX } from "../helpers/constants";
 
 interface Props {
 	placeholder: string
@@ -16,7 +17,7 @@ export const SearchBar = ({placeholder, registerField, registerOptions}: Props) 
 			<IconContext.Provider value={{ className: "icon tw-absolute tw-top-3 tw-left-3"}}>
 				<FaSearch/>
 			</IconContext.Provider>
-			<input {...register(registerField, registerOptions)} placeholder = {placeholder} className = "tw-w-full lg:tw-w-[32rem] !tw-pl-10" type = "text"/>
+			<input {...register(registerField, registerOptions)} placeholder = {placeholder} className = {`${SELECT_Z_INDEX} tw-w-full lg:tw-w-[32rem] !tw-pl-10`} type = "text"/>
 		</div>
 	)	
 }
