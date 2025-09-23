@@ -1,7 +1,6 @@
 import { createSlice, current } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 import type { OptionType } from "../types/common" 
-import { SchedulerData, SchedulerProjectData } from "@bitnoi.se/react-scheduler";
 import { modalTypes } from "../components/Modal"
 import { logout } from "./authSlice"
 

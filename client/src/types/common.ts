@@ -153,6 +153,14 @@ export interface TicketActivity {
 	user?: Omit<UserProfile, "organizationId" | "userRoleId">
 }
 
+export interface ScheduleTask {
+    id: string
+    name: string
+    startDate: Date
+    endDate: Date
+    color?: string
+}
+
 export type ProfileActivity = Pick<TicketComment, "id" | "user" | "createdAt" >
 
 export interface Cell {
