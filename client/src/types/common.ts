@@ -263,3 +263,5 @@ export type GroupByElement = {
 	[property: string]: any
 }
 
+export type ViewMode = 'week' | 'month'
+

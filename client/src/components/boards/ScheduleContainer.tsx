@@ -1,145 +1,52 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { ScheduleTask } from "../../types/common"
-import { IoChevronBack, IoChevronForward, IoCalendar, IoTime } from 'react-icons/io5'
+import { IconArrowRight } from "../../components/icons/IconArrowRight"
+import { IconArrowLeft } from "../../components/icons/IconArrowLeft"
+import { IconCalendar } from "../../components/icons/IconCalendar"
+import { IconClock } from "../../components/icons/IconClock"
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { 
     startOfWeek, 
     endOfWeek, 
     startOfMonth, 
     endOfMonth, 
     areIntervalsOverlapping, 
-    max,
-    min,
     differenceInMilliseconds,
     isBefore, 
     isAfter, 
-    isEqual ,
     eachDayOfInterval, 
     format,
-    eachHourOfInterval, 
     subWeeks, 
     addWeeks, 
     subMonths, 
     addMonths
 } from "date-fns"
+import { setFilters } from '../../slices/boardFilterSlice'
 
 // Types
 type ViewMode = 'week' | 'month'
 
 interface Props {
+    currentDate: Date
+    periodStart: Date
+    periodEnd: Date
+    viewMode: ViewMode
+    setCurrentDate: (date: Date) => void
+    setViewMode: (mode: ViewMode) => void
     tasks?: Array<ScheduleTask>
 }
 
-// Sample tasks data
-const sampleTasks: ScheduleTask[] = [
-    {
-        id: '1',
-        name: 'Project Planning',
-        startDate: new Date('2025-09-20'),
-        endDate: new Date('2025-09-27'),
-        color: '#3B82F6'
-    },
-    {
-        id: '2',
-        name: 'Design Phase',
-        startDate: new Date('2025-09-25'),
-        endDate: new Date('2025-10-10'),
-        color: '#10B981'
-    },
-    {
-        id: '3',
-        name: 'Development',
-        startDate: new Date('2025-10-01'),
-        endDate: new Date('2025-10-25'),
-        color: '#F59E0B'
-    },
-    {
-        id: '4',
-        name: 'Testing',
-        startDate: new Date('2025-10-20'),
-        endDate: new Date('2025-11-05'),
-        color: '#EF4444'
-    },
-    {
-        id: '5',
-        name: 'Deployment',
-        startDate: new Date('2025-11-01'),
-        endDate: new Date('2025-11-08'),
-        color: '#8B5CF6'
-    }
-]
-
-export const GanttChart = ({ tasks = sampleTasks }: Props) => {
-    const [viewMode, setViewMode] = useState<ViewMode>('week')
-    const [currentDate, setCurrentDate] = useState(new Date())
-
-
-    // Get current view period
-    const getCurrentPeriod = useMemo(() => {
-        switch (viewMode) {
-            case 'week':
-                return {
-                    start: startOfWeek(currentDate),
-                    end: endOfWeek(currentDate)
-                }
-            case 'month':
-                return {
-                    start: startOfMonth(currentDate),
-                    end: endOfMonth(currentDate)
-                }
-            default:
-                return {
-                    start: startOfWeek(currentDate),
-                    end: endOfWeek(currentDate)
-                }
-        }
-    }, [viewMode, currentDate])
-
-    // Filter tasks based on current view period
-    const visibleTasks = useMemo(() => {
-        return tasks.filter(task => {
-            const taskStart = new Date(task.startDate)
-            const taskEnd = new Date(task.endDate)
-            const { start: periodStart, end: periodEnd } = getCurrentPeriod
-            
-            return areIntervalsOverlapping(
-                { start: taskStart, end: taskEnd },
-                { start: periodStart, end: periodEnd },
-                { inclusive: true }
-            )
-        })
-    }, [tasks, getCurrentPeriod])
-
-    // Generate time columns based on view mode
-    const timeColumns = useMemo(() => {
-        const { start, end } = getCurrentPeriod
-        if (viewMode === 'week') {
-            // Generate daily columns for week view
-            return eachDayOfInterval({ start, end })
-        } 
-        // Generate daily columns for month view
-        return eachDayOfInterval({ start, end })
-    }, [viewMode, getCurrentPeriod])
-
-    // Navigation functions
-    const navigatePrevious = () => {
-        const actions = {
-            week: () => subWeeks(currentDate, 1),
-            month: () => subMonths(currentDate, 1)
-        }
-        setCurrentDate(actions[viewMode]())
-    }
-    
-    const navigateNext = () => {
-        const actions = {
-            week: () => addWeeks(currentDate, 1),
-            month: () => addMonths(currentDate, 1)
-        }
-        setCurrentDate(actions[viewMode]())
-    }
-
+export const GanttChart = ({ 
+    tasks = [], 
+    currentDate,
+    setCurrentDate,
+    periodStart, 
+    periodEnd, 
+    setViewMode, 
+    viewMode, 
+}: Props) => {
     // Calculate task bar position and width
     const calculateTaskPosition = (task: ScheduleTask) => {
-        const { start: periodStart, end: periodEnd } = getCurrentPeriod
         const taskStart = new Date(task.startDate)
         const taskEnd = new Date(task.endDate)
         
@@ -181,18 +88,44 @@ export const GanttChart = ({ tasks = sampleTasks }: Props) => {
         }
     }
 
+    const timeColumns = useMemo(() => {
+        if (viewMode === 'week') {
+            // Generate daily columns for week view
+            return eachDayOfInterval({ start: periodStart, end: periodEnd })
+        }
+        // Generate daily columns for month view
+        return eachDayOfInterval({ start: periodStart, end: periodEnd })
+    }, [viewMode, periodStart, periodEnd])
+
+    const navigatePrev = () => {
+        const actions = {
+            week: () => subWeeks(currentDate, 1),
+            month: () => subMonths(currentDate, 1)
+        }
+        setCurrentDate(actions[viewMode]())
+    }
+
+    const navigateNext = () => {
+        const actions = {
+            week: () => addWeeks(currentDate, 1),
+            month: () => addMonths(currentDate, 1)
+        }
+        setCurrentDate(actions[viewMode]())
+    }
+
+
     return (
         <div className="tw-w-full tw-bg-white tw-rounded-lg tw-shadow-lg">
             {/* Header */}
             <div className="tw-p-4 tw-border-b tw-border-gray-200">
                 <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
                     <h2 className="tw-text-2xl tw-font-bold tw-text-gray-800 tw-flex tw-items-center">
-                        <IoCalendar className="tw-mr-2" size={24} />
+                        <IconCalendar className="tw-w-6 tw-h-6 tw-mr-2" />
                         Gantt Chart
                     </h2>
                     <div className="tw-text-sm tw-text-gray-600 tw-flex tw-items-center">
-                        <IoTime className="tw-mr-1" size={16} />
-                        {visibleTasks.length} tasks visible
+                        <IconClock className="tw-w-6 tw-h-6 tw-mr-1"/>
+                        {tasks.length} tasks visible
                     </div>
                 </div>
                 
@@ -216,10 +149,10 @@ export const GanttChart = ({ tasks = sampleTasks }: Props) => {
 
                     <div className="tw-flex tw-items-center tw-space-x-2">
                         <button
-                            onClick={navigatePrevious}
+                            onClick={navigatePrev}
                             className="tw-p-1 tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors"
                         >
-                            <IoChevronBack size={20} />
+                            <IconArrowLeft className = "tw-w-6 tw-h-6"/>
                         </button>
                         <span className="tw-text-lg tw-font-medium tw-min-w-[200px] tw-text-center">
                             {getCurrentPeriodLabel()}
@@ -228,7 +161,7 @@ export const GanttChart = ({ tasks = sampleTasks }: Props) => {
                             onClick={navigateNext}
                             className="tw-p-1 tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors"
                         >
-                            <IoChevronForward size={20} />
+                            <IconArrowRight className = "tw-w-6 tw-h-6"/>
                         </button>
                     </div>
 
@@ -263,12 +196,12 @@ export const GanttChart = ({ tasks = sampleTasks }: Props) => {
 
                     {/* Task rows */}
                     <div className="tw-divide-y tw-divide-gray-100">
-                        {visibleTasks.length === 0 ? (
+                        {tasks.length === 0 ? (
                             <div className="tw-p-8 tw-text-center tw-text-gray-500">
                                 No tasks found for the current {viewMode} period
                             </div>
                         ) : (
-                            visibleTasks.map(task => {
+                            tasks.map(task => {
                                 const position = calculateTaskPosition(task)
                                 return (
                                     <div key={task.id} className="tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">

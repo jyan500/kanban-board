@@ -1,56 +1,94 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useState, useEffect, useMemo, useCallback } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
-// import { Scheduler, SchedulerData, SchedulerProjectData } from "@bitnoi.se/react-scheduler";
 import { useGetUserProfilesQuery, useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
 import { boardApi, useGetBoardTicketsQuery } from "../../services/private/board"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { Ticket, UserProfile } from "../../types/common"
-import { format, toDate, isWithinInterval, isBefore, isAfter } from "date-fns"
+import { ScheduleTask, Ticket, UserProfile, ViewMode } from "../../types/common"
+import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns"
 import { colorMap } from "../../components/Ticket"
-import { BoardScheduleFilters, setFilterButtonState, setFilters } from "../../slices/boardScheduleSlice"
-// import "@bitnoi.se/react-scheduler/dist/style.css";
+import { BoardFilters, setFilterButtonState, setFilters } from "../../slices/boardFilterSlice"
 import { GanttChart } from "../../components/boards/ScheduleContainer"
-
-// type SchedulerRow = {
-// 	id: string
-// 	label: {
-// 		icon: string;
-// 		title: string;
-// 		subtitle: string;
-// 	}
-// 	data: SchedulerProjectData[]
-// };
 
 export const BoardSchedule = () => {
 	const dispatch = useAppDispatch()
-	// const { filters, filterButtonState } = useAppSelector((state) => state.boardSchedule)
-	// const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
-	// const { ticketTypes } = useAppSelector((state) => state.ticketType)
-	// const [ ticketsGroupedByAssignee, setTicketsGroupedByAssignee ] = useState<Record<string, any>>({})
-	// const { statuses } = useAppSelector((state) => state.status)
-	// const { priorities } = useAppSelector((state) => state.priority)
-	// const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
-	// const { data: boardTicketData, isFetching: isBoardTicketFetching, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo ? {id: boardInfo.id, urlParams: {
-	// 	// only include the filters that aren't null
-	// 	...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
-	// 		const typedKey = key as keyof BoardScheduleFilters
-	// 		if (filters[typedKey] == null){
-	// 			acc[typedKey] = "" 
-	// 		}
-	// 		else {
-	// 			acc[typedKey] = filters[typedKey]
-	// 		}
-	// 		return acc	
-	// 	}, {} as Record<string, any>)),
-	// 	...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeCompleted": true} : {}),
-	// 	"skipPaginate": true, 
-	// 	"includeAssignees": true, 
-	// 	"requireDueDate": true,
-	// 	"includeRelationshipInfo": true, 
-	// 	"limit": true,
-	// }} : skipToken)
+	const { filters } = useAppSelector((state) => state.boardFilter)
+	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
+    const [currentDate, setCurrentDate] = useState(new Date())
+    const [viewMode, setViewMode] = useState<ViewMode>('week')
+	const { ticketTypes } = useAppSelector((state) => state.ticketType)
+	const [ ticketsGroupedByAssignee, setTicketsGroupedByAssignee ] = useState<Record<string, any>>({})
+	const { statuses } = useAppSelector((state) => state.status)
+	const { priorities } = useAppSelector((state) => state.priority)
+	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
+	const { data: boardTicketData, isFetching: isBoardTicketFetching, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo && filters.startDate != null && filters.endDate != null ? {id: boardInfo.id, urlParams: {
+		// only include the filters that aren't null
+		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
+			const typedKey = key as keyof BoardFilters
+			if (filters[typedKey] == null){
+				acc[typedKey] = "" 
+			}
+			else {
+				acc[typedKey] = filters[typedKey]
+			}
+			return acc	
+		}, {} as Record<string, any>)),
+		...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeCompleted": true} : {}),
+		"skipPaginate": true, 
+		"includeAssignees": true, 
+		"requireDueDate": true,
+		"checkOverlapping": true,
+		"includeRelationshipInfo": true, 
+		"limit": true,
+	}} : skipToken)
+
+	// Get current view period
+	const getCurrentPeriod = useMemo(() => {
+		switch (viewMode) {
+			case 'week':
+				return {
+					start: startOfWeek(currentDate),
+					end: endOfWeek(currentDate)
+				}
+			case 'month':
+				return {
+					start: startOfMonth(currentDate),
+					end: endOfMonth(currentDate)
+				}
+			default:
+				return {
+					start: startOfWeek(currentDate),
+					end: endOfWeek(currentDate)
+				}
+		}
+	}, [viewMode, currentDate])
+
+	useEffect(() => {
+		dispatch(setFilters({
+			...filters,
+			startDate: format(getCurrentPeriod.start, "yyyy-MM-dd"),
+			endDate: format(getCurrentPeriod.end, "yyyy-MM-dd"),
+		}))
+	}, [getCurrentPeriod])
+
+	const parseTicketsToTasks = () => {
+		if (boardTicketData){
+			return boardTicketData.data.map((ticket) => {
+				const priority = priorities.find((priority) => priority.id === ticket.priorityId)?.name ?? ""
+				const { id, name } = ticket
+				return {
+					id: id.toString(),
+					name,
+					startDate: new Date(ticket.createdAt),
+					endDate: new Date(ticket.dueDate),
+					color: priority !== "" ? colorMap[priority] : ""
+				}
+			})
+		}
+		return []
+	}
+
 	// const [ scheduleData, setScheduleData ] = useState<SchedulerData>([])
 	// const [ filteredScheduleData, setFilteredScheduleData ] = useState<SchedulerData>([])
 	// const [ filterUser, setFilterUser ] = useState<string>("")
@@ -179,7 +217,15 @@ export const BoardSchedule = () => {
 					filterButtonState,
 				}}
 			/> */}
-			<GanttChart/>
+			<GanttChart 
+				currentDate={currentDate}
+				setCurrentDate={setCurrentDate}
+				viewMode={viewMode} 
+				periodStart={getCurrentPeriod.start}
+				periodEnd={getCurrentPeriod.end}
+				setViewMode={setViewMode} 
+				tasks={parseTicketsToTasks()}
+			/>
 		</div>
 	)
 }
