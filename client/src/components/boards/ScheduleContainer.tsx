@@ -22,6 +22,7 @@ import {
 } from "date-fns"
 import { setGroupBy } from "../../slices/boardSlice" 
 import { ScheduleContainerRows } from "./ScheduleContainerRows"
+import { Button } from "../../components/page-elements/Button"
 import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { setFilters } from '../../slices/boardFilterSlice'
 
@@ -115,17 +116,13 @@ export const GanttChart = ({
                 <div className="tw-flex tw-items-center tw-justify-between">
                     <div className="tw-flex tw-items-center tw-space-x-2">
                         {(['week', 'month'] as ViewMode[]).map(mode => (
-                            <button
+                            <Button
                                 key={mode}
                                 onClick={() => setViewMode(mode)}
-                                className={`tw-px-3 tw-py-1 tw-rounded-md tw-text-sm tw-font-medium tw-transition-colors ${
-                                    viewMode === mode
-                                        ? 'tw-bg-blue-100 tw-text-blue-700'
-                                        : 'tw-bg-gray-100 tw-text-gray-600 hover:tw-bg-gray-200'
-                                }`}
+                                theme={viewMode === mode ? "active" : "secondary"}
                             >
                                 {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                            </button>
+                            </Button>
                         ))}
                     </div>
 
@@ -147,12 +144,12 @@ export const GanttChart = ({
                         </button>
                     </div>
                     <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
-                        <button
+                        <Button
                             onClick={() => setCurrentDate(new Date())}
-                            className="tw-px-3 tw-py-1 tw-bg-blue-500 tw-text-white tw-rounded-md hover:tw-bg-blue-600 tw-transition-colors tw-text-sm"
+                            theme={"primary"}
                         >
                             Today
-                        </button>
+                        </Button>
                         <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
                             <label className = "label" htmlFor="board-group-by">Group By</label>
                             <select 
