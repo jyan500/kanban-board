@@ -38,7 +38,7 @@ export const ScheduleContainerGroupedRows = ({tickets = [], calculateTaskPositio
                                                 setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})
                                             }}>
                                                 <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-                                                    {groupByElement?.name}
+                                                    <span className = "tw-w-32 tw-truncate">{groupByElement?.name}</span>
                                                     {collapseArrows[groupById] ? <IconArrowUp /> : <IconArrowDown />}
                                                 </div>
                                             </button>
@@ -55,7 +55,7 @@ export const ScheduleContainerGroupedRows = ({tickets = [], calculateTaskPositio
                                     }
                                     return (
                                         <div key={ticket.id} className="tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
-                                            <div className = "tw-w-48 tw-p-3 tw-border-r">
+                                            <div className = "tw-w-48 tw-p-3 tw-border-r tw-h-12">
                                             </div>
                                             <div className="tw-flex-1 tw-relative tw-h-12 tw-flex tw-items-center">
                                                 <div
