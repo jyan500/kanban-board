@@ -97,6 +97,13 @@ export const GROUP_BY_OPTIONS = {
 	"PRIORITY": "Priority",
 }
 
+export const TICKET_TYPE_COLOR_MAP = {
+    "Modification": "var(--bs-primary)",
+    "Bug": "var(--bs-danger)",
+    "Epic": "var(--bs-light-purple)",
+    "Feature": "var(--bs-success)",
+}
+
 export const MOVE_OPEN_ITEM_OPTIONS = [
     {value: "NEW SPRINT", label: "New Sprint"},
     {value: "BACKLOG", label: "Backlog"},

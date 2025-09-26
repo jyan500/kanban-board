@@ -5,19 +5,20 @@ import { Controller, useForm, FormProvider } from "react-hook-form"
 import { AsyncSelect, LoadOptionsType } from "../AsyncSelect"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { LoadingButton } from "../page-elements/LoadingButton"
-import { setFilters, setFilterButtonState } from "../../slices/boardScheduleSlice"
+import { setFilters, setFilterButtonState } from "../../slices/boardFilterSlice"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { boardApi } from "../../services/private/board"
+import { format } from "date-fns"
 
 export type FormValues = {
 	priorityId: number | null
 	statusId: number | null
 	ticketTypeId: number | null
 	assignee: OptionType
-	startDate: Date | null
-	endDate: Date | null
+	startDate: string | null
+	endDate: string | null
 }
 
 interface Props {
@@ -29,7 +30,7 @@ export const BoardScheduleFilterModal = ({boardId}: Props) => {
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
-	const { filters } = useAppSelector((state) => state.boardSchedule)
+	const { filters } = useAppSelector((state) => state.boardFilter)
 	const defaultForm: FormValues = {
 		ticketTypeId: 0,
 		priorityId: 0,

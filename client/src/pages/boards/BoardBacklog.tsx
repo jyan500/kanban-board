@@ -7,7 +7,6 @@ import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { useUpdateSprintTicketsMutation, useDeleteSprintTicketsMutation } from "../../services/private/sprint"
-import { BoardScheduleFilters } from "../../slices/boardScheduleSlice"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { useLazyGetBoardTicketsQuery } from "../../services/private/board"
 import { useGetSprintsQuery, useLazyGetSprintQuery, useLazyGetSprintTicketsQuery } from "../../services/private/sprint"
