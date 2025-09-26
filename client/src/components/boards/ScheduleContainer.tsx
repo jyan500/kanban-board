@@ -4,6 +4,7 @@ import { IconArrowRight } from "../../components/icons/IconArrowRight"
 import { IconArrowLeft } from "../../components/icons/IconArrowLeft"
 import { IconCalendar } from "../../components/icons/IconCalendar"
 import { IconClock } from "../../components/icons/IconClock"
+import { ViewMode } from "../../types/common"
 import { 
     startOfWeek, 
     endOfWeek, 
@@ -18,9 +19,6 @@ import {
     addMonths
 } from "date-fns"
 import { setFilters } from '../../slices/boardFilterSlice'
-
-// Types
-type ViewMode = 'week' | 'month'
 
 interface Props {
     currentDate: Date
