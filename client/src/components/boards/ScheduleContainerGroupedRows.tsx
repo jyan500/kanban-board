@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react"
 import { IconArrowDown } from "../icons/IconArrowDown"
 import { IconArrowUp } from "../icons/IconArrowUp"
-import { Ticket, ViewMode, GroupByElement } from "../../types/common"
+import { Ticket, GroupByElement } from "../../types/common"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { applyGroupModifier } from "../../helpers/groupBy"
 import { useGetGroupByElementsQuery } from "../../services/private/groupBy"
@@ -9,16 +9,15 @@ import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 
 interface Props {
     tickets?: Array<Ticket>
-    viewMode: ViewMode
     calculateTaskPosition: (ticket: Ticket) => Record<string, string>
 }
 
-export const ScheduleContainerGroupedRows = ({tickets = [], viewMode, calculateTaskPosition}: Props) => {
+export const ScheduleContainerGroupedRows = ({tickets = [], calculateTaskPosition}: Props) => {
     const { groupBy } = useAppSelector((state) => state.board)
     const { ticketTypes } = useAppSelector((state) => state.ticketType)
     const groupedTickets = applyGroupModifier(groupBy, tickets)
-    /* object mapping the group by ids to boolean to denote whether the collapse arrow for that section is on/off */
 	const {data: groupByElements, isLoading, isError} = useGetGroupByElementsQuery({groupBy: groupBy, ids: Object.keys(groupedTickets)})  
+    /* object mapping the group by ids to boolean to denote whether the collapse arrow for that section is on/off */
 	const [collapseArrows, setCollapseArrows] = useState<Record<string, boolean>>(
 		Object.keys(groupedTickets).reduce((acc: Record<string, boolean>, key: string) => {
 		acc[key] = false

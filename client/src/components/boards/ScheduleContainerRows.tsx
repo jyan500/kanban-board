@@ -83,7 +83,7 @@ export const ScheduleContainerRows = ({
                         </div>
                     </div>
                 )
-            }) : <ScheduleContainerGroupedRows calculateTaskPosition={calculateTaskPosition} tickets={tickets} viewMode={viewMode}/>
+            }) : <ScheduleContainerGroupedRows calculateTaskPosition={calculateTaskPosition} tickets={tickets}/>
         )}
     </div>
     )
