@@ -5,7 +5,7 @@ import { boardApi, useGetBoardTicketsQuery } from "../../services/private/board"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { ScheduleTask, Ticket, UserProfile, ViewMode } from "../../types/common"
+import { Ticket, UserProfile, ViewMode } from "../../types/common"
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns"
 import { BoardFilters, setFilterButtonState, setFilters } from "../../slices/boardFilterSlice"
 import { GanttChart } from "../../components/boards/ScheduleContainer"
@@ -72,23 +72,6 @@ export const BoardSchedule = () => {
 		}))
 	}, [getCurrentPeriod])
 
-	const parseTicketsToTasks = () => {
-		if (boardTicketData){
-			return boardTicketData.data.map((ticket) => {
-				const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
-				const { id, name } = ticket
-				return {
-					id: id.toString(),
-					name,
-					startDate: new Date(ticket.createdAt),
-					endDate: new Date(ticket.dueDate),
-					color: ticketType !== "" ? TICKET_TYPE_COLOR_MAP[ticketType as keyof typeof TICKET_TYPE_COLOR_MAP] : ""
-				}
-			})
-		}
-		return []
-	}
-
 	return (
 		<div className = "tw-relative tw-w-full">
 			<GanttChart 
@@ -98,7 +81,7 @@ export const BoardSchedule = () => {
 				periodStart={getCurrentPeriod.start}
 				periodEnd={getCurrentPeriod.end}
 				setViewMode={setViewMode} 
-				tasks={parseTicketsToTasks()}
+				tickets={boardTicketData?.data ?? []}
 			/>
 		</div>
 	)

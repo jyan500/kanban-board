@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import { ScheduleTask } from "../../types/common"
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import { GroupByOptionsKey } from "../../types/common"
 import { IconArrowRight } from "../../components/icons/IconArrowRight"
 import { IconArrowLeft } from "../../components/icons/IconArrowLeft"
+import { GROUP_BY_OPTIONS } from "../../helpers/constants"
 import { IconCalendar } from "../../components/icons/IconCalendar"
 import { IconClock } from "../../components/icons/IconClock"
-import { ViewMode } from "../../types/common"
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
+import { Ticket, ViewMode } from "../../types/common"
 import { 
     startOfWeek, 
     endOfWeek, 
@@ -18,6 +20,9 @@ import {
     subMonths, 
     addMonths
 } from "date-fns"
+import { setGroupBy } from "../../slices/boardSlice" 
+import { ScheduleContainerRows } from "./ScheduleContainerRows"
+import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { setFilters } from '../../slices/boardFilterSlice'
 
 interface Props {
@@ -27,11 +32,11 @@ interface Props {
     viewMode: ViewMode
     setCurrentDate: (date: Date) => void
     setViewMode: (mode: ViewMode) => void
-    tasks?: Array<ScheduleTask>
+    tickets?: Array<Ticket>
 }
 
 export const GanttChart = ({ 
-    tasks = [], 
+    tickets = [], 
     currentDate,
     setCurrentDate,
     periodStart, 
@@ -39,28 +44,8 @@ export const GanttChart = ({
     setViewMode, 
     viewMode, 
 }: Props) => {
-    // Calculate task bar position and width
-    const calculateTaskPosition = (task: ScheduleTask) => {
-        const taskStart = new Date(task.startDate)
-        const taskEnd = new Date(task.endDate)
-        
-        // Clamp task dates to visible period
-        const visibleStart = isBefore(taskStart, periodStart) ? periodStart : taskStart
-        const visibleEnd = isAfter(taskEnd, periodEnd) ? periodEnd : taskEnd
-        
-        // Calculate time differences
-        const totalPeriodMs = differenceInMilliseconds(periodEnd, periodStart)
-        const taskStartMs = differenceInMilliseconds(visibleStart, periodStart)
-        const taskDurationMs = differenceInMilliseconds(visibleEnd, visibleStart)
-        
-        const leftPercentage = (taskStartMs / totalPeriodMs) * 100
-        const widthPercentage = (taskDurationMs / totalPeriodMs) * 100
-        
-        return {
-            left: `${Math.max(0, leftPercentage)}%`,
-            width: `${Math.min(100 - leftPercentage, widthPercentage)}%`
-        }
-    }
+    const dispatch = useAppDispatch()
+    const { groupBy } = useAppSelector((state) => state.board)
 
     // Format date for display
     const formatDate = (date: Date) => {
@@ -107,6 +92,9 @@ export const GanttChart = ({
         setCurrentDate(actions[viewMode]())
     }
 
+    const onGroupBy = (option: GroupByOptionsKey) => {
+		dispatch(setGroupBy(option))
+	}
 
     return (
         <div className="tw-w-full tw-bg-white tw-rounded-lg tw-shadow-lg">
@@ -119,7 +107,7 @@ export const GanttChart = ({
                     </h2>
                     <div className="tw-text-sm tw-text-gray-600 tw-flex tw-items-center">
                         <IconClock className="tw-w-6 tw-h-6 tw-mr-1"/>
-                        {tasks.length} tasks visible
+                        {tickets.length} tasks visible
                     </div>
                 </div>
                 
@@ -158,13 +146,30 @@ export const GanttChart = ({
                             <IconArrowRight className = "tw-w-6 tw-h-6"/>
                         </button>
                     </div>
-
-                    <button
-                        onClick={() => setCurrentDate(new Date())}
-                        className="tw-px-3 tw-py-1 tw-bg-blue-500 tw-text-white tw-rounded-md hover:tw-bg-blue-600 tw-transition-colors tw-text-sm"
-                    >
-                        Today
-                    </button>
+                    <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
+                        <button
+                            onClick={() => setCurrentDate(new Date())}
+                            className="tw-px-3 tw-py-1 tw-bg-blue-500 tw-text-white tw-rounded-md hover:tw-bg-blue-600 tw-transition-colors tw-text-sm"
+                        >
+                            Today
+                        </button>
+                        <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+                            <label className = "label" htmlFor="board-group-by">Group By</label>
+                            <select 
+                                id = "board-group-by" 
+                                /* TODO: the margin top is coming from label CSS, need to refactor to make separate horizontal label class rather than
+                                forcing the margin top to 0 here */
+                                className = "__custom-select tw-bg-primary tw-border-primary tw-w-full !tw-mt-0 lg:tw-w-auto" 
+                                value={groupBy}
+                                onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
+                                {
+                                    Object.keys(GROUP_BY_OPTIONS).map((groupByKey) => (
+                                        <option key={`group_by_${groupByKey}`} value = {groupByKey}>{GROUP_BY_OPTIONS[groupByKey as GroupByOptionsKey]}</option>
+                                    ))
+                                }
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -174,7 +179,7 @@ export const GanttChart = ({
                     {/* Time header */}
                     <div className="tw-flex tw-border-b tw-border-gray-200 tw-bg-gray-50">
                         <div className="tw-w-48 tw-p-3 tw-font-medium tw-text-gray-700 tw-border-r tw-border-gray-200">
-                            Tasks
+                            {groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}
                         </div>
                         <div className="tw-flex-1 tw-flex">
                             {timeColumns.map((date, index) => (
@@ -189,44 +194,12 @@ export const GanttChart = ({
                     </div>
 
                     {/* Task rows */}
-                    <div className="tw-divide-y tw-divide-gray-100">
-                        {tasks.length === 0 ? (
-                            <div className="tw-p-8 tw-text-center tw-text-gray-500">
-                                No tasks found for the current {viewMode} period
-                            </div>
-                        ) : (
-                            tasks.map(task => {
-                                const position = calculateTaskPosition(task)
-                                return (
-                                    <div key={task.id} className="tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
-                                        <div className="tw-w-48 tw-p-3 tw-border-r tw-border-gray-200">
-                                            <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
-                                                {task.name}
-                                            </div>
-                                            <div className="tw-text-xs tw-text-gray-500">
-                                                {task.startDate.toLocaleDateString()} - {task.endDate.toLocaleDateString()}
-                                            </div>
-                                        </div>
-                                        <div className="tw-flex-1 tw-relative tw-h-12 tw-flex tw-items-center">
-                                            <div
-                                                className="tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-medium tw-shadow-sm"
-                                                style={{
-                                                    left: position.left,
-                                                    width: position.width,
-                                                    backgroundColor: task.color || '#3B82F6',
-                                                    minWidth: '2px'
-                                                }}
-                                            >
-                                                {parseFloat(position.width) > 10 && (
-                                                    <span className="tw-truncate tw-px-2">{task.name}</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            })
-                        )}
-                    </div>
+                    <ScheduleContainerRows 
+                        viewMode={viewMode} 
+                        periodEnd={periodEnd} 
+                        periodStart={periodStart} 
+                        tickets={tickets}
+                    />
                 </div>
             </div>
         </div>
