@@ -63,6 +63,26 @@ const groupByModifierMap: GroupByModifier = {
 }
 
 /* 
+	Based on the group by option, parses the array of tickets into the grouped version
+	Example:
+	if "TICKET_TYPE" is chosen
+	1) creates an object like so based on the group by modifier
+	{
+		ticketTypeId 1: [Array of tickets with ticketTypeId 1],
+		ticketTypeId 2: [Array of tickets with ticketTypeId 2],
+		...
+	}	
+*/
+export const applyGroupModifier = (
+	option: GroupByOptionsKey,
+	tickets: Array<Ticket>
+) => {
+	const modifier = groupByModifierMap[option as GroupByOptionsKey]
+	const grouped: Record<string, Array<Ticket>> = modifier(tickets)
+	return grouped
+}
+
+/* 
 	Based on the group by option, parses the array of tickets into the grouped version that's separated by status
 	Example:
 	if "TICKET_TYPE" is chosen
@@ -93,8 +113,7 @@ export const boardGroupBy =
 		tickets: Array<Ticket>, 
 		statusesToDisplay: Array<Status>
 	): GroupedTickets => {
-		const modifier = groupByModifierMap[option as GroupByOptionsKey]
-		const grouped: Record<string, Array<Ticket>> = modifier(tickets)
+		const grouped: Record<string, Array<Ticket>> = applyGroupModifier(option, tickets)
 		return Object.keys(grouped).reduce((acc: Record<string, Record<string, Array<number>>>, key: string) => {
 			const groupedTickets = grouped[key]
 			const groupedTicketIdsByStatusMap = statusesToDisplay.reduce((acc: Record<string, Array<number>>, status: Status) => {
@@ -107,4 +126,5 @@ export const boardGroupBy =
 			return acc
 		}, {})
 }
+
 
