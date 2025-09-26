@@ -28,42 +28,44 @@ export const ScheduleContainerGroupedRows = ({tickets = [], viewMode, calculateT
                 !isLoading ? 
                     Object.keys(groupedTickets).map((groupById: string) => {
 						const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
-                        return groupedTickets[groupById].map((ticket, index) => {
-                            const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
-                            const position = calculateTaskPosition(ticket)
-                            return (
-                                <div key={ticket.id} className="tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
-                                    {
-                                        index === 0 ? (
-                                            <div className="tw-w-48 tw-p-3 tw-border-r">
-                                                <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
-                                                    {groupByElement?.name}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className = "tw-w-48 tw-p-3 tw-border-r">
-                                            </div>
-                                        )
-                                    }
-                                    <div className="tw-flex-1 tw-relative tw-h-12 tw-flex tw-items-center">
-                                        <div
-                                            className="tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-medium tw-shadow-sm"
-                                            style={{
-                                                left: position.left,
-                                                width: position.width,
-                                                backgroundColor: TICKET_TYPE_COLOR_MAP[ticketType as keyof typeof TICKET_TYPE_COLOR_MAP] || '#3B82F6',
-                                                minWidth: '2px'
-                                            }}
-                                        >
-                                            {parseFloat(position.width) > 10 && (
-                                                <span className="tw-truncate tw-px-2">{ticket.name}</span>
-                                            )}
+                        return (
+                            <>
+                                <div className = "tw-flex tw-items-center">
+                                    <div className="tw-w-48 tw-p-3 tw-border-r">
+                                        <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
+                                            {groupByElement?.name}
                                         </div>
+                                    </div> 
+                                    <div className="tw-flex-1 tw-relative tw-h-12 tw-flex tw-items-center">
                                     </div>
                                 </div>
-                            )
-                        })
-       
+                                {groupedTickets[groupById].map((ticket, index) => {
+                                    const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
+                                    const position = calculateTaskPosition(ticket)
+                                    return (
+                                        <div key={ticket.id} className="tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
+                                            <div className = "tw-w-48 tw-p-3 tw-border-r">
+                                            </div>
+                                            <div className="tw-flex-1 tw-relative tw-h-12 tw-flex tw-items-center">
+                                                <div
+                                                    className="tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-medium tw-shadow-sm"
+                                                    style={{
+                                                        left: position.left,
+                                                        width: position.width,
+                                                        backgroundColor: TICKET_TYPE_COLOR_MAP[ticketType as keyof typeof TICKET_TYPE_COLOR_MAP] || '#3B82F6',
+                                                        minWidth: '2px'
+                                                    }}
+                                                >
+                                                    {parseFloat(position.width) > 10 && (
+                                                        <span className="tw-truncate tw-px-2">{ticket.name}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </>
+                        )
                     })
                 : null
             }
