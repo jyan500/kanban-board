@@ -3,6 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit"
 import type { OptionType } from "../types/common" 
 import { modalTypes } from "../components/Modal"
 import { logout } from "./authSlice"
+import { format, startOfWeek, endOfWeek } from "date-fns"
 
 export interface BoardFilters {
 	ticketTypeId: number | null
@@ -24,7 +25,6 @@ const initialState: BoardFilterState = {
 		statusId: null,
 		assignee: null,
 		priorityId: null,
-		// TODO: call date-fns getWeekStart and getWeekEnd based on the current date as the defaults here
 		startDate: null,
 		endDate: null,
 	},
