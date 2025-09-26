@@ -1,4 +1,6 @@
 import React, { useState, useCallback } from "react"
+import { IconArrowDown } from "../icons/IconArrowDown"
+import { IconArrowUp } from "../icons/IconArrowUp"
 import { Ticket, ViewMode, GroupByElement } from "../../types/common"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { applyGroupModifier } from "../../helpers/groupBy"
@@ -33,7 +35,14 @@ export const ScheduleContainerGroupedRows = ({tickets = [], viewMode, calculateT
                                 <div className = "tw-flex tw-items-center">
                                     <div className="tw-w-48 tw-p-3 tw-border-r">
                                         <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
-                                            {groupByElement?.name}
+                                            <button onClick={() => {
+                                                setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})
+                                            }}>
+                                                <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+                                                    {groupByElement?.name}
+                                                    {collapseArrows[groupById] ? <IconArrowUp /> : <IconArrowDown />}
+                                                </div>
+                                            </button>
                                         </div>
                                     </div> 
                                     <div className="tw-flex-1 tw-relative tw-h-12 tw-flex tw-items-center">
@@ -42,6 +51,9 @@ export const ScheduleContainerGroupedRows = ({tickets = [], viewMode, calculateT
                                 {groupedTickets[groupById].map((ticket, index) => {
                                     const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
                                     const position = calculateTaskPosition(ticket)
+                                    if (collapseArrows[groupById]) {
+                                        return null;
+                                    }
                                     return (
                                         <div key={ticket.id} className="tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
                                             <div className = "tw-w-48 tw-p-3 tw-border-r">
