@@ -4,13 +4,9 @@ import { IconArrowRight } from "../../components/icons/IconArrowRight"
 import { IconArrowLeft } from "../../components/icons/IconArrowLeft"
 import { IconCalendar } from "../../components/icons/IconCalendar"
 import { IconClock } from "../../components/icons/IconClock"
-import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { 
     startOfWeek, 
     endOfWeek, 
-    startOfMonth, 
-    endOfMonth, 
-    areIntervalsOverlapping, 
     differenceInMilliseconds,
     isBefore, 
     isAfter, 
