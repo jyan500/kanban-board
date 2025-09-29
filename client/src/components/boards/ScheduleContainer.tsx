@@ -171,14 +171,13 @@ export const GanttChart = ({
             </div>
 
             {/* Chart */}
-            <div className="tw-overflow-x-auto">
-                <div className="tw-min-w-[800px]">
-                    {/* Time header */}
-                    <div className="tw-flex tw-border-b tw-border-gray-200 tw-bg-gray-50">
+            <div>
+                {/* <div className="tw-min-w-[800px] tw-border-b tw-border-gray-200">
+                    <div className="tw-flex tw-flex-row tw-items-center">
                         <div className="tw-w-48 tw-p-3 tw-font-medium tw-text-gray-700 tw-border-r tw-border-gray-200">
                             {groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}
                         </div>
-                        <div className="tw-flex-1 tw-flex">
+                        <div className="tw-overflow-x-auto tw-flex-1 tw-flex">
                             {timeColumns.map((date, index) => (
                                 <div
                                     key={index}
@@ -189,11 +188,13 @@ export const GanttChart = ({
                             ))}
                         </div>
                     </div>
-
+                </div> */}
+                <div className = "tw-overflow-x-auto">
                     {/* Task rows */}
                     <ScheduleContainerRows 
                         viewMode={viewMode} 
                         periodEnd={periodEnd} 
+                        currentDate={currentDate}
                         periodStart={periodStart} 
                         tickets={tickets}
                     />
