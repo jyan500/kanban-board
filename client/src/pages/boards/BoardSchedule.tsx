@@ -14,6 +14,7 @@ import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 export const BoardSchedule = () => {
 	const dispatch = useAppDispatch()
 	const { filters } = useAppSelector((state) => state.boardFilter)
+	const [ page, setPage ] = useState(1)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
     const [currentDate, setCurrentDate] = useState(new Date())
     const [viewMode, setViewMode] = useState<ViewMode>('week')
@@ -35,10 +36,10 @@ export const BoardSchedule = () => {
 			return acc	
 		}, {} as Record<string, any>)),
 		...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeCompleted": true} : {}),
-		"skipPaginate": true, 
 		"includeAssignees": true, 
 		"requireDueDate": true,
 		"checkOverlapping": true,
+		"page": page,
 		"includeRelationshipInfo": true, 
 		"limit": true,
 	}} : skipToken)
@@ -81,7 +82,9 @@ export const BoardSchedule = () => {
 				periodStart={getCurrentPeriod.start}
 				periodEnd={getCurrentPeriod.end}
 				setViewMode={setViewMode} 
-				tickets={boardTicketData?.data ?? []}
+				setPage={setPage}
+				currentPage={page}
+				ticketsData={boardTicketData}
 			/>
 		</div>
 	)

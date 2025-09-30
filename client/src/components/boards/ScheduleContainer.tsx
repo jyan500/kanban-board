@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { GenericObject, GroupByOptionsKey, GroupByElement } from "../../types/common"
+import { 
+    GenericObject, 
+    GroupByOptionsKey, 
+    GroupByElement, 
+    Ticket, 
+    TicketType, 
+    ViewMode, 
+    ListResponse, 
+    IPagination 
+} from "../../types/common"
 import { IconArrowRight } from "../icons/IconArrowRight"
 import { IconArrowLeft } from "../icons/IconArrowLeft"
 import { IconArrowDown } from "../icons/IconArrowDown"
@@ -8,7 +17,6 @@ import { GROUP_BY_OPTIONS } from "../../helpers/constants"
 import { IconCalendar } from "../icons/IconCalendar"
 import { IconClock } from "../icons/IconClock"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
-import { Ticket, TicketType, ViewMode } from "../../types/common"
 import { 
     startOfWeek, 
     endOfWeek, 
@@ -34,16 +42,7 @@ import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { setFilters } from '../../slices/boardFilterSlice'
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
-
-interface Props {
-    currentDate: Date
-    periodStart: Date
-    periodEnd: Date
-    viewMode: ViewMode
-    setCurrentDate: (date: Date) => void
-    setViewMode: (mode: ViewMode) => void
-    tickets?: Array<Ticket>
-}
+import { PaginationRow } from "../page-elements/PaginationRow"
 
 interface TicketDescriptionProps {
     ticket: Ticket
@@ -52,7 +51,7 @@ interface TicketDescriptionProps {
 
 const TicketDescription = ({ticket, openModal}: TicketDescriptionProps) => {
     return (
-        <button onClick={(e) => openModal(ticket.id)} key={`label-${ticket.id}`} className="hover:tw-opacity-60 tw-w-full tw-h-16 tw-p-3">
+        <button onClick={(e) => openModal(ticket.id)} className="hover:tw-opacity-60 tw-w-full tw-h-16 tw-p-3">
             <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
                 {ticket.name}
             </div>
@@ -71,6 +70,9 @@ interface ScheduleContainerLeftColumnProps {
     groupedTickets: Record<string, Array<Ticket>>
     collapseArrows: Record<string, boolean>
     setCollapseArrows: (collapseArrows: Record<string, boolean>) => void
+    pagination: IPagination
+    setPage: (page: number) => void
+    currentPage: number
 }
 
 export const ScheduleContainerLeftColumn = ({
@@ -81,16 +83,31 @@ export const ScheduleContainerLeftColumn = ({
     setCollapseArrows, 
     collapseArrows,
     tickets,
+    pagination,
+    setPage,
+    currentPage,
 }: ScheduleContainerLeftColumnProps) => {
     return (
         <div className="tw-w-48 tw-flex-shrink-0 tw-border-r tw-border-gray-200">
-            <div className="tw-p-3 tw-font-medium tw-text-gray-700 tw-h-12 tw-border-b tw-border-gray-200">
-                {groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}
+            <div className="tw-p-3 tw-flex tw-flex-row tw-justify-between tw-font-medium tw-text-gray-700 tw-h-12 tw-border-b tw-border-gray-200">
+                <span>{groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}</span>
+                {
+                    pagination.nextPage || pagination.prevPage ? 
+                        <PaginationRow
+                            currentPage={currentPage}
+                            showPageNums={false}
+                            setPage={setPage}
+                            paginationData={pagination}
+                        />
+                    : null
+                }
             </div>
             <div className="tw-divide-y tw-divide-gray-100">
                 {groupBy === "NONE" ? (
                     tickets.map((ticket) => (
-                        <TicketDescription openModal={openModal} ticket={ticket}/>
+                        <div key={`ticket-description-${ticket.id}`}>
+                            <TicketDescription openModal={openModal} ticket={ticket}/>
+                        </div>
                     ))
                 )
                 : (
@@ -98,7 +115,7 @@ export const ScheduleContainerLeftColumn = ({
                         const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
                         return (
                             <>
-                                <div className="tw-flex tw-flex-row tw-justify-center tw-items-center tw-p-3 tw-h-16 tw-font-medium tw-text-gray-800 tw-bg-gray-50 tw-text-sm tw-truncate">
+                                <div key={`group-by-${groupByElement}-${groupById}`} className="tw-flex tw-flex-row tw-justify-center tw-items-center tw-p-3 tw-h-16 tw-font-medium tw-text-gray-800 tw-bg-gray-50 tw-text-sm tw-truncate">
                                     <button className = "hover:tw-opacity-60" onClick={() => {
                                         setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})
                                     }}>
@@ -111,7 +128,11 @@ export const ScheduleContainerLeftColumn = ({
                                 {
                                     !collapseArrows[groupById] ? 
                                     groupedTickets[groupById].map((ticket, index) => {
-                                        return (<TicketDescription openModal={openModal} ticket={ticket}/>)
+                                        return (
+                                            <div key={`grouped-ticket-description-${ticket.id}`}>
+                                                <TicketDescription openModal={openModal} ticket={ticket}/>
+                                            </div>
+                                        )
                                     }) : null
                                 }
                             </>
@@ -120,6 +141,7 @@ export const ScheduleContainerLeftColumn = ({
                 )
                 }
             </div>
+           
         </div>
     )
 }
@@ -263,7 +285,11 @@ const ScheduleContainerScrollableSection = ({
                             tickets.map((ticket) => {
                                 const position = calculateTaskPosition(ticket)
                                 const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
-                                return (<ScheduleContainerRowTicket openModal={openModal} ticket={ticket} ticketType={ticketType} position={position}/>)
+                                return (
+                                    <div key={`scheduler-row-ticket-${ticket.id}`}>
+                                        <ScheduleContainerRowTicket openModal={openModal} ticket={ticket} ticketType={ticketType} position={position}/>
+                                    </div>
+                                )
                         })
                     ) : (
                         Object.keys(groupedTickets).map((groupById: string) => {
@@ -281,7 +307,9 @@ const ScheduleContainerScrollableSection = ({
                                                 return null;
                                             }
                                             return (
-                                                <ScheduleContainerRowTicket openModal={openModal} ticket={ticket} ticketType={ticketType} position={position}/>
+                                                <div key={`grouped-scheduler-row-ticket=${ticket.id}`}>
+                                                    <ScheduleContainerRowTicket openModal={openModal} ticket={ticket} ticketType={ticketType} position={position}/>
+                                                </div>
                                             )
                                         })
                                     }
@@ -296,16 +324,31 @@ const ScheduleContainerScrollableSection = ({
     )
 }
 
+interface ScheduleContainerProps {
+    currentDate: Date
+    periodStart: Date
+    periodEnd: Date
+    viewMode: ViewMode
+    setCurrentDate: (date: Date) => void
+    setPage: (page: number) => void
+    currentPage: number
+    setViewMode: (mode: ViewMode) => void
+    ticketsData?: ListResponse<Ticket> 
+}
+
 export const ScheduleContainer = ({ 
-    tickets = [], 
+    ticketsData = {} as ListResponse<Ticket>, 
     currentDate,
     setCurrentDate,
     periodStart, 
     periodEnd, 
+    currentPage,
     setViewMode, 
+    setPage,
     viewMode, 
-}: Props) => {
+}: ScheduleContainerProps) => {
     const dispatch = useAppDispatch()
+    const tickets = ticketsData?.data ?? []
     const { groupBy } = useAppSelector((state) => state.board)
     const { ticketTypes } = useAppSelector((state) => state.ticketType)
     const groupedTickets = groupBy !== "NONE" ? applyGroupModifier(groupBy, tickets) : {}
@@ -375,7 +418,7 @@ export const ScheduleContainer = ({
                     </h2>
                     <div className="tw-text-sm tw-text-gray-600 tw-flex tw-items-center">
                         <IconClock className="tw-w-6 tw-h-6 tw-mr-1"/>
-                        {tickets.length} tasks visible
+                        {tickets.length} tasks visible ({ticketsData.pagination.total} total)
                     </div>
                 </div>
                 
@@ -451,6 +494,9 @@ export const ScheduleContainer = ({
                                 {/* Fixed left column for task names */}
                                 <ScheduleContainerLeftColumn
                                     groupBy={groupBy}
+                                    setPage={setPage}
+                                    pagination={ticketsData.pagination}
+                                    currentPage={currentPage}
                                     collapseArrows={collapseArrows}
                                     setCollapseArrows={setCollapseArrows}
                                     tickets={tickets}
