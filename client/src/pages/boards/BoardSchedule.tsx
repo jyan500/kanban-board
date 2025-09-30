@@ -8,12 +8,13 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Ticket, UserProfile, ViewMode } from "../../types/common"
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns"
 import { BoardFilters, setFilterButtonState, setFilters } from "../../slices/boardFilterSlice"
-import { GanttChart } from "../../components/boards/ScheduleContainer"
+import { ScheduleContainer } from "../../components/boards/ScheduleContainer"
 import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 
 export const BoardSchedule = () => {
 	const dispatch = useAppDispatch()
 	const { filters } = useAppSelector((state) => state.boardFilter)
+	const [ page, setPage ] = useState(1)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
     const [currentDate, setCurrentDate] = useState(new Date())
     const [viewMode, setViewMode] = useState<ViewMode>('week')
@@ -35,10 +36,10 @@ export const BoardSchedule = () => {
 			return acc	
 		}, {} as Record<string, any>)),
 		...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeCompleted": true} : {}),
-		"skipPaginate": true, 
 		"includeAssignees": true, 
 		"requireDueDate": true,
 		"checkOverlapping": true,
+		"page": page,
 		"includeRelationshipInfo": true, 
 		"limit": true,
 	}} : skipToken)
@@ -65,6 +66,8 @@ export const BoardSchedule = () => {
 	}, [viewMode, currentDate])
 
 	useEffect(() => {
+		// reset the page whenever the date range is changed
+		setPage(1)
 		dispatch(setFilters({
 			...filters,
 			startDate: format(getCurrentPeriod.start, "yyyy-MM-dd"),
@@ -74,14 +77,16 @@ export const BoardSchedule = () => {
 
 	return (
 		<div className = "tw-relative tw-w-full">
-			<GanttChart 
+			<ScheduleContainer 
 				currentDate={currentDate}
 				setCurrentDate={setCurrentDate}
 				viewMode={viewMode} 
 				periodStart={getCurrentPeriod.start}
 				periodEnd={getCurrentPeriod.end}
 				setViewMode={setViewMode} 
-				tickets={boardTicketData?.data ?? []}
+				setPage={setPage}
+				currentPage={page}
+				ticketsData={boardTicketData}
 			/>
 		</div>
 	)

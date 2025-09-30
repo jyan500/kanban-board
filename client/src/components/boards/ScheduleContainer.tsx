@@ -1,52 +1,157 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { GroupByOptionsKey } from "../../types/common"
-import { IconArrowRight } from "../../components/icons/IconArrowRight"
-import { IconArrowLeft } from "../../components/icons/IconArrowLeft"
+import { 
+    GenericObject, 
+    GroupByOptionsKey, 
+    GroupByElement, 
+    Ticket, 
+    TicketType, 
+    ViewMode, 
+    ListResponse, 
+    IPagination 
+} from "../../types/common"
+import { IconArrowRight } from "../icons/IconArrowRight"
+import { IconArrowLeft } from "../icons/IconArrowLeft"
+import { IconArrowDown } from "../icons/IconArrowDown"
+import { IconArrowUp } from "../icons/IconArrowUp"
 import { GROUP_BY_OPTIONS } from "../../helpers/constants"
-import { IconCalendar } from "../../components/icons/IconCalendar"
-import { IconClock } from "../../components/icons/IconClock"
+import { IconCalendar } from "../icons/IconCalendar"
+import { IconClock } from "../icons/IconClock"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
-import { Ticket, ViewMode } from "../../types/common"
 import { 
     startOfWeek, 
     endOfWeek, 
-    differenceInMilliseconds,
-    isBefore, 
-    isAfter, 
-    eachDayOfInterval, 
     format,
     subWeeks, 
     addWeeks, 
     subMonths, 
-    addMonths
+    addMonths,
+    eachDayOfInterval, 
+    differenceInDays, 
+    startOfDay, 
+    endOfDay, 
+    isBefore, 
+    isAfter, 
+    differenceInMilliseconds 
 } from "date-fns"
 import { setGroupBy } from "../../slices/boardSlice" 
-import { ScheduleContainerRows } from "./ScheduleContainerRows"
+import { applyGroupModifier } from "../../helpers/groupBy"
+import { Button } from "../../components/page-elements/Button"
+import { useGetGroupByElementsQuery } from "../../services/private/groupBy"
+import { skipToken } from '@reduxjs/toolkit/query/react'
 import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { setFilters } from '../../slices/boardFilterSlice'
+import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
+import { selectCurrentTicketId } from "../../slices/boardSlice"
+import { PaginationRow } from "../page-elements/PaginationRow"
 
-interface Props {
-    currentDate: Date
-    periodStart: Date
-    periodEnd: Date
-    viewMode: ViewMode
-    setCurrentDate: (date: Date) => void
-    setViewMode: (mode: ViewMode) => void
-    tickets?: Array<Ticket>
+interface TicketDescriptionProps {
+    ticket: Ticket
+    openModal: (ticketId: number) => void
 }
 
-export const GanttChart = ({ 
-    tickets = [], 
-    currentDate,
-    setCurrentDate,
-    periodStart, 
-    periodEnd, 
-    setViewMode, 
-    viewMode, 
-}: Props) => {
-    const dispatch = useAppDispatch()
-    const { groupBy } = useAppSelector((state) => state.board)
+const TicketDescription = ({ticket, openModal}: TicketDescriptionProps) => {
+    return (
+        <button onClick={(e) => openModal(ticket.id)} className="hover:tw-opacity-60 tw-w-full tw-h-16 tw-p-3">
+            <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
+                {ticket.name}
+            </div>
+            <div className="tw-text-xs tw-text-gray-500">
+                {new Date(ticket.createdAt).toLocaleDateString()} - {new Date(ticket.dueDate).toLocaleDateString()}
+            </div>
+        </button>
+    )
+}
 
+interface ScheduleContainerLeftColumnProps {
+    groupBy: string
+    openModal: (ticketId: number) => void
+    groupByElements?: Array<GenericObject>
+    tickets: Array<Ticket>
+    groupedTickets: Record<string, Array<Ticket>>
+    collapseArrows: Record<string, boolean>
+    setCollapseArrows: (collapseArrows: Record<string, boolean>) => void
+    pagination: IPagination
+    setPage: (page: number) => void
+    currentPage: number
+}
+
+export const ScheduleContainerLeftColumn = ({
+    groupBy, 
+    openModal,
+    groupedTickets, 
+    groupByElements=[],
+    setCollapseArrows, 
+    collapseArrows,
+    tickets,
+    pagination,
+    setPage,
+    currentPage,
+}: ScheduleContainerLeftColumnProps) => {
+    return (
+        <div className="tw-w-48 tw-flex-shrink-0 tw-border-r tw-border-gray-200">
+            <div className="tw-p-3 tw-flex tw-flex-row tw-justify-between tw-font-medium tw-text-gray-700 tw-h-12 tw-border-b tw-border-gray-200">
+                <span>{groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}</span>
+                {
+                    pagination.nextPage || pagination.prevPage ? 
+                        <PaginationRow
+                            currentPage={currentPage}
+                            showPageNums={false}
+                            setPage={setPage}
+                            paginationData={pagination}
+                        />
+                    : null
+                }
+            </div>
+            <div className="tw-divide-y tw-divide-gray-100">
+                {groupBy === "NONE" ? (
+                    tickets.map((ticket) => (
+                        <div key={`ticket-description-${ticket.id}`}>
+                            <TicketDescription openModal={openModal} ticket={ticket}/>
+                        </div>
+                    ))
+                )
+                : (
+                    Object.keys(groupedTickets).map((groupById: string) => {
+                        const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
+                        return (
+                            <>
+                                <div key={`group-by-${groupByElement}-${groupById}`} className="tw-flex tw-flex-row tw-justify-center tw-items-center tw-p-3 tw-h-16 tw-font-medium tw-text-gray-800 tw-bg-gray-50 tw-text-sm tw-truncate">
+                                    <button className = "hover:tw-opacity-60" onClick={() => {
+                                        setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})
+                                    }}>
+                                        <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+                                            <span className = "tw-w-32 tw-truncate">{groupByElement?.name}</span>
+                                            {collapseArrows[groupById] ? <IconArrowUp /> : <IconArrowDown />}
+                                        </div>
+                                    </button>
+                                </div>
+                                {
+                                    !collapseArrows[groupById] ? 
+                                    groupedTickets[groupById].map((ticket, index) => {
+                                        return (
+                                            <div key={`grouped-ticket-description-${ticket.id}`}>
+                                                <TicketDescription openModal={openModal} ticket={ticket}/>
+                                            </div>
+                                        )
+                                    }) : null
+                                }
+                            </>
+                        )
+                    })
+                )
+                }
+            </div>
+           
+        </div>
+    )
+}
+
+interface ScheduleContainerTimeColumnProps {
+    timeColumns: Array<Date>
+    viewMode: string
+}
+
+const ScheduleContainerTimeColumns = ({viewMode, timeColumns}: ScheduleContainerTimeColumnProps) => {
     // Format date for display
     const formatDate = (date: Date) => {
         if (viewMode === 'week') {
@@ -54,6 +159,209 @@ export const GanttChart = ({
         } else {
             return format(date, 'd') // e.g., "23"
         }
+    }
+    return (
+        <div className="tw-flex tw-flex-row tw-border-b tw-border-gray-200">
+            {timeColumns.map((date, index) => (
+                <div
+                    key={index}
+                    className="tw-flex-1 tw-h-12 tw-p-2 tw-text-center tw-text-sm tw-font-medium tw-text-gray-600 tw-border-r tw-border-gray-200 tw-min-w-[60px]"
+                >
+                    {formatDate(date)}
+                </div>
+            ))}
+        </div>
+    )
+}
+
+interface ScheduleContainerRowTicketProps {
+    ticket: Ticket
+    position: {left: string, width: string}
+    ticketType: string 
+    openModal: (ticketId: number) => void
+}
+
+const ScheduleContainerRowTicket = ({openModal, ticket, position, ticketType}: ScheduleContainerRowTicketProps) => {
+    const dispatch = useAppDispatch()
+
+    return (
+        <div key={`bar-${ticket.id}`} className="tw-relative tw-h-16 tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
+            {/* Invisible column structure to maintain width. (Not sure if this is actually necessary so keeping as a comment) */}
+            {/* <div className="tw-flex tw-flex-row tw-w-full">
+                {timeColumns.map((date, index) => (
+                    <div
+                        key={index}
+                        className="tw-flex-1 tw-min-w-[60px]"
+                    />
+                ))}
+            </div> */}
+            {/* Absolutely positioned task bar */}
+            <button
+                onClick={(e) => openModal(ticket.id)}
+                className="hover:tw-opacity-70 tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-medium tw-shadow-sm"
+                style={{
+                    left: position.left,
+                    width: position.width,
+                    backgroundColor: TICKET_TYPE_COLOR_MAP[ticketType as keyof typeof TICKET_TYPE_COLOR_MAP] || '#3B82F6',
+                    minWidth: '2px'
+                }}
+            >
+                <span className="tw-truncate tw-px-2">{ticket.name}</span>
+            </button>
+        </div>
+    )
+}
+
+interface ScheduleContainerScrollableSectionProps {
+    viewMode: string
+    periodStart: Date
+    periodEnd: Date
+    groupBy: string
+    groupByElements?: Array<GenericObject>
+    timeColumns: Array<Date>
+    tickets: Array<Ticket>
+    groupedTickets: Record<string, Array<Ticket>>
+    ticketTypes: Array<TicketType>
+    collapseArrows: Record<string, boolean>
+    openModal: (ticketId: number) => void
+}
+
+const ScheduleContainerScrollableSection = ({
+    periodStart,
+    openModal, 
+    periodEnd,
+    groupBy,
+    tickets,
+    groupByElements=[],
+    groupedTickets,
+    timeColumns,
+    ticketTypes,
+    viewMode,
+    collapseArrows,
+}: ScheduleContainerScrollableSectionProps) => {
+    
+    const calculateTaskPosition = (ticket: Ticket) => {
+        // Normalize to day boundaries
+        const taskStart = startOfDay(new Date(ticket.createdAt))
+        const taskEnd = endOfDay(new Date(ticket.dueDate))
+        
+        const normalizedPeriodStart = startOfDay(periodStart)
+        const normalizedPeriodEnd = endOfDay(periodEnd)
+        
+        // Clamp task dates to visible period
+        const visibleStart = isBefore(taskStart, normalizedPeriodStart) ? normalizedPeriodStart : taskStart
+        const visibleEnd = isAfter(taskEnd, normalizedPeriodEnd) ? normalizedPeriodEnd : taskEnd
+        
+        // Calculate which day columns the task spans
+        const totalDays = eachDayOfInterval({ start: normalizedPeriodStart, end: normalizedPeriodEnd }).length
+        const daysFromStart = differenceInDays(visibleStart, normalizedPeriodStart)
+        const taskDurationDays = differenceInDays(visibleEnd, visibleStart) + 1 // +1 to include both start and end days
+        
+        // Calculate percentage based on day columns, not pure time
+        const leftPercentage = ((daysFromStart / totalDays) * 100)
+        const widthPercentage = (taskDurationDays / totalDays) * 100
+        
+        return {
+            left: `${Math.max(0, leftPercentage)}%`,
+            width: `${Math.min(100 - leftPercentage, widthPercentage)}%`
+        }
+    }
+
+    return (
+        <div className="tw-flex-1 tw-overflow-x-auto">
+            {/* 
+                wrapping both the time columns and ticket sections in
+                min-w-max allows the header + taskbar width calculations to account for the full width needed, including the amount the user needs to scroll if overflow is triggered 
+                This also fixes issues with styling and coloring not extending past the scroll.
+            */}
+            <div className="tw-min-w-max">
+                <ScheduleContainerTimeColumns viewMode={viewMode} timeColumns={timeColumns}/>
+                {/* Task bar rows */}
+                <div className="tw-divide-y tw-divide-gray-100">
+                    {groupBy === "NONE" ? 
+                        (
+                            tickets.map((ticket) => {
+                                const position = calculateTaskPosition(ticket)
+                                const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
+                                return (
+                                    <div key={`scheduler-row-ticket-${ticket.id}`}>
+                                        <ScheduleContainerRowTicket openModal={openModal} ticket={ticket} ticketType={ticketType} position={position}/>
+                                    </div>
+                                )
+                        })
+                    ) : (
+                        Object.keys(groupedTickets).map((groupById: string) => {
+                            const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
+                            return (
+                                <>
+                                    {/* add one empty row to account for the group by header on the left column */}
+                                    <div key={`groupby-${groupById}`} className="tw-relative tw-h-16 tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
+                                    </div>
+                                    {
+                                        groupedTickets[groupById].map((ticket, index) => {
+                                            const position = calculateTaskPosition(ticket)
+                                            const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
+                                            if (collapseArrows[groupById]) {
+                                                return null;
+                                            }
+                                            return (
+                                                <div key={`grouped-scheduler-row-ticket=${ticket.id}`}>
+                                                    <ScheduleContainerRowTicket openModal={openModal} ticket={ticket} ticketType={ticketType} position={position}/>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </>
+                            )
+                        })
+                    ) 
+                    }
+                </div>
+            </div>
+        </div>
+    )
+}
+
+interface ScheduleContainerProps {
+    currentDate: Date
+    periodStart: Date
+    periodEnd: Date
+    viewMode: ViewMode
+    setCurrentDate: (date: Date) => void
+    setPage: (page: number) => void
+    currentPage: number
+    setViewMode: (mode: ViewMode) => void
+    ticketsData?: ListResponse<Ticket> 
+}
+
+export const ScheduleContainer = ({ 
+    ticketsData = {} as ListResponse<Ticket>, 
+    currentDate,
+    setCurrentDate,
+    periodStart, 
+    periodEnd, 
+    currentPage,
+    setViewMode, 
+    setPage,
+    viewMode, 
+}: ScheduleContainerProps) => {
+    const dispatch = useAppDispatch()
+    const tickets = ticketsData?.data ?? []
+    const { groupBy } = useAppSelector((state) => state.board)
+    const { ticketTypes } = useAppSelector((state) => state.ticketType)
+    const groupedTickets = groupBy !== "NONE" ? applyGroupModifier(groupBy, tickets) : {}
+	const {data: groupByElements, isLoading, isError} = useGetGroupByElementsQuery(groupBy !== "NONE" ? {groupBy: groupBy, ids: Object.keys(groupedTickets)} : skipToken)  
+    const [collapseArrows, setCollapseArrows] = useState<Record<string, boolean>>(
+		Object.keys(groupedTickets).reduce((acc: Record<string, boolean>, key: string) => {
+		acc[key] = false
+		return acc
+	}, {}))
+
+    
+    const openModal = (ticketId: number) => {
+        dispatch(toggleShowModal(true))
+        dispatch(setModalType("EDIT_TICKET_FORM"))
+        dispatch(selectCurrentTicketId(ticketId))
     }
 
     // Get current period label
@@ -96,6 +404,7 @@ export const GanttChart = ({
 		dispatch(setGroupBy(option))
 	}
 
+
     return (
         <div className="tw-w-full tw-bg-white tw-rounded-lg tw-shadow-lg">
             {/* Header */}
@@ -107,7 +416,7 @@ export const GanttChart = ({
                     </h2>
                     <div className="tw-text-sm tw-text-gray-600 tw-flex tw-items-center">
                         <IconClock className="tw-w-6 tw-h-6 tw-mr-1"/>
-                        {tickets.length} tasks visible
+                        {tickets.length} tasks visible ({ticketsData?.pagination?.total} total)
                     </div>
                 </div>
                 
@@ -115,17 +424,13 @@ export const GanttChart = ({
                 <div className="tw-flex tw-items-center tw-justify-between">
                     <div className="tw-flex tw-items-center tw-space-x-2">
                         {(['week', 'month'] as ViewMode[]).map(mode => (
-                            <button
+                            <Button
                                 key={mode}
                                 onClick={() => setViewMode(mode)}
-                                className={`tw-px-3 tw-py-1 tw-rounded-md tw-text-sm tw-font-medium tw-transition-colors ${
-                                    viewMode === mode
-                                        ? 'tw-bg-blue-100 tw-text-blue-700'
-                                        : 'tw-bg-gray-100 tw-text-gray-600 hover:tw-bg-gray-200'
-                                }`}
+                                theme={viewMode === mode ? "active" : "secondary"}
                             >
                                 {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                            </button>
+                            </Button>
                         ))}
                     </div>
 
@@ -147,12 +452,12 @@ export const GanttChart = ({
                         </button>
                     </div>
                     <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
-                        <button
+                        <Button
                             onClick={() => setCurrentDate(new Date())}
-                            className="tw-px-3 tw-py-1 tw-bg-blue-500 tw-text-white tw-rounded-md hover:tw-bg-blue-600 tw-transition-colors tw-text-sm"
+                            theme={"primary"}
                         >
                             Today
-                        </button>
+                        </Button>
                         <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
                             <label className = "label" htmlFor="board-group-by">Group By</label>
                             <select 
@@ -174,32 +479,47 @@ export const GanttChart = ({
             </div>
 
             {/* Chart */}
-            <div className="tw-overflow-x-auto">
-                <div className="tw-min-w-[800px]">
-                    {/* Time header */}
-                    <div className="tw-flex tw-border-b tw-border-gray-200 tw-bg-gray-50">
-                        <div className="tw-w-48 tw-p-3 tw-font-medium tw-text-gray-700 tw-border-r tw-border-gray-200">
-                            {groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}
-                        </div>
-                        <div className="tw-flex-1 tw-flex">
-                            {timeColumns.map((date, index) => (
-                                <div
-                                    key={index}
-                                    className="tw-flex-1 tw-p-2 tw-text-center tw-text-sm tw-font-medium tw-text-gray-600 tw-border-r tw-border-gray-200 tw-min-w-[60px]"
-                                >
-                                    {formatDate(date)}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
+            <div>
+                <div className = "tw-overflow-x-auto">
                     {/* Task rows */}
-                    <ScheduleContainerRows 
-                        viewMode={viewMode} 
-                        periodEnd={periodEnd} 
-                        periodStart={periodStart} 
-                        tickets={tickets}
-                    />
+                    <div className="tw-flex tw-flex-col">
+                        {tickets.length === 0 ? (
+                            <div className="tw-p-8 tw-text-center tw-text-gray-500">
+                                No tasks found for the current {viewMode} period
+                            </div>
+                        ) : (
+                            <div className="tw-flex tw-flex-row">
+                                {/* Fixed left column for task names */}
+                                <ScheduleContainerLeftColumn
+                                    groupBy={groupBy}
+                                    setPage={setPage}
+                                    pagination={ticketsData.pagination}
+                                    currentPage={currentPage}
+                                    collapseArrows={collapseArrows}
+                                    setCollapseArrows={setCollapseArrows}
+                                    tickets={tickets}
+                                    groupedTickets={groupedTickets}
+                                    groupByElements={groupByElements}
+                                    openModal={openModal}
+                                /> 
+                
+                                {/* Scrollable section with header and task bars */}
+                                <ScheduleContainerScrollableSection
+                                    openModal={openModal}
+                                    tickets={tickets}
+                                    groupBy={groupBy}
+                                    ticketTypes={ticketTypes}
+                                    groupByElements={groupByElements}
+                                    viewMode={viewMode}
+                                    periodStart={periodStart}
+                                    periodEnd={periodEnd}
+                                    timeColumns={timeColumns}
+                                    groupedTickets={groupedTickets}
+                                    collapseArrows={collapseArrows}
+                                /> 
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
