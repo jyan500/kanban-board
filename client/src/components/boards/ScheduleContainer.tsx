@@ -32,6 +32,8 @@ import { useGetGroupByElementsQuery } from "../../services/private/groupBy"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { setFilters } from '../../slices/boardFilterSlice'
+import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
+import { selectCurrentTicketId } from "../../slices/boardSlice"
 
 interface Props {
     currentDate: Date
@@ -45,23 +47,25 @@ interface Props {
 
 interface TicketDescriptionProps {
     ticket: Ticket
+    openModal: (ticketId: number) => void
 }
 
-const TicketDescription = ({ticket}: TicketDescriptionProps) => {
+const TicketDescription = ({ticket, openModal}: TicketDescriptionProps) => {
     return (
-        <div key={`label-${ticket.id}`} className="tw-h-16 tw-p-3">
+        <button onClick={(e) => openModal(ticket.id)} key={`label-${ticket.id}`} className="hover:tw-opacity-60 tw-w-full tw-h-16 tw-p-3">
             <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
                 {ticket.name}
             </div>
             <div className="tw-text-xs tw-text-gray-500">
                 {new Date(ticket.createdAt).toLocaleDateString()} - {new Date(ticket.dueDate).toLocaleDateString()}
             </div>
-        </div>
+        </button>
     )
 }
 
 interface ScheduleContainerLeftColumnProps {
     groupBy: string
+    openModal: (ticketId: number) => void
     groupByElements?: Array<GenericObject>
     tickets: Array<Ticket>
     groupedTickets: Record<string, Array<Ticket>>
@@ -71,6 +75,7 @@ interface ScheduleContainerLeftColumnProps {
 
 export const ScheduleContainerLeftColumn = ({
     groupBy, 
+    openModal,
     groupedTickets, 
     groupByElements=[],
     setCollapseArrows, 
@@ -85,7 +90,7 @@ export const ScheduleContainerLeftColumn = ({
             <div className="tw-divide-y tw-divide-gray-100">
                 {groupBy === "NONE" ? (
                     tickets.map((ticket) => (
-                        <TicketDescription ticket={ticket}/>
+                        <TicketDescription openModal={openModal} ticket={ticket}/>
                     ))
                 )
                 : (
@@ -94,7 +99,7 @@ export const ScheduleContainerLeftColumn = ({
                         return (
                             <>
                                 <div className="tw-flex tw-flex-row tw-justify-center tw-items-center tw-p-3 tw-h-16 tw-font-medium tw-text-gray-800 tw-bg-gray-50 tw-text-sm tw-truncate">
-                                    <button onClick={() => {
+                                    <button className = "hover:tw-opacity-60" onClick={() => {
                                         setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})
                                     }}>
                                         <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
@@ -106,7 +111,7 @@ export const ScheduleContainerLeftColumn = ({
                                 {
                                     !collapseArrows[groupById] ? 
                                     groupedTickets[groupById].map((ticket, index) => {
-                                        return (<TicketDescription ticket={ticket}/>)
+                                        return (<TicketDescription openModal={openModal} ticket={ticket}/>)
                                     }) : null
                                 }
                             </>
@@ -151,9 +156,12 @@ interface ScheduleContainerRowTicketProps {
     ticket: Ticket
     position: {left: string, width: string}
     ticketType: string 
+    openModal: (ticketId: number) => void
 }
 
-const ScheduleContainerRowTicket = ({ticket, position, ticketType}: ScheduleContainerRowTicketProps) => {
+const ScheduleContainerRowTicket = ({openModal, ticket, position, ticketType}: ScheduleContainerRowTicketProps) => {
+    const dispatch = useAppDispatch()
+
     return (
         <div key={`bar-${ticket.id}`} className="tw-relative tw-h-16 tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
             {/* Invisible column structure to maintain width. (Not sure if this is actually necessary so keeping as a comment) */}
@@ -166,8 +174,9 @@ const ScheduleContainerRowTicket = ({ticket, position, ticketType}: ScheduleCont
                 ))}
             </div> */}
             {/* Absolutely positioned task bar */}
-            <div
-                className="tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-medium tw-shadow-sm"
+            <button
+                onClick={(e) => openModal(ticket.id)}
+                className="hover:tw-opacity-70 tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-medium tw-shadow-sm"
                 style={{
                     left: position.left,
                     width: position.width,
@@ -178,7 +187,7 @@ const ScheduleContainerRowTicket = ({ticket, position, ticketType}: ScheduleCont
                 {parseFloat(position.width) > 10 && (
                     <span className="tw-truncate tw-px-2">{ticket.name}</span>
                 )}
-            </div>
+            </button>
         </div>
     )
 }
@@ -194,10 +203,12 @@ interface ScheduleContainerScrollableSectionProps {
     groupedTickets: Record<string, Array<Ticket>>
     ticketTypes: Array<TicketType>
     collapseArrows: Record<string, boolean>
+    openModal: (ticketId: number) => void
 }
 
 const ScheduleContainerScrollableSection = ({
     periodStart,
+    openModal, 
     periodEnd,
     groupBy,
     tickets,
@@ -252,7 +263,7 @@ const ScheduleContainerScrollableSection = ({
                             tickets.map((ticket) => {
                                 const position = calculateTaskPosition(ticket)
                                 const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
-                                return (<ScheduleContainerRowTicket ticket={ticket} ticketType={ticketType} position={position}/>)
+                                return (<ScheduleContainerRowTicket openModal={openModal} ticket={ticket} ticketType={ticketType} position={position}/>)
                         })
                     ) : (
                         Object.keys(groupedTickets).map((groupById: string) => {
@@ -270,7 +281,7 @@ const ScheduleContainerScrollableSection = ({
                                                 return null;
                                             }
                                             return (
-                                                <ScheduleContainerRowTicket ticket={ticket} ticketType={ticketType} position={position}/>
+                                                <ScheduleContainerRowTicket openModal={openModal} ticket={ticket} ticketType={ticketType} position={position}/>
                                             )
                                         })
                                     }
@@ -304,6 +315,13 @@ export const ScheduleContainer = ({
 		acc[key] = false
 		return acc
 	}, {}))
+
+    
+    const openModal = (ticketId: number) => {
+        dispatch(toggleShowModal(true))
+        dispatch(setModalType("EDIT_TICKET_FORM"))
+        dispatch(selectCurrentTicketId(ticketId))
+    }
 
     // Get current period label
     const getCurrentPeriodLabel = () => {
@@ -438,10 +456,12 @@ export const ScheduleContainer = ({
                                     tickets={tickets}
                                     groupedTickets={groupedTickets}
                                     groupByElements={groupByElements}
+                                    openModal={openModal}
                                 /> 
                 
                                 {/* Scrollable section with header and task bars */}
                                 <ScheduleContainerScrollableSection
+                                    openModal={openModal}
                                     tickets={tickets}
                                     groupBy={groupBy}
                                     ticketTypes={ticketTypes}
