@@ -206,9 +206,7 @@ const ScheduleContainerRowTicket = ({openModal, ticket, position, ticketType}: S
                     minWidth: '2px'
                 }}
             >
-                {parseFloat(position.width) > 10 && (
-                    <span className="tw-truncate tw-px-2">{ticket.name}</span>
-                )}
+                <span className="tw-truncate tw-px-2">{ticket.name}</span>
             </button>
         </div>
     )
