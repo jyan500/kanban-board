@@ -66,6 +66,8 @@ export const BoardSchedule = () => {
 	}, [viewMode, currentDate])
 
 	useEffect(() => {
+		// reset the page whenever the date range is changed
+		setPage(1)
 		dispatch(setFilters({
 			...filters,
 			startDate: format(getCurrentPeriod.start, "yyyy-MM-dd"),
