@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { GroupByOptionsKey, GroupByElement } from "../../types/common"
+import { GenericObject, GroupByOptionsKey, GroupByElement } from "../../types/common"
 import { IconArrowRight } from "../icons/IconArrowRight"
 import { IconArrowLeft } from "../icons/IconArrowLeft"
 import { IconArrowDown } from "../icons/IconArrowDown"
@@ -8,7 +8,7 @@ import { GROUP_BY_OPTIONS } from "../../helpers/constants"
 import { IconCalendar } from "../icons/IconCalendar"
 import { IconClock } from "../icons/IconClock"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
-import { Ticket, ViewMode } from "../../types/common"
+import { Ticket, TicketType, ViewMode } from "../../types/common"
 import { 
     startOfWeek, 
     endOfWeek, 
@@ -26,14 +26,12 @@ import {
     differenceInMilliseconds 
 } from "date-fns"
 import { setGroupBy } from "../../slices/boardSlice" 
-import { ScheduleContainerRows } from "./ScheduleContainerRows"
 import { applyGroupModifier } from "../../helpers/groupBy"
 import { Button } from "../../components/page-elements/Button"
 import { useGetGroupByElementsQuery } from "../../services/private/groupBy"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { setFilters } from '../../slices/boardFilterSlice'
-import { ScheduleContainerRowTicket} from "./ScheduleContainerRowTicket"
 
 interface Props {
     currentDate: Date
@@ -45,7 +43,249 @@ interface Props {
     tickets?: Array<Ticket>
 }
 
-export const GanttChart = ({ 
+interface TicketDescriptionProps {
+    ticket: Ticket
+}
+
+const TicketDescription = ({ticket}: TicketDescriptionProps) => {
+    return (
+        <div key={`label-${ticket.id}`} className="tw-h-16 tw-p-3">
+            <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
+                {ticket.name}
+            </div>
+            <div className="tw-text-xs tw-text-gray-500">
+                {new Date(ticket.createdAt).toLocaleDateString()} - {new Date(ticket.dueDate).toLocaleDateString()}
+            </div>
+        </div>
+    )
+}
+
+interface ScheduleContainerLeftColumnProps {
+    groupBy: string
+    groupByElements?: Array<GenericObject>
+    tickets: Array<Ticket>
+    groupedTickets: Record<string, Array<Ticket>>
+    collapseArrows: Record<string, boolean>
+    setCollapseArrows: (collapseArrows: Record<string, boolean>) => void
+}
+
+export const ScheduleContainerLeftColumn = ({
+    groupBy, 
+    groupedTickets, 
+    groupByElements=[],
+    setCollapseArrows, 
+    collapseArrows,
+    tickets,
+}: ScheduleContainerLeftColumnProps) => {
+    return (
+        <div className="tw-w-48 tw-flex-shrink-0 tw-border-r tw-border-gray-200">
+            <div className="tw-p-3 tw-font-medium tw-text-gray-700 tw-h-12 tw-border-b tw-border-gray-200">
+                {groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}
+            </div>
+            <div className="tw-divide-y tw-divide-gray-100">
+                {groupBy === "NONE" ? (
+                    tickets.map((ticket) => (
+                        <TicketDescription ticket={ticket}/>
+                    ))
+                )
+                : (
+                    Object.keys(groupedTickets).map((groupById: string) => {
+                        const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
+                        return (
+                            <>
+                                <div className="tw-flex tw-flex-row tw-justify-center tw-items-center tw-p-3 tw-h-16 tw-font-medium tw-text-gray-800 tw-bg-gray-50 tw-text-sm tw-truncate">
+                                    <button onClick={() => {
+                                        setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})
+                                    }}>
+                                        <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+                                            <span className = "tw-w-32 tw-truncate">{groupByElement?.name}</span>
+                                            {collapseArrows[groupById] ? <IconArrowUp /> : <IconArrowDown />}
+                                        </div>
+                                    </button>
+                                </div>
+                                {
+                                    !collapseArrows[groupById] ? 
+                                    groupedTickets[groupById].map((ticket, index) => {
+                                        return (<TicketDescription ticket={ticket}/>)
+                                    }) : null
+                                }
+                            </>
+                        )
+                    })
+                )
+                }
+            </div>
+        </div>
+    )
+}
+
+interface ScheduleContainerTimeColumnProps {
+    timeColumns: Array<Date>
+    viewMode: string
+}
+
+const ScheduleContainerTimeColumns = ({viewMode, timeColumns}: ScheduleContainerTimeColumnProps) => {
+    // Format date for display
+    const formatDate = (date: Date) => {
+        if (viewMode === 'week') {
+            return format(date, 'EEE d') // e.g., "Mon 23"
+        } else {
+            return format(date, 'd') // e.g., "23"
+        }
+    }
+    return (
+        <div className="tw-flex tw-flex-row tw-border-b tw-border-gray-200">
+            {timeColumns.map((date, index) => (
+                <div
+                    key={index}
+                    className="tw-flex-1 tw-h-12 tw-p-2 tw-text-center tw-text-sm tw-font-medium tw-text-gray-600 tw-border-r tw-border-gray-200 tw-min-w-[60px]"
+                >
+                    {formatDate(date)}
+                </div>
+            ))}
+        </div>
+    )
+}
+
+interface ScheduleContainerRowTicketProps {
+    ticket: Ticket
+    position: {left: string, width: string}
+    ticketType: string 
+}
+
+const ScheduleContainerRowTicket = ({ticket, position, ticketType}: ScheduleContainerRowTicketProps) => {
+    return (
+        <div key={`bar-${ticket.id}`} className="tw-relative tw-h-16 tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
+            {/* Invisible column structure to maintain width. (Not sure if this is actually necessary so keeping as a comment) */}
+            {/* <div className="tw-flex tw-flex-row tw-w-full">
+                {timeColumns.map((date, index) => (
+                    <div
+                        key={index}
+                        className="tw-flex-1 tw-min-w-[60px]"
+                    />
+                ))}
+            </div> */}
+            {/* Absolutely positioned task bar */}
+            <div
+                className="tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-medium tw-shadow-sm"
+                style={{
+                    left: position.left,
+                    width: position.width,
+                    backgroundColor: TICKET_TYPE_COLOR_MAP[ticketType as keyof typeof TICKET_TYPE_COLOR_MAP] || '#3B82F6',
+                    minWidth: '2px'
+                }}
+            >
+                {parseFloat(position.width) > 10 && (
+                    <span className="tw-truncate tw-px-2">{ticket.name}</span>
+                )}
+            </div>
+        </div>
+    )
+}
+
+interface ScheduleContainerScrollableSectionProps {
+    viewMode: string
+    periodStart: Date
+    periodEnd: Date
+    groupBy: string
+    groupByElements?: Array<GenericObject>
+    timeColumns: Array<Date>
+    tickets: Array<Ticket>
+    groupedTickets: Record<string, Array<Ticket>>
+    ticketTypes: Array<TicketType>
+    collapseArrows: Record<string, boolean>
+}
+
+const ScheduleContainerScrollableSection = ({
+    periodStart,
+    periodEnd,
+    groupBy,
+    tickets,
+    groupByElements=[],
+    groupedTickets,
+    timeColumns,
+    ticketTypes,
+    viewMode,
+    collapseArrows,
+}: ScheduleContainerScrollableSectionProps) => {
+    
+    const calculateTaskPosition = (ticket: Ticket) => {
+        // Normalize to day boundaries
+        const taskStart = startOfDay(new Date(ticket.createdAt))
+        const taskEnd = endOfDay(new Date(ticket.dueDate))
+        
+        const normalizedPeriodStart = startOfDay(periodStart)
+        const normalizedPeriodEnd = endOfDay(periodEnd)
+        
+        // Clamp task dates to visible period
+        const visibleStart = isBefore(taskStart, normalizedPeriodStart) ? normalizedPeriodStart : taskStart
+        const visibleEnd = isAfter(taskEnd, normalizedPeriodEnd) ? normalizedPeriodEnd : taskEnd
+        
+        // Calculate which day columns the task spans
+        const totalDays = eachDayOfInterval({ start: normalizedPeriodStart, end: normalizedPeriodEnd }).length
+        const daysFromStart = differenceInDays(visibleStart, normalizedPeriodStart)
+        const taskDurationDays = differenceInDays(visibleEnd, visibleStart) + 1 // +1 to include both start and end days
+        
+        // Calculate percentage based on day columns, not pure time
+        const leftPercentage = ((daysFromStart / totalDays) * 100)
+        const widthPercentage = (taskDurationDays / totalDays) * 100
+        
+        return {
+            left: `${Math.max(0, leftPercentage)}%`,
+            width: `${Math.min(100 - leftPercentage, widthPercentage)}%`
+        }
+    }
+
+    return (
+        <div className="tw-flex-1 tw-overflow-x-auto">
+            {/* 
+                wrapping both the time columns and ticket sections in
+                min-w-max allows the header + taskbar width calculations to account for the full width needed, including the amount the user needs to scroll if overflow is triggered 
+                This also fixes issues with styling and coloring not extending past the scroll.
+            */}
+            <div className="tw-min-w-max">
+                <ScheduleContainerTimeColumns viewMode={viewMode} timeColumns={timeColumns}/>
+                {/* Task bar rows */}
+                <div className="tw-divide-y tw-divide-gray-100">
+                    {groupBy === "NONE" ? 
+                        (
+                            tickets.map((ticket) => {
+                                const position = calculateTaskPosition(ticket)
+                                const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
+                                return (<ScheduleContainerRowTicket ticket={ticket} ticketType={ticketType} position={position}/>)
+                        })
+                    ) : (
+                        Object.keys(groupedTickets).map((groupById: string) => {
+                            const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
+                            return (
+                                <>
+                                    {/* add one empty row to account for the group by header on the left column */}
+                                    <div key={`groupby-${groupById}`} className="tw-relative tw-h-16 tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
+                                    </div>
+                                    {
+                                        groupedTickets[groupById].map((ticket, index) => {
+                                            const position = calculateTaskPosition(ticket)
+                                            const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
+                                            if (collapseArrows[groupById]) {
+                                                return null;
+                                            }
+                                            return (
+                                                <ScheduleContainerRowTicket ticket={ticket} ticketType={ticketType} position={position}/>
+                                            )
+                                        })
+                                    }
+                                </>
+                            )
+                        })
+                    ) 
+                    }
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export const ScheduleContainer = ({ 
     tickets = [], 
     currentDate,
     setCurrentDate,
@@ -64,15 +304,6 @@ export const GanttChart = ({
 		acc[key] = false
 		return acc
 	}, {}))
-
-    // Format date for display
-    const formatDate = (date: Date) => {
-        if (viewMode === 'week') {
-            return format(date, 'EEE d') // e.g., "Mon 23"
-        } else {
-            return format(date, 'd') // e.g., "23"
-        }
-    }
 
     // Get current period label
     const getCurrentPeriodLabel = () => {
@@ -114,32 +345,6 @@ export const GanttChart = ({
 		dispatch(setGroupBy(option))
 	}
 
-    const calculateTaskPosition = (ticket: Ticket) => {
-        // Normalize to day boundaries
-        const taskStart = startOfDay(new Date(ticket.createdAt))
-        const taskEnd = endOfDay(new Date(ticket.dueDate))
-        
-        const normalizedPeriodStart = startOfDay(periodStart)
-        const normalizedPeriodEnd = endOfDay(periodEnd)
-        
-        // Clamp task dates to visible period
-        const visibleStart = isBefore(taskStart, normalizedPeriodStart) ? normalizedPeriodStart : taskStart
-        const visibleEnd = isAfter(taskEnd, normalizedPeriodEnd) ? normalizedPeriodEnd : taskEnd
-        
-        // Calculate which day columns the task spans
-        const totalDays = eachDayOfInterval({ start: normalizedPeriodStart, end: normalizedPeriodEnd }).length
-        const daysFromStart = differenceInDays(visibleStart, normalizedPeriodStart)
-        const taskDurationDays = differenceInDays(visibleEnd, visibleStart) + 1 // +1 to include both start and end days
-        
-        // Calculate percentage based on day columns, not pure time
-        const leftPercentage = ((daysFromStart / totalDays) * 100)
-        const widthPercentage = (taskDurationDays / totalDays) * 100
-        
-        return {
-            left: `${Math.max(0, leftPercentage)}%`,
-            width: `${Math.min(100 - leftPercentage, widthPercentage)}%`
-        }
-    }
 
     return (
         <div className="tw-w-full tw-bg-white tw-rounded-lg tw-shadow-lg">
@@ -226,117 +431,28 @@ export const GanttChart = ({
                         ) : (
                             <div className="tw-flex tw-flex-row">
                                 {/* Fixed left column for task names */}
-                                <div className="tw-w-48 tw-flex-shrink-0 tw-border-r tw-border-gray-200">
-                                    <div className="tw-p-3 tw-font-medium tw-text-gray-700 tw-h-12 tw-border-b tw-border-gray-200">
-                                        {groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}
-                                    </div>
-                                    <div className="tw-divide-y tw-divide-gray-100">
-                                        {groupBy === "NONE" ? (
-                                            tickets.map((ticket) => (
-                                                <div key={`label-${ticket.id}`} className="tw-h-16 tw-p-3">
-                                                    <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
-                                                        {ticket.name}
-                                                    </div>
-                                                    <div className="tw-text-xs tw-text-gray-500">
-                                                        {new Date(ticket.createdAt).toLocaleDateString()} - {new Date(ticket.dueDate).toLocaleDateString()}
-                                                    </div>
-                                                </div>
-                                            ))
-                                        )
-                                        : (
-                                            Object.keys(groupedTickets).map((groupById: string) => {
-                                                const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
-                                                return (
-                                                    <>
-                                                        <div className="tw-flex tw-flex-row tw-justify-center tw-items-center tw-p-3 tw-h-16 tw-font-medium tw-text-gray-800 tw-bg-gray-50 tw-text-sm tw-truncate">
-                                                            <button onClick={() => {
-                                                                setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})
-                                                            }}>
-                                                                <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-                                                                    <span className = "tw-w-32 tw-truncate">{groupByElement?.name}</span>
-                                                                    {collapseArrows[groupById] ? <IconArrowUp /> : <IconArrowDown />}
-                                                                </div>
-                                                            </button>
-                                                        </div>
-                                                        {
-                                                            !collapseArrows[groupById] ? 
-                                                            groupedTickets[groupById].map((ticket, index) => {
-                                                                return (
-                                                                    <div key={`label-${ticket.id}`} className="tw-h-16 tw-p-3">
-                                                                        <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
-                                                                            {ticket.name}
-                                                                        </div>
-                                                                        <div className="tw-text-xs tw-text-gray-500">
-                                                                            {new Date(ticket.createdAt).toLocaleDateString()} - {new Date(ticket.dueDate).toLocaleDateString()}
-                                                                        </div>
-                                                                    </div>
-                                                                )
-                                                            }) : null
-                                                        }
-                                                    </>
-                                                )
-                                            })
-                                        )
-                                        }
-                                    </div>
-                                </div>
+                                <ScheduleContainerLeftColumn
+                                    groupBy={groupBy}
+                                    collapseArrows={collapseArrows}
+                                    setCollapseArrows={setCollapseArrows}
+                                    tickets={tickets}
+                                    groupedTickets={groupedTickets}
+                                    groupByElements={groupByElements}
+                                /> 
                 
                                 {/* Scrollable section with header and task bars */}
-                                <div className="tw-flex-1 tw-overflow-x-auto">
-                                    {/* 
-                                        wrapping both the time columns and ticket sections in
-                                        min-w-max allows the header + taskbar width calculations to account for the full width needed, including the amount the user needs to scroll if overflow is triggered 
-                                        This also fixes issues with styling and coloring not extending past the scroll.
-                                    */}
-                                    <div className="tw-min-w-max">
-                                        {/* Header row */}
-                                        <div className="tw-flex tw-flex-row tw-border-b tw-border-gray-200">
-                                            {timeColumns.map((date, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="tw-flex-1 tw-h-12 tw-p-2 tw-text-center tw-text-sm tw-font-medium tw-text-gray-600 tw-border-r tw-border-gray-200 tw-min-w-[60px]"
-                                                >
-                                                    {formatDate(date)}
-                                                </div>
-                                            ))}
-                                        </div>
-                                        {/* Task bar rows */}
-                                        <div className="tw-divide-y tw-divide-gray-100">
-                                            {groupBy === "NONE" ? 
-                                                (
-                                                    tickets.map((ticket) => {
-                                                        const position = calculateTaskPosition(ticket)
-                                                        const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
-                                                        return (<ScheduleContainerRowTicket ticket={ticket} ticketType={ticketType} position={position}/>)
-                                                })
-                                            ) : (
-                                                Object.keys(groupedTickets).map((groupById: string) => {
-                                                    const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
-                                                    return (
-                                                        <>
-                                                            {/* add one empty row to account for the group by header on the left column */}
-                                                            <div key={`groupby-${groupById}`} className="tw-relative tw-h-16 tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
-                                                            </div>
-                                                            {
-                                                                groupedTickets[groupById].map((ticket, index) => {
-                                                                    const position = calculateTaskPosition(ticket)
-                                                                    const ticketType = ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name ?? ""
-                                                                    if (collapseArrows[groupById]) {
-                                                                        return null;
-                                                                    }
-                                                                    return (
-                                                                        <ScheduleContainerRowTicket ticket={ticket} ticketType={ticketType} position={position}/>
-                                                                    )
-                                                                })
-                                                            }
-                                                        </>
-                                                    )
-                                                })
-                                            ) 
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
+                                <ScheduleContainerScrollableSection
+                                    tickets={tickets}
+                                    groupBy={groupBy}
+                                    ticketTypes={ticketTypes}
+                                    groupByElements={groupByElements}
+                                    viewMode={viewMode}
+                                    periodStart={periodStart}
+                                    periodEnd={periodEnd}
+                                    timeColumns={timeColumns}
+                                    groupedTickets={groupedTickets}
+                                    collapseArrows={collapseArrows}
+                                /> 
                             </div>
                         )}
                     </div>

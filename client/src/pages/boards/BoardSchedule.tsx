@@ -8,7 +8,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Ticket, UserProfile, ViewMode } from "../../types/common"
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns"
 import { BoardFilters, setFilterButtonState, setFilters } from "../../slices/boardFilterSlice"
-import { GanttChart } from "../../components/boards/ScheduleContainer"
+import { ScheduleContainer } from "../../components/boards/ScheduleContainer"
 import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 
 export const BoardSchedule = () => {
@@ -74,7 +74,7 @@ export const BoardSchedule = () => {
 
 	return (
 		<div className = "tw-relative tw-w-full">
-			<GanttChart 
+			<ScheduleContainer 
 				currentDate={currentDate}
 				setCurrentDate={setCurrentDate}
 				viewMode={viewMode} 
