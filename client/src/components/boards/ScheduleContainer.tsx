@@ -418,7 +418,7 @@ export const ScheduleContainer = ({
                     </h2>
                     <div className="tw-text-sm tw-text-gray-600 tw-flex tw-items-center">
                         <IconClock className="tw-w-6 tw-h-6 tw-mr-1"/>
-                        {tickets.length} tasks visible ({ticketsData.pagination.total} total)
+                        {tickets.length} tasks visible ({ticketsData?.pagination?.total} total)
                     </div>
                 </div>
                 

@@ -250,16 +250,16 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.checkOverlapping === "true" && req.query.startDate && req.query.endDate) {
 				queryBuilder.whereNotNull("tickets.due_date"); // Ensure ticket has a due date
 				queryBuilder.andWhereRaw(
-					"DATE(tickets.created_at) <= ? AND DATE(tickets.due_date) >= ?",
-					[new Date(req.query.endDate), new Date(req.query.startDate)]
+					"DATE(tickets.created_at) <= DATE(?) AND DATE(tickets.due_date) >= DATE(?)",
+					[req.query.endDate, req.query.startDate]
 				);
 			}
 			else if (!req.query.checkOverlapping){
 				if (req.query.startDate){
-					queryBuilder.whereRaw("DATE(tickets.created_at) >= ?", [new Date(req.query.startDate)])
+					queryBuilder.whereRaw("DATE(tickets.created_at) >= ?", [req.query.startDate])
 				}
 				if (req.query.endDate){
-					queryBuilder.whereRaw("DATE(tickets.due_date) <= ?", [new Date(req.query.endDate)])
+					queryBuilder.whereRaw("DATE(tickets.due_date) <= ?", [req.query.endDate])
 				}	
 			}
 			// exclude any tickets that are attached to a specific sprint using
