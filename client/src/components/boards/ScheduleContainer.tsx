@@ -43,6 +43,13 @@ import { setFilters } from '../../slices/boardFilterSlice'
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { PaginationRow } from "../page-elements/PaginationRow"
+import { LoadingSkeleton } from '../page-elements/LoadingSkeleton'
+import { RowPlaceholder } from '../placeholders/RowPlaceholder'
+import { useScreenSize } from "../../hooks/useScreenSize"
+import { LG_BREAKPOINT } from "../../helpers/constants"
+import { SearchToolBar } from "../tickets/SearchToolBar"
+import { useForm, FormProvider, useFormContext} from "react-hook-form"
+import { FormValues } from "../../pages/boards/BoardSchedule"
 
 interface TicketDescriptionProps {
     ticket: Ticket
@@ -88,7 +95,7 @@ export const ScheduleContainerLeftColumn = ({
     currentPage,
 }: ScheduleContainerLeftColumnProps) => {
     return (
-        <div className="tw-w-48 tw-flex-shrink-0 tw-border-r tw-border-gray-200">
+        <div className="tw-w-44 lg:tw-w-48 tw-flex-shrink-0 tw-border-r tw-border-gray-200">
             <div className="tw-p-3 tw-flex tw-flex-row tw-justify-between tw-font-medium tw-text-gray-700 tw-h-12 tw-border-b tw-border-gray-200">
                 <span>{groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}</span>
                 {
@@ -322,6 +329,166 @@ const ScheduleContainerScrollableSection = ({
     )
 }
 
+interface SchedulerContainerControlsProps {
+    viewMode: ViewMode
+    setViewMode: (mode: ViewMode) => void
+    currentDate: Date
+    setCurrentDate: (date: Date) => void
+    navigatePrev: () => void
+    navigateNext: () => void
+    getCurrentPeriodLabel: () => string
+    groupBy: string
+    groupByOptions: Record<string, string>
+    onGroupBy: (option: GroupByOptionsKey) => void
+}
+
+const ScheduleContainerControls = ({
+    viewMode, 
+    setViewMode, 
+    currentDate, 
+    setCurrentDate, 
+    navigatePrev, 
+    navigateNext, 
+    getCurrentPeriodLabel,
+    groupBy,
+    groupByOptions,
+    onGroupBy,
+}: SchedulerContainerControlsProps) => {
+    const { width, height } = useScreenSize()
+
+    const navigationButtons = (
+        <div className="tw-flex tw-items-center tw-gap-x-2">
+            <button
+                onClick={navigatePrev}
+                className="tw-p-1 tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors"
+            >
+                <IconArrowLeft className = "tw-w-6 tw-h-6"/>
+            </button>
+            <span className="tw-text-lg tw-font-medium tw-min-w-[200px] tw-text-center">
+                {getCurrentPeriodLabel()}
+            </span>
+            <button
+                onClick={navigateNext}
+                className="tw-p-1 tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors"
+            >
+                <IconArrowRight className = "tw-w-6 tw-h-6"/>
+            </button>
+        </div>
+    )
+
+    const rightSideButtons = (
+        <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+            <div>
+                <Button
+                    onClick={() => setCurrentDate(new Date())}
+                    theme={"primary"}
+                >
+                    Today
+                </Button>
+            </div>
+
+        </div>
+    )
+
+    const modeChangeButtons = (
+        <div className="tw-flex tw-items-center tw-space-x-2">
+            {(['week', 'month'] as ViewMode[]).map(mode => (
+                <Button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    theme={viewMode === mode ? "active" : "secondary"}
+                >
+                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                </Button>
+            ))}
+        </div>
+    )
+
+    return (
+        <>
+        {
+            width <= LG_BREAKPOINT ? (
+                <div className="tw-flex tw-flex-col tw-gap-y-4 tw-items-center">
+                    {navigationButtons}
+                    <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-justify-between tw-items-center">
+                        {modeChangeButtons} 
+                        {rightSideButtons}
+                    </div>
+                </div>
+            ) : (
+                <div className="tw-flex tw-flex-row tw-items-center tw-justify-between">
+                    {modeChangeButtons}
+                    {navigationButtons}
+                    {rightSideButtons} 
+                </div>
+            )
+        }
+        </>
+    )
+}
+
+
+interface ScheduleContainerSearchBarProps { 
+    pagination: IPagination
+    setPage: (page: number) => void
+    currentPage: number
+    onSubmit: (values: FormValues) => void
+    groupBy: string,
+    onGroupBy: (option: GroupByOptionsKey) => void
+}
+
+const ScheduleContainerSearchBar = ({
+    pagination,
+    setPage,
+    currentPage,
+    onSubmit,
+    groupBy,
+    onGroupBy,
+}: ScheduleContainerSearchBarProps) => {
+    const methods = useFormContext<FormValues>()
+    const { handleSubmit } = methods
+    return (
+        <div className = "tw-flex tw-flex-col tw-gap-y-2 sm:tw-w-full lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
+            <FormProvider {...methods}>
+                <SearchToolBar 
+                    paginationData={pagination} 
+                    setPage={setPage} 
+                    currentPage={currentPage}
+                    registerOptions={{}}
+                    searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+                    additionalButtons={
+                    () => {
+                        return (
+                            <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+                                <label className = "label tw-whitespace-nowrap" htmlFor="board-group-by">Group By</label>
+                                <select 
+                                    id = "board-group-by" 
+                                    /* TODO: the margin top is coming from label CSS, need to refactor to make separate horizontal label class rather than
+                                    forcing the margin top to 0 here */
+                                    className = "__custom-select tw-bg-primary tw-border-primary tw-w-full !tw-mt-0 lg:tw-w-auto" 
+                                    value={groupBy}
+                                    onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
+                                    {
+                                        Object.keys(GROUP_BY_OPTIONS).map((groupByKey) => (
+                                            <option key={`group_by_${groupByKey}`} value = {groupByKey}>{GROUP_BY_OPTIONS[groupByKey as GroupByOptionsKey]}</option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
+                        )
+                    }
+                    }
+                    onFormSubmit={async () => {
+                        await handleSubmit(onSubmit)()
+                    }}
+                    hidePagination={true}
+                >
+                </SearchToolBar>
+            </FormProvider>
+        </div>
+    )
+}
+
 interface ScheduleContainerProps {
     currentDate: Date
     periodStart: Date
@@ -332,6 +499,8 @@ interface ScheduleContainerProps {
     currentPage: number
     setViewMode: (mode: ViewMode) => void
     ticketsData?: ListResponse<Ticket> 
+    isTicketsLoading?: boolean
+    onSubmit: (values: FormValues) => void
 }
 
 export const ScheduleContainer = ({ 
@@ -344,6 +513,8 @@ export const ScheduleContainer = ({
     setViewMode, 
     setPage,
     viewMode, 
+    onSubmit,
+    isTicketsLoading=false,
 }: ScheduleContainerProps) => {
     const dispatch = useAppDispatch()
     const tickets = ticketsData?.data ?? []
@@ -356,6 +527,8 @@ export const ScheduleContainer = ({
 		acc[key] = false
 		return acc
 	}, {}))
+    const methods = useFormContext<FormValues>()
+    const { handleSubmit } = methods
 
     
     const openModal = (ticketId: number) => {
@@ -409,73 +582,36 @@ export const ScheduleContainer = ({
         <div className="tw-w-full tw-bg-white tw-rounded-lg tw-shadow-lg">
             {/* Header */}
             <div className="tw-p-4 tw-border-b tw-border-gray-200">
-                <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
-                    <h2 className="tw-text-2xl tw-font-bold tw-text-gray-800 tw-flex tw-items-center">
-                        <IconCalendar className="tw-w-6 tw-h-6 tw-mr-2" />
-                        Gantt Chart
-                    </h2>
-                    <div className="tw-text-sm tw-text-gray-600 tw-flex tw-items-center">
-                        <IconClock className="tw-w-6 tw-h-6 tw-mr-1"/>
-                        {tickets.length} tasks visible ({ticketsData?.pagination?.total} total)
+                <div className="tw-flex tw-flex-col lg:tw-flex-row tw-gap-y-2 lg:tw-items-center lg:tw-justify-between tw-mb-4">
+                    <FormProvider {...methods}>
+                        <ScheduleContainerSearchBar
+                            setPage={setPage}
+                            currentPage={currentPage}
+                            pagination={ticketsData.pagination ?? {}}
+                            onSubmit={onSubmit}
+                            groupBy={groupBy}
+                            onGroupBy={onGroupBy}
+                        />
+                    </FormProvider>
+                    <div className="tw-text-sm tw-text-gray-600 tw-flex tw-gap-x-2 tw-items-center">
+                        <IconClock className="tw-flex-shrink-0 tw-w-6 tw-h-6"/>
+                        <span className="tw-whitespace-nowrap">{tickets.length} tasks visible ({ticketsData?.pagination?.total} total)</span>
                     </div>
                 </div>
                 
                 {/* Controls */}
-                <div className="tw-flex tw-items-center tw-justify-between">
-                    <div className="tw-flex tw-items-center tw-space-x-2">
-                        {(['week', 'month'] as ViewMode[]).map(mode => (
-                            <Button
-                                key={mode}
-                                onClick={() => setViewMode(mode)}
-                                theme={viewMode === mode ? "active" : "secondary"}
-                            >
-                                {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                            </Button>
-                        ))}
-                    </div>
-
-                    <div className="tw-flex tw-items-center tw-space-x-2">
-                        <button
-                            onClick={navigatePrev}
-                            className="tw-p-1 tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors"
-                        >
-                            <IconArrowLeft className = "tw-w-6 tw-h-6"/>
-                        </button>
-                        <span className="tw-text-lg tw-font-medium tw-min-w-[200px] tw-text-center">
-                            {getCurrentPeriodLabel()}
-                        </span>
-                        <button
-                            onClick={navigateNext}
-                            className="tw-p-1 tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors"
-                        >
-                            <IconArrowRight className = "tw-w-6 tw-h-6"/>
-                        </button>
-                    </div>
-                    <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
-                        <Button
-                            onClick={() => setCurrentDate(new Date())}
-                            theme={"primary"}
-                        >
-                            Today
-                        </Button>
-                        <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-                            <label className = "label" htmlFor="board-group-by">Group By</label>
-                            <select 
-                                id = "board-group-by" 
-                                /* TODO: the margin top is coming from label CSS, need to refactor to make separate horizontal label class rather than
-                                forcing the margin top to 0 here */
-                                className = "__custom-select tw-bg-primary tw-border-primary tw-w-full !tw-mt-0 lg:tw-w-auto" 
-                                value={groupBy}
-                                onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
-                                {
-                                    Object.keys(GROUP_BY_OPTIONS).map((groupByKey) => (
-                                        <option key={`group_by_${groupByKey}`} value = {groupByKey}>{GROUP_BY_OPTIONS[groupByKey as GroupByOptionsKey]}</option>
-                                    ))
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                <ScheduleContainerControls 
+                    viewMode={viewMode}
+                    setViewMode={setViewMode}
+                    currentDate={currentDate}
+                    setCurrentDate={setCurrentDate}
+                    navigatePrev={navigatePrev}
+                    navigateNext={navigateNext}
+                    getCurrentPeriodLabel={getCurrentPeriodLabel}
+                    groupBy={groupBy}
+                    groupByOptions={GROUP_BY_OPTIONS}
+                    onGroupBy={onGroupBy}
+                />
             </div>
 
             {/* Chart */}
@@ -485,7 +621,13 @@ export const ScheduleContainer = ({
                     <div className="tw-flex tw-flex-col">
                         {tickets.length === 0 ? (
                             <div className="tw-p-8 tw-text-center tw-text-gray-500">
-                                No tasks found for the current {viewMode} period
+                                {
+                                    isTicketsLoading ? 
+                                        <LoadingSkeleton height="tw-h-[800px]" width="tw-w-full">
+                                            <RowPlaceholder/>	
+                                        </LoadingSkeleton> :
+                                    <span>No tasks found for the current {viewMode} period</span>
+                                }
                             </div>
                         ) : (
                             <div className="tw-flex tw-flex-row">

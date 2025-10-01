@@ -25,7 +25,7 @@ interface Props {
 	boardId: number	
 }
 
-export const BoardScheduleFilterModal = ({boardId}: Props) => {
+export const BoardScheduleFilterForm = ({boardId}: Props) => {
 	const dispatch = useAppDispatch()
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { priorities } = useAppSelector((state) => state.priority)

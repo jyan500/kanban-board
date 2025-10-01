@@ -10,6 +10,12 @@ import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-f
 import { BoardFilters, setFilterButtonState, setFilters } from "../../slices/boardFilterSlice"
 import { ScheduleContainer } from "../../components/boards/ScheduleContainer"
 import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
+import { useForm, FormProvider } from "react-hook-form"
+
+export interface FormValues { 
+	query: string
+	searchBy: string
+}
 
 export const BoardSchedule = () => {
 	const dispatch = useAppDispatch()
@@ -23,7 +29,14 @@ export const BoardSchedule = () => {
 	const { statuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
-	const { data: boardTicketData, isFetching: isBoardTicketFetching, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo && filters.startDate != null && filters.endDate != null ? {id: boardInfo.id, urlParams: {
+	const defaultForm: FormValues = {
+		query: "",
+		searchBy: "title",
+	}
+    const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
+	const methods = useForm<FormValues>({defaultValues: preloadedValues})
+	const { handleSubmit } = methods
+	const { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo && filters.startDate != null && filters.endDate != null ? {id: boardInfo.id, urlParams: {
 		// only include the filters that aren't null
 		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
 			const typedKey = key as keyof BoardFilters
@@ -35,6 +48,7 @@ export const BoardSchedule = () => {
 			}
 			return acc	
 		}, {} as Record<string, any>)),
+		...preloadedValues,
 		...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeCompleted": true} : {}),
 		"includeAssignees": true, 
 		"requireDueDate": true,
@@ -65,6 +79,11 @@ export const BoardSchedule = () => {
 		}
 	}, [viewMode, currentDate])
 
+	const onSubmit = (values: FormValues) => {
+		setPage(1)
+		setPreloadedValues(values)
+	}
+
 	useEffect(() => {
 		// reset the page whenever the date range is changed
 		setPage(1)
@@ -77,17 +96,21 @@ export const BoardSchedule = () => {
 
 	return (
 		<div className = "tw-relative tw-w-full">
-			<ScheduleContainer 
-				currentDate={currentDate}
-				setCurrentDate={setCurrentDate}
-				viewMode={viewMode} 
-				periodStart={getCurrentPeriod.start}
-				periodEnd={getCurrentPeriod.end}
-				setViewMode={setViewMode} 
-				setPage={setPage}
-				currentPage={page}
-				ticketsData={boardTicketData}
-			/>
+			<FormProvider {...methods}>
+				<ScheduleContainer 
+					onSubmit={onSubmit}
+					currentDate={currentDate}
+					setCurrentDate={setCurrentDate}
+					viewMode={viewMode} 
+					periodStart={getCurrentPeriod.start}
+					isTicketsLoading={isBoardTicketLoading}
+					periodEnd={getCurrentPeriod.end}
+					setViewMode={setViewMode} 
+					setPage={setPage}
+					currentPage={page}
+					ticketsData={boardTicketData}
+				/>
+			</FormProvider>
 		</div>
 	)
 }
