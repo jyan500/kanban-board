@@ -107,6 +107,7 @@ export const sprintApi = privateApi.injectEndpoints({
 })
 
 export const {
+	useLazyGetSprintsQuery,
 	useGetSprintsQuery,
 	useGetSprintQuery,
 	useLazyGetSprintQuery,

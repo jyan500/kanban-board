@@ -19,7 +19,7 @@ export interface FormValues {
 
 export const BoardSchedule = () => {
 	const dispatch = useAppDispatch()
-	const { filters } = useAppSelector((state) => state.boardFilter)
+	const { filters, filterButtonState } = useAppSelector((state) => state.boardFilter)
 	const [ page, setPage ] = useState(1)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
     const [currentDate, setCurrentDate] = useState(new Date())
@@ -103,6 +103,7 @@ export const BoardSchedule = () => {
 					setCurrentDate={setCurrentDate}
 					viewMode={viewMode} 
 					periodStart={getCurrentPeriod.start}
+					filterButtonState={filterButtonState}
 					isTicketsLoading={isBoardTicketLoading}
 					periodEnd={getCurrentPeriod.end}
 					boardId={boardInfo?.id ?? 0}

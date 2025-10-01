@@ -437,6 +437,7 @@ interface ScheduleContainerSearchBarProps {
     currentPage: number
     onSubmit: (values: FormValues) => void
     groupBy: string
+    filterButtonState: boolean
     onGroupBy: (option: GroupByOptionsKey) => void
     boardId: number
 }
@@ -447,12 +448,12 @@ const ScheduleContainerSearchBar = ({
     currentPage,
     onSubmit,
     groupBy,
+    filterButtonState,
     onGroupBy,
     boardId,
 }: ScheduleContainerSearchBarProps) => {
     const dispatch = useAppDispatch()
     const methods = useFormContext<FormValues>()
-
     const { handleSubmit } = methods
     return (
         <div className = "tw-flex tw-flex-col tw-gap-y-2 sm:tw-w-full lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
@@ -488,7 +489,7 @@ const ScheduleContainerSearchBar = ({
                                         dispatch(toggleShowModal(true))
                                     }} className="tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700">
                                         <div className = "tw-flex tw-flex-row tw-gap-x-2">
-                                            <IconFilter/>
+                                            <IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
                                             <span>Filters</span>
                                         </div>
                                     </Button>
@@ -520,6 +521,7 @@ interface ScheduleContainerProps {
     setViewMode: (mode: ViewMode) => void
     ticketsData?: ListResponse<Ticket> 
     isTicketsLoading?: boolean
+    filterButtonState: boolean
     onSubmit: (values: FormValues) => void
     boardId: number
 }
@@ -533,6 +535,7 @@ export const ScheduleContainer = ({
     currentPage,
     setViewMode, 
     setPage,
+    filterButtonState,
     viewMode, 
     onSubmit,
     boardId,
@@ -612,6 +615,7 @@ export const ScheduleContainer = ({
                             onSubmit={onSubmit}
                             groupBy={groupBy}
                             onGroupBy={onGroupBy}
+                            filterButtonState={filterButtonState}
                         />
                     </FormProvider>
                     <div className="tw-text-sm tw-text-gray-600 tw-flex tw-gap-x-2 tw-items-center">
