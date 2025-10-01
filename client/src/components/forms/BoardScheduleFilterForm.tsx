@@ -84,7 +84,7 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 	}
 
 	return (
-		<div className = "tw-p-2 tw-flex tw-flex-col tw-gap-y-2 lg:tw-w-[500px]">
+		<div className = "tw-p-2 tw-flex tw-flex-col tw-gap-y-2 tw-w-full lg:tw-w-[500px]">
 			<form onSubmit={(e) => {
 				e.preventDefault()
 				e.stopPropagation()

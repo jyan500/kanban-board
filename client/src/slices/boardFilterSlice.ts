@@ -12,6 +12,7 @@ export interface BoardFilters {
 	priorityId: number | null
 	startDate: string | null
 	endDate: string | null
+	sprintId: string | null
 }
 
 interface BoardFilterState {
@@ -27,6 +28,7 @@ const initialState: BoardFilterState = {
 		priorityId: null,
 		startDate: null,
 		endDate: null,
+		sprintId: null,
 	},
 	filterButtonState: 0
 }
