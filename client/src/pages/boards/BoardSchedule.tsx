@@ -23,7 +23,7 @@ export const BoardSchedule = () => {
 	const { statuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
-	const { data: boardTicketData, isFetching: isBoardTicketFetching, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo && filters.startDate != null && filters.endDate != null ? {id: boardInfo.id, urlParams: {
+	const { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo && filters.startDate != null && filters.endDate != null ? {id: boardInfo.id, urlParams: {
 		// only include the filters that aren't null
 		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
 			const typedKey = key as keyof BoardFilters
@@ -82,6 +82,7 @@ export const BoardSchedule = () => {
 				setCurrentDate={setCurrentDate}
 				viewMode={viewMode} 
 				periodStart={getCurrentPeriod.start}
+				isTicketsLoading={isBoardTicketLoading}
 				periodEnd={getCurrentPeriod.end}
 				setViewMode={setViewMode} 
 				setPage={setPage}
