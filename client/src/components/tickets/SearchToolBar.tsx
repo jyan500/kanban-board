@@ -52,7 +52,7 @@ export const SearchToolBar = ({
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-justify-between">
+			<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-gap-x-2">
 				<FormProvider {...methods}>
 					<form onSubmit={(e) => {
 						e.preventDefault()
@@ -101,9 +101,9 @@ export const SearchToolBar = ({
 								Clear Filters
 							</button>
 						) : null}
-						{additionalButtons ? additionalButtons() : null}
 					</form>
 				</FormProvider>
+				{additionalButtons ? additionalButtons() : null}
 			</div>
 			{/* 
 			For some reason, error messages when retrieved from useFormContext() have to be converted to strings explicitly, see below:

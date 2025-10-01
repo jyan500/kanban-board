@@ -14,6 +14,7 @@ import { CompleteSprintForm } from "./forms/CompleteSprintForm"
 import { BoardStatusModal } from "./primary-modals/BoardStatusModal"
 import { OrganizationStatusModal } from "./primary-modals/OrganizationStatusModal"
 import { BulkActionsModal } from "./primary-modals/BulkActionsModal"
+import { BoardFilterModal } from "./primary-modals/BoardFilterModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { PRIMARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
 import { useScreenSize } from "../hooks/useScreenSize"
@@ -32,6 +33,7 @@ export const modalTypes = {
 	"USER_FORM": EditUserFormModal,
 	"BULK_ACTIONS_MODAL": BulkActionsModal,
 	"COMPLETE_SPRINT_FORM": CompleteSprintForm,
+	"BOARD_FILTER_MODAL": BoardFilterModal,
 }
 
 export const modalClassNames = {
@@ -46,6 +48,7 @@ export const modalClassNames = {
 	"BULK_ACTIONS_MODAL": defaultConfig,
 	"SPRINT_FORM": avoidAsyncSelectMenuOverflow,
 	"COMPLETE_SPRINT_FORM": avoidAsyncSelectMenuOverflow,
+	"BOARD_FILTER_MODAL": avoidAsyncSelectMenuOverflow,
 }
 
 // type for partial subset of keys

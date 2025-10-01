@@ -105,6 +105,7 @@ export const BoardSchedule = () => {
 					periodStart={getCurrentPeriod.start}
 					isTicketsLoading={isBoardTicketLoading}
 					periodEnd={getCurrentPeriod.end}
+					boardId={boardInfo?.id ?? 0}
 					setViewMode={setViewMode} 
 					setPage={setPage}
 					currentPage={page}
