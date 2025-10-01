@@ -386,22 +386,7 @@ const ScheduleContainerControls = ({
                     Today
                 </Button>
             </div>
-            <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-                <label className = "label" htmlFor="board-group-by">Group By</label>
-                <select 
-                    id = "board-group-by" 
-                    /* TODO: the margin top is coming from label CSS, need to refactor to make separate horizontal label class rather than
-                    forcing the margin top to 0 here */
-                    className = "__custom-select tw-bg-primary tw-border-primary tw-w-full !tw-mt-0 lg:tw-w-auto" 
-                    value={groupBy}
-                    onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
-                    {
-                        Object.keys(GROUP_BY_OPTIONS).map((groupByKey) => (
-                            <option key={`group_by_${groupByKey}`} value = {groupByKey}>{GROUP_BY_OPTIONS[groupByKey as GroupByOptionsKey]}</option>
-                        ))
-                    }
-                </select>
-            </div>
+
         </div>
     )
 
@@ -448,6 +433,8 @@ interface ScheduleContainerSearchBarProps {
     setPage: (page: number) => void
     currentPage: number
     onSubmit: (values: FormValues) => void
+    groupBy: string,
+    onGroupBy: (option: GroupByOptionsKey) => void
 }
 
 const ScheduleContainerSearchBar = ({
@@ -455,6 +442,8 @@ const ScheduleContainerSearchBar = ({
     setPage,
     currentPage,
     onSubmit,
+    groupBy,
+    onGroupBy,
 }: ScheduleContainerSearchBarProps) => {
     const methods = useFormContext<FormValues>()
     const { handleSubmit } = methods
@@ -467,6 +456,28 @@ const ScheduleContainerSearchBar = ({
                     currentPage={currentPage}
                     registerOptions={{}}
                     searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+                    additionalButtons={
+                    () => {
+                        return (
+                            <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+                                <label className = "label" htmlFor="board-group-by">Group By</label>
+                                <select 
+                                    id = "board-group-by" 
+                                    /* TODO: the margin top is coming from label CSS, need to refactor to make separate horizontal label class rather than
+                                    forcing the margin top to 0 here */
+                                    className = "__custom-select tw-bg-primary tw-border-primary tw-w-full !tw-mt-0 lg:tw-w-auto" 
+                                    value={groupBy}
+                                    onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
+                                    {
+                                        Object.keys(GROUP_BY_OPTIONS).map((groupByKey) => (
+                                            <option key={`group_by_${groupByKey}`} value = {groupByKey}>{GROUP_BY_OPTIONS[groupByKey as GroupByOptionsKey]}</option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
+                        )
+                    }
+                    }
                     onFormSubmit={async () => {
                         await handleSubmit(onSubmit)()
                     }}
@@ -578,6 +589,8 @@ export const ScheduleContainer = ({
                             currentPage={currentPage}
                             pagination={ticketsData.pagination ?? {}}
                             onSubmit={onSubmit}
+                            groupBy={groupBy}
+                            onGroupBy={onGroupBy}
                         />
                     </FormProvider>
                     <div className="tw-text-sm tw-text-gray-600 tw-flex tw-gap-x-2 tw-items-center">
