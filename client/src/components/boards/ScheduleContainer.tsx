@@ -47,6 +47,9 @@ import { LoadingSkeleton } from '../page-elements/LoadingSkeleton'
 import { RowPlaceholder } from '../placeholders/RowPlaceholder'
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
+import { SearchToolBar } from "../tickets/SearchToolBar"
+import { useForm, FormProvider, useFormContext} from "react-hook-form"
+import { FormValues } from "../../pages/boards/BoardSchedule"
 
 interface TicketDescriptionProps {
     ticket: Ticket
@@ -439,6 +442,42 @@ const ScheduleContainerControls = ({
     )
 }
 
+
+interface ScheduleContainerSearchBarProps { 
+    pagination: IPagination
+    setPage: (page: number) => void
+    currentPage: number
+    onSubmit: (values: FormValues) => void
+}
+
+const ScheduleContainerSearchBar = ({
+    pagination,
+    setPage,
+    currentPage,
+    onSubmit,
+}: ScheduleContainerSearchBarProps) => {
+    const methods = useFormContext<FormValues>()
+    const { handleSubmit } = methods
+    return (
+        <div className = "tw-flex tw-flex-col tw-gap-y-2 sm:tw-w-full lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
+            <FormProvider {...methods}>
+                <SearchToolBar 
+                    paginationData={pagination} 
+                    setPage={setPage} 
+                    currentPage={currentPage}
+                    registerOptions={{}}
+                    searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+                    onFormSubmit={async () => {
+                        await handleSubmit(onSubmit)()
+                    }}
+                    hidePagination={true}
+                >
+                </SearchToolBar>
+            </FormProvider>
+        </div>
+    )
+}
+
 interface ScheduleContainerProps {
     currentDate: Date
     periodStart: Date
@@ -450,6 +489,7 @@ interface ScheduleContainerProps {
     setViewMode: (mode: ViewMode) => void
     ticketsData?: ListResponse<Ticket> 
     isTicketsLoading?: boolean
+    onSubmit: (values: FormValues) => void
 }
 
 export const ScheduleContainer = ({ 
@@ -462,6 +502,7 @@ export const ScheduleContainer = ({
     setViewMode, 
     setPage,
     viewMode, 
+    onSubmit,
     isTicketsLoading=false,
 }: ScheduleContainerProps) => {
     const dispatch = useAppDispatch()
@@ -475,6 +516,8 @@ export const ScheduleContainer = ({
 		acc[key] = false
 		return acc
 	}, {}))
+    const methods = useFormContext<FormValues>()
+    const { handleSubmit } = methods
 
     
     const openModal = (ticketId: number) => {
@@ -529,8 +572,16 @@ export const ScheduleContainer = ({
             {/* Header */}
             <div className="tw-p-4 tw-border-b tw-border-gray-200">
                 <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
-                    <div className="tw-text-sm tw-text-gray-600 tw-flex tw-items-center">
-                        <IconClock className="tw-w-6 tw-h-6 tw-mr-1"/>
+                    <FormProvider {...methods}>
+                        <ScheduleContainerSearchBar
+                            setPage={setPage}
+                            currentPage={currentPage}
+                            pagination={ticketsData.pagination ?? {}}
+                            onSubmit={onSubmit}
+                        />
+                    </FormProvider>
+                    <div className="tw-text-sm tw-text-gray-600 tw-flex tw-gap-x-2 tw-items-center">
+                        <IconClock className="tw-flex-shrink-0 tw-w-6 tw-h-6"/>
                         {tickets.length} tasks visible ({ticketsData?.pagination?.total} total)
                     </div>
                 </div>

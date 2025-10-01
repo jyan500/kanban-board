@@ -13,7 +13,6 @@ import { SprintForm } from "./forms/SprintForm"
 import { CompleteSprintForm } from "./forms/CompleteSprintForm"
 import { BoardStatusModal } from "./primary-modals/BoardStatusModal"
 import { OrganizationStatusModal } from "./primary-modals/OrganizationStatusModal"
-import { BoardScheduleFilterModal } from "./primary-modals/BoardScheduleFilterModal"
 import { BulkActionsModal } from "./primary-modals/BulkActionsModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { PRIMARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
@@ -32,7 +31,6 @@ export const modalTypes = {
 	"SPRINT_FORM": SprintForm,
 	"USER_FORM": EditUserFormModal,
 	"BULK_ACTIONS_MODAL": BulkActionsModal,
-	"BOARD_SCHEDULE_FILTER_MODAL": BoardScheduleFilterModal,
 	"COMPLETE_SPRINT_FORM": CompleteSprintForm,
 }
 
@@ -46,7 +44,6 @@ export const modalClassNames = {
 	"BOARD_FORM": avoidAsyncSelectMenuOverflow,
 	"PROJECT_FORM": avoidAsyncSelectMenuOverflow,
 	"BULK_ACTIONS_MODAL": defaultConfig,
-	"BOARD_SCHEDULE_FILTER_MODAL": avoidAsyncSelectMenuOverflow,
 	"SPRINT_FORM": avoidAsyncSelectMenuOverflow,
 	"COMPLETE_SPRINT_FORM": avoidAsyncSelectMenuOverflow,
 }

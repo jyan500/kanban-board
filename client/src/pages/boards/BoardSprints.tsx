@@ -42,10 +42,7 @@ export const BoardSprints = () => {
 
 	const onSubmit = (values: FormValues) => {
 		setPage(1)
-		setPreloadedValues({
-			...defaultForm,
-			query: values.query,
-		})
+		setPreloadedValues(values)
 	}
 
 	return (
