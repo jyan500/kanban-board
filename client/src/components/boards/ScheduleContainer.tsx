@@ -460,7 +460,7 @@ const ScheduleContainerSearchBar = ({
                     () => {
                         return (
                             <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-                                <label className = "label" htmlFor="board-group-by">Group By</label>
+                                <label className = "label tw-whitespace-nowrap" htmlFor="board-group-by">Group By</label>
                                 <select 
                                     id = "board-group-by" 
                                     /* TODO: the margin top is coming from label CSS, need to refactor to make separate horizontal label class rather than
@@ -582,7 +582,7 @@ export const ScheduleContainer = ({
         <div className="tw-w-full tw-bg-white tw-rounded-lg tw-shadow-lg">
             {/* Header */}
             <div className="tw-p-4 tw-border-b tw-border-gray-200">
-                <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                <div className="tw-flex tw-flex-col lg:tw-flex-row tw-gap-y-2 lg:tw-items-center lg:tw-justify-between tw-mb-4">
                     <FormProvider {...methods}>
                         <ScheduleContainerSearchBar
                             setPage={setPage}
@@ -595,7 +595,7 @@ export const ScheduleContainer = ({
                     </FormProvider>
                     <div className="tw-text-sm tw-text-gray-600 tw-flex tw-gap-x-2 tw-items-center">
                         <IconClock className="tw-flex-shrink-0 tw-w-6 tw-h-6"/>
-                        {tickets.length} tasks visible ({ticketsData?.pagination?.total} total)
+                        <span className="tw-whitespace-nowrap">{tickets.length} tasks visible ({ticketsData?.pagination?.total} total)</span>
                     </div>
                 </div>
                 
