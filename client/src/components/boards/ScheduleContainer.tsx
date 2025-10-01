@@ -374,13 +374,15 @@ const ScheduleContainerControls = ({
     )
 
     const rightSideButtons = (
-        <div className = "tw-flex tw-flex-row tw-gap-x-2">
-            <Button
-                onClick={() => setCurrentDate(new Date())}
-                theme={"primary"}
-            >
-                Today
-            </Button>
+        <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+            <div>
+                <Button
+                    onClick={() => setCurrentDate(new Date())}
+                    theme={"primary"}
+                >
+                    Today
+                </Button>
+            </div>
             <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
                 <label className = "label" htmlFor="board-group-by">Group By</label>
                 <select 
