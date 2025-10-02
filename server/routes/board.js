@@ -243,6 +243,9 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.statusId){
 				queryBuilder.where("tickets.status_id", req.query.statusId)
 			}
+			if (req.query.sprintId){
+				queryBuilder.join("tickets_to_sprints", "tickets_to_sprints.ticket_id", "=", "tickets.id").where("tickets_to_sprints.sprint_id", req.query.sprintId)
+			}
 			if (req.query.excludeCompleted){
 				queryBuilder.whereNotIn("tickets.status_id", completedStatusIds)
 			}

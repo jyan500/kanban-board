@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
-import { USER_PROFILE_URL } from "../../helpers/urls"
-import { TicketType, Priority, Status, OptionType } from "../../types/common"
+import { USER_PROFILE_URL, SPRINT_URL } from "../../helpers/urls"
+import { TicketType, Priority, Status, OptionType, Sprint } from "../../types/common"
 import { Controller, useForm, FormProvider } from "react-hook-form"
 import { AsyncSelect, LoadOptionsType } from "../AsyncSelect"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
@@ -8,6 +8,7 @@ import { LoadingButton } from "../page-elements/LoadingButton"
 import { setFilters, setFilterButtonState } from "../../slices/boardFilterSlice"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
+import { useLazyGetSprintQuery } from "../../services/private/sprint"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { boardApi } from "../../services/private/board"
 import { format } from "date-fns"
@@ -17,8 +18,7 @@ export type FormValues = {
 	statusId: number | null
 	ticketTypeId: number | null
 	assignee: OptionType
-	startDate: string | null
-	endDate: string | null
+	sprint: OptionType
 }
 
 interface Props {
@@ -36,10 +36,10 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 		priorityId: 0,
 		statusId: 0,
 		assignee: {value: "", label: ""},
-		startDate: null,
-		endDate: null,
+		sprint: {value: "", label: ""},
 	}
 	const [ trigger, {data, isLoading, isFetching}] = useLazyGetUserProfilesQuery()
+	const [ triggerGetSprint, {data: sprintData, isLoading: isSprintLoading, isFetching: isSprintFetching}] = useLazyGetSprintQuery()
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({
 		defaultValues: preloadedValues
@@ -48,17 +48,18 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 
 	useEffect(() => {
 		if (filters){
-			const { ticketTypeId, priorityId, statusId, assignee, startDate, endDate } = filters
+			const { ticketTypeId, priorityId, statusId, assignee, sprintId } = filters
 			reset({
 				...defaultForm,
 				ticketTypeId, 
 				priorityId,
 				statusId,
-				startDate,
-				endDate
 			})
 			if (assignee){
 				trigger({userIds: [assignee]})
+			}
+			if (sprintId){
+				triggerGetSprint({id: sprintId, urlParams: {}})
 			}
 		}
 	}, [])
@@ -72,28 +73,37 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 		}
 	}, [isFetching, data])
 
-	const onSubmit = async (values: FormValues) => {
+	useEffect(() => {
+		if (!isSprintFetching && sprintData){
+			setValue("sprint", {value: sprintData.id.toString(), label: sprintData.name})
+		}
+	}, [isSprintFetching, sprintData])
+
+	const onSubmit = (values: FormValues) => {
 		dispatch(setFilters({
+            ...filters,
 			ticketTypeId: values.ticketTypeId !== 0 ? values.ticketTypeId : null,
 			priorityId: values.priorityId !== 0 ? values.priorityId : null,
 			statusId: values.statusId !== 0 ? values.statusId : null,
-			startDate: values.startDate,
-			endDate: values.endDate,
-			assignee: values.assignee && values.assignee.value !== "" ? Number(values.assignee.value) : null
+			assignee: values.assignee && values.assignee.value !== "" ? Number(values.assignee.value) : null,
+			sprintId: values.sprint && values.sprint.value !== "" ? Number(values.sprint.value) : null
 		}))
 		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
-		const { assignee, ...assigneeExcluded} = values
-		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.startDate == null && values.endDate == null && values.assignee?.value === "")
-		dispatch(setFilterButtonState(filtersApplied ? 1 : 0))
+		const { assignee, sprint, ...otherValues} = values
+		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.assignee?.value === "" && values.sprint?.value === "")
+		dispatch(setFilterButtonState(filtersApplied))
 		dispatch(toggleShowModal(false))
 		dispatch(setModalProps({}))
 		dispatch(setModalType(undefined))
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-w-[500px]">
-			<p className = "tw-font-semibold tw-text-xl">Filters</p>	
-			<form onSubmit={handleSubmit(onSubmit)}>
+		<div className = "tw-p-2 tw-flex tw-flex-col tw-gap-y-2 tw-w-full lg:tw-w-[500px]">
+			<form onSubmit={(e) => {
+				e.preventDefault()
+				e.stopPropagation()
+				handleSubmit(onSubmit)()
+			}}>
 				<div className = "tw-flex tw-flex-col tw-gap-y-2">
 					<div className = "tw-flex tw-flex-col">
 						<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
@@ -142,12 +152,23 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 						/>
 					</div>
 					<div className = "tw-flex tw-flex-col">
-						<label className = "label" htmlFor = "filters-noti-date-from">Start Date</label>
-						<input {...register("startDate")} id = "filters-noti-date-from" aria-label="Date" type="date"/>
-					</div>
-					<div className = "tw-flex tw-flex-col">
-						<label className = "label" htmlFor = "filters-noti-date-to">End Date</label>
-						<input {...register("endDate")} id = "filters-noti-date-to" aria-label="Date" type="date"/>
+						<label className = "label" htmlFor = "filters-ticket-sprint">Sprint</label>
+						<Controller
+							name={"sprint"}
+							control={control}
+			                render={({ field: { onChange, value, name, ref } }) => (
+		                	<AsyncSelect 
+		                		defaultValue={watch("sprint") ?? {value: "", label: ""}}
+			                	endpoint={SPRINT_URL} 
+			                	urlParams={{boardId: boardId, searchBy: "name", forSelect: true}} 
+			                	className={"tw-w-full"}
+			                	clearable={false}
+			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
+			                		onChange(selectedOption) 	
+			                	}}
+			                />
+			                )}
+						/>
 					</div>
 					<div className = "tw-flex tw-flex-row tw-gap-x-2">
 						<LoadingButton type={"submit"} text={"Submit"}/>	
@@ -155,15 +176,15 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 							e.preventDefault()
 							reset(defaultForm)
 							dispatch(setFilters({
+                                ...filters,
 								ticketTypeId: null,
 								priorityId: null,
 								statusId: null,
-								startDate: null,
-								endDate: null,
-								assignee: null
+								assignee: null,
+								sprintId: null
 							}))
 							dispatch(boardApi.util.invalidateTags(["BoardTickets"]))
-							dispatch(setFilterButtonState(0))
+							dispatch(setFilterButtonState(false))
 						}} className = "button --secondary">Clear Filters</button>	
 					</div>
 				</div>

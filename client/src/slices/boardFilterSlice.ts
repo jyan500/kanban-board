@@ -12,11 +12,12 @@ export interface BoardFilters {
 	priorityId: number | null
 	startDate: string | null
 	endDate: string | null
+	sprintId: number | null
 }
 
 interface BoardFilterState {
 	filters: BoardFilters
-	filterButtonState: number
+	filterButtonState: boolean
 }
 
 const initialState: BoardFilterState = {
@@ -27,8 +28,9 @@ const initialState: BoardFilterState = {
 		priorityId: null,
 		startDate: null,
 		endDate: null,
+		sprintId: null,
 	},
-	filterButtonState: 0
+	filterButtonState: false
 }
 
 export const boardFilterSlice = createSlice({
@@ -38,7 +40,7 @@ export const boardFilterSlice = createSlice({
 		setFilters(state, action: PayloadAction<BoardFilters>){
 			state.filters = action.payload	
 		},
-		setFilterButtonState(state, action: PayloadAction<number>){
+		setFilterButtonState(state, action: PayloadAction<boolean>){
 			state.filterButtonState = action.payload
 		}
 	},

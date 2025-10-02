@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { 
     GenericObject, 
     GroupByOptionsKey, 
@@ -48,8 +48,11 @@ import { RowPlaceholder } from '../placeholders/RowPlaceholder'
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
 import { SearchToolBar } from "../tickets/SearchToolBar"
+import { BoardScheduleFilterForm } from "../forms/BoardScheduleFilterForm"
+import { useClickOutside } from "../../hooks/useClickOutside"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { FormValues } from "../../pages/boards/BoardSchedule"
+import { IconFilter } from "../icons/IconFilter"
 
 interface TicketDescriptionProps {
     ticket: Ticket
@@ -433,8 +436,10 @@ interface ScheduleContainerSearchBarProps {
     setPage: (page: number) => void
     currentPage: number
     onSubmit: (values: FormValues) => void
-    groupBy: string,
+    groupBy: string
+    filterButtonState: boolean
     onGroupBy: (option: GroupByOptionsKey) => void
+    boardId: number
 }
 
 const ScheduleContainerSearchBar = ({
@@ -443,8 +448,11 @@ const ScheduleContainerSearchBar = ({
     currentPage,
     onSubmit,
     groupBy,
+    filterButtonState,
     onGroupBy,
+    boardId,
 }: ScheduleContainerSearchBarProps) => {
+    const dispatch = useAppDispatch()
     const methods = useFormContext<FormValues>()
     const { handleSubmit } = methods
     return (
@@ -474,6 +482,18 @@ const ScheduleContainerSearchBar = ({
                                         ))
                                     }
                                 </select>
+                                <div className = "tw-relative tw-group">
+                                    <Button onClick={() => {
+                                        dispatch(setModalType("BOARD_FILTER_MODAL"))
+                                        dispatch(setModalProps({type: "SCHEDULE", boardId: boardId}))
+                                        dispatch(toggleShowModal(true))
+                                    }} className="tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700">
+                                        <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                                            <IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
+                                            <span>Filters</span>
+                                        </div>
+                                    </Button>
+                                </div>
                             </div>
                         )
                     }
@@ -485,6 +505,7 @@ const ScheduleContainerSearchBar = ({
                 >
                 </SearchToolBar>
             </FormProvider>
+
         </div>
     )
 }
@@ -500,7 +521,9 @@ interface ScheduleContainerProps {
     setViewMode: (mode: ViewMode) => void
     ticketsData?: ListResponse<Ticket> 
     isTicketsLoading?: boolean
+    filterButtonState: boolean
     onSubmit: (values: FormValues) => void
+    boardId: number
 }
 
 export const ScheduleContainer = ({ 
@@ -512,8 +535,10 @@ export const ScheduleContainer = ({
     currentPage,
     setViewMode, 
     setPage,
+    filterButtonState,
     viewMode, 
     onSubmit,
+    boardId,
     isTicketsLoading=false,
 }: ScheduleContainerProps) => {
     const dispatch = useAppDispatch()
@@ -529,8 +554,6 @@ export const ScheduleContainer = ({
 	}, {}))
     const methods = useFormContext<FormValues>()
     const { handleSubmit } = methods
-
-    
     const openModal = (ticketId: number) => {
         dispatch(toggleShowModal(true))
         dispatch(setModalType("EDIT_TICKET_FORM"))
@@ -587,10 +610,12 @@ export const ScheduleContainer = ({
                         <ScheduleContainerSearchBar
                             setPage={setPage}
                             currentPage={currentPage}
+                            boardId={boardId}
                             pagination={ticketsData.pagination ?? {}}
                             onSubmit={onSubmit}
                             groupBy={groupBy}
                             onGroupBy={onGroupBy}
+                            filterButtonState={filterButtonState}
                         />
                     </FormProvider>
                     <div className="tw-text-sm tw-text-gray-600 tw-flex tw-gap-x-2 tw-items-center">
