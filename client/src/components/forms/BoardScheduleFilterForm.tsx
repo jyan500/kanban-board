@@ -160,7 +160,7 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 		                	<AsyncSelect 
 		                		defaultValue={watch("sprint") ?? {value: "", label: ""}}
 			                	endpoint={SPRINT_URL} 
-			                	urlParams={{boardId: boardId, forSelect: true}} 
+			                	urlParams={{boardId: boardId, searchBy: "name", forSelect: true}} 
 			                	className={"tw-w-full"}
 			                	clearable={false}
 			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
