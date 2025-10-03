@@ -58,17 +58,20 @@ router.get("/", async (req, res, next) => {
 			else if (req.query.searchBy === "reporter"){
 				queryBuilder.join("users", "users.id", "=", "tickets.user_id").whereILike("users.first_name", `%${req.query.query}%`)
 			}
-			if (req.query.ticketType) {
-				queryBuilder.where("tickets.ticket_type_id", req.query.ticketType)
+			if (req.query.ticketType || req.query.ticketTypeId) {
+				queryBuilder.where("tickets.ticket_type_id", req.query.ticketType ?? req.query.ticketTypeId)
 			}
-			if (req.query.priority){
-				queryBuilder.where("tickets.priority_id", req.query.priority)
+			if (req.query.priority || req.query.priorityId){
+				queryBuilder.where("tickets.priority_id", req.query.priority ?? req.query.priorityId)
 			}
-			if (req.query.board){
-				queryBuilder.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id").where("tickets_to_boards.board_id", "=", req.query.board)
+			if (req.query.board || req.query.boardId){
+				queryBuilder.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id").where("tickets_to_boards.board_id", "=", req.query.board ?? req.query.boardId)
 			}
-			if (req.query.status){
-				queryBuilder.where("tickets.status_id", req.query.status)
+			if (req.query.status || req.query.statusId){
+				queryBuilder.where("tickets.status_id", req.query.status ?? req.query.statusId)
+			}
+			if (req.query.sprintId){
+				queryBuilder.join("tickets_to_sprints", "tickets_to_sprints.ticket_id", "=", "tickets.id").where("tickets_to_sprints.sprint_id", req.query.sprintId)
 			}
 			if (req.query.ticketIds){
 				queryBuilder.whereIn("id", req.query.ticketIds.split(","))

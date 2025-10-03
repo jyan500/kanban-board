@@ -41,6 +41,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { setFilters } from '../../slices/boardFilterSlice'
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
+import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { PaginationRow } from "../page-elements/PaginationRow"
 import { LoadingSkeleton } from '../page-elements/LoadingSkeleton'
@@ -48,7 +49,7 @@ import { RowPlaceholder } from '../placeholders/RowPlaceholder'
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
 import { SearchToolBar } from "../tickets/SearchToolBar"
-import { BoardScheduleFilterForm } from "../forms/BoardScheduleFilterForm"
+import { BoardFilterForm } from "../forms/BoardFilterForm"
 import { useClickOutside } from "../../hooks/useClickOutside"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { FormValues } from "../../pages/boards/BoardSchedule"
@@ -482,18 +483,16 @@ const ScheduleContainerSearchBar = ({
                                         ))
                                     }
                                 </select>
-                                <div className = "tw-relative tw-group">
-                                    <Button onClick={() => {
-                                        dispatch(setModalType("BOARD_FILTER_MODAL"))
-                                        dispatch(setModalProps({type: "SCHEDULE", boardId: boardId}))
-                                        dispatch(toggleShowModal(true))
-                                    }} className="tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700">
-                                        <div className = "tw-flex tw-flex-row tw-gap-x-2">
-                                            <IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
-                                            <span>Filters</span>
-                                        </div>
-                                    </Button>
-                                </div>
+                                <Button onClick={() => {
+                                    dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
+                                    dispatch(setSecondaryModalProps({boardId: boardId, isBulkEdit: false}))
+                                    dispatch(toggleShowSecondaryModal(true))
+                                }} className="tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700">
+                                    <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                                        <IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
+                                        <span>Filters</span>
+                                    </div>
+                                </Button>
                             </div>
                         )
                     }

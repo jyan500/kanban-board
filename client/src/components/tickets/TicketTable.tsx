@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react"
-import { useAppDispatch } from "../../hooks/redux-hooks"
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { ticketApi, useGetTicketsQuery } from "../../services/private/ticket"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Table } from "../Table"
@@ -13,6 +13,11 @@ import { LoadingButton } from "../page-elements/LoadingButton"
 import { SearchToolBar } from "./SearchToolBar"
 import { Filters } from "../bulk-actions/Filters"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
+import { BoardFilters, setFilterButtonState, setFilters } from "../../slices/boardFilterSlice"
+import { Button} from "../page-elements/Button"
+import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
+import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
+import { IconFilter } from "../icons/IconFilter"
 
 interface Props {
 	boardId: number | null | undefined
@@ -25,13 +30,7 @@ interface Props {
 	bulkEditAction?: (ids: Array<number>) => void	
 }
 
-type Filters = {
-	ticketType: string
-	priority: string
-	status: string
-}
-
-export type FormValues = Filters & {
+export type FormValues = {
 	searchBy: string
 	query: string	
 }
@@ -48,16 +47,15 @@ export const TicketTable = ({
 }: Props) => {
 	const [ page, setPage ] = useState(1)
 
-	const filters: Filters = {
-		ticketType: "",
-		priority: "",
-		status: ""
-	}
+	const { filters, bulkEditFilters, bulkEditFilterButtonState, filterButtonState: boardFilterButtonState } = useAppSelector((state) => state.boardFilter)
+
+	// if we're coming from the boards table, use the filters. Otherwise, use bulkEditFilters
+	const selectedFilters = bulkEditAction != undefined ? filters : bulkEditFilters
+	const filterButtonState = bulkEditAction != undefined ? boardFilterButtonState : bulkEditFilterButtonState
 
 	const defaultForm: FormValues = {
 		query: "",
 		searchBy: "title",
-		...filters
 	}
 
 	const dispatch = useAppDispatch()
@@ -69,14 +67,25 @@ export const TicketTable = ({
 	const registerOptions = {
 	}
 
-	const { data, isLoading, isFetching, isError } = useGetTicketsQuery({
+	const { data, isLoading, isFetching, isError } = useGetTicketsQuery(boardId !== 0 ? {
+		...(Object.keys(selectedFilters).reduce((acc: Record<string, any>, key) => {
+			const typedKey = key as keyof BoardFilters
+			if (selectedFilters[typedKey] == null){
+				acc[typedKey] = "" 
+			}
+			else {
+				acc[typedKey] = selectedFilters[typedKey]
+			}
+			return acc	
+		}, {} as Record<string, any>)),
 		page: page,
 		board: boardId,
 		sortBy: "createdAt",
 		order: "desc",
 		includeAssignees: true,
+		// only include the filters that aren't null
 		...preloadedValues,	
-	})
+	} : skipToken)
 
 	const selectCurrentPageIds = () => {
 		const nonSelectedIdsOnCurrentPage = data?.data.map((ticket) => ticket.id).filter((id) => !selectedIds.includes(id))
@@ -101,10 +110,6 @@ export const TicketTable = ({
 		setPreloadedValues(values)
 	}
 
-	const renderFilter = () => {
-		return (<Filters/>)
-	}
-
 	// if the bulkEditAction is defined, that means we're coming from the board table instead of the bulk actions form
 	const config = useBoardTicketConfig(true, selectedIds, setSelectedIds, bulkEditAction != undefined)
 	return (
@@ -117,13 +122,24 @@ export const TicketTable = ({
 					currentPage={page ?? 1}
 					registerOptions={registerOptions}
 					searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
-					renderFilter={renderFilter}
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()
 					}}
-					showFilters={!(Object.values(filters).every((val: string) => val === "" || val == null))}
-					filters={Object.keys(filters)}
 					hidePagination={true}
+					additionalButtons={() => {
+						return (
+							<Button onClick={() => {
+								dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
+								dispatch(setSecondaryModalProps({boardId: boardId, isBulkEdit: bulkEditAction == undefined}))
+								dispatch(toggleShowSecondaryModal(true))
+							}} className="tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700">
+								<div className = "tw-flex tw-flex-row tw-gap-x-2">
+									<IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
+									<span>Filters</span>
+								</div>
+							</Button>
+						)
+					}}
 				>
 				</SearchToolBar>
 			</FormProvider>
