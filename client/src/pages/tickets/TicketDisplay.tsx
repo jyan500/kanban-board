@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { ticketApi, useGetTicketsQuery } from "../../services/private/ticket" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { Outlet, useNavigate, useParams, useSearchParams } from "react-router-dom"
@@ -14,17 +14,12 @@ import { toggleShowModal, setModalProps, setModalType } from "../../slices/modal
 import { Filters } from "../../components/tickets/Filters"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
-
-export type Filters = {
-	ticketType: string
-	priority: string
-	board: string
-	status: string
-}
+import { Button } from "../../components/page-elements/Button"
+import { TicketFilters, setFilters, setFilterButtonState } from "../../slices/ticketFilterSlice"
+import { IconFilter } from "../../components/icons/IconFilter"
+import { setSecondaryModalProps, setSecondaryModalType, toggleShowSecondaryModal } from "../../slices/secondaryModalSlice"
 
 export type FormValues = {
-	ticketType: string
-	priority: string
 	searchBy: string
 	query: string	
 }
@@ -39,25 +34,29 @@ export const TicketDisplay = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const params = useParams<{ticketId: string}>()
 	const navigate = useNavigate()
-	const filters: Filters = {
-		"ticketType": searchParams.get("ticketType") ?? "",
-		"priority": searchParams.get("priority") ?? "",
-		"board": searchParams.get("board") ?? "",
-		"status": searchParams.get("status") ?? "",
-	}
+	const { filters, filterButtonState } = useAppSelector((state) => state.ticketFilter)
+
 	const {data: data, isLoading } = useGetTicketsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
 		query: searchParams.get("query") ?? "",
 		page: searchParams.get("page") ?? 1,
 		includeAssignees: true,
-		...filters
+		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
+			const typedKey = key as keyof TicketFilters
+			if (filters[typedKey] == null){
+				acc[typedKey] = "" 
+			}
+			else {
+				acc[typedKey] = filters[typedKey]
+			}
+			return acc	
+		}, {} as Record<string, any>)),
 	})
 	const ticketId = params.ticketId ? parseInt(params.ticketId) : undefined 
 	const pageParam = (searchParams.get("page") != null && searchParams.get("page") !== "" ? searchParams.get("page") : "") as string
 	const currentPage = pageParam !== "" ? parseInt(pageParam) : 1
 	const url = `${TICKETS}${ticketId ? `/${ticketId}` : ""}`
 	const defaultForm: FormValues = {
-		...filters,
 		query: searchParams.get("query") ?? "",
 		searchBy: searchParams.get("searchBy") ?? "title",
 	}
@@ -67,6 +66,37 @@ export const TicketDisplay = () => {
 	const registerOptions = {
 	}
 
+	/* when filters are changed, add to search params */
+	useEffect(() => {
+		const parsedValues = Object.fromEntries(
+			Object.entries(filters).map(([key, value]) => [key, value === null ? "" : value])
+		) as FormValues
+		setSearchParams(prev => ({
+			...Object.fromEntries(prev),
+			...parsedValues,
+			page: "1",
+		}))
+	}, [filters])
+
+	// if there are any search params, add those to the filter
+	useEffect(() => {
+		const filterKeys = Object.keys(filters) // adjust keys as needed for your filters
+		const filtersFromParams: Record<string, any> = {};
+		filterKeys.forEach((key) => {
+			if (searchParams.get(key)){
+				const value = searchParams.get(key) 
+				const numValue = Number(value);
+				filtersFromParams[key] = value === "" ? null : (isNaN(numValue) ? value : numValue);
+			}
+		})
+		if (Object.keys(filtersFromParams).length > 0) {
+			dispatch(setFilters({
+				...filters,
+				...filtersFromParams
+			}));
+		}
+	}, [searchParams])
+
 	const onSubmit = (values: FormValues) => {
 		// replace any null values with ""
 		const parsedValues = Object.fromEntries(
@@ -75,10 +105,11 @@ export const TicketDisplay = () => {
 		// reset back to page 1 if modifying search results
 		// setting the search params 
 		// modifying the search params will then retrigger the useGetTicketsQuery
-		setSearchParams({
+		setSearchParams(prev => ({
+			...Object.fromEntries(prev),
+			...parsedValues,
 			page: "1",
-			...parsedValues
-		})
+		}))
 	}
 
 	const setPage = (pageNum: number) => {
@@ -103,16 +134,21 @@ export const TicketDisplay = () => {
 
 	const additionalButtons = () => {
 		return (
-			<button className="button" onClick={(e) => {
-			e.preventDefault()
-			showAddTicketModal()
-			}}>Add Ticket</button>
-		)
-	}
-
-	const renderFilter = () => {
-		return (
-			<Filters/>
+			<div className = "tw-flex tw-flex-row tw-gap-x-2">
+				<Button onClick={() => {
+					dispatch(setSecondaryModalType("TICKET_FILTER_MODAL"))
+					dispatch(toggleShowSecondaryModal(true))
+				}}>
+					<div className = "tw-flex tw-flex-row tw-gap-x-2">
+						<IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
+						<span>Filters</span>
+					</div>
+				</Button>
+				<button className="button" onClick={(e) => {
+				e.preventDefault()
+				showAddTicketModal()
+				}}>Add Ticket</button>
+			</div>
 		)
 	}
 
@@ -127,12 +163,9 @@ export const TicketDisplay = () => {
 					registerOptions={registerOptions}
 					searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
 					additionalButtons={additionalButtons}
-					renderFilter={renderFilter}
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()
 					}}
-					showFilters={!(Object.values(filters).every((val: string) => val === "" || val == null))}
-					filters={Object.keys(filters)}
 				>
 				</SearchToolBar>
 			</FormProvider>

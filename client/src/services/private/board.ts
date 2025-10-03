@@ -204,6 +204,7 @@ export const boardApi = privateApi.injectEndpoints({
 
 export const { 
 	useGetBoardQuery, 
+	useLazyGetBoardQuery,
 	useGetBoardsQuery, 
 	useGetBoardTicketsQuery,
 	useLazyGetBoardTicketsQuery,

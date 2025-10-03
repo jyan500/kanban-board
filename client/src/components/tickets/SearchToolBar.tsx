@@ -8,7 +8,6 @@ import { PaginationRow } from "../page-elements/PaginationRow"
 import { FormValues } from "../../pages/tickets/TicketDisplay"
 import { MdOutlineKeyboardArrowDown as ArrowDown } from "react-icons/md";
 import { Filters } from "./Filters"
-import { Filters as FiltersType } from "../../pages/tickets/TicketDisplay"
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
 

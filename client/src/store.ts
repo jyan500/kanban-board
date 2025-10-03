@@ -4,6 +4,7 @@ import { boardReducer } from "./slices/boardSlice"
 import { boardInfoReducer } from "./slices/boardInfoSlice" 
 import { boardFilterReducer } from "./slices/boardFilterSlice"
 import { ticketReducer } from "./slices/ticketSlice" 
+import { ticketFilterReducer } from "./slices/ticketFilterSlice"
 import { navReducer }  from "./slices/navSlice"
 import { authReducer } from "./slices/authSlice" 
 import { toastReducer } from "./slices/toastSlice" 
@@ -61,6 +62,7 @@ export const store = configureStore({
 		"secondaryModal": secondaryModalReducer,
 		"notificationType": notificationTypeReducer,
 		"tooltip": tooltipReducer,
+		"ticketFilter": ticketFilterReducer,
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
