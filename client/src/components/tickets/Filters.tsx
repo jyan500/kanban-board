@@ -1,26 +1,92 @@
-import React from "react"
-import { useFormContext, FormProvider, SubmitHandler, Controller } from "react-hook-form"
+import React, { useState, useEffect } from "react"
+import { useFormContext, useForm, FormProvider, SubmitHandler, Controller } from "react-hook-form"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { Board, TicketType, Priority, Status } from "../../types/common"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { BOARD_URL } from "../../helpers/urls"
 import { AsyncSelect, LoadOptionsType } from "../../components/AsyncSelect"
-import { useGetBoardQuery } from "../../services/private/board"
+import { useLazyGetBoardQuery } from "../../services/private/board"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
+import { ticketApi } from "../../services/private/ticket"
+import { OptionType } from "../../types/common"
+import { setFilters, setFilterButtonState } from "../../slices/ticketFilterSlice"
+import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
+import { LoadingButton } from "../page-elements/LoadingButton"
+
+interface FormValues {
+	statusId: number | null
+	ticketTypeId: number | null
+	priorityId: number | null
+	board: OptionType
+}
 
 export const Filters = () => {
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
-	const methods = useFormContext()
-	const { register, getValues, watch, control } = methods
-	const { data: boardInfo, isLoading, isError } = useGetBoardQuery(watch("board") ? {id: watch("board"), urlParams: {}} : skipToken)
+	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
+	const { filters, filterButtonState } = useAppSelector((state) => state.ticketFilter)
+	const dispatch = useAppDispatch()
+	const defaultForm: FormValues = {
+		ticketTypeId: 0,
+		priorityId: 0,
+		statusId: 0,
+		board: {value: "", label: ""}
+	}
+	const [ preloadedValues, setPreloadedValues ] = useState<FormValues>()
+	const { reset, register, setValue, getValues, watch, control, handleSubmit } = useForm<FormValues>({defaultValues: preloadedValues})
+	const [ triggerGetBoard, {data: boardInfo, isFetching, isLoading, isError }] = useLazyGetBoardQuery()
+
+	useEffect(() => {
+		if (!showSecondaryModal){
+			reset(defaultForm)
+		}
+	}, [showSecondaryModal])
+
+	useEffect(() => {
+		if (filters){
+			const { ticketTypeId, priorityId, statusId, boardId } = filters
+			reset({
+				...defaultForm,
+				ticketTypeId, 
+				priorityId,
+				statusId,
+			})
+			if (boardId){
+				triggerGetBoard({id: boardId, urlParams: {}})
+			}
+		}
+	}, [])
+
+	useEffect(() => {
+		if (!isFetching && boardInfo?.length){
+			setValue("board", {value: boardInfo[0].id.toString(), label: boardInfo[0].name})
+		}
+	}, [isFetching, boardInfo])
+
+	const onSubmit = (values: FormValues) => {
+		const newFilterValues = {
+            ...filters,
+			ticketTypeId: values.ticketTypeId !== 0 ? values.ticketTypeId : null,
+			priorityId: values.priorityId !== 0 ? values.priorityId : null,
+			statusId: values.statusId !== 0 ? values.statusId : null,
+			boardId: values.board && values.board.value !== "" ? Number(values.board.value) : null,
+		}
+		dispatch(setFilters(newFilterValues))
+		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
+		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.board.value === "")
+		dispatch(setFilterButtonState(filtersApplied))
+		dispatch(toggleShowSecondaryModal(false))
+		dispatch(setSecondaryModalProps({}))
+		dispatch(setSecondaryModalType(undefined))
+	}
+
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-gap-x-2">
+		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
-				<select className = "tw-w-full" id = "filters-ticket-type" {...register("ticketType")}>
+				<select className = "tw-w-full" id = "filters-ticket-type" {...register("ticketTypeId")}>
 					<option value="" disabled></option>
 					{ticketTypes.map((ticketType: TicketType) => {
 						return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
@@ -29,7 +95,7 @@ export const Filters = () => {
 			</div>
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
-				<select className = "tw-w-full" id = "filters-ticket-priority" {...register("priority")}>
+				<select className = "tw-w-full" id = "filters-ticket-priority" {...register("priorityId")}>
 					<option value="" disabled></option>
 					{priorities.map((priority: Priority) => {
 						return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
@@ -38,7 +104,7 @@ export const Filters = () => {
 			</div>
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-ticket-status">Status</label>
-				<select className = "tw-w-full" id = "filters-ticket-status" {...register("status")}>
+				<select className = "tw-w-full" id = "filters-ticket-status" {...register("statusId")}>
 					<option value="" disabled></option>
 					{statuses.map((status: Status) => {
 						return <option key = {status.id} value = {status.id}>{status.name}</option>
@@ -52,23 +118,40 @@ export const Filters = () => {
 						<Controller
 							name={"board"}
 							control={control}
-			                render={({ field: { onChange, value, name, ref } }) => (
-			                	<AsyncSelect 
-				                	endpoint={BOARD_URL} 
-				                	urlParams={{}} 
-				                	defaultValue={watch("board") ? {value: boardInfo?.[0]?.id.toString() ?? "", label: boardInfo?.[0]?.name ?? ""} : null}
-				                	className={"tw-w-64"}
-				                	onSelect={(selectedOption: {label: string, value: string} | null) => {
-				                		onChange(selectedOption?.value ?? null) 	
-				                	}}
-				                />
-			                )}
+							render={({ field: { onChange, value, name, ref } }) => (
+								<AsyncSelect 
+									endpoint={BOARD_URL} 
+									urlParams={{}} 
+									defaultValue={watch("board") ?? {value: "", label: ""}}
+									className={"tw-w-64"}
+									onSelect={(selectedOption: {label: string, value: string} | null) => {
+										onChange(selectedOption) 	
+									}}
+								/>
+							)}
 						/>
 					) : (
 						<LoadingSkeleton className= "tw-bg-gray-200" width = "tw-w-64" height="tw-h-10"/>	
 					)
 				}
 			</div>
-		</div>
+			<div className = "tw-flex tw-flex-row tw-gap-x-2">
+				<LoadingButton type={"submit"} text={"Submit"}/>	
+				<button onClick={(e) => {
+					e.preventDefault()
+					reset(defaultForm)
+					const resetFilters = {
+						...filters,
+						ticketTypeId: null,
+						priorityId: null,
+						statusId: null,
+						boardId: null
+					}
+					dispatch(setFilters(resetFilters))
+					dispatch(ticketApi.util.invalidateTags(["Tickets"]))
+					dispatch(setFilterButtonState(false))
+				}} className = "button --secondary">Clear Filters</button>	
+			</div>
+		</form>
 	)
 }
