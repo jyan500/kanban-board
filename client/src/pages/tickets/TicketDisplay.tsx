@@ -76,7 +76,6 @@ export const TicketDisplay = () => {
 		const parsedValues = Object.fromEntries(
 			Object.entries(filters).map(([key, value]) => [key, value === null ? "" : value])
 		) as FormValues
-		console.log("searchParams: ", searchParams)
 		setSearchParams(prev => ({
 			...Object.fromEntries(prev),
 			...parsedValues,
@@ -111,7 +110,6 @@ export const TicketDisplay = () => {
 		// reset back to page 1 if modifying search results
 		// setting the search params 
 		// modifying the search params will then retrigger the useGetTicketsQuery
-		console.log("searchParams: ", searchParams)
 		setSearchParams(prev => ({
 			...Object.fromEntries(prev),
 			...parsedValues,
@@ -145,7 +143,7 @@ export const TicketDisplay = () => {
 				<Button onClick={() => {
 					dispatch(setSecondaryModalType("TICKET_FILTER_MODAL"))
 					dispatch(toggleShowSecondaryModal(true))
-				}} className="tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700">
+				}}>
 					<div className = "tw-flex tw-flex-row tw-gap-x-2">
 						<IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
 						<span>Filters</span>
