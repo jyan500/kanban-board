@@ -10,8 +10,6 @@ export interface BoardFilters {
 	statusId: number | null
 	assignee: number | null 
 	priorityId: number | null
-	startDate: string | null
-	endDate: string | null
 	sprintId: number | null
 }
 
@@ -26,8 +24,6 @@ const initialState: BoardFilterState = {
 		statusId: null,
 		assignee: null,
 		priorityId: null,
-		startDate: null,
-		endDate: null,
 		sprintId: null,
 	},
 	filterButtonState: false

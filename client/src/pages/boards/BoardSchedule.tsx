@@ -36,28 +36,7 @@ export const BoardSchedule = () => {
     const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
 	const { handleSubmit } = methods
-	const { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo && filters.startDate != null && filters.endDate != null ? {id: boardInfo.id, urlParams: {
-		// only include the filters that aren't null
-		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
-			const typedKey = key as keyof BoardFilters
-			if (filters[typedKey] == null){
-				acc[typedKey] = "" 
-			}
-			else {
-				acc[typedKey] = filters[typedKey]
-			}
-			return acc	
-		}, {} as Record<string, any>)),
-		...preloadedValues,
-		...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeCompleted": true} : {}),
-		"includeAssignees": true, 
-		"requireDueDate": true,
-		"checkOverlapping": true,
-		"page": page,
-		"includeRelationshipInfo": true, 
-		"limit": true,
-	}} : skipToken)
-
+	
 	// Get current view period
 	const getCurrentPeriod = useMemo(() => {
 		switch (viewMode) {
@@ -79,6 +58,31 @@ export const BoardSchedule = () => {
 		}
 	}, [viewMode, currentDate])
 
+	const { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError } = useGetBoardTicketsQuery(boardInfo ? {id: boardInfo.id, urlParams: {
+		// only include the filters that aren't null
+		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
+			const typedKey = key as keyof BoardFilters
+			if (filters[typedKey] == null){
+				acc[typedKey] = "" 
+			}
+			else {
+				acc[typedKey] = filters[typedKey]
+			}
+			return acc	
+		}, {} as Record<string, any>)),
+		...preloadedValues,
+		...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeCompleted": true} : {}),
+		startDate: format(getCurrentPeriod.start, "yyyy-MM-dd"),
+		endDate: format(getCurrentPeriod.end, "yyyy-MM-dd"),
+		"includeAssignees": true, 
+		"requireDueDate": true,
+		"checkOverlapping": true,
+		"page": page,
+		"includeRelationshipInfo": true, 
+		"limit": true,
+	}} : skipToken)
+
+
 	const onSubmit = (values: FormValues) => {
 		setPage(1)
 		setPreloadedValues(values)
@@ -87,11 +91,6 @@ export const BoardSchedule = () => {
 	useEffect(() => {
 		// reset the page whenever the date range is changed
 		setPage(1)
-		dispatch(setFilters({
-			...filters,
-			startDate: format(getCurrentPeriod.start, "yyyy-MM-dd"),
-			endDate: format(getCurrentPeriod.end, "yyyy-MM-dd"),
-		}))
 	}, [getCurrentPeriod])
 
 	return (
