@@ -18,14 +18,34 @@ import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPlaceholder"
 import { BoardPlaceholder } from "../../components/placeholders/BoardPlaceholder"
 import { FilterButton } from "../../components/page-elements/FilterButton"
+import { BoardFilters } from "../../slices/boardFilterSlice"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
 	const navigate = useNavigate()
 	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
+	const { filters } = useAppSelector((state) => state.boardFilter)
 	const {data: boardData, isLoading: isGetBoardLoading, isError: isGetBoardError } = useGetBoardQuery(boardId ? {id: boardId, urlParams: {assignees: true}} : skipToken)
-	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError } = useGetBoardTicketsQuery(boardId ? {id: boardId, urlParams: {"skipPaginate": true, "includeAssignees": true, "includeRelationshipInfo": true, "limit": true}} : skipToken)
+	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError } = useGetBoardTicketsQuery(boardId ? {
+		id: boardId, 
+		urlParams: {
+			...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
+				const typedKey = key as keyof BoardFilters
+				if (filters[typedKey] == null){
+					acc[typedKey] = "" 
+				}
+				else {
+					acc[typedKey] = filters[typedKey]
+				}
+				return acc	
+			}, {} as Record<string, any>)),
+			"skipPaginate": true, 
+			"includeAssignees": true, 
+			"includeRelationshipInfo": true, 
+			"limit": true
+		}
+	} : skipToken)
 	const {data: statusData, isLoading: isGetBoardStatusesLoading, isError: isGetBoardStatusesError } = useGetBoardStatusesQuery(boardId ? {id: boardId, isActive: true} : skipToken)
 	const { pathname } = useLocation()
 	const board = useAppSelector((state) => state.board)

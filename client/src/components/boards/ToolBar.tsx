@@ -17,6 +17,8 @@ import { MD_BREAKPOINT, GROUP_BY_OPTIONS } from "../../helpers/constants"
 import { IconButton } from "../page-elements/IconButton"
 import { IconGear } from "../icons/IconGear"
 import { BoardToolbarDropdown } from "../dropdowns/BoardToolbarDropdown"
+import { IconFilter } from "../icons/IconFilter"
+import { Button } from "../page-elements/Button"
 
 type FormValues = {
 	query: string	
@@ -25,6 +27,7 @@ type FormValues = {
 export const ToolBar = () => {
 	const dispatch = useAppDispatch()
 	const { board, boardInfo: primaryBoardInfo, tickets, statusesToDisplay, groupBy } = useAppSelector((state) => state.board)
+	const { filterButtonState } = useAppSelector((state) => state.boardFilter)
 	const { showModal } = useAppSelector((state) => state.modal)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -94,16 +97,31 @@ export const ToolBar = () => {
 
 	return (
 		<div className = "tw-py-4 tw-flex tw-flex-col tw-gap-y-2 xl:tw-gap-x-2 lg:tw-flex-row lg:tw-flex-wrap lg:tw-justify-between lg:tw-items-center">
-			<FormProvider {...methods}>
-				<form className = "tw-flex tw-flex-row tw-justify-between lg:tw-justify-normal lg:tw-items-center tw-gap-x-2">
-					<SearchBar 
-						registerOptions= { registerOptions.query }
-						registerField={"query"}
-						placeholder={"Search..."}
-					/>
-					<button onClick={handleSubmit(onSubmit)} className = "button tw-bg-primary">Search</button>
-				</form>
-			</FormProvider>
+			<div className = "tw-flex tw-flex-row tw-justify-between lg:tw-justify-normal lg:tw-items-center tw-gap-x-2">
+				<FormProvider {...methods}>
+					<form className = "tw-flex tw-flex-row tw-justify-between lg:tw-justify-normal lg:tw-items-center tw-gap-x-2">
+						<SearchBar 
+							registerOptions= { registerOptions.query }
+							registerField={"query"}
+							placeholder={"Search..."}
+						/>
+						<button onClick={handleSubmit(onSubmit)} className = "button tw-bg-primary">Search</button>
+					
+					</form>
+				</FormProvider>
+				<Button onClick={(e) => {
+					e.preventDefault()
+					e.stopPropagation()
+					dispatch(setModalType("BOARD_FILTER_MODAL"))
+					dispatch(setModalProps({type: "SCHEDULE", boardId: primaryBoardInfo?.id ?? 0}))
+					dispatch(toggleShowModal(true))
+				}} className="tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700">
+					<div className = "tw-flex tw-flex-row tw-gap-x-2">
+						<IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
+						<span>Filters</span>
+					</div>
+				</Button>
+			</div>
 		{/*	<div>
 				{!isFetching && width >= MD_BREAKPOINT && primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length > 0 ? 
 					<OverlappingRow imageUrls={data?.data?.map((data) => data.imageUrl ?? "") ?? []}/>

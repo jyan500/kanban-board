@@ -47,7 +47,6 @@ export const TicketTable = ({
 	const [ page, setPage ] = useState(1)
 
 	const { filters, filterButtonState } = useAppSelector((state) => state.boardFilter)
-	console.log("filters: ", filters)
 
 	const defaultForm: FormValues = {
 		query: "",
