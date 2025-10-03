@@ -5,7 +5,7 @@ import { Controller, useForm, FormProvider } from "react-hook-form"
 import { AsyncSelect, LoadOptionsType } from "../AsyncSelect"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { LoadingButton } from "../page-elements/LoadingButton"
-import { setFilters, setFilterButtonState } from "../../slices/boardFilterSlice"
+import { setBulkEditFilters, setBulkEditFilterButtonState, setFilters, setFilterButtonState } from "../../slices/boardFilterSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
 import { useLazyGetSprintQuery } from "../../services/private/sprint"
@@ -22,15 +22,19 @@ export type FormValues = {
 }
 
 interface Props {
-	boardId: number	
+	boardId: number
+	isBulkEdit?: boolean
 }
 
-export const BoardScheduleFilterForm = ({boardId}: Props) => {
+export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 	const dispatch = useAppDispatch()
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
-	const { filters } = useAppSelector((state) => state.boardFilter)
+	const { filters: boardFilters, bulkEditFilters } = useAppSelector((state) => state.boardFilter)
+	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
+	const filters = isBulkEdit ? bulkEditFilters : boardFilters
+	console.log("isBulkEdit: ", isBulkEdit)
 	const defaultForm: FormValues = {
 		ticketTypeId: 0,
 		priorityId: 0,
@@ -45,6 +49,12 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 		defaultValues: preloadedValues
 	})
 	const { register , handleSubmit, reset , control, setValue, getValues, watch, formState: {errors} } = methods
+
+	useEffect(() => {
+		if (!showSecondaryModal){
+			reset(defaultForm)
+		}
+	}, [showSecondaryModal])
 
 	useEffect(() => {
 		if (filters){
@@ -80,18 +90,19 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 	}, [isSprintFetching, sprintData])
 
 	const onSubmit = (values: FormValues) => {
-		dispatch(setFilters({
+		const newFilterValues = {
             ...filters,
 			ticketTypeId: values.ticketTypeId !== 0 ? values.ticketTypeId : null,
 			priorityId: values.priorityId !== 0 ? values.priorityId : null,
 			statusId: values.statusId !== 0 ? values.statusId : null,
 			assignee: values.assignee && values.assignee.value !== "" ? Number(values.assignee.value) : null,
 			sprintId: values.sprint && values.sprint.value !== "" ? Number(values.sprint.value) : null
-		}))
+		}
+		isBulkEdit ? dispatch(setBulkEditFilters(newFilterValues)) : dispatch(setFilters(newFilterValues))
 		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
 		const { assignee, sprint, ...otherValues} = values
 		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.assignee?.value === "" && values.sprint?.value === "")
-		dispatch(setFilterButtonState(filtersApplied))
+		isBulkEdit ? dispatch(setBulkEditFilterButtonState(filtersApplied)) : dispatch(setFilterButtonState(filtersApplied))
 		dispatch(toggleShowSecondaryModal(false))
 		dispatch(setSecondaryModalProps({}))
 		dispatch(setSecondaryModalType(undefined))
@@ -175,16 +186,17 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 						<button onClick={(e) => {
 							e.preventDefault()
 							reset(defaultForm)
-							dispatch(setFilters({
+							const resetFilters = {
                                 ...filters,
 								ticketTypeId: null,
 								priorityId: null,
 								statusId: null,
 								assignee: null,
 								sprintId: null
-							}))
+							}
+							isBulkEdit ? dispatch(setBulkEditFilters(resetFilters)) : dispatch(setFilters(resetFilters))
 							dispatch(boardApi.util.invalidateTags(["BoardTickets"]))
-							dispatch(setFilterButtonState(false))
+							isBulkEdit ? dispatch(setBulkEditFilterButtonState(false)) : dispatch(setFilterButtonState(false))
 						}} className = "button --secondary">Clear Filters</button>	
 					</div>
 				</div>

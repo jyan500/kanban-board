@@ -47,7 +47,12 @@ export const TicketTable = ({
 }: Props) => {
 	const [ page, setPage ] = useState(1)
 
-	const { filters, filterButtonState } = useAppSelector((state) => state.boardFilter)
+	const { filters, bulkEditFilters, bulkEditFilterButtonState, filterButtonState: boardFilterButtonState } = useAppSelector((state) => state.boardFilter)
+
+	// if we're coming from the boards table, use the filters. Otherwise, use bulkEditFilters
+	const selectedFilters = bulkEditAction != undefined ? filters : bulkEditFilters
+	console.log("bulkEditAction: ", bulkEditAction != undefined)
+	const filterButtonState = bulkEditAction != undefined ? boardFilterButtonState : bulkEditFilterButtonState
 
 	const defaultForm: FormValues = {
 		query: "",
@@ -64,13 +69,13 @@ export const TicketTable = ({
 	}
 
 	const { data, isLoading, isFetching, isError } = useGetTicketsQuery(boardId !== 0 ? {
-		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
+		...(Object.keys(selectedFilters).reduce((acc: Record<string, any>, key) => {
 			const typedKey = key as keyof BoardFilters
-			if (filters[typedKey] == null){
+			if (selectedFilters[typedKey] == null){
 				acc[typedKey] = "" 
 			}
 			else {
-				acc[typedKey] = filters[typedKey]
+				acc[typedKey] = selectedFilters[typedKey]
 			}
 			return acc	
 		}, {} as Record<string, any>)),
@@ -126,7 +131,7 @@ export const TicketTable = ({
 						return (
 							<Button onClick={() => {
 								dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
-								dispatch(setSecondaryModalProps({type: "SCHEDULE", boardId: boardId}))
+								dispatch(setSecondaryModalProps({boardId: boardId, isBulkEdit: bulkEditAction == undefined}))
 								dispatch(toggleShowSecondaryModal(true))
 							}} className="tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700">
 								<div className = "tw-flex tw-flex-row tw-gap-x-2">

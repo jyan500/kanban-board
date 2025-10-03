@@ -15,7 +15,9 @@ export interface BoardFilters {
 
 interface BoardFilterState {
 	filters: BoardFilters
+	bulkEditFilters: BoardFilters
 	filterButtonState: boolean
+	bulkEditFilterButtonState: boolean
 }
 
 const initialState: BoardFilterState = {
@@ -26,7 +28,15 @@ const initialState: BoardFilterState = {
 		priorityId: null,
 		sprintId: null,
 	},
-	filterButtonState: false
+	bulkEditFilters: {
+		ticketTypeId: null,
+		statusId: null,
+		assignee: null,
+		priorityId: null,
+		sprintId: null,	
+	},
+	filterButtonState: false,
+	bulkEditFilterButtonState: false
 }
 
 export const boardFilterSlice = createSlice({
@@ -36,8 +46,14 @@ export const boardFilterSlice = createSlice({
 		setFilters(state, action: PayloadAction<BoardFilters>){
 			state.filters = action.payload	
 		},
+		setBulkEditFilters(state, action: PayloadAction<BoardFilters>){
+			state.bulkEditFilters = action.payload
+		},
 		setFilterButtonState(state, action: PayloadAction<boolean>){
 			state.filterButtonState = action.payload
+		},
+		setBulkEditFilterButtonState(state, action: PayloadAction<boolean>){
+			state.bulkEditFilterButtonState = action.payload
 		}
 	},
     extraReducers: (builder) => {
@@ -50,5 +66,7 @@ export const boardFilterSlice = createSlice({
 export const { 
 	setFilters,
 	setFilterButtonState,
+	setBulkEditFilters,
+	setBulkEditFilterButtonState,
 } = boardFilterSlice.actions
 export const boardFilterReducer = boardFilterSlice.reducer 

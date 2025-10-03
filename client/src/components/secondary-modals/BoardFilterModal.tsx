@@ -1,17 +1,14 @@
 import React from "react"
-import { BoardScheduleFilterForm } from "../forms/BoardScheduleFilterForm"
-
-export type BoardFilterTypes = "SCHEDULE" | "BOARD" | "SPRINT" | "TABLE"
+import { BoardFilterForm } from "../forms/BoardFilterForm"
 
 interface Props {
     boardId: number
-    type: BoardFilterTypes
+    isBulkEdit?: boolean
 }
 
-export const BoardFilterModal = ({type, boardId}: Props) => {
-    if (type === "SCHEDULE"){
-        return (
-            <BoardScheduleFilterForm boardId={boardId}/>
-        )
-    }
+export const BoardFilterModal = ({boardId, isBulkEdit=false}: Props) => {
+    console.log("board filter modal isBulkEdit: ", isBulkEdit)
+    return (
+        <BoardFilterForm boardId={boardId} isBulkEdit={isBulkEdit}/>
+    )
 }

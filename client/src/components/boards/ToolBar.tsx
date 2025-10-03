@@ -114,7 +114,7 @@ export const ToolBar = () => {
 					e.preventDefault()
 					e.stopPropagation()
 					dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
-					dispatch(setSecondaryModalProps({type: "SCHEDULE", boardId: primaryBoardInfo?.id ?? 0}))
+					dispatch(setSecondaryModalProps({boardId: primaryBoardInfo?.id ?? 0, isBulkEdit: false}))
 					dispatch(toggleShowSecondaryModal(true))
 				}} className="tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700">
 					<div className = "tw-flex tw-flex-row tw-gap-x-2">
