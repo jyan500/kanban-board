@@ -34,7 +34,6 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 	const { filters: boardFilters, bulkEditFilters } = useAppSelector((state) => state.boardFilter)
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
 	const filters = isBulkEdit ? bulkEditFilters : boardFilters
-	console.log("isBulkEdit: ", isBulkEdit)
 	const defaultForm: FormValues = {
 		ticketTypeId: 0,
 		priorityId: 0,

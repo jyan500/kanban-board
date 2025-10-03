@@ -51,7 +51,6 @@ export const TicketTable = ({
 
 	// if we're coming from the boards table, use the filters. Otherwise, use bulkEditFilters
 	const selectedFilters = bulkEditAction != undefined ? filters : bulkEditFilters
-	console.log("bulkEditAction: ", bulkEditAction != undefined)
 	const filterButtonState = bulkEditAction != undefined ? boardFilterButtonState : bulkEditFilterButtonState
 
 	const defaultForm: FormValues = {
