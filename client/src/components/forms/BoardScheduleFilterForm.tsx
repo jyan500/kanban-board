@@ -6,7 +6,7 @@ import { AsyncSelect, LoadOptionsType } from "../AsyncSelect"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { setFilters, setFilterButtonState } from "../../slices/boardFilterSlice"
-import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
+import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
 import { useLazyGetSprintQuery } from "../../services/private/sprint"
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -92,9 +92,9 @@ export const BoardScheduleFilterForm = ({boardId}: Props) => {
 		const { assignee, sprint, ...otherValues} = values
 		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.assignee?.value === "" && values.sprint?.value === "")
 		dispatch(setFilterButtonState(filtersApplied))
-		dispatch(toggleShowModal(false))
-		dispatch(setModalProps({}))
-		dispatch(setModalType(undefined))
+		dispatch(toggleShowSecondaryModal(false))
+		dispatch(setSecondaryModalProps({}))
+		dispatch(setSecondaryModalType(undefined))
 	}
 
 	return (

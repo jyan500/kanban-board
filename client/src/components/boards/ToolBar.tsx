@@ -3,7 +3,8 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { SearchBar } from "../SearchBar" 
 import "../../styles/toolbar.css"
 import { setBoard, setFilteredTickets, setGroupBy } from "../../slices/boardSlice" 
-import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice" 
+import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice"
+import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice" 
 import { prioritySort as sortByPriority } from "../../helpers/functions"
 import { useForm, FormProvider } from "react-hook-form"
 import { useDebouncedValue } from "../../hooks/useDebouncedValue" 
@@ -112,9 +113,9 @@ export const ToolBar = () => {
 				<Button onClick={(e) => {
 					e.preventDefault()
 					e.stopPropagation()
-					dispatch(setModalType("BOARD_FILTER_MODAL"))
-					dispatch(setModalProps({type: "SCHEDULE", boardId: primaryBoardInfo?.id ?? 0}))
-					dispatch(toggleShowModal(true))
+					dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
+					dispatch(setSecondaryModalProps({type: "SCHEDULE", boardId: primaryBoardInfo?.id ?? 0}))
+					dispatch(toggleShowSecondaryModal(true))
 				}} className="tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700">
 					<div className = "tw-flex tw-flex-row tw-gap-x-2">
 						<IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>

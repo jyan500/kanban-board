@@ -14,6 +14,7 @@ import { SetColumnLimitModal } from "./secondary-modals/SetColumnLimitModal"
 import { AddTicketWatchersModal } from "./secondary-modals/AddTicketWatchersModal"
 import { TicketActivityModal } from "./secondary-modals/TicketActivityModal"
 import { TicketAIFeaturesModal } from "./secondary-modals/TicketAIFeaturesModal"
+import { BoardFilterModal } from "./secondary-modals/BoardFilterModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SECONDARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
 import { useScreenSize } from "../hooks/useScreenSize"
@@ -33,6 +34,7 @@ export const secondaryModalTypes = {
 	"SET_COLUMN_LIMIT_MODAL": SetColumnLimitModal,
 	"TICKET_ACTIVITY_MODAL": TicketActivityModal,
 	"TICKET_AI_FEATURES_MODAL": TicketAIFeaturesModal,
+	"BOARD_FILTER_MODAL": BoardFilterModal,
 }
 
 export const secondaryModalClassNames = {
@@ -41,6 +43,7 @@ export const secondaryModalClassNames = {
 	"CLONE_TICKET_FORM_MODAL": avoidAsyncSelectMenuOverflow,
 	"ADD_TICKET_WATCHERS_MODAL": avoidAsyncSelectMenuOverflow,
 	"TICKET_ACTIVITY_MODAL": avoidAsyncSelectMenuOverflow,
+	"BOARD_FILTER_MODAL": avoidAsyncSelectMenuOverflow,
 }
 
 export const SecondaryModal = () => {
