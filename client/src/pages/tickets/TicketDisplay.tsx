@@ -35,12 +35,7 @@ export const TicketDisplay = () => {
 	const params = useParams<{ticketId: string}>()
 	const navigate = useNavigate()
 	const { filters, filterButtonState } = useAppSelector((state) => state.ticketFilter)
-	// const filters: Filters = {
-	// 	"ticketType": searchParams.get("ticketType") ?? "",
-	// 	"priority": searchParams.get("priority") ?? "",
-	// 	"board": searchParams.get("board") ?? "",
-	// 	"status": searchParams.get("status") ?? "",
-	// }
+
 	const {data: data, isLoading } = useGetTicketsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
 		query: searchParams.get("query") ?? "",
