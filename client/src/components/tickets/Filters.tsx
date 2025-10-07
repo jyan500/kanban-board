@@ -3,9 +3,10 @@ import { useFormContext, useForm, FormProvider, SubmitHandler, Controller } from
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { Board, TicketType, Priority, Status } from "../../types/common"
 import { LoadingSpinner } from "../LoadingSpinner"
-import { BOARD_URL } from "../../helpers/urls"
+import { BOARD_URL, SPRINT_URL } from "../../helpers/urls"
 import { AsyncSelect, LoadOptionsType } from "../../components/AsyncSelect"
 import { useLazyGetBoardQuery } from "../../services/private/board"
+import { useLazyGetSprintQuery } from "../../services/private/sprint"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { ticketApi } from "../../services/private/ticket"
@@ -18,6 +19,7 @@ interface FormValues {
 	statusId: number | null
 	ticketTypeId: number | null
 	priorityId: number | null
+	sprint: OptionType
 	board: OptionType
 }
 
@@ -32,11 +34,13 @@ export const Filters = () => {
 		ticketTypeId: 0,
 		priorityId: 0,
 		statusId: 0,
-		board: {value: "", label: ""}
+		board: {value: "", label: ""},
+		sprint: {value: "", label: ""}
 	}
 	const [ preloadedValues, setPreloadedValues ] = useState<FormValues>()
 	const { reset, register, setValue, getValues, watch, control, handleSubmit } = useForm<FormValues>({defaultValues: preloadedValues})
 	const [ triggerGetBoard, {data: boardInfo, isFetching, isLoading, isError }] = useLazyGetBoardQuery()
+	const [ triggerGetSprint, {data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading }] = useLazyGetSprintQuery()
 
 	useEffect(() => {
 		if (!showSecondaryModal){
@@ -46,7 +50,7 @@ export const Filters = () => {
 
 	useEffect(() => {
 		if (filters){
-			const { ticketTypeId, priorityId, statusId, boardId } = filters
+			const { ticketTypeId, priorityId, statusId, boardId, sprintId } = filters
 			reset({
 				...defaultForm,
 				ticketTypeId, 
@@ -55,6 +59,9 @@ export const Filters = () => {
 			})
 			if (boardId){
 				triggerGetBoard({id: boardId, urlParams: {}})
+			}
+			if (sprintId){
+				triggerGetSprint({id: sprintId, urlParams: {}})
 			}
 		}
 	}, [])
@@ -65,6 +72,12 @@ export const Filters = () => {
 		}
 	}, [isFetching, boardInfo])
 
+	useEffect(() => {
+		if (!isSprintFetching && sprintData){
+			setValue("sprint", {value: sprintData.id.toString(), label: sprintData.name})
+		}
+	}, [isSprintFetching, sprintData])
+
 	const onSubmit = (values: FormValues) => {
 		const newFilterValues = {
             ...filters,
@@ -72,10 +85,11 @@ export const Filters = () => {
 			priorityId: values.priorityId !== 0 ? values.priorityId : null,
 			statusId: values.statusId !== 0 ? values.statusId : null,
 			boardId: values.board && values.board.value !== "" ? Number(values.board.value) : null,
+			sprintId: values.sprint && values.sprint.value !== "" ? Number(values.sprint.value) : null,
 		}
 		dispatch(setFilters(newFilterValues))
 		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
-		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.board.value === "")
+		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.board.value === "" && values.sprint.value === "")
 		dispatch(setFilterButtonState(filtersApplied))
 		dispatch(toggleShowSecondaryModal(false))
 		dispatch(setSecondaryModalProps({}))
@@ -135,6 +149,30 @@ export const Filters = () => {
 					)
 				}
 			</div>
+			<div className = "tw-flex tw-flex-col">
+				<label className = "label" htmlFor = "filters-ticket-sprint">Sprint</label>
+				{
+					!isSprintLoading ? (
+						<Controller
+							name={"sprint"}
+							control={control}
+							render={({ field: { onChange, value, name, ref } }) => (
+								<AsyncSelect 
+									endpoint={SPRINT_URL} 
+									urlParams={{"searchBy": "name"}} 
+									defaultValue={watch("sprint") ?? {value: "", label: ""}}
+									className={"tw-w-64"}
+									onSelect={(selectedOption: {label: string, value: string} | null) => {
+										onChange(selectedOption) 	
+									}}
+								/>
+							)}
+						/>
+					) : (
+						<LoadingSkeleton className= "tw-bg-gray-200" width = "tw-w-64" height="tw-h-10"/>	
+					)
+				}
+			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<LoadingButton type={"submit"} text={"Submit"}/>	
 				<button onClick={(e) => {
@@ -145,7 +183,8 @@ export const Filters = () => {
 						ticketTypeId: null,
 						priorityId: null,
 						statusId: null,
-						boardId: null
+						boardId: null,
+						sprintId: null,
 					}
 					dispatch(setFilters(resetFilters))
 					dispatch(ticketApi.util.invalidateTags(["Tickets"]))
