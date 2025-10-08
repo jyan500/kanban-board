@@ -36,6 +36,7 @@ export const BoardSchedule = () => {
     const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
 	const { handleSubmit } = methods
+
 	
 	// Get current view period
 	const getCurrentPeriod = useMemo(() => {
@@ -82,6 +83,8 @@ export const BoardSchedule = () => {
 		"limit": true,
 	}} : skipToken)
 
+	// Count active filters for the badge
+	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
 
 	const onSubmit = (values: FormValues) => {
 		setPage(1)
@@ -103,6 +106,7 @@ export const BoardSchedule = () => {
 					viewMode={viewMode} 
 					periodStart={getCurrentPeriod.start}
 					filterButtonState={filterButtonState}
+					numFilters={numActiveFilters}
 					isTicketsLoading={isBoardTicketLoading}
 					periodEnd={getCurrentPeriod.end}
 					boardId={boardInfo?.id ?? 0}

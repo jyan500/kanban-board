@@ -17,6 +17,7 @@ import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { Button } from "../../components/page-elements/Button"
 import { TicketFilters, setFilters, setFilterButtonState } from "../../slices/ticketFilterSlice"
 import { IconFilter } from "../../components/icons/IconFilter"
+import { FilterButton } from "../../components/page-elements/FilterButton"
 import { setSecondaryModalProps, setSecondaryModalType, toggleShowSecondaryModal } from "../../slices/secondaryModalSlice"
 
 export type FormValues = {
@@ -35,6 +36,9 @@ export const TicketDisplay = () => {
 	const params = useParams<{ticketId: string}>()
 	const navigate = useNavigate()
 	const { filters, filterButtonState } = useAppSelector((state) => state.ticketFilter)
+	
+	// Count active filters for the badge
+	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
 
 	const {data: data, isLoading } = useGetTicketsQuery({
 		searchBy: searchParams.get("searchBy") ?? "",
@@ -135,15 +139,14 @@ export const TicketDisplay = () => {
 	const additionalButtons = () => {
 		return (
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<Button onClick={() => {
-					dispatch(setSecondaryModalType("TICKET_FILTER_MODAL"))
-					dispatch(toggleShowSecondaryModal(true))
-				}}>
-					<div className = "tw-flex tw-flex-row tw-gap-x-2">
-						<IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
-						<span>Filters</span>
-					</div>
-				</Button>
+				<FilterButton 
+					filterButtonState={filterButtonState}
+					numFilters={numActiveFilters}
+					onClick={() => {
+						dispatch(setSecondaryModalType("TICKET_FILTER_MODAL"))
+						dispatch(toggleShowSecondaryModal(true))
+					}}
+				/>
 				<button className="button" onClick={(e) => {
 				e.preventDefault()
 				showAddTicketModal()

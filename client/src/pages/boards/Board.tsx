@@ -17,7 +17,7 @@ import { Banner } from "../../components/page-elements/Banner"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPlaceholder"
 import { BoardPlaceholder } from "../../components/placeholders/BoardPlaceholder"
-import { FilterButton } from "../../components/page-elements/FilterButton"
+import { TabButton } from "../../components/page-elements/TabButton"
 import { BoardFilters } from "../../slices/boardFilterSlice"
 
 export const Board = () => {
@@ -109,11 +109,11 @@ export const Board = () => {
 						{
 							defaultLinks.map((link: {pathname: string, text: string}) => {
 							 	return (
-							 		<FilterButton key={`filter_button_${link.text}`} isActive={link.pathname === pathname} onClick={(e) => {
+							 		<TabButton key={`filter_button_${link.text}`} isActive={link.pathname === pathname} onClick={(e) => {
 							 			navigate(link.pathname)
 							 		}}>
 							 			{link.text}
-							 		</FilterButton>
+							 		</TabButton>
 								)
 							})
 						}

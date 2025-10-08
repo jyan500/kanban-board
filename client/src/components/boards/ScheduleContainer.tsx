@@ -54,6 +54,7 @@ import { useClickOutside } from "../../hooks/useClickOutside"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { FormValues } from "../../pages/boards/BoardSchedule"
 import { IconFilter } from "../icons/IconFilter"
+import { FilterButton } from "../../components/page-elements/FilterButton"
 
 interface TicketDescriptionProps {
     ticket: Ticket
@@ -439,6 +440,7 @@ interface ScheduleContainerSearchBarProps {
     onSubmit: (values: FormValues) => void
     groupBy: string
     filterButtonState: boolean
+    numFilters: number
     onGroupBy: (option: GroupByOptionsKey) => void
     boardId: number
 }
@@ -450,6 +452,7 @@ const ScheduleContainerSearchBar = ({
     onSubmit,
     groupBy,
     filterButtonState,
+    numFilters,
     onGroupBy,
     boardId,
 }: ScheduleContainerSearchBarProps) => {
@@ -483,16 +486,15 @@ const ScheduleContainerSearchBar = ({
                                         ))
                                     }
                                 </select>
-                                <Button onClick={() => {
-                                    dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
-                                    dispatch(setSecondaryModalProps({boardId: boardId, isBulkEdit: false}))
-                                    dispatch(toggleShowSecondaryModal(true))
-                                }}>
-                                    <div className = "tw-flex tw-flex-row tw-gap-x-2">
-                                        <IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
-                                        <span>Filters</span>
-                                    </div>
-                                </Button>
+                                <FilterButton
+                                    onClick={() => {
+                                        dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
+                                        dispatch(setSecondaryModalProps({boardId: boardId, isBulkEdit: false}))
+                                        dispatch(toggleShowSecondaryModal(true))
+                                    }}
+                                    numFilters={numFilters}
+                                    filterButtonState={filterButtonState}
+                                />
                             </div>
                         )
                     }
@@ -521,6 +523,7 @@ interface ScheduleContainerProps {
     ticketsData?: ListResponse<Ticket> 
     isTicketsLoading?: boolean
     filterButtonState: boolean
+    numFilters: number
     onSubmit: (values: FormValues) => void
     boardId: number
 }
@@ -537,6 +540,7 @@ export const ScheduleContainer = ({
     filterButtonState,
     viewMode, 
     onSubmit,
+    numFilters,
     boardId,
     isTicketsLoading=false,
 }: ScheduleContainerProps) => {
@@ -608,6 +612,7 @@ export const ScheduleContainer = ({
                     <FormProvider {...methods}>
                         <ScheduleContainerSearchBar
                             setPage={setPage}
+                            numFilters={numFilters}
                             currentPage={currentPage}
                             boardId={boardId}
                             pagination={ticketsData.pagination ?? {}}

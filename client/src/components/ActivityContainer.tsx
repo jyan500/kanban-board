@@ -4,7 +4,7 @@ import { ListResponse, Ticket, TicketComment, TicketActivity as TicketActivityTy
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { TicketCommentForm } from "./TicketCommentForm"
 import { PaginationRow } from "./page-elements/PaginationRow"
-import { FilterButton } from "./page-elements/FilterButton"
+import { TabButton } from "./page-elements/TabButton"
 import { TicketActivity } from "./TicketActivity"
 import { IconSparkle } from "./icons/IconSparkle" 
 import { setSecondaryModalType, setSecondaryModalProps, toggleShowSecondaryModal } from "../slices/secondaryModalSlice"
@@ -44,16 +44,16 @@ export const ActivityContainer = ({
 				</button>
 			</div>
 			<div className = "tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
-				<FilterButton isActive={isActive === 0} onClick={(e) => {
+				<TabButton isActive={isActive === 0} onClick={(e) => {
 					setIsActive(0)
 				}}>
 					Comments	
-				</FilterButton>
-				<FilterButton isActive={isActive === 1} onClick={(e) => {
+				</TabButton>
+				<TabButton isActive={isActive === 1} onClick={(e) => {
 					setIsActive(1)
 				}}>
 					Work Log
-				</FilterButton>
+				</TabButton>
 			</div>	
 			{
 				isActive === 0 ? (

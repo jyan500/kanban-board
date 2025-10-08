@@ -1,13 +1,31 @@
 import React from "react"
+import { Button } from "./Button"
+import { IconFilter } from "../icons/IconFilter"
+import { Badge } from "./Badge"
 
-type FilterButtonProps = {
-	isActive: boolean
-	onClick: (e: React.MouseEvent) => void
-	children: React.ReactNode
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    theme?: string 
+    children?: React.ReactNode
+    onClick: () => void
+    filterButtonState: boolean
+    numFilters: number
+
 }
 
-export const FilterButton = ({isActive, onClick, children}: FilterButtonProps) => {
-	return (
-		<button className = {`tw-p-1.5 tw-rounded-sm tw-font-semibold hover:tw-bg-light-primary hover:tw-text-primary ${isActive ? "tw-text-primary tw-bg-light-primary tw-font-bold" : ""} tw-transition tw-duration-100 tw-ease-in-out`} onClick={onClick}>{children}</button>
-	)
-}
+export const FilterButton = React.forwardRef<HTMLButtonElement, Props>(({theme="secondary", children, filterButtonState, onClick, numFilters, ...props}, ref) => {
+
+    return (
+        <Button {...props} theme={theme} onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            onClick()
+        }}>
+            <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                <IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
+                <span>Filters</span>
+                {filterButtonState && numFilters > 0 ? <Badge className = "tw-w-4 tw-h-4 tw-text-white tw-bg-primary tw-flex tw-flex-row tw-justify-center tw-items-center"><span className = "tw-text-xs tw-font-semibold">{numFilters}</span></Badge> : null}
+                {children}
+            </div>
+        </Button>
+    )
+})
