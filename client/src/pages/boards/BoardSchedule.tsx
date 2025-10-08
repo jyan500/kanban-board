@@ -36,6 +36,7 @@ export const BoardSchedule = () => {
     const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
 	const { handleSubmit } = methods
+
 	
 	// Get current view period
 	const getCurrentPeriod = useMemo(() => {
@@ -82,6 +83,21 @@ export const BoardSchedule = () => {
 		"limit": true,
 	}} : skipToken)
 
+	console.log("filters: ", filters)
+
+	const numberOfFiltersApplied = useMemo(() => {
+		if (!isBoardTicketLoading && boardTicketData && filters){
+			return Object.keys(filters).reduce((acc: number, key) => {
+				const typedKey = key as keyof BoardFilters
+				if (filters[typedKey] != null){
+					return acc + 1	
+				}
+				return acc	
+			}, 0)
+		}
+		return 0
+	}, [filters, boardTicketData, isBoardTicketLoading])
+
 
 	const onSubmit = (values: FormValues) => {
 		setPage(1)
@@ -103,6 +119,7 @@ export const BoardSchedule = () => {
 					viewMode={viewMode} 
 					periodStart={getCurrentPeriod.start}
 					filterButtonState={filterButtonState}
+					numFilters={numberOfFiltersApplied}
 					isTicketsLoading={isBoardTicketLoading}
 					periodEnd={getCurrentPeriod.end}
 					boardId={boardInfo?.id ?? 0}
