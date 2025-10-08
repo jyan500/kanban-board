@@ -133,6 +133,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 export const { 
 	useGetUserQuery,
 	useGetUserProfileQuery, 
+	useLazyGetUserQuery,
 	useGetUserProfilesQuery, 
 	useLazyGetUserProfilesQuery,
 	useGetUserOrganizationsQuery, 
