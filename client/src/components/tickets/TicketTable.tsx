@@ -18,6 +18,7 @@ import { Button} from "../page-elements/Button"
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { IconFilter } from "../icons/IconFilter"
+import { FilterButton } from "../page-elements/FilterButton"
 
 interface Props {
 	boardId: number | null | undefined
@@ -52,6 +53,9 @@ export const TicketTable = ({
 	// if we're coming from the boards table, use the filters. Otherwise, use bulkEditFilters
 	const selectedFilters = bulkEditAction != undefined ? filters : bulkEditFilters
 	const filterButtonState = bulkEditAction != undefined ? boardFilterButtonState : bulkEditFilterButtonState
+	
+	// Count active filters for the badge
+	const numActiveFilters = Object.values(selectedFilters).filter(value => value !== null).length
 
 	const defaultForm: FormValues = {
 		query: "",
@@ -128,16 +132,15 @@ export const TicketTable = ({
 					hidePagination={true}
 					additionalButtons={() => {
 						return (
-							<Button onClick={() => {
-								dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
-								dispatch(setSecondaryModalProps({boardId: boardId, isBulkEdit: bulkEditAction == undefined}))
-								dispatch(toggleShowSecondaryModal(true))
-							}}>
-								<div className = "tw-flex tw-flex-row tw-gap-x-2">
-									<IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
-									<span>Filters</span>
-								</div>
-							</Button>
+							<FilterButton 
+								filterButtonState={filterButtonState}
+								numFilters={numActiveFilters}
+								onClick={() => {
+									dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
+									dispatch(setSecondaryModalProps({boardId: boardId, isBulkEdit: bulkEditAction == undefined}))
+									dispatch(toggleShowSecondaryModal(true))
+								}}
+							/>
 						)
 					}}
 				>

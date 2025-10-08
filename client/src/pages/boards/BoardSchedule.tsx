@@ -83,21 +83,8 @@ export const BoardSchedule = () => {
 		"limit": true,
 	}} : skipToken)
 
-	console.log("filters: ", filters)
-
-	const numberOfFiltersApplied = useMemo(() => {
-		if (!isBoardTicketLoading && boardTicketData && filters){
-			return Object.keys(filters).reduce((acc: number, key) => {
-				const typedKey = key as keyof BoardFilters
-				if (filters[typedKey] != null){
-					return acc + 1	
-				}
-				return acc	
-			}, 0)
-		}
-		return 0
-	}, [filters, boardTicketData, isBoardTicketLoading])
-
+	// Count active filters for the badge
+	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
 
 	const onSubmit = (values: FormValues) => {
 		setPage(1)
@@ -119,7 +106,7 @@ export const BoardSchedule = () => {
 					viewMode={viewMode} 
 					periodStart={getCurrentPeriod.start}
 					filterButtonState={filterButtonState}
-					numFilters={numberOfFiltersApplied}
+					numFilters={numActiveFilters}
 					isTicketsLoading={isBoardTicketLoading}
 					periodEnd={getCurrentPeriod.end}
 					boardId={boardInfo?.id ?? 0}

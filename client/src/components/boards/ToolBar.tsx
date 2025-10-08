@@ -18,8 +18,7 @@ import { MD_BREAKPOINT, GROUP_BY_OPTIONS } from "../../helpers/constants"
 import { IconButton } from "../page-elements/IconButton"
 import { IconGear } from "../icons/IconGear"
 import { BoardToolbarDropdown } from "../dropdowns/BoardToolbarDropdown"
-import { IconFilter } from "../icons/IconFilter"
-import { Button } from "../page-elements/Button"
+import { FilterButton } from "../page-elements/FilterButton"
 
 type FormValues = {
 	query: string	
@@ -28,7 +27,10 @@ type FormValues = {
 export const ToolBar = () => {
 	const dispatch = useAppDispatch()
 	const { board, boardInfo: primaryBoardInfo, tickets, statusesToDisplay, groupBy } = useAppSelector((state) => state.board)
-	const { filterButtonState } = useAppSelector((state) => state.boardFilter)
+	const { filterButtonState, filters } = useAppSelector((state) => state.boardFilter)
+	
+	// Count active filters for the badge
+	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
 	const { showModal } = useAppSelector((state) => state.modal)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
@@ -110,18 +112,15 @@ export const ToolBar = () => {
 					
 					</form>
 				</FormProvider>
-				<Button onClick={(e) => {
-					e.preventDefault()
-					e.stopPropagation()
-					dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
-					dispatch(setSecondaryModalProps({boardId: primaryBoardInfo?.id ?? 0, isBulkEdit: false}))
-					dispatch(toggleShowSecondaryModal(true))
-				}}>
-					<div className = "tw-flex tw-flex-row tw-gap-x-2">
-						<IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
-						<span>Filters</span>
-					</div>
-				</Button>
+				<FilterButton 
+					filterButtonState={filterButtonState}
+					numFilters={numActiveFilters}
+					onClick={() => {
+						dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
+						dispatch(setSecondaryModalProps({boardId: primaryBoardInfo?.id ?? 0, isBulkEdit: false}))
+						dispatch(toggleShowSecondaryModal(true))
+					}}
+				/>
 			</div>
 		{/*	<div>
 				{!isFetching && width >= MD_BREAKPOINT && primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length > 0 ? 

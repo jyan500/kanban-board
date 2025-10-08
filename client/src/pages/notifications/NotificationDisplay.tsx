@@ -25,6 +25,7 @@ import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { Button } from "../../components/page-elements/Button"
 import { IconFilter } from "../../components/icons/IconFilter"
+import { FilterButton } from "../../components/page-elements/FilterButton"
 
 export type FormValues = {
 	searchBy: string
@@ -43,6 +44,9 @@ export const NotificationDisplay = () => {
 	const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
     const [ updateNotification, {error: updateNotificationError, isLoading: isUpdateNotificationLoading}] = useUpdateNotificationMutation()
 	const { filters, filterButtonState } = useAppSelector((state) => state.notificationFilter)
+	
+	// Count active filters for the badge
+	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
 	const {data: data, isFetching, isLoading } = useGetNotificationsQuery({
 		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
 			const typedKey = key as keyof NotificationFilters
@@ -188,15 +192,14 @@ export const NotificationDisplay = () => {
 	const additionalButtons = () => {
 		return (
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<Button onClick={() => {
-					dispatch(setSecondaryModalType("NOTIFICATION_FILTER_MODAL"))
-					dispatch(toggleShowSecondaryModal(true))
-				}}>
-					<div className = "tw-flex tw-flex-row tw-gap-x-2">
-						<IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
-						<span>Filters</span>
-					</div>
-				</Button>
+				<FilterButton 
+					filterButtonState={filterButtonState}
+					numFilters={numActiveFilters}
+					onClick={() => {
+						dispatch(setSecondaryModalType("NOTIFICATION_FILTER_MODAL"))
+						dispatch(toggleShowSecondaryModal(true))
+					}}
+				/>
 			</div>
 		)
 	}
