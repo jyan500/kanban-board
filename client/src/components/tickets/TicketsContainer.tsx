@@ -5,7 +5,7 @@ import { useAppSelector } from "../../hooks/redux-hooks"
 import { TicketRow } from "../TicketRow"
 import { TICKETS } from "../../helpers/routes"
 import { PaginationRow } from "../page-elements/PaginationRow"
-import { FilterButton } from "../page-elements/FilterButton"
+import { TabButton } from "../page-elements/TabButton"
 
 type Props = {
 	title: string
@@ -23,21 +23,21 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage}: Props) 
 			<h3>{title}</h3>
 			{/* Middle selection area */}
 			<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
-				<FilterButton isActive={isActive === 0} onClick={(e) => {
+				<TabButton isActive={isActive === 0} onClick={(e) => {
 					setFilterBy(undefined)
 					setIsActive(0)
 				}}>
 					All
-				</FilterButton>
+				</TabButton>
 				{ticketTypes.map((ticketType) => (
-					<FilterButton 
+					<TabButton 
 						key={`filter_button_${ticketType.id}`}
 						isActive={isActive === ticketType.id} onClick={(e) => {
 						setFilterBy(ticketType.id)
 						setIsActive(ticketType.id)
 					}}>
 					{ticketType.name}
-					</FilterButton>
+					</TabButton>
 				))}
 			</div>	
 			<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-col">
