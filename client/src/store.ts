@@ -18,6 +18,7 @@ import { statusReducer } from "./slices/statusSlice"
 import { modalReducer } from "./slices/modalSlice" 
 import { tooltipReducer } from "./slices/tooltipSlice"
 import { secondaryModalReducer } from "./slices/secondaryModalSlice" 
+import { notificationFilterReducer } from "./slices/notificationFilterSlice"
 import { userRoleReducer } from "./slices/userRoleSlice" 
 import { publicApi } from "./services/public"
 import { privateApi } from "./services/private"
@@ -63,6 +64,7 @@ export const store = configureStore({
 		"notificationType": notificationTypeReducer,
 		"tooltip": tooltipReducer,
 		"ticketFilter": ticketFilterReducer,
+		"notificationFilter": notificationFilterReducer,
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]

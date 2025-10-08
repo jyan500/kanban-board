@@ -23,8 +23,8 @@ router.get("/", validateGet, handleValidationResult, async (req, res, next) => {
 			if (req.query.dateTo){
 				queryBuilder.whereRaw("DATE(created_at) <= ?", [req.query.dateTo])
 			}	
-			if (req.query.user){
-				queryBuilder.where("sender_id", req.query.user)
+			if (req.query.userId){
+				queryBuilder.where("sender_id", req.query.userId)
 			}
 			if (req.query.notificationType){
 				queryBuilder.where("notification_type_id", req.query.notificationType)

@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { useAppDispatch } from "../../hooks/redux-hooks"
+import React, { useEffect, useState } from "react"
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { notificationApi, useGetNotificationsQuery } from "../../services/private/notification" 
 import { Outlet, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { Notification, Toast } from "../../types/common"
@@ -9,7 +9,8 @@ import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { SearchToolBar } from "../../components/tickets/SearchToolBar"
 import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
-import { Filters } from "../../components/notifications/Filters"
+import { setFilters, setFilterButtonState, NotificationFilters } from "../../slices/notificationFilterSlice"
+import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { Avatar } from "../../components/page-elements/Avatar"
 import { NotificationRow } from "../../components/notifications/NotificationRow"
 import { Link } from "react-router-dom"
@@ -22,16 +23,10 @@ import {
 import { BulkEditToolbar } from "../../components/page-elements/BulkEditToolbar"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
+import { Button } from "../../components/page-elements/Button"
+import { IconFilter } from "../../components/icons/IconFilter"
 
-export type Filters = {
-	notificationType: string
-	user: string
-	dateFrom: string 
-	dateTo: string
-	isUnread: string
-}
-
-export type FormValues = Filters & {
+export type FormValues = {
 	searchBy: string
 	query: string	
 }
@@ -47,19 +42,22 @@ export const NotificationDisplay = () => {
 	const [ selectedIds, setSelectedIds ] = useState<Array<number>>([])
 	const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
     const [ updateNotification, {error: updateNotificationError, isLoading: isUpdateNotificationLoading}] = useUpdateNotificationMutation()
-	const filters: Filters = {
-		"notificationType": searchParams.get("notificationType") ?? "",
-		"user": searchParams.get("user") ?? "",
-		"dateFrom": searchParams.get("dateFrom") ?? "",
-		"dateTo": searchParams.get("dateTo") ?? "",
-		"isUnread": searchParams.get("isUnread") ?? "",
-	}
+	const { filters, filterButtonState } = useAppSelector((state) => state.notificationFilter)
 	const {data: data, isFetching, isLoading } = useGetNotificationsQuery({
+		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
+			const typedKey = key as keyof NotificationFilters
+			if (filters[typedKey] == null){
+				acc[typedKey] = "" 
+			}
+			else {
+				acc[typedKey] = filters[typedKey]
+			}
+			return acc	
+		}, {} as Record<string, any>)),
 		searchBy: searchParams.get("searchBy") ?? "",
 		query: searchParams.get("query") ?? "",
 		page: searchParams.get("page") ?? 1,
 		perPage: 30,
-		...filters
 	})
 	const pageParam = (searchParams.get("page") != null && searchParams.get("page") !== "" ? searchParams.get("page") : "") as string
 	const currentPage = pageParam !== "" ? parseInt(pageParam) : 1
@@ -74,6 +72,36 @@ export const NotificationDisplay = () => {
 	const { register, handleSubmit, reset, watch, setValue, formState: {errors} } = methods
 	const registerOptions = {
 	}
+
+	/* when filters are changed, add to search params */
+	useEffect(() => {
+		const parsedValues = Object.fromEntries(
+			Object.entries(filters).map(([key, value]) => [key, value === null ? "" : value])
+		) as FormValues
+		setSearchParams(prev => ({
+			...Object.fromEntries(prev),
+			...parsedValues,
+			page: "1",
+		}))
+	}, [filters])
+
+	// if there are any search params, add those to the filter
+	useEffect(() => {
+		const filterKeys = Object.keys(filters) // adjust keys as needed for your filters
+		const filtersFromParams: Record<string, any> = {};
+		filterKeys.forEach((key) => {
+			if (searchParams.get(key)){
+				const value = searchParams.get(key) 
+				filtersFromParams[key] = value !== "" ? value : null
+			}
+		})
+		if (Object.keys(filtersFromParams).length > 0) {
+			dispatch(setFilters({
+				...filters,
+				...filtersFromParams
+			}));
+		}
+	}, [searchParams])
 
 	// TODO: unsure if this functionality should be on this page
 	const markMessagesRead = async (notificationIds: Array<number>) => {
@@ -135,22 +163,17 @@ export const NotificationDisplay = () => {
 		// reset back to page 1 if modifying search results
 		// setting the search params 
 		// modifying the search params will then retrigger the useGetTicketsQuery
-		setSearchParams({
+		setSearchParams(prev => ({
+			...Object.fromEntries(prev),
+			...parsedValues,
 			page: "1",
-			...parsedValues
-		})
+		}))
 	}
 
 	const setPage = (pageNum: number) => {
 		let pageUrl = `${NOTIFICATIONS}?page=${pageNum}`
 		pageUrl = withUrlParams(defaultForm, searchParams, pageUrl)
 	    navigate(pageUrl, {replace:true});
-	}
-
-	const renderFilter = () => {
-		return (
-			<Filters/>
-		)
 	}
 
 	const setSelectedId = (selectedId: number) => {
@@ -160,6 +183,22 @@ export const NotificationDisplay = () => {
 		else {
 			setSelectedIds([...selectedIds, selectedId])
 		}
+	}
+
+	const additionalButtons = () => {
+		return (
+			<div className = "tw-flex tw-flex-row tw-gap-x-2">
+				<Button onClick={() => {
+					dispatch(setSecondaryModalType("NOTIFICATION_FILTER_MODAL"))
+					dispatch(toggleShowSecondaryModal(true))
+				}}>
+					<div className = "tw-flex tw-flex-row tw-gap-x-2">
+						<IconFilter className = {`${filterButtonState ? "tw-text-primary" : ""}`}/>
+						<span>Filters</span>
+					</div>
+				</Button>
+			</div>
+		)
 	}
 
 	return (
@@ -174,10 +213,8 @@ export const NotificationDisplay = () => {
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()
 					}}
-					renderFilter={renderFilter}
-					showFilters={!(Object.values(filters).every((val: string) => val === "" || val == null))}
-					filters={Object.keys(filters)}
 					hidePagination={true}
+					additionalButtons={additionalButtons}
 				/>
 			</FormProvider>
 			{isLoading ? (
@@ -207,8 +244,8 @@ export const NotificationDisplay = () => {
 										{
 											value.map((notification) => {
 												return (
-													<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-4">
-														<input checked={selectedIds.includes(notification.id)} onClick={() => setSelectedId(notification.id)} type="checkbox"/>
+													<div key={`${key}-${notification.id}`} className = "tw-flex tw-flex-row tw-items-center tw-gap-x-4">
+														<input checked={selectedIds.includes(notification.id)} onChange={() => setSelectedId(notification.id)} type="checkbox"/>
 														<Link 
 															className = "tw-w-full"
 															onClick={async () => {
