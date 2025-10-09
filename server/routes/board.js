@@ -18,6 +18,8 @@ const {
 	validateBoardProjectsUpdate,
 	validateBoardSprintGet,
 	validateBoardSprintGetById,
+	validateBoardFilterGet,
+	validateBoardFilterUpdate,
 }  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
@@ -609,22 +611,47 @@ router.post("/:boardId/project", validateBoardProjectsUpdate, handleValidationRe
 	}
 })
 
-router.get("/:boardId/sprint", validateBoardSprintGet, handleValidationResult, async (req, res, next) => {
+router.get("/:boardId/filter", validateBoardFilterGet, handleValidationResult, async (req, res, next) => {
 	try {
-		res.json({message: "GET /:boardId/sprint endpoint"})
+		const data = await db("boards_to_filters")
+		.where("boards_to_filters.board_id", req.params.boardId)
+		.join("filters", "filters.id", "=", "boards_to_filters.filter_id")
+		.select(
+			"filters.id as id",
+			"filters.name as name",
+			"filters.order as order",
+			"filters.organization_id as organizationId",
+		)
+		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		res.json(data)
 	}
-	catch (err) {
-		console.error(`Error while getting sprints: ${err.message}`)
+	catch (err){
+		console.error(`Error while getting filters: ${err.message}`)
 		next(err)
 	}
 })
 
-router.get("/:boardId/sprint/:sprintId", validateBoardSprintGetById, handleValidationResult, async (req, res, next) => {
+router.post("/:boardId/filter", validateBoardFilterUpdate, handleValidationResult, async (req, res, next) => {
 	try {
-		res.json({message: "GET /:boardId/sprint/:sprintId endpoint"})
+		const existingFilters = await db("boards_to_filters").where("board_id", req.params.boardId)
+		const existingFilterIds = existingFilters.map((filter) => filter.filter_id)
+		const idsToAdd = req.body.ids.filter((id) => !existingFilterIds.includes(id))
+		const idsToDelete = existingFilterIds.filter((id) => !req.body.ids.includes(id))
+		if (idsToAdd.length){
+			await db("boards_to_filters").insert(idsToAdd.map((id) => {
+				return {
+					filter_id: id,
+					board_id: req.params.boardId,
+				}
+			}))
+		}
+		if (idsToDelete.length){
+			await db("boards_to_filters").where("board_id", req.params.boardId).whereIn("filter_id", idsToDelete).del()
+		}
+		res.json({message: "Filters attached to board successfully!"})
 	}
-	catch (err) {
-		console.error(`Error while getting sprint: ${err.message}`)
+	catch (err){
+		console.error(`Error while adding filters to board: ${err.message}`)
 		next(err)
 	}
 })
