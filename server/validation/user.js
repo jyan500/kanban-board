@@ -144,11 +144,15 @@ const userBoardFilterValidator = (actionType) => {
 			body("ids").isArray({ max: BULK_INSERT_LIMIT })
 			.withMessage("ids must be an array")
 			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
-			body("ids.*")
-				.custom(async (value, {req}) => await checkEntityExistsIn("filter", value, [{
+			// Validate each object in the array
+			body("ids.*.board_filter_id")
+				.isInt().withMessage("board_filter_id must be an integer")
+				.custom(async (value, {req}) => await checkEntityExistsIn("boardFilter", value, [{
 					col: "id",
 					value: value
-				}], "boards_to_filters"))
+				}], "boards_to_filters")),
+			body("ids.*.value")
+				.isInt().withMessage("value must be an integer")
 		]		
 	}
 	return validationRules
