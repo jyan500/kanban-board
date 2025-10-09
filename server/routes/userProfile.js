@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
-const { getUserValidator, editUserValidator, editOwnUserValidator, editUserImageValidator, editNotificationTypesValidator } = require("../validation/user")
+const { getUserValidator, editUserValidator, editOwnUserValidator, editUserImageValidator, editNotificationTypesValidator, validateUserBoardFilterGet, validateUserBoardFilterUpdate } = require("../validation/user")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { validateAddOrganization } = require("../validation/organization") 
@@ -184,6 +184,54 @@ router.post("/notification-type", authenticateUserActivated, editNotificationTyp
 	}	
 	catch (err){
 		console.error(`Error while updating user notification types: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/board-filter", authenticateUserActivated, validateUserBoardFilterGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const { id: userId } = req.user
+		const data = await db("users_to_board_filters")
+		.where("users_to_board_filters.user_id", userId)
+		.join("boards_to_filters", "boards_to_filters.id", "=", "users_to_board_filters.board_filter_id")
+		.join("filters", "filters.id", "=", "boards_to_filters.filter_id")
+		.select(
+			"filters.id as id",
+			"filters.name as name",
+			"filters.order as order",
+		)
+		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		res.json(data)
+	}
+	catch (err) {
+		console.error(`Error while getting board filters: ${err.message}`)
+		next(err)
+	}
+})
+
+router.post("/board-filter", authenticateUserActivated, validateUserBoardFilterUpdate, handleValidationResult, async (req, res, next) => {
+	try {
+		const { id: userId } = req.user
+		const existingFilters = await db("users_to_board_filters").where("user_id", userId)
+		const existingFilterIds = existingFilters.map((filter) => filter.board_filter_id)
+		const idsToAdd = req.body.ids.filter((id) => !existingFilterIds.includes(id))
+		const idsToDelete = existingFilterIds.filter((id) => !req.body.ids.includes(id))
+		if (idsToAdd.length){
+			await db("users_to_boards_filters").insert(idsToAdd.map((id) => {
+				return {
+					user_id: userId,
+					board_filter_id: id,
+				}
+			}))
+		}
+		if (idsToDelete.length){
+			await db("users_to_board_filters").where("user_id", userId).whereIn("board_filter_id", idsToDelete).del()
+		}
+		res.json({message: "Board filters attached to user successfully!"})
+	}
+	catch (err){
+		console.error(`Error while adding board filters to user: ${err.message}`)
+		next(err)
 	}
 })
 
@@ -265,6 +313,8 @@ router.post("/organization", authenticateUserActivated, validateAddOrganization,
 		next(err)
 	}
 })
+
+
 
 // get a user
 router.get("/:userId", getUserValidator, handleValidationResult, async (req, res, next) => {
