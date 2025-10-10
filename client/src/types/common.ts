@@ -243,6 +243,13 @@ export interface Mention {
     [key: string]: any;
 }
 
+export interface UserBoardFilter {
+	id: number
+	boardFilterId: number
+	boardFilterName: string
+	value: number | null
+}
+
 export type GroupByOptionsKey = keyof typeof GROUP_BY_OPTIONS
 
 export type GroupedTickets = {
