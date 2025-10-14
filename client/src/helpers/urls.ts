@@ -15,7 +15,7 @@ export const ORGANIZATION_URL = `/${API_VERSION}/organization`
 export const USER_REGISTRATION_REQUEST_URL = `/${API_VERSION}/organization/registration-request`
 export const USER_PROFILE_URL = `/${API_VERSION}/user-profile`
 export const USER_PROFILE_ORG_URL = `${USER_PROFILE_URL}/organization`
-export const USER_BOARD_FILTER_URL = `/${USER_PROFILE_URL}/board-filter`
+export const USER_BOARD_FILTER_URL = `${USER_PROFILE_URL}/board-filter`
 export const USER_NOTIFICATION_TYPES_URL = `${USER_PROFILE_URL}/notification-type`
 export const USER_ACTIVATE_ACCOUNT = `${USER_PROFILE_URL}/activate`
 export const USER_ROLE_URL = `/${API_VERSION}/user-role/`
@@ -35,6 +35,7 @@ export const BOARD_TICKET_URL = (boardId: number | string, ticketId: number | st
 export const BOARD_PROJECT_URL = (boardId: number) => `/${API_VERSION}/board/${boardId}/project`
 export const BOARD_STATUS_URL = (boardId: number | string, statusId: number | string) => `/${API_VERSION}/board/${boardId}/status` + (statusId !== "" ? `/${statusId}` : "")
 export const BOARD_BULK_EDIT_STATUS_URL = (boardId: number | string) => `/${API_VERSION}/board/${boardId}/status/bulk-edit`
+export const BOARD_FILTER_URL = (boardId: number | string) => `/${API_VERSION}/board/${boardId}/filter`
 export const TICKET_ASSIGNEES_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/user/`
 export const TICKET_SUMMARY_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/summary/`
 export const TICKET_BULK_EDIT_ASSIGNEES_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/user/bulk-edit`

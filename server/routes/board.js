@@ -621,7 +621,6 @@ router.get("/:boardId/filter", validateBoardFilterGet, handleValidationResult, a
 			"filters.name as name",
 			"filters.order as order",
 		)
-		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(data)
 	}
 	catch (err){

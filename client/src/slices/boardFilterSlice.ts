@@ -17,6 +17,7 @@ interface BoardFilterState {
 	filters: BoardFilters
 	bulkEditFilters: BoardFilters
 	filterButtonState: boolean
+	filterIdMap: BoardFilters
 	bulkEditFilterButtonState: boolean
 }
 
@@ -35,6 +36,15 @@ const initialState: BoardFilterState = {
 		priorityId: null,
 		sprintId: null,	
 	},
+	/* note that this should only be set once on page load, this maps the 
+	   name of the filter to its corresponding id in the boards_to_filters table */
+	filterIdMap: {
+		ticketTypeId: null,
+		statusId: null,
+		assignee: null,
+		priorityId: null,
+		sprintId: null,
+	},
 	filterButtonState: false,
 	bulkEditFilterButtonState: false
 }
@@ -52,6 +62,9 @@ export const boardFilterSlice = createSlice({
 		setFilterButtonState(state, action: PayloadAction<boolean>){
 			state.filterButtonState = action.payload
 		},
+		setFilterIdMap(state, action: PayloadAction<BoardFilters>){
+			state.filterIdMap = action.payload
+		},
 		setBulkEditFilterButtonState(state, action: PayloadAction<boolean>){
 			state.bulkEditFilterButtonState = action.payload
 		}
@@ -68,5 +81,6 @@ export const {
 	setFilterButtonState,
 	setBulkEditFilters,
 	setBulkEditFilterButtonState,
+	setFilterIdMap,
 } = boardFilterSlice.actions
 export const boardFilterReducer = boardFilterSlice.reducer 

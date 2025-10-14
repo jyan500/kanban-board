@@ -136,7 +136,6 @@ export const Filters = () => {
 						render={({field: {onChange, value}}) => (
 							<Switch
 								onChange={(e) => {
-									console.log(e.target.checked)
 									onChange(e.target.checked)
 								}}
 								checked={value}

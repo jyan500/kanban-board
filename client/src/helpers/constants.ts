@@ -64,6 +64,7 @@ export const TAG_TYPES = [
     "Sprints",
     "SprintTickets",
     "UserBoardFilters",
+    "BoardFilters",
 ]
 
 export const EMAIL_PATTERN = /\S+@\S+\.\S+/

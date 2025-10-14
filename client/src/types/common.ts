@@ -246,8 +246,9 @@ export interface Mention {
 export interface UserBoardFilter {
 	id: number
 	boardFilterId: number
-	boardFilterName: string
+	name: string
 	value: number | null
+	order: number
 }
 
 export type GroupByOptionsKey = keyof typeof GROUP_BY_OPTIONS

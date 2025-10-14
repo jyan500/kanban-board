@@ -196,11 +196,12 @@ router.get("/board-filter", authenticateUserActivated, validateUserBoardFilterGe
 		.join("boards_to_filters", "boards_to_filters.id", "=", "users_to_board_filters.board_filter_id")
 		.join("filters", "filters.id", "=", "boards_to_filters.filter_id")
 		.select(
-			"filters.id as id",
+			"users_to_board_filters.id as id",
+			"boards_to_filters.id as boardFilterId",
 			"filters.name as name",
 			"filters.order as order",
+			"users_to_board_filters.value as value"
 		)
-		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		res.json(data)
 	}
 	catch (err) {

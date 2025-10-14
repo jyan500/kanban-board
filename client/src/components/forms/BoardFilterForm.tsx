@@ -7,10 +7,11 @@ import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { setBulkEditFilters, setBulkEditFilterButtonState, setFilters, setFilterButtonState } from "../../slices/boardFilterSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
-import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
+import { useLazyGetUserProfilesQuery, useGetUserBoardFiltersQuery, useUpdateUserBoardFiltersMutation } from "../../services/private/userProfile"
 import { useLazyGetSprintQuery } from "../../services/private/sprint"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { boardApi } from "../../services/private/board"
+import { Button } from "../page-elements/Button"
 import { format } from "date-fns"
 
 export type FormValues = {
@@ -43,6 +44,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 	}
 	const [ trigger, {data, isLoading, isFetching}] = useLazyGetUserProfilesQuery()
 	const [ triggerGetSprint, {data: sprintData, isLoading: isSprintLoading, isFetching: isSprintFetching}] = useLazyGetSprintQuery()
+	const [ updateUserBoardFilters, {isLoading: isUpdateUserBoardFiltersLoading}] = useUpdateUserBoardFiltersMutation()
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({
 		defaultValues: preloadedValues
@@ -105,6 +107,29 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 		dispatch(toggleShowSecondaryModal(false))
 		dispatch(setSecondaryModalProps({}))
 		dispatch(setSecondaryModalType(undefined))
+	}
+
+	const resetFilters = () => {
+		reset(defaultForm)
+		const resetFilters = {
+			...filters,
+			ticketTypeId: null,
+			priorityId: null,
+			statusId: null,
+			assignee: null,
+			sprintId: null
+		}
+		isBulkEdit ? dispatch(setBulkEditFilters(resetFilters)) : dispatch(setFilters(resetFilters))
+		dispatch(boardApi.util.invalidateTags(["BoardTickets"]))
+		isBulkEdit ? dispatch(setBulkEditFilterButtonState(false)) : dispatch(setFilterButtonState(false))
+	}
+
+	const setAsDefault = async () => {
+		try {
+		}
+		catch {
+
+		}
 	}
 
 	return (
@@ -181,22 +206,15 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 						/>
 					</div>
 					<div className = "tw-flex tw-flex-row tw-gap-x-2">
-						<LoadingButton type={"submit"} text={"Submit"}/>	
-						<button onClick={(e) => {
+						<Button theme={"primary"} type={"submit"}>Submit</Button>	
+						<LoadingButton isLoading={isUpdateUserBoardFiltersLoading} theme={"secondary"} onClick={async (e) => {
 							e.preventDefault()
-							reset(defaultForm)
-							const resetFilters = {
-                                ...filters,
-								ticketTypeId: null,
-								priorityId: null,
-								statusId: null,
-								assignee: null,
-								sprintId: null
-							}
-							isBulkEdit ? dispatch(setBulkEditFilters(resetFilters)) : dispatch(setFilters(resetFilters))
-							dispatch(boardApi.util.invalidateTags(["BoardTickets"]))
-							isBulkEdit ? dispatch(setBulkEditFilterButtonState(false)) : dispatch(setFilterButtonState(false))
-						}} className = "button --secondary">Clear Filters</button>	
+							await setAsDefault()
+						}}>Set as Default</LoadingButton>	
+						<Button onClick={(e) => {
+							e.preventDefault()
+							resetFilters()	
+						}} theme="secondary">Clear Filters</Button>	
 					</div>
 				</div>
 			</form>

@@ -127,7 +127,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["UserProfiles"]
 		}),
-		getUserBoardFilters: builder.query<ListResponse<UserBoardFilter>, void>({
+		getUserBoardFilters: builder.query<Array<UserBoardFilter>, void>({
 			query: () => ({
 				url: USER_BOARD_FILTER_URL,
 				method: "GET",
@@ -161,4 +161,6 @@ export const {
 	useUpdateUserNotificationTypesMutation,
 	useRegisterOrganizationMutation,
 	useActivateAccountMutation,
+	useGetUserBoardFiltersQuery,
+	useUpdateUserBoardFiltersMutation,
 } = userProfileApi 
