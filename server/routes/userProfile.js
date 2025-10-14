@@ -214,11 +214,11 @@ router.post("/board-filter", authenticateUserActivated, validateUserBoardFilterU
 	try {
 		const { id: userId } = req.user
 		const existingFilters = await db("users_to_board_filters").where("user_id", userId)
-		const existingFilterIds = existingFilters.map((filter) => filter.board_filter_id)
+		const existingFilterIds = existingFilters.filter((filter) => filter.board_filter_id != null).map((filter) => filter.board_filter_id)
 		const idsToAdd = req.body.ids.filter((idObj) => !existingFilterIds.includes(idObj.board_filter_id))
 		const idsToDelete = existingFilterIds.filter((id) => !req.body.ids.map(idObj => idObj.board_filter_id).includes(id))
 		if (idsToAdd.length){
-			await db("users_to_boards_filters").insert(idsToAdd.map((idObj) => {
+			await db("users_to_board_filters").insert(idsToAdd.map((idObj) => {
 				return {
 					user_id: userId,
 					board_filter_id: idObj.board_filter_id,

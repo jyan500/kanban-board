@@ -134,7 +134,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["UserBoardFilters"]
 		}),
-		updateUserBoardFilters: builder.mutation<{message: string}, Array<{board_filter_id: number, value: number}>>({
+		updateUserBoardFilters: builder.mutation<{message: string}, Array<{board_filter_id: number | null, value: number}>>({
 			query: (ids) => ({
 				url: USER_BOARD_FILTER_URL,
 				method: "POST",

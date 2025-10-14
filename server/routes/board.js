@@ -617,7 +617,8 @@ router.get("/:boardId/filter", validateBoardFilterGet, handleValidationResult, a
 		.where("boards_to_filters.board_id", req.params.boardId)
 		.join("filters", "filters.id", "=", "boards_to_filters.filter_id")
 		.select(
-			"filters.id as id",
+			"boards_to_filters.id as id",
+			"filters.id as filter_id",
 			"filters.name as name",
 			"filters.order as order",
 		)
