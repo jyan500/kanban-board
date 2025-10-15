@@ -144,9 +144,9 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 			const userBoardFilters = [
 				...(watch("sprint").value !== "" && "sprintId" in filterIdMap ? [{ board_filter_id: filterIdMap["sprintId"], value: Number(watch("sprint").value)}] : []),
 				...(watch("assignee").value !== "" && "assignee" in filterIdMap ? [{ board_filter_id: filterIdMap["assignee"], value: Number(watch("assignee").value)}] : []),
-				...(watch("statusId") != null && "statusId" in filterIdMap ? [{ board_filter_id: filterIdMap["statusId"], value: Number(watch("statusId"))}] : []),
-				...(watch("priorityId") != null && "priorityId" in filterIdMap ? [{ board_filter_id: filterIdMap["priorityId"], value: Number(watch("priorityId"))}] : []),
-				...(watch("ticketTypeId") != null && "ticketTypeId" in filterIdMap ? [{ board_filter_id: filterIdMap["ticketTypeId"], value: Number(watch("ticketTypeId"))}] : []),
+				...(watch("statusId") != 0 && "statusId" in filterIdMap ? [{ board_filter_id: filterIdMap["statusId"], value: Number(watch("statusId"))}] : []),
+				...(watch("priorityId") != 0 && "priorityId" in filterIdMap ? [{ board_filter_id: filterIdMap["priorityId"], value: Number(watch("priorityId"))}] : []),
+				...(watch("ticketTypeId") != 0 && "ticketTypeId" in filterIdMap ? [{ board_filter_id: filterIdMap["ticketTypeId"], value: Number(watch("ticketTypeId"))}] : []),
 			] 
 			await updateUserBoardFilters(userBoardFilters).unwrap()
 			postSubmit({
@@ -242,10 +242,14 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 					</div>
 					<div className = "tw-flex tw-flex-row tw-gap-x-2">
 						<Button theme={"primary"} type={"submit"}>Submit</Button>	
-						<LoadingButton isLoading={isUpdateUserBoardFiltersLoading} theme={"secondary"} onClick={async (e) => {
-							e.preventDefault()
-							await setAsDefault()
-						}}>Set as Default</LoadingButton>	
+						{
+							!isBulkEdit ? 
+							<LoadingButton isLoading={isUpdateUserBoardFiltersLoading} theme={"secondary"} onClick={async (e) => {
+								e.preventDefault()
+								await setAsDefault()
+							}}>Set as Default</LoadingButton>	
+							: null
+						}
 						<Button onClick={(e) => {
 							e.preventDefault()
 							resetFilters()	

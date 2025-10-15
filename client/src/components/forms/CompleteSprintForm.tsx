@@ -117,7 +117,7 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
                             registerOptions={registerOptions.debrief}
                         />
                     </div>
-                    <div className="tw-flex tw-flex-col">
+                    <div>
                         <LoadingButton isLoading={submitLoading} type="submit" text="Submit" className="button" />
                     </div>
                 </form>
