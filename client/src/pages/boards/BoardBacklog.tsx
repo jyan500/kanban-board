@@ -91,7 +91,7 @@ export const BoardBacklog = () => {
 				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
-				"excludeCompleted": true,
+				"excludeStatuses": completedStatuses,
 				"excludeSprintId": sprintData?.data?.[0]?.id,
 				"limit": true,
 			}})
@@ -118,12 +118,12 @@ export const BoardBacklog = () => {
 				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
-				"excludeCompleted": true,
+				"excludeStatuses": completedStatuses,
 				"excludeSprintId": sprintData?.data?.[0]?.id,
 				"limit": true,
 			}}, true)
 		}
-	}, [backlogPreloadedValues, backlogPage])
+	}, [boardInfo, backlogPreloadedValues, backlogPage])
 	// in order for ease of use with the existing bulk edit toolbar, track a "combined" array of both 
 	// selected backlog and sprint tickets
 	const setId = (id: number, type: "sprint" | "backlog", items: Array<BacklogBulkItem>, setter: (items: Array<BacklogBulkItem>) => void) => {
@@ -283,7 +283,7 @@ export const BoardBacklog = () => {
 			)
 			}
 			{
-				 !boardTicketData && boardInfo ? (
+				 !boardTicketData ? (
 					<LoadingSkeleton>
 						<RowPlaceholder/>
 					</LoadingSkeleton>

@@ -72,7 +72,7 @@ export const BoardSchedule = () => {
 			return acc	
 		}, {} as Record<string, any>)),
 		...preloadedValues,
-		...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeCompleted": true} : {}),
+		...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeStatuses": completedStatuses} : {}),
 		startDate: format(getCurrentPeriod.start, "yyyy-MM-dd"),
 		endDate: format(getCurrentPeriod.end, "yyyy-MM-dd"),
 		"includeAssignees": true, 
