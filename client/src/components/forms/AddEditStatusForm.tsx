@@ -65,7 +65,7 @@ export const AddEditStatusForm = () => {
 				{
 					<BackendErrorMessage error={error}/>
 				}
-				<div className = {`tw-flex tw-flex-col tw-gap-y-2`}>
+				<div className = {`tw-gap-y-2`}>
 					<div className = "">
 						<label htmlFor = "status-name" className = "label">Name</label>
 						<input id = "status-name" type = "text" {...register("name")}/>

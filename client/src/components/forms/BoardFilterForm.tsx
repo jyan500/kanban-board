@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react"
 import { USER_PROFILE_URL, SPRINT_URL } from "../../helpers/urls"
-import { TicketType, Priority, Status, OptionType, Sprint } from "../../types/common"
+import { TicketType, Priority, Status, Toast, OptionType, Sprint } from "../../types/common"
 import { Controller, useForm, FormProvider } from "react-hook-form"
 import { AsyncSelect, LoadOptionsType } from "../AsyncSelect"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { setBulkEditFilters, setBulkEditFilterButtonState, setFilters, setFilterButtonState } from "../../slices/boardFilterSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
-import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
+import { useLazyGetUserProfilesQuery, useGetUserBoardFiltersQuery, useUpdateUserBoardFiltersMutation } from "../../services/private/userProfile"
 import { useLazyGetSprintQuery } from "../../services/private/sprint"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { boardApi } from "../../services/private/board"
+import { Button } from "../page-elements/Button"
 import { format } from "date-fns"
+import { addToast } from "../../slices/toastSlice"
+import { v4 as uuidv4 } from "uuid"
 
 export type FormValues = {
 	priorityId: number | null
@@ -31,7 +34,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
-	const { filters: boardFilters, bulkEditFilters } = useAppSelector((state) => state.boardFilter)
+	const { filters: boardFilters, filterIdMap, bulkEditFilters } = useAppSelector((state) => state.boardFilter)
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
 	const filters = isBulkEdit ? bulkEditFilters : boardFilters
 	const defaultForm: FormValues = {
@@ -43,6 +46,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 	}
 	const [ trigger, {data, isLoading, isFetching}] = useLazyGetUserProfilesQuery()
 	const [ triggerGetSprint, {data: sprintData, isLoading: isSprintLoading, isFetching: isSprintFetching}] = useLazyGetSprintQuery()
+	const [ updateUserBoardFilters, {isLoading: isUpdateUserBoardFiltersLoading}] = useUpdateUserBoardFiltersMutation()
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({
 		defaultValues: preloadedValues
@@ -88,6 +92,16 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 		}
 	}, [isSprintFetching, sprintData])
 
+	const postSubmit = (values: FormValues) => {
+		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
+		const { assignee, sprint, ...otherValues} = values
+		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.assignee?.value === "" && values.sprint?.value === "")
+		isBulkEdit ? dispatch(setBulkEditFilterButtonState(filtersApplied)) : dispatch(setFilterButtonState(filtersApplied))
+		dispatch(toggleShowSecondaryModal(false))
+		dispatch(setSecondaryModalProps({}))
+		dispatch(setSecondaryModalType(undefined))
+	}
+
 	const onSubmit = (values: FormValues) => {
 		const newFilterValues = {
             ...filters,
@@ -99,12 +113,58 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 		}
 		isBulkEdit ? dispatch(setBulkEditFilters(newFilterValues)) : dispatch(setFilters(newFilterValues))
 		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
-		const { assignee, sprint, ...otherValues} = values
-		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.assignee?.value === "" && values.sprint?.value === "")
-		isBulkEdit ? dispatch(setBulkEditFilterButtonState(filtersApplied)) : dispatch(setFilterButtonState(filtersApplied))
-		dispatch(toggleShowSecondaryModal(false))
-		dispatch(setSecondaryModalProps({}))
-		dispatch(setSecondaryModalType(undefined))
+		postSubmit(values)
+	}
+
+	const resetFilters = () => {
+		reset(defaultForm)
+		const resetFilters = {
+			...filters,
+			ticketTypeId: null,
+			priorityId: null,
+			statusId: null,
+			assignee: null,
+			sprintId: null
+		}
+		isBulkEdit ? dispatch(setBulkEditFilters(resetFilters)) : dispatch(setFilters(resetFilters))
+		dispatch(boardApi.util.invalidateTags(["BoardTickets"]))
+		isBulkEdit ? dispatch(setBulkEditFilterButtonState(false)) : dispatch(setFilterButtonState(false))
+	}
+
+	const setAsDefault = async () => {
+		const defaultToast: Toast = {
+			id: uuidv4(),
+			message: "Default filters saved successfully!",
+			animationType: "animation-in",
+			type: "success"
+		}
+		try {
+			// get the board filter ids for each filter type that has a value and map to an array of objects like so
+			// { board_filter_id: filter id from the id map, value: the form vaule}
+			const userBoardFilters = [
+				...(watch("sprint").value !== "" && "sprintId" in filterIdMap ? [{ board_filter_id: filterIdMap["sprintId"], value: Number(watch("sprint").value)}] : []),
+				...(watch("assignee").value !== "" && "assignee" in filterIdMap ? [{ board_filter_id: filterIdMap["assignee"], value: Number(watch("assignee").value)}] : []),
+				...(watch("statusId") != 0 && "statusId" in filterIdMap ? [{ board_filter_id: filterIdMap["statusId"], value: Number(watch("statusId"))}] : []),
+				...(watch("priorityId") != 0 && "priorityId" in filterIdMap ? [{ board_filter_id: filterIdMap["priorityId"], value: Number(watch("priorityId"))}] : []),
+				...(watch("ticketTypeId") != 0 && "ticketTypeId" in filterIdMap ? [{ board_filter_id: filterIdMap["ticketTypeId"], value: Number(watch("ticketTypeId"))}] : []),
+			] 
+			await updateUserBoardFilters(userBoardFilters).unwrap()
+			postSubmit({
+				assignee: watch("assignee"),
+				sprint: watch("sprint"),
+				ticketTypeId: watch("ticketTypeId"),
+				statusId: watch("statusId"),
+				priorityId: watch("priorityId"),
+			} as FormValues)
+			dispatch(addToast(defaultToast))
+		}
+		catch {
+			dispatch(addToast({
+				...defaultToast,
+				type: "failure",
+				message: "There was an issue while saving default filters"
+			}))
+		}
 	}
 
 	return (
@@ -181,22 +241,19 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 						/>
 					</div>
 					<div className = "tw-flex tw-flex-row tw-gap-x-2">
-						<LoadingButton type={"submit"} text={"Submit"}/>	
-						<button onClick={(e) => {
+						<Button theme={"primary"} type={"submit"}>Submit</Button>	
+						{
+							!isBulkEdit ? 
+							<LoadingButton isLoading={isUpdateUserBoardFiltersLoading} theme={"secondary"} onClick={async (e) => {
+								e.preventDefault()
+								await setAsDefault()
+							}}>Set as Default</LoadingButton>	
+							: null
+						}
+						<Button onClick={(e) => {
 							e.preventDefault()
-							reset(defaultForm)
-							const resetFilters = {
-                                ...filters,
-								ticketTypeId: null,
-								priorityId: null,
-								statusId: null,
-								assignee: null,
-								sprintId: null
-							}
-							isBulkEdit ? dispatch(setBulkEditFilters(resetFilters)) : dispatch(setFilters(resetFilters))
-							dispatch(boardApi.util.invalidateTags(["BoardTickets"]))
-							isBulkEdit ? dispatch(setBulkEditFilterButtonState(false)) : dispatch(setFilterButtonState(false))
-						}} className = "button --secondary">Clear Filters</button>	
+							resetFilters()	
+						}} theme="secondary">Clear Filters</Button>	
 					</div>
 				</div>
 			</form>

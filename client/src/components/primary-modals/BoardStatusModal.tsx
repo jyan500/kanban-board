@@ -55,7 +55,7 @@ export const BoardStatusModal = () => {
 	}
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-2">
+		<div>
 			{[...statuses].sort(sortStatusByOrder).map((status: Status) => {
 				return (
 					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2" key = {status.id}>

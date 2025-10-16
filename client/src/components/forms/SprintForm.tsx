@@ -8,8 +8,10 @@ import { Sprint } from "../../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Controller, useForm, FormProvider } from "react-hook-form"
 import { useAddSprintMutation, useGetSprintQuery, useUpdateSprintMutation } from "../../services/private/sprint"
+import { useUpdateUserBoardFiltersMutation } from "../../services/private/userProfile"
 import { Switch } from "../page-elements/Switch"
 import { SimpleEditor } from "../page-elements/SimpleEditor"
+import { setFilters } from "../../slices/boardFilterSlice"
 
 interface SprintFormProps {
     sprintId?: number;
@@ -24,17 +26,20 @@ interface SprintFormValues {
     endDate: string;
     debrief?: string;
     isCompleted?: boolean;
+    applySprintFilter?: boolean;
 }
 
 export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
     const dispatch = useAppDispatch()
     const { showModal } = useAppSelector((state) => state.modal)
+    const { filters, filterIdMap } = useAppSelector((state) => state.boardFilter)
     const defaultForm: SprintFormValues = {
         id: undefined,
         name: "",
         goal: "",
         startDate: "",
         endDate: "",
+        applySprintFilter: false,
     }
 
     const [addSprint] = useAddSprintMutation()
@@ -47,6 +52,7 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
     })
     const { register, control, handleSubmit, reset, watch, formState: { errors } } = methods
     const [submitLoading, setSubmitLoading] = useState(false)
+	const [ updateUserBoardFilters, {isLoading: isUpdateUserBoardFiltersLoading}] = useUpdateUserBoardFiltersMutation()
 
     const registerOptions = {
         name: { required: "Name is required" },
@@ -64,6 +70,8 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
                 goal: sprintInfo.goal,
                 startDate: sprintInfo.startDate ? new Date(sprintInfo.startDate).toISOString().split('T')[0] : "",
                 endDate: sprintInfo.endDate ? new Date(sprintInfo.endDate).toISOString().split('T')[0] : "",
+                // apply if the sprint filter is already applied
+                applySprintFilter: filters.sprintId === sprintId
             })
         } else {
             reset(defaultForm)
@@ -73,6 +81,7 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
     const onSubmit = async (values: SprintFormValues) => {
         setSubmitLoading(true)
         try {
+            let id = sprintId ?? 0
             if (values.id != null && sprintId && sprintInfo) {
                 await updateSprint({
                     id: sprintId,
@@ -84,14 +93,33 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
                     isCompleted: sprintInfo.isCompleted,
                 }).unwrap()
             } else {
-                await addSprint({
+                const data = await addSprint({
                     name: values.name,
                     goal: values.goal,
                     startDate: new Date(values.startDate),
                     endDate: new Date(values.endDate),
                     boardId: boardId ?? 0,
                 }).unwrap()
+                id = data.id
             }
+
+            if (id !== 0){
+                // get the board filter ids for each filter type that has a value and map to an array of objects like so
+                // { board_filter_id: filter id from the id map, value: the form vaule}
+                const userBoardFilters = [
+                    ...(filters.assignee != null && "assignee" in filterIdMap ? [{ board_filter_id: filterIdMap["assignee"], value: Number(filters.assignee)}] : []),
+                    ...(filters.statusId != null && "statusId" in filterIdMap ? [{ board_filter_id: filterIdMap["statusId"], value: Number(filters.statusId)}] : []),
+                    ...(filters.priorityId != null && "priorityId" in filterIdMap ? [{ board_filter_id: filterIdMap["priorityId"], value: Number(filters.priorityId)}] : []),
+                    ...(filters.ticketTypeId != null && "ticketTypeId" in filterIdMap ? [{ board_filter_id: filterIdMap["ticketTypeId"], value: Number(filters.ticketTypeId)}] : []),
+                    ...(values.applySprintFilter && "sprintId" in filterIdMap ? [{ board_filter_id: filterIdMap["sprintId"], value: id}] : []),
+                ] 
+                const newFilters = {
+                    ...filters,
+                    sprintId: values.applySprintFilter ? id : null
+                }
+                dispatch(setFilters(newFilters))
+                await updateUserBoardFilters(userBoardFilters).unwrap()
+            } 
             dispatch(toggleShowModal(false))
             dispatch(addToast({
                 id: uuidv4(),
@@ -160,7 +188,26 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
                         />
                         {errors?.endDate && <small className="--text-alert">{errors.endDate.message}</small>}
                     </div>
-                    <div className="tw-flex tw-flex-col">
+                    {
+                        !isCompleted ? 
+                        <div className="tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+                            <Controller
+                                name={"applySprintFilter"}
+                                control={control}
+                                render={({field: {onChange, value}}) => (
+                                    <Switch
+                                        id={"apply-sprint-filter"}
+                                        onChange={(e) => {
+                                            onChange(e.target.checked)
+                                        }}
+                                        checked={watch("applySprintFilter") ?? false}
+                                    />
+                                )}
+                            />
+                            <label htmlFor = "apply-sprint-filter" className = "label">Apply this sprint as a default filter</label>
+                        </div> : null
+                    }
+                    <div>
                         <LoadingButton isLoading={submitLoading} type="submit" text="Submit" className="button" />
                     </div>
                 </form>

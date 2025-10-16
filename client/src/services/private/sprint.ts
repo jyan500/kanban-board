@@ -27,7 +27,7 @@ export const sprintApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["Sprints"]
 		}),
-		addSprint: builder.mutation<{id: Number, message: string}, Omit<Sprint, "id" | "organizationId" | "userId" | "isCompleted" | "tickets" | "debrief">>({
+		addSprint: builder.mutation<{id: number, message: string}, Omit<Sprint, "id" | "organizationId" | "userId" | "isCompleted" | "tickets" | "debrief">>({
 			query: ({ name, goal, boardId, startDate, endDate }) => ({
 				url: SPRINT_URL,
 				body: {
@@ -42,7 +42,7 @@ export const sprintApi = privateApi.injectEndpoints({
 			invalidatesTags: ["Sprints"]
 		}),
 		updateSprint: builder.mutation<{message: string}, Pick<Sprint, "id" | "name" | "goal" | "debrief" | "isCompleted" | "startDate" | "endDate">>({
-			query: ({ id, name, goal, startDate, endDate, debrief, isCompleted }) => ({
+			query: ({ id, name, goal, startDate, endDate, debrief, isCompleted  }) => ({
 				url: `${SPRINT_URL}/${id}`,
 				body: {
 					name,

@@ -1,11 +1,14 @@
 import React, { useEffect } from "react"
 import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom" 
+import { useGetUserBoardFiltersQuery } from "../../services/private/userProfile"
 import { 
 	useGetBoardQuery, 
 	useGetBoardTicketsQuery, 
+	useLazyGetBoardTicketsQuery,
+	useGetBoardFiltersQuery,
 	useGetBoardStatusesQuery } from "../../services/private/board"
 import { Board as KanbanBoard } from "../../components/Board" 
-import { KanbanBoard as KanbanBoardType } from "../../types/common" 
+import { GenericObject, KanbanBoard as KanbanBoardType } from "../../types/common" 
 import { setBoard, setBoardInfo, setStatusesToDisplay, setFilteredTickets, setGroupBy, setTickets as setBoardTickets } from "../../slices/boardSlice" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -18,37 +21,29 @@ import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPlaceholder"
 import { BoardPlaceholder } from "../../components/placeholders/BoardPlaceholder"
 import { TabButton } from "../../components/page-elements/TabButton"
-import { BoardFilters } from "../../slices/boardFilterSlice"
+import { setFilters, setFilterIdMap, setFilterButtonState, BoardFilters } from "../../slices/boardFilterSlice"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
 	const navigate = useNavigate()
 	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
-	const { filters } = useAppSelector((state) => state.boardFilter)
+	const { filters, filterIdMap } = useAppSelector((state) => state.boardFilter)
+	const { tickets } = useAppSelector((state) => state.board)
+	const {data: boardFilterData, isLoading: isBoardFilterDataLoading} = useGetBoardFiltersQuery(boardId ? {boardId} : skipToken)
+	const {data: userBoardFilterData, isLoading: isUserBoardFilterDataLoading } = useGetUserBoardFiltersQuery()
 	const {data: boardData, isLoading: isGetBoardLoading, isError: isGetBoardError } = useGetBoardQuery(boardId ? {id: boardId, urlParams: {assignees: true}} : skipToken)
-	const {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError } = useGetBoardTicketsQuery(boardId ? {
-		id: boardId, 
-		urlParams: {
-			...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
-				const typedKey = key as keyof BoardFilters
-				if (filters[typedKey] == null){
-					acc[typedKey] = "" 
-				}
-				else {
-					acc[typedKey] = filters[typedKey]
-				}
-				return acc	
-			}, {} as Record<string, any>)),
-			"skipPaginate": true, 
-			"includeAssignees": true, 
-			"includeRelationshipInfo": true, 
-			"limit": true
-		}
-	} : skipToken)
+	const [trigger, {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError }] = useLazyGetBoardTicketsQuery()
 	const {data: statusData, isLoading: isGetBoardStatusesLoading, isError: isGetBoardStatusesError } = useGetBoardStatusesQuery(boardId ? {id: boardId, isActive: true} : skipToken)
 	const { pathname } = useLocation()
 	const board = useAppSelector((state) => state.board)
+
+	const getBoardFilterAttribute = (arrayData: Array<GenericObject>, name: string, attribute: string) => {
+		if (arrayData.length){
+			return arrayData.find((obj) => obj.name === name)?.[attribute] ?? 0
+		}
+		return 0
+	}
 
 	// only reset the "group by" on the toolbar if we're navigating to this page
 	useEffect(() => {
@@ -56,7 +51,77 @@ export const Board = () => {
 	}, [boardId])
 
 	useEffect(() => {
-		if (boardData?.length){
+		let newFilters: BoardFilters = {
+			sprintId: null,
+			ticketTypeId: null,
+			assignee: null,
+			statusId: null,
+			priorityId: null,
+		}
+		if (boardFilterData){
+			const sprintFilterId = getBoardFilterAttribute(boardFilterData, "sprintId", "id")
+			const assigneeFilterId = getBoardFilterAttribute(boardFilterData, "assignee", "id")
+			const ticketTypeFilterId = getBoardFilterAttribute(boardFilterData, "ticketTypeId", "id")
+			const statusFilterId = getBoardFilterAttribute(boardFilterData, "statusId", "id")
+			const priorityFilterId = getBoardFilterAttribute(boardFilterData, "priorityId", "id")
+			dispatch(setFilterIdMap({
+				...filterIdMap,
+				...(sprintFilterId !== 0 ? { sprintId: sprintFilterId } : {}),
+				...(assigneeFilterId !== 0 ? { assigneeId: assigneeFilterId } : {}),
+				...(ticketTypeFilterId !== 0 ? { ticketTypeId: ticketTypeFilterId } : {}),
+				...(statusFilterId !== 0 ? { statusId: statusFilterId } : {}),	
+				...(priorityFilterId !== 0 ? { priorityId: priorityFilterId } : {}),
+			}))
+		}
+		if (userBoardFilterData){
+			const sprintId = getBoardFilterAttribute(userBoardFilterData, "sprintId", "value")
+			const assigneeId = getBoardFilterAttribute(userBoardFilterData, "assignee", "value")
+			const ticketTypeId = getBoardFilterAttribute(userBoardFilterData, "ticketTypeId", "value")
+			const statusId = getBoardFilterAttribute(userBoardFilterData, "statusId", "value")
+			const priorityId = getBoardFilterAttribute(userBoardFilterData, "priorityId", "value")
+			newFilters = {
+				...filters,
+				...(sprintId !== 0 ? { sprintId: sprintId } : {}),
+				...(assigneeId !== 0 ? { assignee: assigneeId } : {}),
+				...(ticketTypeId !== 0 ? { ticketTypeId: ticketTypeId } : {}),
+				...(statusId !== 0 ? { statusId: statusId } : {}),	
+				...(priorityId !== 0 ? { priorityId: priorityId } : {}),	
+			}
+			// if there are any filters applied, set filter button state to 1 to show that filters have been applied
+			const filtersApplied = !(ticketTypeId === 0 && priorityId === 0 && statusId === 0 && assigneeId === 0 && sprintId === 0)
+			dispatch(setFilterButtonState(filtersApplied))
+			dispatch(setFilters(newFilters))
+		}
+
+	}, [boardFilterData, userBoardFilterData])
+
+	/* When filters are changed, manually re-trigger the fetch to retrieve new ticket ids */
+	useEffect(() => {
+		if (boardId){
+			trigger({
+				id: boardId, 
+				urlParams: {
+					...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
+						const typedKey = key as keyof BoardFilters
+						if (filters[typedKey] == null){
+							acc[typedKey] = "" 
+						}
+						else {
+							acc[typedKey] = filters[typedKey]
+						}
+						return acc	
+					}, {} as Record<string, any>)),
+					"skipPaginate": true, 
+					"includeAssignees": true, 
+					"includeRelationshipInfo": true, 
+					"limit": true
+				}
+			})
+		}
+	}, [filters])
+
+	useEffect(() => {
+		if (boardData && boardTicketData && !isGetBoardTicketsLoading){
 			let board: KanbanBoardType = {}
 			let ids: Array<number> = [];
 			if (statusData?.length){
@@ -67,11 +132,11 @@ export const Board = () => {
 			}
 			dispatch(setBoard(board))
 			dispatch(setBoardInfo(boardData[0]))
+			dispatch(setStatusesToDisplay(statusData ?? []))
 			dispatch(setBoardTickets(boardTicketData?.data ?? []))
 			dispatch(setFilteredTickets(boardTicketData?.data ?? []))
-			dispatch(setStatusesToDisplay(statusData ?? []))
 		}
-	}, [boardData, statusData, boardTicketData])
+	}, [boardData, statusData, isGetBoardTicketsLoading, boardTicketData])
 
 	const boardPath = `${BOARDS}/${boardId}`
 
@@ -102,7 +167,7 @@ export const Board = () => {
 					<Banner message = {"Something went wrong!"} type = "failure"/>
 				) : null
 			}
-			{ !isGetBoardLoading && !isGetBoardTicketsLoading && !isGetBoardStatusesLoading ? 
+			{ !isBoardFilterDataLoading && !isUserBoardFilterDataLoading && !isGetBoardLoading && !isGetBoardTicketsLoading && !isGetBoardStatusesLoading ? 
 				<>
 					<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>
 					<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">

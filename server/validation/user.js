@@ -135,10 +135,35 @@ const editNotificationTypesValidator = [
 	], "notification_types"))
 ]
 
+const userBoardFilterValidator = (actionType) => {
+	let validationRules = []
+	if (actionType === "update") {
+		validationRules = [
+			...validationRules,
+			// must be an array of length > 0
+			body("ids").isArray({ max: BULK_INSERT_LIMIT })
+			.withMessage("ids must be an array")
+			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
+			// Validate each object in the array
+			body("ids.*.board_filter_id")
+				.isInt().withMessage("board_filter_id must be an integer")
+				.custom(async (value, {req}) => await checkEntityExistsIn("boardFilter", value, [{
+					col: "id",
+					value: value
+				}], "boards_to_filters")),
+			body("ids.*.value")
+				.isInt().withMessage("value must be an integer")
+		]		
+	}
+	return validationRules
+}
+
 module.exports = {
 	registerValidator: editUserValidator("register"),
 	editUserValidator: editUserValidator("adminEditUser"),
 	editOwnUserValidator: editUserValidator("editOwnUser"),
+	validateUserBoardFilterGet: userBoardFilterValidator("get"),
+	validateUserBoardFilterUpdate: userBoardFilterValidator("update"),
 	forgotPasswordValidator,
 	resetPasswordValidator,
 	organizationUserRegisterValidator,

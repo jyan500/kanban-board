@@ -7,8 +7,9 @@ import {
 	BOARD_STATUS_URL, 
 	BOARD_BULK_EDIT_STATUS_URL,
 	BOARD_PROJECT_URL,
+	BOARD_FILTER_URL,
 } from "../../helpers/urls" 
-import { CustomError, Board, ListResponse, Project, Status, Ticket } from "../../types/common" 
+import { CustomError, GenericObject, Board, ListResponse, Project, Status, Ticket } from "../../types/common" 
 import { privateApi } from "../private"
 import { parseURLParams } from "../../helpers/functions" 
 
@@ -198,6 +199,13 @@ export const boardApi = privateApi.injectEndpoints({
 				}
 			}),
 			invalidatesTags: ["ProjectBoards"]
+		}),
+		getBoardFilters: builder.query<Array<GenericObject>, {boardId: number}>({
+			query: ({boardId}) => ({
+				url: BOARD_FILTER_URL(boardId),
+				method: "GET",
+			}),
+			providesTags: ["BoardFilters"]
 		})
 	}),
 })
@@ -207,6 +215,7 @@ export const {
 	useLazyGetBoardQuery,
 	useGetBoardsQuery, 
 	useGetBoardTicketsQuery,
+	useGetBoardFiltersQuery,
 	useLazyGetBoardTicketsQuery,
 	useGetBoardStatusesQuery,
 	useGetBoardStatusQuery,
