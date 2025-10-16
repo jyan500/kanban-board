@@ -741,7 +741,7 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 			priority_id: req.body.priority_id,
 			status_id: req.body.status_id,
 			ticket_type_id: req.body.ticket_type_id,
-			due_date: req.body.due_date !== "" ? new Date(req.body.due_date) : null,
+			due_date: req.body.due_date !== "" ? new Date(req.body.due_date).toISOString().split('T')[0] : null,
 			story_points: req.body.story_points,
 		})
 		// remove existing mentioned users first before adding
