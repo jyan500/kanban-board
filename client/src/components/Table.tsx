@@ -166,8 +166,8 @@ const TableContent = ({
 									<td key = {`${tableKey}-${row.id}-${headerKey}`}>
 										{
 											!config.deleteCol.shouldShow || (config.deleteCol.shouldShow && config.deleteCol.shouldShow(row)) ? (
-												<button className = "button --alert" onClick={() => config.deleteCol?.onClick(row.id)}>{config.deleteCol?.text}
-												</button>
+												<Button theme="secondary" onClick={() => config.deleteCol?.onClick(row.id)}>{config.deleteCol?.text}
+												</Button>
 											) : null
 										}
 									</td>

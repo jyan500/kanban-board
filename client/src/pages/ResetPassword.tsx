@@ -105,7 +105,7 @@ export const ResetPassword = () => {
 				        {errors?.confirmPassword && <small className = "--text-alert">{errors.confirmPassword.message}</small>}
 			        </div>
 			        <div>
-			        	<LoadingButton isLoading={isResetPasswordLoading} type="submit" className = "button" text="Submit"/>
+			        	<LoadingButton isLoading={isResetPasswordLoading} type="submit" text="Submit"/>
 			        </div>
 				</form>
 			</div>

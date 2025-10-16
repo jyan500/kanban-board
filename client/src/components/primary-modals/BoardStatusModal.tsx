@@ -55,16 +55,18 @@ export const BoardStatusModal = () => {
 	}
 
 	return (
-		<div>
+		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			{[...statuses].sort(sortStatusByOrder).map((status: Status) => {
 				return (
 					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2" key = {status.id}>
 						<Switch id ={`status-${status.id}`} checked={formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)}/>
-						<label htmlFor = {`status-${status.id}`}>{status.name}</label>
+						<label className = "label" htmlFor = {`status-${status.id}`}>{status.name}</label>
 					</div>
 				)
 			})}
-			<LoadingButton isLoading={isLoading} className = "button" onClick={onSubmit} text={"Save Changes"}/>	
+			<div>
+				<LoadingButton isLoading={isLoading} className = "button" onClick={onSubmit} text={"Save Changes"}/>	
+			</div>
 		</div>
 	)	
 }

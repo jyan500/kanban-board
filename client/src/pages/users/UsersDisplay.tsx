@@ -15,6 +15,7 @@ import { useForm, FormProvider } from "react-hook-form"
 import { getUserInitials, withUrlParams } from "../../helpers/functions"
 import { SearchBar } from "../../components/SearchBar"
 import { RowContentLoading } from "../../components/page-elements/RowContentLoading"
+import { Button } from "../../components/page-elements/Button"
 
 type RegFormValues = {
 	regQuery: string
@@ -74,7 +75,7 @@ const UserForm = ({filters}: UserFormProps) => {
 					<FormProvider {...methods}>
 						<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
 							<SearchBar placeholder={"Search..."} registerField={"userQuery"} registerOptions={{}}/>
-							<button type = "submit" className = "button">Search</button>
+							<Button theme="primary" type = "submit">Search</Button>
 						</form>
 					</FormProvider>
 				</div>
@@ -151,7 +152,7 @@ const RegForm = ({filters}: RegFormProps) => {
 					<FormProvider {...methods}>
 						<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
 							<SearchBar placeholder={"Search..."} registerField={"regQuery"} registerOptions={{}}/>
-							<button type = "submit" className = "button">Search</button>
+							<Button theme="primary" type = "submit">Search</Button>
 						</form>
 					</FormProvider>
 				</div>

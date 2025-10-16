@@ -24,6 +24,7 @@ import { Switch } from "../page-elements/Switch"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
 import { BackendErrorMessage } from "../page-elements/BackendErrorMessage"
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { Button } from "../page-elements/Button"
 
 type FormValues = {
 	id?: number
@@ -65,7 +66,7 @@ export const AddEditStatusForm = () => {
 				{
 					<BackendErrorMessage error={error}/>
 				}
-				<div className = {`tw-gap-y-2`}>
+				<div className = {`tw-flex tw-flex-col tw-gap-y-2`}>
 					<div className = "">
 						<label htmlFor = "status-name" className = "label">Name</label>
 						<input id = "status-name" type = "text" {...register("name")}/>
@@ -238,7 +239,7 @@ export const AddEditStatusForm = () => {
 				<h1>Add/Edit Statuses</h1>
 				<p className = "tw-font-bold">Click on the buttons to edit the statuses, and arrows to change the order</p>
 				<div>
-					<button onClick={(e) => {
+					<Button theme="secondary" onClick={(e) => {
 						setShowNewStatus(!showNewStatus)
 						setSelectedStatusId(null)
 						reset({
@@ -247,12 +248,12 @@ export const AddEditStatusForm = () => {
 							isActive: false,
 							isCompleted: false,
 						})
-					}} className = "button --secondary">
+					}}>
 						<div className = "tw-flex tw-items-center tw-gap-x-2">
 							<IconPlus/>
 							<p>Add Status</p>
 						</div>
-					</button>
+					</Button>
 				</div>
 				{
 					showNewStatus ?  
@@ -263,7 +264,7 @@ export const AddEditStatusForm = () => {
 				{ !isStatusDataLoading && statusData?.length ? ([...statusData].sort(sortStatusByOrder).map((status, index) => (
 					<>
 						<div className = "tw-flex tw-flex-row tw-justify-between">
-							<button onClick = {(e) => {
+							<Button theme="primary" onClick = {(e) => {
 								setShowNewStatus(false)
 								setSelectedStatusId(selectedStatusId === status.id ? null : status.id)
 								reset({
@@ -272,9 +273,9 @@ export const AddEditStatusForm = () => {
 									isActive: status.isActive,
 									isCompleted: status.isCompleted,
 								})
-							}} key = {status.id} className = "button">
+							}} key = {status.id}>
 								{status.name}
-							</button>
+							</Button>
 							<div className = "tw-flex tw-flex-col tw-items-center">
 								<IconButton disabled = {index === 0} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, false))}><IconArrowUp className = "tw-w-6 tw-h-6"/></IconButton>
 								<IconButton disabled = {index === statusData.length-1} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, true))}><IconArrowDown className = "tw-w-6 tw-h-6"/></IconButton>

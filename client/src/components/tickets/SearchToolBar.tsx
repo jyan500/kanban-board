@@ -5,6 +5,7 @@ import "../../styles/toolbar.css"
 import { useFormContext, FormProvider, SubmitHandler } from "react-hook-form"
 import { IPagination } from "../../types/common"
 import { PaginationRow } from "../page-elements/PaginationRow"
+import { Button } from "../page-elements/Button"
 import { FormValues } from "../../pages/tickets/TicketDisplay"
 import { MdOutlineKeyboardArrowDown as ArrowDown } from "react-icons/md";
 import { Filters } from "./Filters"
@@ -73,20 +74,20 @@ export const SearchToolBar = ({
 								registerField={"query"}
 								placeholder={"Search..."}
 							/>
-							<button type = "submit" className = "button">Search</button>
+							<Button theme="primary" type = "submit">Search</Button>
 						</div>
 						{
 							filters && renderFilter ? (
-								<button onClick={() => setShowFilter(!showFilter)} type = "button" className = "button">
+								<Button theme="primary" onClick={() => setShowFilter(!showFilter)} type = "button">
 									<div className = "tw-flex tw-flex-row tw-justify-center tw-items-center tw-gap-x-0.5">
 										<ArrowDown className = "tw-w-6 tw-h-6"/>
 										<span>Filters</span>	
 									</div>
-								</button>
+								</Button>
 							) : null
 						}
 						{filters && renderFilter && showFilter ? (
-							<button onClick={(e) => {
+							<Button theme="secondary" onClick={(e) => {
 								e.preventDefault()
 								reset({
 									...getValues(),
@@ -96,9 +97,9 @@ export const SearchToolBar = ({
 									}, {})),
 								})
 								onFormSubmit()
-							}} type = "button" className = "button !tw-bg-secondary">
+							}} type = "button">
 								Clear Filters
-							</button>
+							</Button>
 						) : null}
 					</form>
 				</FormProvider>

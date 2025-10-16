@@ -9,7 +9,9 @@ export const Button = React.forwardRef<HTMLButtonElement, Props>(({theme="second
     const themes = {
         "secondary": "tw-border-gray-300 tw-text-gray-700 tw-bg-white hover:tw-bg-gray-50",
         "primary": "tw-border-primary tw-text-gray-50 tw-bg-primary hover:tw-bg-blue-700",
-        "active": "tw-bg-blue-100 tw-text-blue-700"
+        "alert": "tw-border-danger tw-text-gray-50 tw-bg-danger hover:tw-bg-red-700",
+        "active": "tw-bg-blue-100 tw-text-blue-700",
+        "purple": "tw-border-light-purple tw-text-gray-50 tw-bg-light-purple hover:tw-bg-light-purple"
     }
     return (
         <button 

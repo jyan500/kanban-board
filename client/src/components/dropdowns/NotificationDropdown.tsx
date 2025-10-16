@@ -1,6 +1,7 @@
 import React, { useRef } from "react" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { Dropdown } from "../Dropdown" 
+import { Button } from "../page-elements/Button"
 import { 
 	useUpdateNotificationMutation,
 	useBulkEditNotificationsMutation, 
@@ -67,12 +68,12 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 			<ReadOnlyDropdownOption
 			>
 				<p className = "tw-font-bold">Notifications: </p>
-				<button onClick={async () => {
+				<Button theme="secondary" onClick={async () => {
 					const unreadMessages = notifications?.filter(n => !n.isRead)
 					if (unreadMessages?.length){
 						await markMessagesRead(unreadMessages)
 					}
-				}} className = "button --secondary">Mark as Read</button>
+				}} >Mark as Read</Button>
 			</ReadOnlyDropdownOption>
 			{!notifications?.length ? <ReadOnlyDropdownOption><p>No Notifications Found</p></ReadOnlyDropdownOption> : null}
 			<ul>
@@ -95,7 +96,7 @@ export const NotificationDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 				))}
 			</ul>
 			<div className = "tw-block tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700">
-				<Link to = {NOTIFICATIONS}><button className = "button --secondary" onClick={() => closeDropdown()}>See More</button></Link>
+				<Link to = {NOTIFICATIONS}><Button theme="secondary" onClick={() => closeDropdown()}>See More</Button></Link>
 			</div>
 		</Dropdown>
 	)	

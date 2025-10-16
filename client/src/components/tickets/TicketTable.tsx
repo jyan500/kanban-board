@@ -156,8 +156,8 @@ export const TicketTable = ({
 							itemIds={selectedIds} 
 						>
 							<>
-								<button onClick={selectCurrentPageIds} className = "button">Select current page</button>	
-								<button onClick={unselectCurrentPageIds} className = "button --secondary">Unselect current page</button>	
+								<Button theme="primary" onClick={selectCurrentPageIds}>Select current page</Button>	
+								<Button theme="secondary" onClick={unselectCurrentPageIds}>Unselect current page</Button>	
 							</>
 						</BulkEditToolbar>
 						{

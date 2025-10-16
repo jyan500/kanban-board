@@ -19,6 +19,7 @@ import { IconButton } from "../page-elements/IconButton"
 import { IconGear } from "../icons/IconGear"
 import { BoardToolbarDropdown } from "../dropdowns/BoardToolbarDropdown"
 import { FilterButton } from "../page-elements/FilterButton"
+import { Button } from "../page-elements/Button"
 
 type FormValues = {
 	query: string	
@@ -108,7 +109,7 @@ export const ToolBar = () => {
 							registerField={"query"}
 							placeholder={"Search..."}
 						/>
-						<button onClick={handleSubmit(onSubmit)} className = "button tw-bg-primary">Search</button>
+						<Button theme="primary" onClick={handleSubmit(onSubmit)}>Search</Button>
 					
 					</form>
 				</FormProvider>
@@ -129,11 +130,11 @@ export const ToolBar = () => {
 				}
 			</div>*/}
 			<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-gap-x-2">
-				<button className = "button" onClick = {() => {
+				<Button theme="primary" onClick = {() => {
 					dispatch(toggleShowModal(true))
 					dispatch(setModalType("ADD_TICKET_FORM"))
 					dispatch(setModalProps({statusesToDisplay: statuses, boardId: primaryBoardInfo?.id}))
-				}}>Add Ticket</button>
+				}}>Add Ticket</Button>
 				<div className = "tw-flex tw-flex-col lg:tw-flex-row lg:tw-items-center tw-gap-y-2 lg:tw-gap-x-2">
 					<label className = "label" htmlFor="board-group-by">Group By</label>
 					<select 

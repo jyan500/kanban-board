@@ -42,6 +42,7 @@ import { AsyncSelect } from "./AsyncSelect"
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { ActivityContainer } from "./ActivityContainer"
 import { Avatar } from "./page-elements/Avatar"
+import { Button } from "./page-elements/Button"
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../helpers/constants"
@@ -585,27 +586,27 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							}
 							</div>
 							<div className = "tw-flex tw-flex-row tw-gap-x-2">
-								<button onClick={(e) => {
+								<Button theme="secondary" onClick={(e) => {
 									e.preventDefault()	
 									setShowAddLinkedIssue(!showAddLinkedIssue)
-								}} className = "button !tw-bg-secondary">
+								}} >
 									<div className = "icon-container">
 										<IconLink className="icon"/>
 										<span>Link Issue</span>
 									</div>
-								</button>
+								</Button>
 								{
 									epicTicketType?.id === ticket?.ticketTypeId ? 
 									(
-										<button onClick={(e) => {
+										<Button theme="purple" onClick={(e) => {
 										e.preventDefault()	
 										setShowAddToEpic(!showAddToEpic)
-										}} className = "button !tw-bg-light-purple">
+										}} >
 											<div className = "icon-container">
 												<IconTree className="icon"/>
 												<span>Add To Epic</span>
 											</div>
-										</button>
+										</Button>
 									) : null
 								}
 							</div>

@@ -18,6 +18,7 @@ import { v4 as uuidv4 } from "uuid"
 import { useForm, Controller, FormProvider } from "react-hook-form"
 import { useLocation } from "react-router-dom"
 import { AsyncSelect } from "../../components/AsyncSelect"
+import { Button } from "../../components/page-elements/Button"
 
 interface BacklogBulkItem {
 	id: number
@@ -202,7 +203,7 @@ export const BoardBacklog = () => {
 				setItemIds([])
 			}}>
 				<>
-					<button onClick={(e) => {
+					<Button theme="secondary" onClick={(e) => {
 						const allSprintTickets = sprintTicketData?.data ? sprintTicketData?.data.map((sprintTicket) => {
 							return {
 								id: sprintTicket.id,
@@ -216,8 +217,8 @@ export const BoardBacklog = () => {
 							} as BacklogBulkItem
 						}) : []
 						setItemIds([...allSprintTickets, ...allBacklogTickets])
-					}} className = "button --secondary">Select All</button>
-					<button onClick={(e) => {
+					}} >Select All</Button>
+					<Button theme="primary" onClick={(e) => {
 						if (boardInfo){
 							dispatch(setModalType("BULK_ACTIONS_MODAL"))
 							dispatch(setModalProps({
@@ -228,7 +229,7 @@ export const BoardBacklog = () => {
 							}))
 							dispatch(toggleShowModal(true))
 						}
-					}} className = "button">Edit Tickets</button>
+					}} >Edit Tickets</Button>
 					{
 						backlogTickets.length && sprintData ?
 						<LoadingButton isLoading={isUpdateTicketsLoading} text={`Move ${backlogTickets.length} ticket(s) to Sprint`} onClick={async (e) => {
@@ -241,7 +242,7 @@ export const BoardBacklog = () => {
 							if (boardTicketData?.pagination.prevPage){
 								setBacklogPage(boardTicketData?.pagination.prevPage)
 							}
-						}} className = "button"/>
+						}} />
 						: null
 					}
 					{
@@ -256,7 +257,7 @@ export const BoardBacklog = () => {
 							if (sprintTicketData?.data.length === 0 && sprintTicketData?.pagination.prevPage){
 								setSprintPage(sprintTicketData?.pagination.prevPage)
 							}
-						}} className = "button"/>
+						}} />
 						: null
 					}
 				</>

@@ -13,6 +13,7 @@ import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { setFilters, setFilterButtonState } from "../../slices/notificationFilterSlice"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { LoadingButton } from "../../components/page-elements/LoadingButton"
+import { Button } from "../../components/page-elements/Button"
 import { Switch } from "../page-elements/Switch"
 
 interface FormValues {
@@ -146,7 +147,7 @@ export const Filters = () => {
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<LoadingButton type={"submit"} text={"Submit"}/>	
-				<button onClick={(e) => {
+				<Button theme="secondary" onClick={(e) => {
 					e.preventDefault()
 					reset(defaultForm)
 					const resetFilters = {
@@ -160,7 +161,7 @@ export const Filters = () => {
 					dispatch(setFilters(resetFilters))
 					dispatch(notificationApi.util.invalidateTags(["Notifications"]))
 					dispatch(setFilterButtonState(false))
-				}} className = "button --secondary">Clear Filters</button>	
+				}}>Clear Filters</Button>	
 			</div>
 		</form>
 	)

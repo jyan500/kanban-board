@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react"
 import { TicketTable } from "../tickets/TicketTable"
+import { Button } from "../page-elements/Button"
 
 interface Props {
 	boardId: number | null | undefined
@@ -21,8 +22,8 @@ export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSe
 			key={"bulk-actions"}
 			stepButtonRow={
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
- 					<button disabled={selectedIds.length === 0} onClick={() => setStep(step+1)} className = "button">Next</button>	
- 					<button onClick={closeModal} className = "button --secondary">Cancel</button>	
+ 					<Button theme="primary" disabled={selectedIds.length === 0} onClick={() => setStep(step+1)} >Next</Button>	
+ 					<Button theme="secondary" onClick={closeModal} >Cancel</Button>	
  				</div>
 			}
 		/>

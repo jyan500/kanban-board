@@ -3,6 +3,7 @@ import { BulkEditFormValues, BulkEditOperationKey } from "./BulkActionsForm"
 import { MoveTicketForm, FormValues as MoveTicketFormValues } from "../forms/MoveTicketForm"
 import { AddTicketForm, AddTicketFormValues } from "../AddTicketForm"
 import { useAppSelector } from "../../hooks/redux-hooks"
+import { Button } from "../page-elements/Button"
 
 interface Props {
 	step: number
@@ -47,11 +48,11 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 	const buttonBar = () => {
 		return (
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<button className = "button" type = "submit">Next</button>
-				<button onClick={(e) => {
+				<Button theme="primary" type = "submit">Next</Button>
+				<Button theme="secondary" onClick={(e) => {
 					e.preventDefault()
 					setStep(step-1)
-				}} className = "button --secondary">Cancel</button>
+				}} >Cancel</Button>
 			</div>
 		)	
 	}

@@ -9,6 +9,7 @@ import { Toast } from "../../types/common"
 import { BackendErrorMessage } from "../page-elements/BackendErrorMessage"
 import { MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT } from "../../helpers/constants"
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { Button } from "../page-elements/Button"
 
 export type SetColumnLimitModalProps = {
 	boardId: number
@@ -88,11 +89,11 @@ export const SetColumnLimitModal = ({boardId, statusId}: SetColumnLimitModalProp
 		        {errors?.limit && <small className = "--text-alert">{errors.limit.message}</small>}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<LoadingButton isLoading={isUpdateBoardStatusLoading} type = "submit" className = "button" text="Save"/>
-				<button onClick = {(e) => {
+				<LoadingButton isLoading={isUpdateBoardStatusLoading} type = "submit" text="Save"/>
+				<Button theme="secondary" onClick = {(e) => {
 					e.preventDefault()
 					onClose()
-				}} className = "button --secondary">Cancel</button>
+				}} >Cancel</Button>
 			</div>
 		</form>
 	)

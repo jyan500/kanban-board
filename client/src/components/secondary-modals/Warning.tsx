@@ -1,6 +1,7 @@
 import React from "react"
 import { IconWarning } from "../icons/IconWarning"
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { Button } from "../page-elements/Button"
 
 type WarningProps = {
 	title: string
@@ -20,8 +21,8 @@ export const Warning = ({isLoading, title, submitText, cancelText, onSubmit, onC
 			</div>
 			{children}
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<LoadingButton className = {"button --alert"} isLoading={isLoading} onClick={onSubmit} text={submitText}/>
-				<button className = "button --secondary" onClick={onCancel}>{cancelText}</button>
+				<LoadingButton theme="alert" isLoading={isLoading} onClick={onSubmit} text={submitText}/>
+				<Button theme="secondary" onClick={onCancel}>{cancelText}</Button>
 			</div>
 		</div>
 	)

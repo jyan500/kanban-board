@@ -9,6 +9,7 @@ import { LoadingSpinner } from "../LoadingSpinner"
 import { IconWarning } from "../icons/IconWarning"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { Button } from "../page-elements/Button"
 
 interface Props {
 	selectedIds: Array<number>
@@ -73,15 +74,15 @@ export const BulkActionsFormStep4 = ({isSubmitLoading, selectedIds, skipStep3, s
 				}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<LoadingButton isLoading={isSubmitLoading} onClick={onSubmit} className = "button" text={"Confirm"}/>
-				<button onClick={() => {
+				<LoadingButton isLoading={isSubmitLoading} onClick={onSubmit} text={"Confirm"}/>
+				<Button theme="secondary" onClick={() => {
 					if (step-1 === 3 && skipStep3){
 						setStep(step-2)
 					}
 					else {
 						setStep(step-1)
 					}
-				}} className = "button --secondary">Cancel</button>
+				}} >Cancel</Button>
 			</div>
 		</div>
 
