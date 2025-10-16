@@ -169,10 +169,9 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, spr
 				await updateSprintTickets({sprintId: sprintId, ticketIds: [insertedTicketId]}).unwrap()
 			}
 
-			dispatch(toggleShowModal(false))
-			dispatch(setModalType(undefined))
 			dispatch(setModalProps({}))
-			dispatch(selectCurrentTicketId(null))
+			dispatch(selectCurrentTicketId(insertedTicketId))
+			dispatch(setModalType("EDIT_TICKET_FORM"))
 			dispatch(toggleShowSecondaryModal(false))
 			dispatch(setSecondaryModalProps({}))
 			dispatch(setSecondaryModalType(undefined))
