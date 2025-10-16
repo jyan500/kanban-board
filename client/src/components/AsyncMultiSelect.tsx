@@ -4,7 +4,8 @@ import { useLazyGenericFetchQuery } from "../services/private/generic"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ListResponse, OptionType } from "../types/common"
 import { OptionsOrGroups, GroupBase, SelectInstance, MultiValue, ActionMeta } from "react-select"
-import { SELECT_Z_INDEX } from "../helpers/constants"
+import { MD_BREAKPOINT, SELECT_Z_INDEX } from "../helpers/constants"
+import { useScreenSize } from "../hooks/useScreenSize";
 
 export interface LoadOptionsType {
 	options: ListResponse<any>
@@ -31,6 +32,7 @@ export const AsyncMultiSelect = React.forwardRef<SelectInstance<OptionType, true
 	const [searchTerm, setSearchTerm] = useState("")
 	const [val, setVal] = useState<MultiValue<OptionType>>(defaultValue ?? [])
 	const [ genericFetch ] = useLazyGenericFetchQuery()
+	const { width, height } = useScreenSize()
 
 	const loadOptions = async (
 		query: string, 
@@ -91,12 +93,23 @@ export const AsyncMultiSelect = React.forwardRef<SelectInstance<OptionType, true
 			    control: (state) => `${className ?? "tw-w-full"} ${SELECT_Z_INDEX}`
 			}}
 			styles={{
+				valueContainer: (base) => ({
+					...base,
+					flexWrap: "wrap",
+					gap: "4px",
+				}),
 			    control: (baseStyles, state) => ({
-			      ...baseStyles,
-			      height: "44px",
-			      border: "var(--width-input-border) solid var(--bs-light-gray)",
-			      padding: ".1em",
+					...baseStyles,
+					height: "auto",
+					minHeight: "44px",
+					border: "var(--width-input-border) solid var(--bs-light-gray)",
+					padding: ".1em",
 			    }),
+				multiValue: (base) => ({
+					...base,
+					fontSize: width < MD_BREAKPOINT ? '12px' : '14px',
+					padding: width < MD_BREAKPOINT ? '2px 6px' : '5px 8px',
+				}),
 			}}
 			onChange={handleChange}
 			getOptionLabel={(option) => option.label}
