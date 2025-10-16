@@ -11,6 +11,7 @@ import { SearchToolBar } from "../../components/tickets/SearchToolBar"
 import { useForm, FormProvider } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { BOARDS, BACKLOG } from "../../helpers/routes"
+import { Button } from "../../components/page-elements/Button"
 
 export interface FormValues { 
 	query: string
@@ -66,10 +67,10 @@ export const BoardSprints = () => {
 	                                hidePagination={true}
 	                                additionalButtons={() => {
 	                                	return (<>
-	                                	<button onClick={(e) => {
-			                            	navigate(`${boardPage}/${BACKLOG}`, {state: {"createSprint": true}})
-			                            }} className = "button">Create Sprint</button>
-			                            </>)
+								<Button theme="primary" onClick={(e) => {
+							                            	navigate(`${boardPage}/${BACKLOG}`, {state: {"createSprint": true}})
+							                            }} >Create Sprint</Button>
+	                                	</>)
 	                                }}
 	                            >
 	                            </SearchToolBar>

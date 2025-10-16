@@ -11,6 +11,7 @@ import { ACCOUNT_REGISTRATION_REQUESTS } from "../../helpers/routes"
 import { SearchBar } from "../../components/SearchBar"
 import { withUrlParams } from "../../helpers/functions"
 import { RowContentLoading } from "../../components/page-elements/RowContentLoading"
+import { Button } from "../../components/page-elements/Button"
 
 type FormValues = {
 	query: string
@@ -54,7 +55,7 @@ export const RegistrationRequests = () => {
 					<FormProvider {...methods}>
 						<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
 							<SearchBar placeholder={"Search..."} registerField={"query"} registerOptions={{}}/>
-							<button type = "submit" className = "button">Search</button>
+							<Button theme="primary" type = "submit">Search</Button>
 						</form>
 					</FormProvider>
 				</div>

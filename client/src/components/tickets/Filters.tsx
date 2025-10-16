@@ -14,6 +14,7 @@ import { OptionType } from "../../types/common"
 import { setFilters, setFilterButtonState } from "../../slices/ticketFilterSlice"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { Button } from "../page-elements/Button"
 
 interface FormValues {
 	statusId: number | null
@@ -175,7 +176,7 @@ export const Filters = () => {
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<LoadingButton type={"submit"} text={"Submit"}/>	
-				<button onClick={(e) => {
+				<Button theme="secondary" onClick={(e) => {
 					e.preventDefault()
 					reset(defaultForm)
 					const resetFilters = {
@@ -189,7 +190,7 @@ export const Filters = () => {
 					dispatch(setFilters(resetFilters))
 					dispatch(ticketApi.util.invalidateTags(["Tickets"]))
 					dispatch(setFilterButtonState(false))
-				}} className = "button --secondary">Clear Filters</button>	
+				}}>Clear Filters</Button>	
 			</div>
 		</form>
 	)

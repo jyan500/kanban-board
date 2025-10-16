@@ -147,10 +147,10 @@ export const TicketDisplay = () => {
 						dispatch(toggleShowSecondaryModal(true))
 					}}
 				/>
-				<button className="button" onClick={(e) => {
-				e.preventDefault()
-				showAddTicketModal()
-				}}>Add Ticket</button>
+				<Button theme="primary" onClick={(e) => {
+					e.preventDefault()
+					showAddTicketModal()
+				}}>Add Ticket</Button>
 			</div>
 		)
 	}

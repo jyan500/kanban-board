@@ -8,6 +8,7 @@ import { addToast } from "../../slices/toastSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
+import { Button } from "../page-elements/Button"
 
 type Props = {
 	childTicketId: number | string | undefined
@@ -93,7 +94,9 @@ export const AddToEpicFormModal = ({childTicketId}: Props) => {
 	                )}
 				/>
 				{/*<AsyncSelect endpoint={TICKET_URL} urlParams={{searchBy: "title", ticketType: epicTicketType?.id}} onSelect={handleSelect}/>*/}
-				<button className = "button">Submit</button>
+				<div>
+					<Button type="submit" theme="primary">Submit</Button>
+				</div>
 			</form>
 		</div>
 	)		

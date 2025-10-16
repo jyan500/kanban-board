@@ -128,7 +128,7 @@ export const Login = () => {
 				</div>
 				<div>
 				    <div>
-						<LoadingButton isLoading={isLoading} className = "button" type = "submit" text="Submit"/>
+						<LoadingButton isLoading={isLoading} type = "submit" text="Submit"/>
 					</div>
 				</div>
 				<div className = "tw-flex tw-flex-col tw-gap-y-2">

@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { IoMdClose } from "react-icons/io";
+import { Button } from "./Button"
 
 type Props = {
 	applyActionToAll?: (ids: Array<number>) => void
@@ -25,15 +26,15 @@ export const BulkEditToolbar = ({itemIds, applyActionToAll, applyRemoveToAll, ac
 			<div><p className = "tw-font-bold tw-text-lg">{itemIds.length} Selected</p></div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				{children}
-				<button onClick={(e) => updateIds([])} className = "button --secondary">Unselect All</button>
+				<Button theme="secondary" onClick={(e) => updateIds([])}>Unselect All</Button>
 				{
 					applyActionToAll && actionText ? 
-						<button onClick={(e) => applyActionToAll(itemIds)} className = "button">{actionText}</button>
+						<Button theme="primary" onClick={(e) => applyActionToAll(itemIds)}>{actionText}</Button>
 					: null
 				}
 				{
 					applyRemoveToAll && removeText ? 
-						<button onClick={(e) => applyRemoveToAll(itemIds)} className = "button --alert">{removeText}</button>
+						<Button theme="alert" onClick={(e) => applyRemoveToAll(itemIds)}>{removeText}</Button>
 					: null
 				}
 			</div>

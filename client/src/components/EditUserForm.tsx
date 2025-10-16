@@ -256,7 +256,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 				    ): null
 		        }
 		        <div>
-		        	<LoadingButton isLoading={isEditUserLoading || isEditOwnUserLoading} type = "submit" className = "button" text="Submit"/>
+		        	<LoadingButton isLoading={isEditUserLoading || isEditOwnUserLoading} type = "submit" text="Submit"/>
 		        </div>
 			</form>
 		</div>

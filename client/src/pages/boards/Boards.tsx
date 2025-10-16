@@ -14,6 +14,7 @@ import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
+import { Button } from "../../components/page-elements/Button"
 
 type FormValues = {
 	query?: string
@@ -73,13 +74,13 @@ export const Boards = () => {
 						<FormProvider {...methods}>
 							<form className = "tw-flex tw-flex-row tw-gap-x-2" onSubmit={handleSubmit(onSubmit)}>
 								<SearchBar placeholder={"Search..."} registerField={"query"} registerOptions={registerOptions}/>
-								<button type = "submit" className = "button">Search</button>
+								<Button theme="primary" type = "submit">Search</Button>
 							</form>
 							{userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN") ? (
-								<button className = "button" onClick={(e) => {
+								<Button theme="primary" onClick={(e) => {
 									e.preventDefault()
 									addNewBoard()
-								}}>Add New Board</button>
+								}}>Add New Board</Button>
 							) : null}
 						</FormProvider>
 					</div>

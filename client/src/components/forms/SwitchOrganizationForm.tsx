@@ -18,6 +18,7 @@ import { Avatar } from "../page-elements/Avatar"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 import { HOME } from "../../helpers/routes"
+import { Button } from "../page-elements/Button"
 
 export const SwitchOrganizationForm = () => {
 	const dispatch = useAppDispatch()
@@ -76,7 +77,7 @@ export const SwitchOrganizationForm = () => {
 								className = "tw-w-full"
 							/>
 							<div>
-								<button onClick={switchOrganization} className = "button">Switch Organization</button>
+								<Button theme="primary" onClick={switchOrganization}>Switch Organization</Button>
 							</div>
 						</div>
 					</>

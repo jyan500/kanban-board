@@ -78,7 +78,7 @@ export const SprintContainer = ({
                 onCheck={onCheck} 
                 isLoading={isLoading}
                 actionButtons={
-                    <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                    <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
                         {
                             sprintData?.data?.[0]?.numCompletedTickets != null && sprintData?.data?.[0]?.numOpenTickets != null ? 
                             <>

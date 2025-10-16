@@ -129,9 +129,11 @@ export const MoveTicketForm = ({step, title, boardId: currentBoardId, ticketId, 
 						</div>
 					</>
 				) : null}
-				{
-					buttonBar ? buttonBar : <LoadingButton isLoading={addBoardTicketsLoading || deleteBoardTicketLoading} type = "submit" className = "button" text="Submit"/>
-				}
+				<div>
+					{
+						buttonBar ? buttonBar : <LoadingButton isLoading={addBoardTicketsLoading || deleteBoardTicketLoading} type = "submit" text="Submit"/>
+					}
+				</div>
 			</form>
 		</div>
 	)		

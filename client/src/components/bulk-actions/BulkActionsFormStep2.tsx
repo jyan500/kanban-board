@@ -1,5 +1,6 @@
 import React from "react"
 import { BulkEditOperation, BulkEditOperationKey } from "./BulkActionsForm"
+import { Button } from "../page-elements/Button"
 
 interface Props {
 	step: number
@@ -35,15 +36,15 @@ export const BulkActionsFormStep2 = ({step, setStep, skipStep3, numSelectedIssue
 				})}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<button onClick={() => {
+				<Button theme="primary" onClick={() => {
 					if (step+1 === 3 && skipStep3){
 						setStep(step+2)
 					}
 					else {
 						setStep(step+1)
 					}
-				}} disabled={!propOperation} className = "button">Next</button>			
-				<button onClick={() => setStep(step-1)} className = "button --secondary">Cancel</button>			
+				}} disabled={!propOperation} >Next</Button>			
+				<Button theme="secondary" onClick={() => setStep(step-1)} >Cancel</Button>			
 			</div>
 		</div>
 	)

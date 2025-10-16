@@ -19,6 +19,7 @@ import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps
 import { DeleteCommentWarningProps } from "./secondary-modals/DeleteCommentWarning"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { Avatar } from "./page-elements/Avatar"
+import { Button } from "./page-elements/Button"
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
@@ -53,8 +54,8 @@ export const CommentField = ({isLoading, registerOptions, onSubmit, onCancel}: C
 			</FormProvider>
 	        {errors?.comment && <small className = "--text-alert">{errors.comment.message}</small>}
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<LoadingButton isLoading={isLoading} className = "button" text={"Save"} onClick={onSubmit}></LoadingButton>
-				<button onClick = {onCancel} className = "button --secondary">Cancel</button>
+				<LoadingButton isLoading={isLoading} text={"Save"} onClick={onSubmit}></LoadingButton>
+				<Button theme="secondary" onClick = {onCancel}>Cancel</Button>
 			</div>
 		</form>
 	)

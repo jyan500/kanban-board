@@ -131,7 +131,7 @@ const TableContent = ({
 												const newNestedTableSet = new Set(nestedTableSet)
 												newNestedTableSet.has(row.id) ? newNestedTableSet.delete(row.id) : newNestedTableSet.add(row.id)
 												setNestedTableSet(newNestedTableSet)
-											} : () => {}} className = "tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md tw-text-gray-700 tw-bg-white hover:tw-bg-gray-50 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200">
+											} : () => {}}>
 												{
 													nestedTableSet?.has(row.id) ? 
 													<>
@@ -166,8 +166,8 @@ const TableContent = ({
 									<td key = {`${tableKey}-${row.id}-${headerKey}`}>
 										{
 											!config.deleteCol.shouldShow || (config.deleteCol.shouldShow && config.deleteCol.shouldShow(row)) ? (
-												<button className = "button --alert" onClick={() => config.deleteCol?.onClick(row.id)}>{config.deleteCol?.text}
-												</button>
+												<Button theme="secondary" onClick={() => config.deleteCol?.onClick(row.id)}>{config.deleteCol?.text}
+												</Button>
 											) : null
 										}
 									</td>
