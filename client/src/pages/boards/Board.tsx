@@ -28,7 +28,7 @@ export const Board = () => {
 	const navigate = useNavigate()
 	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
-	const { filters, filterIdMap } = useAppSelector((state) => state.boardFilter)
+	const { filters, searchTerm, filterIdMap } = useAppSelector((state) => state.boardFilter)
 	const { tickets } = useAppSelector((state) => state.board)
 	const {data: boardFilterData, isLoading: isBoardFilterDataLoading} = useGetBoardFiltersQuery(boardId ? {boardId} : skipToken)
 	const {data: userBoardFilterData, isLoading: isUserBoardFilterDataLoading } = useGetUserBoardFiltersQuery()
@@ -95,7 +95,10 @@ export const Board = () => {
 
 	}, [boardFilterData, userBoardFilterData])
 
-	/* When filters are changed, manually re-trigger the fetch to retrieve new ticket ids */
+	/* 
+	When filters or the search term are changed, 
+	manually re-trigger the fetch to retrieve new ticket ids 
+	*/
 	useEffect(() => {
 		if (boardId){
 			trigger({
@@ -111,6 +114,10 @@ export const Board = () => {
 						}
 						return acc	
 					}, {} as Record<string, any>)),
+					...(searchTerm !== "" ? {
+						"searchBy": "title",
+						"query": searchTerm,
+					} : {}),
 					"skipPaginate": true, 
 					"includeAssignees": true, 
 					"includeRelationshipInfo": true, 
@@ -118,7 +125,7 @@ export const Board = () => {
 				}
 			})
 		}
-	}, [filters])
+	}, [filters, searchTerm])
 
 	useEffect(() => {
 		if (boardData && boardTicketData && !isGetBoardTicketsLoading){
