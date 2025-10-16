@@ -16,7 +16,7 @@ export const Button = React.forwardRef<HTMLButtonElement, Props>(({theme="second
     return (
         <button 
             ref={ref}
-            className = {`${themes[theme as keyof typeof themes]} tw-inline-flex tw-items-center tw-px-3 tw-py-2 tw-border tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200`}
+            className = {`${themes[theme as keyof typeof themes]} tw-inline-flex tw-items-center tw-px-3 tw-py-3 tw-border tw-shadow-sm tw-text-sm tw-leading-4 tw-font-medium tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-indigo-500 tw-transition-colors tw-duration-200`}
             {...props}
         >
             {children}
