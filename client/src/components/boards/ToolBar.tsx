@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react"
+import React, {useState, useEffect, useRef, useMemo} from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { SearchBar } from "../SearchBar" 
 import "../../styles/toolbar.css"
@@ -15,11 +15,13 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { useClickOutside } from "../../hooks/useClickOutside" 
 import { MD_BREAKPOINT, GROUP_BY_OPTIONS } from "../../helpers/constants"
+import { setSearchTerm } from "../../slices/boardFilterSlice"
 import { IconButton } from "../page-elements/IconButton"
 import { IconGear } from "../icons/IconGear"
 import { BoardToolbarDropdown } from "../dropdowns/BoardToolbarDropdown"
 import { FilterButton } from "../page-elements/FilterButton"
 import { Button } from "../page-elements/Button"
+import { displayUser, getUserInitials } from "../../helpers/functions"
 
 type FormValues = {
 	query: string	
@@ -28,7 +30,7 @@ type FormValues = {
 export const ToolBar = () => {
 	const dispatch = useAppDispatch()
 	const { board, boardInfo: primaryBoardInfo, tickets, statusesToDisplay, groupBy } = useAppSelector((state) => state.board)
-	const { filterButtonState, filters } = useAppSelector((state) => state.boardFilter)
+	const { filterButtonState, searchTerm, filters } = useAppSelector((state) => state.boardFilter)
 	
 	// Count active filters for the badge
 	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
@@ -41,7 +43,16 @@ export const ToolBar = () => {
 	const buttonRef = useRef(null)
 	const menuDropdownRef = useRef<HTMLDivElement>(null)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
-	const { data, isFetching} = useGetUserProfilesQuery(primaryBoardInfo?.assignees ? {userIds: primaryBoardInfo?.assignees} : skipToken)
+
+	// get all unique assignees on all tickets
+	const ticketAssigneeIds = useMemo(() => {
+		const ticketAssigneeSet = new Set([...tickets.filter((ticket) => ticket.assignees && ticket.assignees.length > 0).map((ticket) => ticket?.assignees?.[0].id ?? 0)])
+		return Array.from(ticketAssigneeSet)
+	}, [tickets])
+
+	// fetch the users that are assigned to the given tickets
+	// this also has the nice side effect of only showing the assignees that are attached to any filtered tickets as well.
+	const { data, isFetching} = useGetUserProfilesQuery(ticketAssigneeIds ? {userIds: [...ticketAssigneeIds]} : skipToken)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 
 	const defaultForm: FormValues = {
@@ -53,18 +64,6 @@ export const ToolBar = () => {
 	const registerOptions = {
 		query: {},
 	}
-
-	// const debouncedSearchTerm = useDebouncedValue(value, 300)
-
-	// useEffect(() => {
-	// 	if (value === ""){
-	// 		dispatch(setFilteredTickets(tickets))
-	// 	}
-	// 	else {
-	// 		const filtered = tickets.filter((obj) => obj.name.toLowerCase().includes(value.toLowerCase()))
-	// 		dispatch(setFilteredTickets(filtered))
-	// 	}	
-	// }, [debouncedSearchTerm])
 
 	const onClickOutside = () => {
 		setShowDropdown(false)	
@@ -79,13 +78,7 @@ export const ToolBar = () => {
 	}, [showModal])
 
 	const onSubmit = (values: FormValues) => {
-		if (values.query === ""){
-			dispatch(setFilteredTickets(tickets))
-		}
-		else {
-			const filtered = tickets.filter((obj) => obj.name.toLowerCase().includes(values.query.toLowerCase()))
-			dispatch(setFilteredTickets(filtered))
-		}
+		dispatch(setSearchTerm(values.query))
 	}
 
 	const prioritySort = (sortOrder: 1 | -1) => {
@@ -101,7 +94,7 @@ export const ToolBar = () => {
 
 	return (
 		<div className = "tw-py-4 tw-flex tw-flex-col tw-gap-y-2 xl:tw-gap-x-2 lg:tw-flex-row lg:tw-flex-wrap lg:tw-justify-between lg:tw-items-center">
-			<div className = "tw-flex tw-flex-row tw-justify-between lg:tw-justify-normal lg:tw-items-center tw-gap-x-2">
+			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 				<FormProvider {...methods}>
 					<form className = "tw-flex tw-flex-row tw-justify-between lg:tw-justify-normal lg:tw-items-center tw-gap-x-2">
 						<SearchBar 
@@ -122,20 +115,32 @@ export const ToolBar = () => {
 						dispatch(toggleShowSecondaryModal(true))
 					}}
 				/>
-			</div>
-		{/*	<div>
-				{!isFetching && width >= MD_BREAKPOINT && primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length > 0 ? 
-					<OverlappingRow imageUrls={data?.data?.map((data) => data.imageUrl ?? "") ?? []}/>
+				{!isFetching && width >= MD_BREAKPOINT && primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length && data?.data.length ? 
+					<OverlappingRow 
+						ignoreScreenSize={true}
+						imageSize={"m"} 
+						imageUrls={
+							data.data.map((data) => {
+								return {
+									name: displayUser(data), 
+									imageUrl: data.imageUrl ?? "", 
+									initials: getUserInitials(data)
+								}
+							})
+						}
+					/>
 					: null
 				}
-			</div>*/}
-			<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-gap-x-2">
-				<Button theme="primary" onClick = {() => {
-					dispatch(toggleShowModal(true))
-					dispatch(setModalType("ADD_TICKET_FORM"))
-					dispatch(setModalProps({statusesToDisplay: statuses, boardId: primaryBoardInfo?.id}))
-				}}>Add Ticket</Button>
-				<div className = "tw-flex tw-flex-col lg:tw-flex-row lg:tw-items-center tw-gap-y-2 lg:tw-gap-x-2">
+			</div>
+			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+				<div>
+					<Button theme="primary" onClick = {() => {
+						dispatch(toggleShowModal(true))
+						dispatch(setModalType("ADD_TICKET_FORM"))
+						dispatch(setModalProps({statusesToDisplay: statuses, boardId: primaryBoardInfo?.id}))
+					}}>Add Ticket</Button>
+				</div>
+				<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 					<label className = "label" htmlFor="board-group-by">Group By</label>
 					<select 
 						id = "board-group-by" 

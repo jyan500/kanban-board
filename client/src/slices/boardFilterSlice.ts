@@ -19,9 +19,11 @@ interface BoardFilterState {
 	filterButtonState: boolean
 	filterIdMap: BoardFilters
 	bulkEditFilterButtonState: boolean
+	searchTerm: string
 }
 
 const initialState: BoardFilterState = {
+	searchTerm: "",
 	filters: {
 		ticketTypeId: null,
 		statusId: null,
@@ -67,6 +69,9 @@ export const boardFilterSlice = createSlice({
 		},
 		setBulkEditFilterButtonState(state, action: PayloadAction<boolean>){
 			state.bulkEditFilterButtonState = action.payload
+		},
+		setSearchTerm(state, action: PayloadAction<string>){
+			state.searchTerm = action.payload
 		}
 	},
     extraReducers: (builder) => {
@@ -78,6 +83,7 @@ export const boardFilterSlice = createSlice({
 
 export const { 
 	setFilters,
+	setSearchTerm,
 	setFilterButtonState,
 	setBulkEditFilters,
 	setBulkEditFilterButtonState,

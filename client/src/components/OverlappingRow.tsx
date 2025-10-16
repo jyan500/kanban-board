@@ -13,11 +13,13 @@ that shows the count of (total num - 4)
 type Props = {
 	imageUrls: Array<{imageUrl: string, name: string, initials: string}>
 	imageSize: string
+	ignoreScreenSize?: boolean
 }
 
-export const OverlappingRow = ({imageUrls, imageSize}: Props) => {
+export const OverlappingRow = ({imageUrls, imageSize, ignoreScreenSize=false}: Props) => {
+	console.log("ignoreScreenSize: ", ignoreScreenSize)
 	const { width, height } = useScreenSize()
-	const size = `${imageSize && imageSize in AVATAR_SIZES && width >= LG_BREAKPOINT ? AVATAR_SIZES[imageSize] : AVATAR_SIZES.s}` 
+	const size = `${!ignoreScreenSize ? ((imageSize && imageSize in AVATAR_SIZES && width >= LG_BREAKPOINT) ? AVATAR_SIZES[imageSize] : AVATAR_SIZES.s) : AVATAR_SIZES[imageSize]}` 
 	const total = imageUrls.length
 	const createElements = (num: number) => {
 		let amt = total <= 4 ? total : 4
@@ -31,7 +33,7 @@ export const OverlappingRow = ({imageUrls, imageSize}: Props) => {
 					imageUrls.slice(0, amt).map(({imageUrl, initials, name}: {imageUrl: string, initials: string, name: string}) => {
 					    return (
 					    	<div key={`avatar_${initials}_${name}`} className = "tw-relative tw-group tw-inline-flex">
-						    	<Avatar userInitials={initials} imageUrl={imageUrl} size={width >= LG_BREAKPOINT ? imageSize : "s"} className = "tw-border-2 tw-border-gray-800 tw-rounded-full"/>
+						    	<Avatar userInitials={initials} imageUrl={imageUrl} size={ignoreScreenSize || width >= LG_BREAKPOINT ? imageSize : "s"} className = "tw-border-2 tw-border-gray-800 tw-rounded-full"/>
 						    	<HoverTooltip text={name}/>
 				    		</div>
 					    )
