@@ -53,7 +53,6 @@ export const ToolBar = () => {
 
 	// fetch the users that are assigned to the given tickets
 	// this also has the nice side effect of only showing the assignees that are attached to any filtered tickets as well.
-	console.log("ticketAssigneeIds: ", ticketAssigneeIds)
 	const { data, isLoading } = useGetUserProfilesQuery(ticketAssigneeIds ? {userIds: [...ticketAssigneeIds]} : skipToken)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 
