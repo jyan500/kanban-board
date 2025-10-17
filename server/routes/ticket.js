@@ -31,6 +31,7 @@ const db = require("../db/db")
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { GoogleGenAI } = require("@google/genai")
 const { searchTicketByAssignee } = require("../helpers/query-helpers")
+const { rateLimitTicketSummary } = require("../middleware/rateLimitMiddleware")
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -796,7 +797,7 @@ router.patch("/:ticketId/status", validateTicketStatusUpdate, handleValidationRe
 Generates smart-summary of a ticket by concatenating all text content + ticket activity, and inputting
 into LLM model. 
 */
-router.get("/:ticketId/summary", validateGet, handleValidationResult, async (req, res, next) => {
+router.get("/:ticketId/summary", rateLimitTicketSummary, validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const ai = new GoogleGenAI({})
 		const ticket = await db("tickets").where("id", req.params.ticketId).first()
