@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks" 
 import type { Status } from "../../types/common" 
 import { addToast } from "../../slices/toastSlice" 
-import { useBulkEditBoardStatusesMutation } from "../../services/private/board" 
+import { useBulkEditBoardStatusesMutation, useGetBoardStatusesQuery } from "../../services/private/board" 
 import { toggleShowModal } from "../../slices/modalSlice"
 import { sortStatusByOrder } from "../../helpers/functions" 
+import { skipToken } from '@reduxjs/toolkit/query/react'
 import { v4 as uuidv4 } from "uuid"
 import { Switch } from "../page-elements/Switch"
 import { LoadingButton } from "../page-elements/LoadingButton"
@@ -14,8 +15,15 @@ export const BoardStatusModal = () => {
 	const { boardInfo, statusesToDisplay, tickets: boardTicketIds } = useAppSelector((state) => state.board)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { showModal } = useAppSelector((state) => state.modal) 
-	const [formStatuses, setFormStatuses] = useState<Array<Status>>(statusesToDisplay)
+	const { data: boardStatuses, isLoading: isBoardStatusesLoading } = useGetBoardStatusesQuery(boardInfo ? {id: boardInfo.id, isActive: true} : skipToken)
+	const [ formStatuses, setFormStatuses ] = useState<Array<Status>>([])
 	const [ bulkEditBoardStatuses, {isLoading: isLoading, error: isError} ] =  useBulkEditBoardStatusesMutation() 
+
+	useEffect(() => {
+		if (!isBoardStatusesLoading && boardStatuses){
+			setFormStatuses(boardStatuses)
+		}
+	}, [isBoardStatusesLoading, boardStatuses])
 
 	const onSubmit = async () => {
 		if (boardInfo){
