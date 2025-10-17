@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { SearchBar } from "../SearchBar" 
 import "../../styles/toolbar.css"
 import { setBoard, setFilteredTickets, setGroupBy } from "../../slices/boardSlice" 
+import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice" 
 import { prioritySort as sortByPriority } from "../../helpers/functions"
@@ -52,7 +53,7 @@ export const ToolBar = () => {
 
 	// fetch the users that are assigned to the given tickets
 	// this also has the nice side effect of only showing the assignees that are attached to any filtered tickets as well.
-	const { data, isFetching} = useGetUserProfilesQuery(ticketAssigneeIds ? {userIds: [...ticketAssigneeIds]} : skipToken)
+	const { data, isLoading } = useGetUserProfilesQuery(ticketAssigneeIds ? {userIds: [...ticketAssigneeIds]} : skipToken)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 
 	const defaultForm: FormValues = {
@@ -115,7 +116,7 @@ export const ToolBar = () => {
 						dispatch(toggleShowSecondaryModal(true))
 					}}
 				/>
-				{!isFetching && width >= MD_BREAKPOINT && primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length && data?.data.length ? 
+				{!isLoading && width >= MD_BREAKPOINT && primaryBoardInfo?.assignees && primaryBoardInfo?.assignees?.length && data?.data.length ? 
 					<OverlappingRow 
 						ignoreScreenSize={true}
 						imageSize={"m"} 
@@ -128,8 +129,7 @@ export const ToolBar = () => {
 								}
 							})
 						}
-					/>
-					: null
+					/> : null
 				}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
