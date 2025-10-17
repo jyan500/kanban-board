@@ -16,31 +16,10 @@ const activateAccountTemplate = require("../email/templates/activate-account")
 const passwordResetTemplate = require("../email/templates/password-reset")
 const {sendEmail} = require("../email/email")
 const { EXCEEDED_MESSAGE, DEFAULT_STATUSES } = require("../constants")
-const rateLimit = require("express-rate-limit")
 const axios = require("axios")
+const { rateLimitAuth } = require("../middleware/rateLimitMiddleware")
 
-const limiter = rateLimit({
-    windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 5, // 5 max in the window,
-    handler: (req, res) => {
-	    res.status(429).json({
-		    status: 429,
-		    errors: ['Too many requests, please try again later.'],
-	    })
-	},
-	standardHeaders: true,
-	legacyHeaders: false,
-})
-
-// apply rate limiting only in production
-const applyRateLimit = (req, res, next) => {
-  if (process.env.ENVIRONMENT === "PROD") {
-    return limiter(req, res, next);
-  }
-  next();
-};
-
-router.post("/login", applyRateLimit, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
+router.post("/login", rateLimitAuth, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const user = await db("users").where("email", req.body.email).first()
 		const error = "Failed to login: email, organization or password is incorrect."
@@ -81,7 +60,7 @@ router.post("/login", applyRateLimit, userValidator.loginValidator, handleValida
 	}
 })
 
-router.post("/register", applyRateLimit, userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
+router.post("/register", rateLimitAuth, userValidator.registerValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const { recaptcha } = req.body
 		const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
@@ -129,7 +108,7 @@ router.post("/register", applyRateLimit, userValidator.registerValidator, handle
 	}
 })
 
-router.post("/forgot-password", applyRateLimit, userValidator.forgotPasswordValidator, handleValidationResult, async (req, res, next) => {
+router.post("/forgot-password", rateLimitAuth, userValidator.forgotPasswordValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const email = req.body.email
 		// get user
@@ -160,7 +139,7 @@ router.post("/forgot-password", applyRateLimit, userValidator.forgotPasswordVali
 	}
 })
 
-router.get("/validate-token", applyRateLimit, async (req, res, next) => {
+router.get("/validate-token", rateLimitAuth, async (req, res, next) => {
 	try {
 		// make sure the reset password token has not exceeded the current date and time
 		const user = await db("users")
@@ -184,7 +163,7 @@ router.get("/validate-token", applyRateLimit, async (req, res, next) => {
 	}
 })
 
-router.post("/resend-activation", applyRateLimit, async (req, res, next) => {
+router.post("/resend-activation", rateLimitAuth, async (req, res, next) => {
 	try {
 		// if the user has a token but it's expired, allow for a resend
 		const user = await db("users").where("activation_token", req.query.token).andWhere("activation_token_expires", ">", new Date()).first()
@@ -204,7 +183,7 @@ router.post("/resend-activation", applyRateLimit, async (req, res, next) => {
 	}
 })
 
-router.post("/activate", applyRateLimit, async (req, res, next) => {
+router.post("/activate", rateLimitAuth, async (req, res, next) => {
 	try {
 		const user = await db("users").where("activation_token", req.body.token).andWhere("activation_token_expires", ">", new Date()).first()
 		if (!user) {
@@ -223,7 +202,7 @@ router.post("/activate", applyRateLimit, async (req, res, next) => {
 	}
 })
 
-router.post("/reset-password", applyRateLimit, userValidator.resetPasswordValidator, handleValidationResult, async (req, res, next) => {
+router.post("/reset-password", rateLimitAuth, userValidator.resetPasswordValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const { token, password } = req.body
 		
@@ -254,7 +233,7 @@ router.post("/reset-password", applyRateLimit, userValidator.resetPasswordValida
 	}
 })
 
-router.post("/register/organization", applyRateLimit, userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
+router.post("/register/organization", rateLimitAuth, userValidator.organizationUserRegisterValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const { recaptcha } = req.body.user
 		const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
