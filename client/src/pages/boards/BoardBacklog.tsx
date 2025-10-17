@@ -52,7 +52,7 @@ export const BoardBacklog = () => {
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
-	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
+	const nonCompletedStatuses = statuses.filter((status) => !status.isCompleted).map((status) => status.id) ?? []
 	const [ deleteSprintTickets, { isLoading: isDeleteTicketsLoading }] = useDeleteSprintTicketsMutation()
 	const [ updateSprintTickets, { isLoading: isUpdateTicketsLoading }] = useUpdateSprintTicketsMutation()
 	const [ triggerGetSprint, { isLoading: isLazyGetSprintLoading }] = useLazyGetSprintQuery()
@@ -91,7 +91,7 @@ export const BoardBacklog = () => {
 				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
-				"excludeStatuses": completedStatuses,
+				"statusIds": nonCompletedStatuses,
 				"excludeSprintId": sprintData?.data?.[0]?.id,
 				"limit": true,
 			}})
@@ -118,7 +118,7 @@ export const BoardBacklog = () => {
 				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
-				"excludeStatuses": completedStatuses,
+				"statusIds": nonCompletedStatuses,
 				"excludeSprintId": sprintData?.data?.[0]?.id,
 				"limit": true,
 			}}, true)
@@ -283,7 +283,7 @@ export const BoardBacklog = () => {
 			)
 			}
 			{
-				 !boardTicketData ? (
+				 !boardTicketData && boardInfo ? (
 					<LoadingSkeleton>
 						<RowPlaceholder/>
 					</LoadingSkeleton>

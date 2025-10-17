@@ -100,7 +100,7 @@ export const Board = () => {
 	manually re-trigger the fetch to retrieve new ticket ids 
 	*/
 	useEffect(() => {
-		if (boardId){
+		if (boardId && statusData){
 			trigger({
 				id: boardId, 
 				urlParams: {
@@ -118,6 +118,7 @@ export const Board = () => {
 						"searchBy": "title",
 						"query": searchTerm,
 					} : {}),
+					"statusIds": statusData.map((status)=>status.id),
 					"skipPaginate": true, 
 					"includeAssignees": true, 
 					"includeRelationshipInfo": true, 
@@ -125,7 +126,7 @@ export const Board = () => {
 				}
 			})
 		}
-	}, [filters, searchTerm])
+	}, [filters, statusData, searchTerm])
 
 	useEffect(() => {
 		if (boardData && boardTicketData && !isGetBoardTicketsLoading){
@@ -174,7 +175,7 @@ export const Board = () => {
 					<Banner message = {"Something went wrong!"} type = "failure"/>
 				) : null
 			}
-			{ !isBoardFilterDataLoading && !isUserBoardFilterDataLoading && !isGetBoardLoading && !isGetBoardTicketsLoading && !isGetBoardStatusesLoading ? 
+			{ !isBoardFilterDataLoading && !isUserBoardFilterDataLoading && !isGetBoardLoading && !isGetBoardTicketsLoading && !isGetBoardStatusesLoading && boardData && boardTicketData ? 
 				<>
 					<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>
 					<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">

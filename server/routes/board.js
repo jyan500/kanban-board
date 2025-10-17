@@ -248,8 +248,8 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.sprintId){
 				queryBuilder.join("tickets_to_sprints", "tickets_to_sprints.ticket_id", "=", "tickets.id").where("tickets_to_sprints.sprint_id", req.query.sprintId)
 			}
-			if (req.query.excludeStatuses){
-				queryBuilder.whereNotIn("tickets.status_id", req.query.excludeStatuses.split(","))
+			if (req.query.statusIds){
+				queryBuilder.whereIn("tickets.status_id", req.query.statusIds.split(","))
 			}
 			// If checkOverlapping is true, and both startDate and endDate are provided, check for interval overlaps
 			if (req.query.checkOverlapping === "true" && req.query.startDate && req.query.endDate) {
