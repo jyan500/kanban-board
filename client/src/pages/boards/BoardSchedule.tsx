@@ -28,7 +28,7 @@ export const BoardSchedule = () => {
 	const [ ticketsGroupedByAssignee, setTicketsGroupedByAssignee ] = useState<Record<string, any>>({})
 	const { statuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
-	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
+	const nonCompletedStatuses = statuses.filter((status) => !status.isCompleted).map((status) => status.id) ?? []
 	const defaultForm: FormValues = {
 		query: "",
 		searchBy: "title",
@@ -72,7 +72,7 @@ export const BoardSchedule = () => {
 			return acc	
 		}, {} as Record<string, any>)),
 		...preloadedValues,
-		...(filters.statusId == null || !completedStatuses.includes(filters.statusId) ? {"excludeCompleted": true} : {}),
+		...(filters.statusId == null || !nonCompletedStatuses.includes(filters.statusId) ? {"statusIds": nonCompletedStatuses} : {}),
 		startDate: format(getCurrentPeriod.start, "yyyy-MM-dd"),
 		endDate: format(getCurrentPeriod.end, "yyyy-MM-dd"),
 		"includeAssignees": true, 

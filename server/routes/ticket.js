@@ -73,8 +73,11 @@ router.get("/", async (req, res, next) => {
 			if (req.query.sprintId){
 				queryBuilder.join("tickets_to_sprints", "tickets_to_sprints.ticket_id", "=", "tickets.id").where("tickets_to_sprints.sprint_id", req.query.sprintId)
 			}
-			if (req.query.ticketIds){
+			if ("ticketIds" in req.query){
 				queryBuilder.whereIn("id", req.query.ticketIds.split(","))
+			}
+			if ("statusIds" in req.query){
+				queryBuilder.whereIn("status_id", req.query.statusIds.split(","))
 			}
 			if (req.query.childTicketId){
 				if (req.query.excludeAddedEpicParent){

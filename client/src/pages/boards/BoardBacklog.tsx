@@ -52,7 +52,7 @@ export const BoardBacklog = () => {
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { priorities } = useAppSelector((state) => state.priority)
-	const completedStatuses = statuses.filter((status) => status.isCompleted).map((status) => status.id) ?? []
+	const nonCompletedStatuses = statuses.filter((status) => !status.isCompleted).map((status) => status.id) ?? []
 	const [ deleteSprintTickets, { isLoading: isDeleteTicketsLoading }] = useDeleteSprintTicketsMutation()
 	const [ updateSprintTickets, { isLoading: isUpdateTicketsLoading }] = useUpdateSprintTicketsMutation()
 	const [ triggerGetSprint, { isLoading: isLazyGetSprintLoading }] = useLazyGetSprintQuery()
@@ -91,7 +91,7 @@ export const BoardBacklog = () => {
 				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
-				"excludeCompleted": true,
+				"statusIds": nonCompletedStatuses,
 				"excludeSprintId": sprintData?.data?.[0]?.id,
 				"limit": true,
 			}})
@@ -118,12 +118,12 @@ export const BoardBacklog = () => {
 				"includeTicketStats": true,
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
-				"excludeCompleted": true,
+				"statusIds": nonCompletedStatuses,
 				"excludeSprintId": sprintData?.data?.[0]?.id,
 				"limit": true,
 			}}, true)
 		}
-	}, [backlogPreloadedValues, backlogPage])
+	}, [boardInfo, backlogPreloadedValues, backlogPage])
 	// in order for ease of use with the existing bulk edit toolbar, track a "combined" array of both 
 	// selected backlog and sprint tickets
 	const setId = (id: number, type: "sprint" | "backlog", items: Array<BacklogBulkItem>, setter: (items: Array<BacklogBulkItem>) => void) => {

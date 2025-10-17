@@ -24,7 +24,7 @@ router.get("/", async (req, res, next) => {
 					const query = req.query.query ?? req.query.userQuery
 					queryBuilder.where((queryBuilder2) => queryBuilder2.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`))
 				}
-				if (req.query.userIds){
+				if ("userIds" in req.query){
 					queryBuilder.whereIn("users.id", req.query.userIds.split(","))
 				}
 				if (req.query.filterOnUserRole){
@@ -214,7 +214,7 @@ router.post("/board-filter", authenticateUserActivated, validateUserBoardFilterU
 	try {
 		const { id: userId } = req.user
 		const existingFilters = await db("users_to_board_filters").where("user_id", userId)
-		const existingFilterIds = existingFilters.filter((filter) => filter.board_filter_id != null).map((filter) => filter.board_filter_id)
+		const existingFilterIds = existingFilters.map((filter) => filter.board_filter_id)
 		const idsToAdd = req.body.ids.filter((idObj) => !existingFilterIds.includes(idObj.board_filter_id))
 		const idsToDelete = existingFilterIds.filter((id) => !req.body.ids.map(idObj => idObj.board_filter_id).includes(id))
 		if (idsToAdd.length){
