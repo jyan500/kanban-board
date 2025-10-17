@@ -59,6 +59,8 @@ export const Dashboard = () => {
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const [assignedSearchParams, setAssignedSearchParams] = useState<Record<string, any>>({})
 	const [watchSearchParams, setWatchSearchParams] = useState<Record<string, any>>({})
+	const { statuses } = useAppSelector((state) => state.status)
+	const nonCompletedStatusIds = statuses.filter((status) => !status.isCompleted).map((status) => status.id)
 	const {data: assignedTickets, isLoading: isAssignedTicketsLoading} = useGetTicketsQuery(Object.keys(assignedSearchParams).length > 0 ? assignedSearchParams : skipToken)
 	const {data: watchedTickets, isLoading: isWatchedTicketsLoading} = useGetTicketsQuery(Object.keys(watchSearchParams).length > 0 ? watchSearchParams : skipToken)
 	const {data: boards, isLoading: isBoardsLoading} = useGetBoardsQuery({includeUserDashboardInfo: true, perPage: 5})
@@ -88,6 +90,7 @@ export const Dashboard = () => {
 				order: "desc", 
 				page: "1", 
 				includeAssignees: true, 
+				statusIds: nonCompletedStatusIds,
 				assignedToUser: userProfile?.id,
 				perPage: 5,
 			}
