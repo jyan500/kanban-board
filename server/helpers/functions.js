@@ -248,7 +248,7 @@ const retryTransaction = async (operation) => {
  */
 const insertAndGetId = async (tableName, data) => {
 	const result = await retryTransaction(db(tableName).insert(data, 'id'));
-  return result[0]?.id ?? result[0];
+	return result[0]?.id ?? result[0];
 }
 
 module.exports = {
