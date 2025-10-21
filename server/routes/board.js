@@ -1,5 +1,6 @@
 const express = require("express")
 const router = express.Router()
+const { subDays, addDays, startOfDay } = require('date-fns')
 const { 
 	validateGet, 
 	validateCreate, 
@@ -205,6 +206,89 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 	}	
 	catch (err) {
 		console.error(`Error while getting board last modified:  ${err.message}`)	
+		next(err)
+	}
+})
+
+router.get("/:boardId/insights", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const board = await db("boards").where("id", req.params.boardId).first()
+
+		const sevenDaysAgo = startOfDay(subDays(new Date(), 7))
+		const sevenDaysFromNow = startOfDay(addDays(new Date(), 7))
+		const now = startOfDay(new Date())
+
+		/* Get the count of tickets that were created in ine last 7 days */
+		const ticketsCreated = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+		.where("tickets_to_boards.board_id", req.params.boardId)
+		.where(db.raw("DATE(tickets.created_at)"), ">=", sevenDaysAgo)
+		.count("tickets.id as totalTickets")
+		.first()
+
+		/* Get the count of tickets that were updated in ine last 7 days */
+		const ticketsUpdated = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+		.where("tickets_to_boards.board_id", req.params.boardId)
+		.where(db.raw("DATE(tickets.updated_at)"), ">=", sevenDaysAgo)
+		.count("tickets.id as totalTickets")
+		.first()
+		/* TODO: Get the count of tickets that were completed in ine last 7 days */
+		/* Get the count of tickets that have a due date AND are due within the next 7 days*/
+		const ticketsDue = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+		.where("tickets_to_boards.board_id", req.params.boardId)
+		.whereNotNull("tickets.due_date")
+		.where(db.raw('DATE(tickets.due_date)'), ">=", now).andWhere(db.raw('DATE(tickets.due_date)'), "<=", sevenDaysFromNow)
+		.count("tickets.id as totalTickets")
+		.first()
+		/* 
+			Get the counts of tickets on the board aggregated by statuses 
+		*/
+		const ticketsByStatus = await db("tickets")
+        .join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+        .where("tickets_to_boards.board_id", req.params.boardId)
+        .groupBy("tickets.status_id")
+        .select("tickets.status_id as statusId")
+        .count("tickets.id as totalTickets")
+		/* 
+			Get the counts of tickets on the board aggregated by priority 
+		*/
+		const ticketsByPriority = await db("tickets")
+		.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+        .where("tickets_to_boards.board_id", req.params.boardId)
+        .groupBy("tickets.priority_id")
+        .select("tickets.priority_id as priorityId")
+        .count("tickets.id as totalTickets")
+		/* 
+			Get the counts of tickets on the board aggregated by ticket type 
+		*/
+		const ticketsByTicketType = await db("tickets")
+		.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+        .where("tickets_to_boards.board_id", req.params.boardId)
+        .groupBy("tickets.ticket_type_id")
+        .select("tickets.ticket_type_id as ticketTypeId")
+        .count("tickets.id as totalTickets")
+		/* 
+			Get the counts of tickets on the board aggregated by assignee 
+		*/
+		const ticketsByAssignee = await db("tickets")
+		.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+		.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
+        .where("tickets_to_boards.board_id", req.params.boardId)
+        .groupBy("tickets_to_users.user_id")
+        .select("tickets_to_users.user_id as userId")
+        .count("tickets.id as totalTickets")
+
+		res.json({
+			ticketsDue: ticketsDue,
+			ticketsCreated: ticketsCreated,
+			ticketsByAssignee: ticketsByAssignee,
+			ticketsByPriority: ticketsByPriority,
+			ticketsByTicketType: ticketsByTicketType,
+			ticketsUpdated: ticketsUpdated,
+			ticketsByStatus: ticketsByStatus,
+		})
+	}
+	catch (err) {
+		console.error(`Error while getting tickets: ${err.message}`)
 		next(err)
 	}
 })
