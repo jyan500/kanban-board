@@ -212,6 +212,35 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 router.get("/:boardId/insights", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const board = await db("boards").where("id", req.params.boardId).first()
+
+		const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+		sevenDaysAgo.setHours(0, 0, 0, 0)
+		const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+		sevenDaysFromNow.setHours(0, 0, 0, 0)
+		const now = new Date()
+		now.setHours(0, 0, 0, 0)
+
+		/* Get the count of tickets that were created in ine last 7 days */
+		const ticketsCreated = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+		.where("tickets_to_boards.board_id", req.params.boardId)
+		.where(db.raw("DATE(tickets.created_at)"), ">=", sevenDaysAgo)
+		.count("tickets.id as totalTickets")
+		.first()
+
+		/* Get the count of tickets that were updated in ine last 7 days */
+		const ticketsUpdated = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+		.where("tickets_to_boards.board_id", req.params.boardId)
+		.where(db.raw("DATE(tickets.updated_at)"), ">=", sevenDaysAgo)
+		.count("tickets.id as totalTickets")
+		.first()
+		/* TODO: Get the count of tickets that were completed in ine last 7 days */
+		/* Get the count of tickets that have a due date AND are due within the next 7 days*/
+		const ticketsDue = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+		.where("tickets_to_boards.board_id", req.params.boardId)
+		.whereNotNull("tickets.due_date")
+		.where(db.raw('DATE(tickets.due_date)'), ">=", now).andWhere(db.raw('DATE(tickets.due_date)'), "<=", sevenDaysFromNow)
+		.count("tickets.id as totalTickets")
+		.first()
 		/* 
 			Get the counts of tickets on the board aggregated by statuses 
 		*/
@@ -250,11 +279,15 @@ router.get("/:boardId/insights", validateGet, handleValidationResult, async (req
         .select("tickets_to_users.user_id as userId")
         .count("tickets.id as totalTickets")
 
-		console.log("ticketsByAssignee: ", ticketsByAssignee)
-		console.log("ticketsByPriority: ", ticketsByPriority)
-		console.log("ticketsByTicketType: ", ticketsByTicketType)
-		console.log("ticketsByStatus: ", ticketsByStatus)
-		res.json({message: "success!"})
+		res.json({
+			ticketsDue: ticketsDue,
+			ticketsCreated: ticketsCreated,
+			ticketsByAssignee: ticketsByAssignee,
+			ticketsByPriority: ticketsByPriority,
+			ticketsByTicketType: ticketsByTicketType,
+			ticketsUpdated: ticketsUpdated,
+			ticketsByStatus: ticketsByStatus,
+		})
 	}
 	catch (err) {
 		console.error(`Error while getting tickets: ${err.message}`)
