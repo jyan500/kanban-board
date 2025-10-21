@@ -1,5 +1,6 @@
 const express = require("express")
 const router = express.Router()
+const { subDays, addDays, startOfDay } = require('date-fns')
 const { 
 	validateGet, 
 	validateCreate, 
@@ -213,12 +214,9 @@ router.get("/:boardId/insights", validateGet, handleValidationResult, async (req
 	try {
 		const board = await db("boards").where("id", req.params.boardId).first()
 
-		const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-		sevenDaysAgo.setHours(0, 0, 0, 0)
-		const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-		sevenDaysFromNow.setHours(0, 0, 0, 0)
-		const now = new Date()
-		now.setHours(0, 0, 0, 0)
+		const sevenDaysAgo = startOfDay(subDays(new Date(), 7))
+		const sevenDaysFromNow = startOfDay(addDays(new Date(), 7))
+		const now = startOfDay(new Date())
 
 		/* Get the count of tickets that were created in ine last 7 days */
 		const ticketsCreated = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
