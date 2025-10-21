@@ -209,6 +209,59 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 	}
 })
 
+router.get("/:boardId/insights", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const board = await db("boards").where("id", req.params.boardId).first()
+		/* 
+			Get the counts of tickets on the board aggregated by statuses 
+		*/
+		const ticketsByStatus = await db("tickets")
+        .join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+        .where("tickets_to_boards.board_id", req.params.boardId)
+        .groupBy("tickets.status_id")
+        .select("tickets.status_id as statusId")
+        .count("tickets.id as totalTickets")
+		/* 
+			Get the counts of tickets on the board aggregated by priority 
+		*/
+		const ticketsByPriority = await db("tickets")
+		.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+        .where("tickets_to_boards.board_id", req.params.boardId)
+        .groupBy("tickets.priority_id")
+        .select("tickets.priority_id as priorityId")
+        .count("tickets.id as totalTickets")
+		/* 
+			Get the counts of tickets on the board aggregated by ticket type 
+		*/
+		const ticketsByTicketType = await db("tickets")
+		.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+        .where("tickets_to_boards.board_id", req.params.boardId)
+        .groupBy("tickets.ticket_type_id")
+        .select("tickets.ticket_type_id as ticketTypeId")
+        .count("tickets.id as totalTickets")
+		/* 
+			Get the counts of tickets on the board aggregated by assignee 
+		*/
+		const ticketsByAssignee = await db("tickets")
+		.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+		.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
+        .where("tickets_to_boards.board_id", req.params.boardId)
+        .groupBy("tickets_to_users.user_id")
+        .select("tickets_to_users.user_id as userId")
+        .count("tickets.id as totalTickets")
+
+		console.log("ticketsByAssignee: ", ticketsByAssignee)
+		console.log("ticketsByPriority: ", ticketsByPriority)
+		console.log("ticketsByTicketType: ", ticketsByTicketType)
+		console.log("ticketsByStatus: ", ticketsByStatus)
+		res.json({message: "success!"})
+	}
+	catch (err) {
+		console.error(`Error while getting tickets: ${err.message}`)
+		next(err)
+	}
+})
+
 router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const board = await db("boards").where("id", req.params.boardId).first()
