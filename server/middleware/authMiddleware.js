@@ -11,6 +11,11 @@ function authenticateToken(req, res, next){
 			return res.status(403).json({ error: "Invalid Token"})
 		}
 		req.user = user
+		req.historyContext = {
+			userId: req.user?.id || null,
+			ipAddress: req.ip || req.connection.remoteAddress,
+			userAgent: req.get('user-agent')
+		}
 		next()
 	})
 }
