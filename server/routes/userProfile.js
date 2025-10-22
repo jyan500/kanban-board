@@ -10,6 +10,9 @@ const bcrypt = require("bcrypt")
 const config = require("../config")
 const {authenticateUserActivated} = require("../middleware/userActivatedMiddleware")
 const { insertAndGetId } = require("../helpers/functions")
+const HistoryService = require('../services/history-service')
+
+const historyService = new HistoryService(db)
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -78,9 +81,14 @@ router.get("/", async (req, res, next) => {
 
 router.post("/image", editUserImageValidator, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("users").where("id", req.body.id).update({
-			image_url: req.body.image_url
-		})
+		await historyService.update(
+			"users",
+			req.body.id,
+			{
+				image_url: req.body.image_url
+			},
+			req.historyContext
+		)
 		res.json({message: "User profile image uploaded successfully!"})
 	}	
 	catch (err){
@@ -140,15 +148,20 @@ router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res
 			salt = await bcrypt.genSalt(config.saltRounds)
 			hash = await bcrypt.hash(req.body.password, salt)
 		}
-		await db("users").update({
-			first_name: req.body.first_name,
-			last_name: req.body.last_name,
-			email: req.body.email,
-			image_url: req.body.image_url,
-			...(req.body.change_password ? {
-				password: hash	
-			} : {})
-		}).where("id", userId)
+		await historyService.update(
+			"users",
+			userId,
+			{
+				first_name: req.body.first_name,
+				last_name: req.body.last_name,
+				email: req.body.email,
+				image_url: req.body.image_url,
+				...(req.body.change_password ? {
+					password: hash	
+				} : {})
+			},
+			req.historyContext
+		)
 		res.json({message: "Account updated successfully!"})
 	}	
 	catch (err){
@@ -279,11 +292,16 @@ router.get("/organization", async (req, res, next) => {
 
 router.post("/activate", async (req, res, next) => {
 	try {
-		await db("users").where("id", req.user.id).update({
-			is_active: true,
-			activation_token: undefined,
-			activation_token_expires: undefined,
-		})
+		await historyService.update(
+			"users",
+			req.user.id,
+			{
+				is_active: true,
+				activation_token: undefined,
+				activation_token_expires: undefined,
+			},
+			req.historyContext
+		)
 		res.json({message: "Account activated successfully!"})
 	}
 	catch (err){
@@ -411,11 +429,16 @@ router.get("/:userId/registration-request", getUserValidator, handleValidationRe
 router.put("/:userId", authenticateUserRole(["ADMIN"]), editUserValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const userId = req.params.userId
-		await db("users").update({
-			first_name: req.body.first_name,
-			last_name: req.body.last_name,
-			email: req.body.email,
-		}).where("id", userId)
+		await historyService.update(
+			"users",
+			userId,
+			{
+				first_name: req.body.first_name,
+				last_name: req.body.last_name,
+				email: req.body.email,
+			},
+			req.historyContext
+		)
 		if (req.body.user_role_id){
 			await db("organization_user_roles").update({
 				user_role_id: req.body.user_role_id

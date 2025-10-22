@@ -26,7 +26,7 @@ type TableWrapperProps = {
 
 const TableWrapper = ({children}: TableWrapperProps) => {
 	return (
-		<div className = "tw-max-w-6xl tw-overflow-x-auto tw-shadow-md tw-rounded-md">
+		<div className = "tw-max-w-8xl tw-overflow-x-auto tw-shadow-md tw-rounded-md">
 			<table className = "tw-min-w-full tw-w-max tw-bg-white">
 				{children}
 			</table>
@@ -161,12 +161,25 @@ const TableContent = ({
 									</td>
 								)
 							}
+							else if (headerKey === config.approveCol?.col){
+								return (
+									<td key = {`${tableKey}-${row.id}-${headerKey}`}>
+										{
+											!config.approveCol.shouldShow || (config.approveCol.shouldShow && config.approveCol.shouldShow(row)) ? (
+												<Button onClick={() => config.approveCol?.onClick(row.id)}>
+													{ config.approveCol?.text }
+												</Button>
+											) : null	
+										}
+									</td>	
+								)
+							}
 							else if (headerKey === config.deleteCol?.col){
 								return (
 									<td key = {`${tableKey}-${row.id}-${headerKey}`}>
 										{
 											!config.deleteCol.shouldShow || (config.deleteCol.shouldShow && config.deleteCol.shouldShow(row)) ? (
-												<Button theme="secondary" onClick={() => config.deleteCol?.onClick(row.id)}>{config.deleteCol?.text}
+												<Button theme="alert" onClick={() => config.deleteCol?.onClick(row.id)}>{config.deleteCol?.text}
 												</Button>
 											) : null
 										}

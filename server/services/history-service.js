@@ -1,4 +1,4 @@
-const { insertAndGetId } = require("../helpers/functions")
+const { insertAndGetId, bulkInsertAndGetIds } = require("../helpers/functions")
 
 class HistoryService {
     constructor(knex) {
@@ -67,7 +67,7 @@ class HistoryService {
     async insert(tableName, data, context, trx = null) {
         const query = async (transaction) => {
             // const [id] = await transaction(tableName).insert(data).returning('id')
-            const id = await insertAndGetId(tableName)
+            const id = await insertAndGetId(tableName, data)
             
             await this.recordHistory(
                 transaction,
@@ -79,6 +79,35 @@ class HistoryService {
             )
             
             return id
+        }
+
+        return trx ? query(trx) : this.knex.transaction(query)
+    }
+
+    /**
+     * Bulk insert with history tracking
+     */
+    async bulkInsert(tableName, data, context, trx = null) {
+        const query = async (transaction) => {
+            // Insert all records and get their IDs
+            const insertedIds = await bulkInsertAndGetIds(tableName, data)
+
+            // Record history for each inserted record
+            for (let i = 0; i < insertedIds.length; i++) {
+                const id = insertedIds[i]
+                const recordData = data[i] // Assuming the order of data and insertedIds is consistent
+
+                await this.recordHistory(
+                    transaction,
+                    tableName,
+                    id,
+                    recordData,
+                    'INSERT',
+                    context
+                )
+            }
+
+            return insertedIds
         }
 
         return trx ? query(trx) : this.knex.transaction(query)
@@ -111,6 +140,45 @@ class HistoryService {
             )
 
             return updatedRows
+        }
+
+        return trx ? query(trx) : this.knex.transaction(query)
+    }
+
+    /**
+     * Bulk update with history tracking
+     */
+    async bulkUpdate(tableName, ids, data, context, trx = null) {
+        const query = async (transaction) => {
+            const primaryKeyName = this.getPrimaryKeyName(tableName)
+
+            // Fetch old records before update for history tracking
+            const oldRecords = await transaction(tableName)
+                .whereIn(primaryKeyName, ids)
+                .select('*')
+
+            if (oldRecords.length === 0) {
+                throw new Error(`No records found for update with provided IDs in ${tableName}`)
+            }
+
+            // Perform the bulk update
+            const updatedRowsCount = await transaction(tableName)
+                .whereIn(primaryKeyName, ids)
+                .update(data)
+
+            // Record history for each updated record
+            for (const oldRecord of oldRecords) {
+                await this.recordHistory(
+                    transaction,
+                    tableName,
+                    oldRecord[primaryKeyName],
+                    { ...oldRecord, ...data }, // Merge old data with new data for history
+                    'UPDATE',
+                    { ...context, oldRecord }
+                )
+            }
+
+            return updatedRowsCount
         }
 
         return trx ? query(trx) : this.knex.transaction(query)
