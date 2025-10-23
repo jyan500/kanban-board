@@ -115,7 +115,7 @@ export const useRegistrationRequestConfig = (
 				return data?.filter((userReg) => !userReg.approvedAt && !userReg.deniedAt)
 			},
 		},
-		editCol: {
+		approveCol: {
 			col: "approve", 
 			text: "Approve", 
 			shouldShow: (data: UserRegistrationRequest) => {

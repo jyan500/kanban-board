@@ -18,6 +18,9 @@ const {sendEmail} = require("../email/email")
 const { EXCEEDED_MESSAGE, DEFAULT_STATUSES } = require("../constants")
 const axios = require("axios")
 const { rateLimitAuth } = require("../middleware/rateLimitMiddleware")
+const HistoryService = require('../services/history-service')
+
+const historyService = new HistoryService(db)
 
 router.post("/login", rateLimitAuth, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
@@ -76,13 +79,18 @@ router.post("/register", rateLimitAuth, userValidator.registerValidator, handleV
 
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(req.body.password, salt)
-		const userId = await insertAndGetId("users", {
-			first_name: req.body.first_name,
-			last_name: req.body.last_name,
-			email: req.body.email,
-			password: hash,
-			is_active: true,
-		})
+
+		const userId = await historyService.insert(
+			'users',
+			{  
+				first_name: req.body.first_name,
+				last_name: req.body.last_name,
+				email: req.body.email,
+				password: hash,
+				is_active: true,
+			},
+			req.historyContext
+		)
 
 		await db("user_registration_requests").insert({
 			user_id: userId,
@@ -120,10 +128,15 @@ router.post("/forgot-password", rateLimitAuth, userValidator.forgotPasswordValid
 		// Expires in 15 minutes
 		const expiresAt = new Date(Date.now() + 1000 * 60 * 15)
 		// Store in the database
-		await db("users").where("email", email).update({
-		    reset_token: resetToken,
-		    reset_token_expires: expiresAt,
-		})
+		await historyService.update(
+			"users", 
+			user.id, 
+			{
+			    reset_token: resetToken,
+			    reset_token_expires: expiresAt,
+			},
+			req.historyContext
+		)
 		// Generate reset link
 		const resetLink = `/reset-password?token=${resetToken}`;
 
@@ -189,11 +202,16 @@ router.post("/activate", rateLimitAuth, async (req, res, next) => {
 		if (!user) {
 			return res.status(400).json({message: "Invalid activation request"})	
 		}
-		await db("users").where("id", user.id).update({
-			is_active: true,
-			activation_token: undefined,
-			activation_token_expires: undefined 
-		})
+		await historyService.update(
+			"users",
+			user.id,
+			{
+				is_active: true,
+				activation_token: undefined,
+				activation_token_expires: undefined 
+			},
+			req.historyContext
+		)
 		res.json({message: "Account activated successfully!"})
 	}
 	catch (err) {
@@ -219,11 +237,16 @@ router.post("/reset-password", rateLimitAuth, userValidator.resetPasswordValidat
 		const hash = await bcrypt.hash(password, salt)
 
 		// Update user password and remove reset token
-		await db("users").where("id", user.id).update({
-			password: hash, 
-			reset_token: null,
-			reset_token_expires: null,
-		});
+		await historyService.update(
+			"users",
+			user.id,
+			{
+				password: hash, 
+				reset_token: null,
+				reset_token_expires: null,
+			},
+			req.historyContext
+		);
 
 		res.json({ message: "Password reset successful" });	
 	}	
@@ -258,7 +281,9 @@ router.post("/register/organization", rateLimitAuth, userValidator.organizationU
 		const expiresAt = new Date();
 		expiresAt.setMonth(expiresAt.getMonth() + 6);
 
-		const userId = await insertAndGetId("users", {
+		const userId = await historyService.insert(
+			"users",
+			{
 			first_name: first_name,
 			last_name: last_name,
 			email: user_email,
@@ -266,7 +291,9 @@ router.post("/register/organization", rateLimitAuth, userValidator.organizationU
 			activation_token: activationToken,
 			activation_token_expires: expiresAt,
 			is_active: false
-		})
+			},
+			req.historyContext
+		)
 		const organizationId = await insertAndGetId("organizations", {
 			name, email, phone_number, address, city, state, zipcode, industry	
 		})
