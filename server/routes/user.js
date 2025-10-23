@@ -79,13 +79,7 @@ router.post("/register", rateLimitAuth, userValidator.registerValidator, handleV
 
 		const salt = await bcrypt.genSalt(config.saltRounds)
 		const hash = await bcrypt.hash(req.body.password, salt)
-		// const userId = await insertAndGetId("users", {
-		// 	first_name: req.body.first_name,
-		// 	last_name: req.body.last_name,
-		// 	email: req.body.email,
-		// 	password: hash,
-		// 	is_active: true,
-		// })
+
 		const userId = await historyService.insert(
 			'users',
 			{  
