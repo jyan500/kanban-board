@@ -32,6 +32,9 @@ const { DEFAULT_PER_PAGE } = require("../constants")
 const { GoogleGenAI } = require("@google/genai")
 const { searchTicketByAssignee } = require("../helpers/query-helpers")
 const { rateLimitTicketSummary } = require("../middleware/rateLimitMiddleware")
+const HistoryService = require('../services/history-service')
+
+historyService = new HistoryService(db)
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -281,15 +284,18 @@ router.post("/bulk-watch", validateBulkWatch, handleValidationResult, async (req
 router.post("/", validateCreate, handleValidationResult, async (req, res, next) => {
 	try {
 		const body = {...req.body, organization_id: req.user.organization}
-		const id = await insertAndGetId("tickets", {
-			name: body.name,
-			description: body.description,
-			priority_id: body.priority_id,
-			status_id: body.status_id,
-			ticket_type_id: body.ticket_type_id,
-			organization_id: body.organization_id,
-			user_id: req.user.id
-		})
+		const id = await historyService.insert(
+			"tickets", {
+				name: body.name,
+				description: body.description,
+				priority_id: body.priority_id,
+				status_id: body.status_id,
+				ticket_type_id: body.ticket_type_id,
+				organization_id: body.organization_id,
+				user_id: req.user.id
+			},
+			req.historyContext
+		)
 		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: id, is_mention: true}, req.user.organization)
 		if (ticketsToUsers.length){
 			await db("tickets_to_users").insert(ticketsToUsers)
@@ -739,15 +745,19 @@ router.delete("/:ticketId/activity/:activityId", validateTicketActivityDelete, h
 
 router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("tickets").where("id", req.params.ticketId).update({
-			name: req.body.name,
-			description: req.body.description,
-			priority_id: req.body.priority_id,
-			status_id: req.body.status_id,
-			ticket_type_id: req.body.ticket_type_id,
-			due_date: req.body.due_date !== "" ? new Date(req.body.due_date).toISOString().split('T')[0] : null,
-			story_points: req.body.story_points,
-		})
+		await historyService.update("tickets",
+			req.params.ticketId,
+			{
+				name: req.body.name,
+				description: req.body.description,
+				priority_id: req.body.priority_id,
+				status_id: req.body.status_id,
+				ticket_type_id: req.body.ticket_type_id,
+				due_date: req.body.due_date !== "" ? new Date(req.body.due_date).toISOString().split('T')[0] : null,
+				story_points: req.body.story_points,	
+			},
+			req.historyContext
+		)
 		// remove existing mentioned users first before adding
 		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: req.params.ticketId, is_mention: true}, req.user.organization)
 		let newMentions = []
@@ -782,9 +792,13 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 
 router.patch("/:ticketId/status", validateTicketStatusUpdate, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("tickets").where("id", req.params.ticketId).update({
-			status_id: req.body.status_id
-		})
+		await historyService.update("tickets",
+			req.params.ticketId,
+			{
+				status_id: req.body.status_id
+			},
+			req.historyContext
+		)
 		res.json({message: `Ticket status updated successfully!`})
 	}
 	catch (err) {
@@ -859,7 +873,10 @@ router.delete("/:ticketId", validateDelete, handleValidationResult, async (req, 
 			await db("ticket_relationships").whereIn("id", ticketRelationships.map((relationship) => relationship.id)).del()
 		}
 		// delete ticket
-		await db("tickets").where("id", req.params.ticketId).del()
+		await historyService.delete("tickets",
+			req.params.ticketId,
+			req.historyContext
+		)
 		res.json({message: "Ticket deleted successfully!"})
 	}
 	catch (err){
