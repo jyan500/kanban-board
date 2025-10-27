@@ -129,14 +129,25 @@ class HistoryService {
             for (let i = 0; i < insertedIds.length; i++) {
                 const id = insertedIds[i]
                 const recordData = data[i] // Assuming the order of data and insertedIds is consistent
+                let bulkParentContext = null
+                if (context.bulkParentEntityInfo && context.useParentEntityId){
+                    // using the parent entity id of the record, find the appropriate bulk parent context that was passed in
+                    // for example, if searching within "tickets_to_users", "ticket_id" would be the parent,
+                    // so we would be looking for the record within bulkParentEntityInfo that has that ticket id
+                    bulkParentContext = context.bulkParentEntityInfo.find((obj) => obj.parentEntityId === Number(recordData[context.useParentEntityId]))
+                }
 
                 await this.recordHistory(
                     transaction,
                     tableName,
                     id,
                     recordData,
-                    'INSERT',
-                    context
+                    // if this is a many to many, categorize as "link", otherwise treat as "insert"
+                    context.parentEntityType ? 'LINK' : 'INSERT',
+                    {
+                        ...context, 
+                        ...(bulkParentContext ? bulkParentContext : {})
+                    }
                 )
             }
 
@@ -225,7 +236,8 @@ class HistoryService {
                 .first()
 
             if (!oldRecord) {
-                throw new Error(`Record with id ${id} not found in ${tableName}`)
+                console.error(`Record with id ${id} not found in ${tableName}`)
+                return
             }
 
             await transaction(tableName).where({ id }).del()
@@ -250,7 +262,8 @@ class HistoryService {
         const query = async (transaction) => {
             const oldRecords = await transaction(tableName).modify(customStatement)
             if (oldRecords.length === 0){
-                throw new Error(`Existing records not found in ${tableName}`)
+                console.error(`Existing records not found in ${tableName}`)
+                return
             }
 
             // Perform the bulk delete
@@ -258,16 +271,29 @@ class HistoryService {
 
             // Record history for each updated record
             for (const oldRecord of oldRecords) {
+                let bulkParentContext = null;
+                // using the parent entity id of the record, find the appropriate bulk parent context that was passed in
+                // for example, if searching within "tickets_to_users", "ticket_id" would be the parent,
+                // so we would be looking for the record within bulkParentEntityInfo that has that ticket id
+                if (context.bulkParentEntityInfo && context.useParentEntityId){
+                    bulkParentContext = context.bulkParentEntityInfo.find((obj) => obj.parentEntityId === Number(oldRecord[context.useParentEntityId]))
+                }
                 await this.recordHistory(
                     transaction,
                     tableName,
                     oldRecord["id"],
-                    { ...oldRecord, ...data }, // Merge old data with new data for history
-                    'DELETE',
-                    { ...context, oldRecord }
+                    oldRecord,
+                    // if this is a many to many, categorize as "unlink", otherwise treat as "delete"
+                    context.parentEntityType ? 'UNLINK' : 'DELETE',
+                    { 
+                        ...context, 
+                        ...(bulkParentContext ? bulkParentContext : {}),
+                        oldRecord 
+                    }
                 )
             }
         }
+        return trx ? query(trx) : this.knex.transaction(query)
     }
 
     /**

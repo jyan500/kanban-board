@@ -226,7 +226,7 @@ router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, 
 			// await db("tickets").whereIn("id", req.body.ticket_ids).update(updateBody)
 			await historyService.bulkUpdate(
 				'tickets',
-				req.body.ticketIds,
+				req.body.ticket_ids,
 				updateBody,
 				req.historyContext
 			)
@@ -238,9 +238,27 @@ router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, 
 				user_id: req.body.user_ids[0]
 			}))
 			// delete all existing assignees
-			await db("tickets_to_users").where("is_watcher", false).where("is_mention", false).whereIn("ticket_id", req.body.ticket_ids).del()
+			// await db("tickets_to_users").where("is_watcher", false).where("is_mention", false).whereIn("ticket_id", req.body.ticket_ids).del()
+			await historyService.bulkDelete("tickets_to_users", (queryBuilder) => {
+				queryBuilder.where("is_watcher", false).where("is_mention", false).whereIn("ticket_id", req.body.ticket_ids)
+			}, {
+				...req.historyContext,
+				useParentEntityId: "ticket_id",
+				bulkParentEntityInfo: req.body.ticket_ids.map((id) => ({
+					parentEntityType: 'ticket',
+                    parentEntityId: id 
+				}))
+			})
 			// re-insert new assignee for each ticket
-			await db("tickets_to_users").insert(ticketUserBody)
+			// await db("tickets_to_users").insert(ticketUserBody)
+			await historyService.bulkInsert("tickets_to_users", ticketUserBody, {
+				...req.historyContext,
+				useParentEntityId: "ticket_id",
+				bulkParentEntityInfo: req.body.ticket_ids.map((id) => ({
+					parentEntityType: 'ticket',
+                    parentEntityId: id 
+				}))
+			})
 		}
 		res.json({message: "Tickets updated successfully!"})
 	}	
