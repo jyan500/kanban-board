@@ -73,12 +73,6 @@ class HistoryService {
                 user_agent: context.userAgent
             }
 
-            // Add entity-specific fields
-            if (entityType === 'users') {
-                historyEntry.gdpr_consent_version = context.gdprConsentVersion || null
-                historyEntry.data_processing_purpose = context.dataProcessingPurpose || null
-            }
-
             await trx(historyTable).insert(historyEntry)
         } else {
             // Insert into unified history table (entity_history)
@@ -189,11 +183,9 @@ class HistoryService {
      */
     async bulkUpdate(tableName, ids, data, context, trx = null) {
         const query = async (transaction) => {
-            const primaryKeyName = this.getPrimaryKeyName(tableName)
-
             // Fetch old records before update for history tracking
             const oldRecords = await transaction(tableName)
-                .whereIn(primaryKeyName, ids)
+                .whereIn("id", ids)
                 .select('*')
 
             if (oldRecords.length === 0) {
@@ -202,7 +194,7 @@ class HistoryService {
 
             // Perform the bulk update
             const updatedRowsCount = await transaction(tableName)
-                .whereIn(primaryKeyName, ids)
+                .whereIn("id", ids)
                 .update(data)
 
             // Record history for each updated record
@@ -210,7 +202,7 @@ class HistoryService {
                 await this.recordHistory(
                     transaction,
                     tableName,
-                    oldRecord[primaryKeyName],
+                    oldRecord["id"],
                     { ...oldRecord, ...data }, // Merge old data with new data for history
                     'UPDATE',
                     { ...context, oldRecord }
@@ -249,6 +241,33 @@ class HistoryService {
         }
 
         return trx ? query(trx) : this.knex.transaction(query)
+    }
+
+    /**
+     * Bulk Delete with history tracking
+     */
+    async bulkDelete(tableName, customStatement, context, trx = null) {
+        const query = async (transaction) => {
+            const oldRecords = await transaction(tableName).modify(customStatement)
+            if (oldRecords.length === 0){
+                throw new Error(`Existing records not found in ${tableName}`)
+            }
+
+            // Perform the bulk delete
+            await transaction(tableName).modify(customStatement).del()
+
+            // Record history for each updated record
+            for (const oldRecord of oldRecords) {
+                await this.recordHistory(
+                    transaction,
+                    tableName,
+                    oldRecord["id"],
+                    { ...oldRecord, ...data }, // Merge old data with new data for history
+                    'DELETE',
+                    { ...context, oldRecord }
+                )
+            }
+        }
     }
 
     /**
@@ -445,6 +464,31 @@ class HistoryService {
         }
 
         return trx ? query(trx) : this.knex.transaction(query)
+    }
+
+    /**
+     *  
+     * Link tickets to user 
+     */
+    async linkTicketsToUser(data, context, trx=null){
+        const query = async (transaction) => {
+            this.bulkInsert(
+                "tickets_to_users",
+                data,
+                context,
+            )
+        }
+        return trx ? query(trx) : this.knex.transaction(query)
+    }
+
+    /**
+     *  
+     * Unlink tickets to user 
+     */
+    async unlinkTicketsToUser(ticketId, userId, context, trx=null){
+        const query = async (transaction) => {
+
+        }
     }
 
     /**
