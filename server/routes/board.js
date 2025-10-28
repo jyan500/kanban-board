@@ -487,7 +487,6 @@ router.post("/:boardId/ticket", validateBoardTicketCreate, handleValidationResul
 		const tickets = req.body.ticket_ids
 		const boardId = req.params.boardId
 		const toInsert = tickets.map((ticketId) => ({board_id: boardId, ticket_id: ticketId}) )
-		// await retryTransaction(db("tickets_to_boards").insert()))
 		await historyService.bulkInsert("tickets_to_boards", toInsert, {
 			...req.historyContext,
 			useParentEntityId: "ticket_id",
@@ -535,7 +534,6 @@ router.get("/:boardId/ticket/:ticketId", validateBoardTicketGet, handleValidatio
 
 router.delete("/:boardId/ticket", validateBoardTicketBulkDelete, handleValidationResult, async (req, res, next) => {
 	try {
-		// await db("tickets_to_boards").whereIn("ticket_id", req.body.ticket_ids).where("board_id", req.params.boardId).del()
 		await historyService.bulkDelete("tickets_to_boards", (queryBuilder) => {
 			queryBuilder.whereIn("ticket_id", req.body.ticket_ids).where("board_id", req.params.boardId)
 		}, {
