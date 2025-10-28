@@ -847,11 +847,15 @@ router.get("/:ticketId/activity", validateGet, handleValidationResult, async (re
 router.post("/:ticketId/activity", validateTicketActivityAdd, handleValidationResult, async (req, res, next) => {
 	try {
 		const { description, minutes_spent, user_id } = req.body
-		await db("ticket_activity").insert({
+		await historyService.insert("ticket_activity", {
 			ticket_id: req.params.ticketId,
 			description,
 			minutes_spent,
 			user_id: req.user.id
+		}, {
+			...req.historyContext,
+			parentEntityType: "ticket",
+			parentEntityId: req.params.ticketId,
 		})
 		res.json({message: "ticket activity created successfully!"})
 	}
@@ -882,9 +886,16 @@ router.get("/:ticketId/activity/:activityId", validateTicketActivityGet, handleV
 router.put("/:ticketId/activity/:activityId", validateTicketActivityUpdate, handleValidationResult, async (req, res, next) => {
 	try {
 		const { description, minutes_spent } = req.body
-		await db("ticket_activity").where("id", req.params.activityId).update({
-			description, 
-			minutes_spent,
+		// await db("ticket_activity").where("id", req.params.activityId).update({
+		// 	description, 
+		// 	minutes_spent,
+		// })
+		await historyService.update("ticket_activity", req.params.activityId, {
+			description, minutes_spent
+		}, {
+			...req.historyContext,
+			parentEntityType: "ticket",
+			parentEntityId: req.params.ticketId
 		})
 		res.json({message: "Ticket activity updated successfully!"})
 	}	
@@ -896,7 +907,12 @@ router.put("/:ticketId/activity/:activityId", validateTicketActivityUpdate, hand
 
 router.delete("/:ticketId/activity/:activityId", validateTicketActivityDelete, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("ticket_activity").where("id", req.params.activityId).del()
+		// await db("ticket_activity").where("id", req.params.activityId).del()
+		await historyService.delete("ticket_activity", req.params.activityId, {
+			...req.historyContext,
+			parentEntityId: req.params.ticketId,
+			parentEntityType: "ticket"
+		})
 		res.json({message: "Ticket activity deleted successfully!"})
 	}
 	catch (err) {
