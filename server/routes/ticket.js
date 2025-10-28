@@ -300,7 +300,6 @@ router.post("/bulk-watch", validateBulkWatch, handleValidationResult, async (req
 				}
 			}))
 			// delete all the ticket to users rows where the user is a watcher
-			// await db("tickets_to_users").whereIn("id", ticketsToUsersIds.filter(id => id)).del()
 			await historyService.bulkDelete("tickets_to_users", (queryBuilder) => {
 				queryBuilder.whereIn("id", ticketsToUsersIds.filter(watcher => watcher).map((watcher) => watcher.id))
 			}, {
@@ -451,7 +450,6 @@ router.post("/:ticketId/user/", validateTicketUserCreate, handleValidationResult
 		}
 		// delete any assigned users that are present in the existing ids but not in the new list of ids
 		if (toDelete.length){
-			console.log("toDelete: ", toDelete)
 			// await db("tickets_to_users").where("ticket_id", ticketId).whereIn("user_id", toDelete).del()
 			// get existing watching users
 			const ticketsToUsers = await db("tickets_to_users").where("ticket_id", ticketId).whereIn("user_id", toDelete)
@@ -588,11 +586,6 @@ router.get("/:ticketId/comment/:commentId", validateTicketCommentGet, handleVali
 
 router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationResult, async (req, res, next) => {
 	try {
-		// const id = await insertAndGetId("ticket_comments", {
-		// 	comment: req.body.comment,
-		// 	ticket_id: req.params.ticketId,
-		// 	user_id: req.user.id
-		// })
 		const id = await historyService.insert("ticket_comments", {
 			comment: req.body.comment,
 			ticket_id: req.params.ticketId,
@@ -630,10 +623,6 @@ router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationR
 
 router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleValidationResult, async (req, res, next) => {
 	try {
-		// await db("ticket_comments").where("id", req.params.commentId).update(
-		// {
-		// 	comment: req.body.comment
-		// })	
 		await historyService.update(
 			"ticket_comments", 
 			req.params.commentId, 
