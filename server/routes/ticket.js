@@ -337,7 +337,15 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 		)
 		const ticketsToUsers = await parseMentions(req.body.description, {ticket_id: id, is_mention: true}, req.user.organization)
 		if (ticketsToUsers.length){
-			await db("tickets_to_users").insert(ticketsToUsers)
+			// await db("tickets_to_users").insert(ticketsToUsers)
+			await historyService.bulkInsert("tickets_to_users", ticketsToUsers, {
+				...req.historyContext,
+				useParentEntityId: "ticket_id",
+				bulkParentEntityInfo: ticketsToUsers.map((obj) => ({
+					parentEntityType: 'ticket',
+                    parentEntityId: obj.ticket_id 
+				}))
+			})
 		}
 		res.json({id: id, mentions: ticketsToUsers.map((obj) => {
 			return {
@@ -808,13 +816,40 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 					return obj
 				}
 			}))
-			await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("is_mention", true).del()
-			await db("tickets_to_users").insert(ticketsToUsers)
+			await historyService.bulkDelete("tickets_to_users", (queryBuilder) => {
+				queryBuilder.where("ticket_id", req.params.ticketId).where("is_mention", true)
+			}, {
+				...req.historyContext,
+				useParentEntityId: "ticket_id",
+				bulkParentEntityInfo: ticketsToUsers.map((obj) => ({
+					parentEntityType: 'ticket',
+                    parentEntityId: obj.ticket_id 
+				}))
+			})
+			await historyService.bulkInsert("tickets_to_users", ticketsToUsers, {
+				...req.historyContext,
+				useParentEntityId: "ticket_id",
+				bulkParentEntityInfo: ticketsToUsers.map((obj) => ({
+					parentEntityType: 'ticket',
+                    parentEntityId: obj.ticket_id
+				}))
+			})
 		}
 		// if there are no mentioned users, it is assumed that the user has cleared these out 
 		// in the text body, so delete existing mentioned users
 		else {
-			await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("is_mention", true).del()
+			// get existing mentions
+			const existingMentions = await db("tickets_to_users").where("ticket_id", req.params.ticketId).where("is_mention", true)
+			await historyService.bulkDelete("tickets_to_users", (queryBuilder) => {
+				queryBuilder.where("ticket_id", req.params.ticketId).where("is_mention", true)
+			}, {
+				...req.historyContext,
+				useParentEntityId: "ticket_id",
+				bulkParentEntityInfo: existingMentions.map((obj) => ({
+					parentEntityType: 'ticket',
+                    parentEntityId: obj.ticket_id 
+				}))
+			})
 		}
 		res.json({mentions: newMentions.filter((obj) => obj).map((obj) => {
 			return {

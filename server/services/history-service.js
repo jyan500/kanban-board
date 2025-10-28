@@ -134,7 +134,7 @@ class HistoryService {
                     // using the parent entity id of the record, find the appropriate bulk parent context that was passed in
                     // for example, if searching within "tickets_to_users", "ticket_id" would be the parent,
                     // so we would be looking for the record within bulkParentEntityInfo that has that ticket id
-                    bulkParentContext = context.bulkParentEntityInfo.find((obj) => obj.parentEntityId === Number(recordData[context.useParentEntityId]))
+                    bulkParentContext = context.bulkParentEntityInfo.find((obj) => Number(obj.parentEntityId) === Number(recordData[context.useParentEntityId]))
                 }
 
                 await this.recordHistory(
@@ -276,7 +276,7 @@ class HistoryService {
                 // for example, if searching within "tickets_to_users", "ticket_id" would be the parent,
                 // so we would be looking for the record within bulkParentEntityInfo that has that ticket id
                 if (context.bulkParentEntityInfo && context.useParentEntityId){
-                    bulkParentContext = context.bulkParentEntityInfo.find((obj) => obj.parentEntityId === Number(oldRecord[context.useParentEntityId]))
+                    bulkParentContext = context.bulkParentEntityInfo.find((obj) => Number(obj.parentEntityId) === Number(oldRecord[context.useParentEntityId]))
                 }
                 await this.recordHistory(
                     transaction,
