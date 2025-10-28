@@ -17,7 +17,10 @@ const { handleValidationResult }  = require("../middleware/validationMiddleware"
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { searchTicketByAssignee } = require("../helpers/query-helpers")
 const { aggregateCompletedAndOpenSprintTickets } = require("../helpers/functions")
+const HistoryService = require('../services/history-service')
 const db = require("../db/db")
+
+historyService = new HistoryService(db)
 
 router.get("/", validateSprintGet, handleValidationResult, async (req, res, next) => {
 	try {
@@ -207,7 +210,14 @@ router.post("/:sprintId/complete", validateSprintComplete, handleValidationResul
 				}
 			})
 			// insert existing tickets into the new sprint
-			await db("tickets_to_sprints").insert(toInsert)
+			await historyService.bulkInsert("tickets_to_sprints", toInsert, {
+				...req.historyContext,
+				useParentEntityId: "ticket_id",
+				bulkParentEntityInfo: toInsert.map((obj) => ({
+					parentEntityType: "ticket",
+					parentEntityId: obj.ticket_id
+				}))
+			})
 		}
 		// if moving to the backlog (OR we're done inserting tickets into the new sprint),
 		// we actually don't do anything since we want to keep the tickets attached to the sprint to keep a record
@@ -305,12 +315,20 @@ router.get("/:sprintId/ticket/:ticketId", validateSprintTicketGetById, handleVal
 
 router.post("/:sprintId/ticket", validateSprintTicketUpdate, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("tickets_to_sprints").insert(req.body.ticket_ids.map((ticket_id) => {
+		const toInsert = req.body.ticket_ids.map((ticket_id) => {
 			return {
 				ticket_id: ticket_id,
 				sprint_id: req.params.sprintId
 			}
-		}))
+		})
+		await historyService.bulkInsert("tickets_to_sprints", toInsert, {
+			...req.historyContext,
+			useParentEntityId: "ticket_id",
+			bulkParentEntityInfo: toInsert.map((obj) => ({
+				parentEntityType: 'ticket',
+				parentEntityId: obj.ticket_id 
+			}))
+		})
 		res.json({message: "tickets inserted successfully!"})
 	}
 	catch (err) {
@@ -321,7 +339,17 @@ router.post("/:sprintId/ticket", validateSprintTicketUpdate, handleValidationRes
 
 router.delete("/:sprintId/ticket", validateSprintTicketDelete, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("tickets_to_sprints").where("sprint_id", req.params.sprintId).whereIn("ticket_id", req.body.ticket_ids).del()
+		const existingTickets = await db("tickets_to_sprints").where("sprint_id", req.params.sprintId).whereIn("ticket_id", req.body.ticket_ids)
+		await historyService.bulkDelete("tickets_to_sprints", (queryBuilder) => {
+			queryBuilder.where("sprint_id", req.params.sprintId).whereIn("ticket_id", req.body.ticket_ids)
+		}, {
+			...req.historyContext,
+			useParentEntityId: "ticket_id",		
+			bulkParentEntityInfo: existingTickets.map((obj) => ({
+				parentEntityType: "ticket",
+				parentEntityId: obj.ticket_id
+			}))
+		})
 		res.json({message: "tickets deleted successfully!"})
 	}
 	catch (err){

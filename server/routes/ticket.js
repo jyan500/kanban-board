@@ -425,13 +425,6 @@ router.post("/:ticketId/user/", validateTicketUserCreate, handleValidationResult
 
 		// add any assigned users that are present in the new list of ids but not present in the existing list
 		if (toAdd.length){
-			// await db("tickets_to_users").insert(toAdd.map((id) => {
-			// 	return {
-			// 		user_id: id,
-			// 		is_watcher: isWatcher,
-			// 		ticket_id: ticketId
-			// 	}
-			// }))
 			const ticketsToUsers = toAdd.map((id) => {
 				return {
 					user_id: id,
@@ -450,7 +443,6 @@ router.post("/:ticketId/user/", validateTicketUserCreate, handleValidationResult
 		}
 		// delete any assigned users that are present in the existing ids but not in the new list of ids
 		if (toDelete.length){
-			// await db("tickets_to_users").where("ticket_id", ticketId).whereIn("user_id", toDelete).del()
 			// get existing watching users
 			const ticketsToUsers = await db("tickets_to_users").where("ticket_id", ticketId).whereIn("user_id", toDelete)
 			await historyService.bulkDelete("tickets_to_users", (queryBuilder) => {

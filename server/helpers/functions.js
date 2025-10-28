@@ -255,8 +255,11 @@ const insertAndGetId = async (tableName, data) => {
  * Inserts multiple records and returns all ids
  */
 const bulkInsertAndGetIds = async (tableName, data) => {
-	const result = await retryTransaction(db(tableName).insert(data, 'id'));
-	return result.map(item => item?.id ?? item);
+	await retryTransaction(db(tableName).insert(data));
+	// order the results by id desc and get the last X amount of results based on the length of data
+	const results = await retryTransaction(db(tableName).orderBy("id", "desc").limit(data.length))
+	// re-order the ids in their inserted order
+	return results.map((result) => result.id).toSorted()
 }
 
 module.exports = {
