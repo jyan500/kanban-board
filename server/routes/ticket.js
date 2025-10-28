@@ -426,17 +426,45 @@ router.post("/:ticketId/user/", validateTicketUserCreate, handleValidationResult
 
 		// add any assigned users that are present in the new list of ids but not present in the existing list
 		if (toAdd.length){
-			await db("tickets_to_users").insert(toAdd.map((id) => {
+			// await db("tickets_to_users").insert(toAdd.map((id) => {
+			// 	return {
+			// 		user_id: id,
+			// 		is_watcher: isWatcher,
+			// 		ticket_id: ticketId
+			// 	}
+			// }))
+			const ticketsToUsers = toAdd.map((id) => {
 				return {
 					user_id: id,
 					is_watcher: isWatcher,
 					ticket_id: ticketId
 				}
-			}))
+			})
+			await historyService.bulkInsert("tickets_to_users", ticketsToUsers, {
+				...req.historyContext,
+				useParentEntityId: "ticket_id",
+				bulkParentEntityInfo: ticketsToUsers.map((obj) => ({
+					parentEntityType: 'ticket',
+                    parentEntityId: obj.ticket_id 
+				}))
+			})
 		}
 		// delete any assigned users that are present in the existing ids but not in the new list of ids
 		if (toDelete.length){
-			await db("tickets_to_users").where("ticket_id", ticketId).whereIn("user_id", toDelete).del()
+			console.log("toDelete: ", toDelete)
+			// await db("tickets_to_users").where("ticket_id", ticketId).whereIn("user_id", toDelete).del()
+			// get existing watching users
+			const ticketsToUsers = await db("tickets_to_users").where("ticket_id", ticketId).whereIn("user_id", toDelete)
+			await historyService.bulkDelete("tickets_to_users", (queryBuilder) => {
+				queryBuilder.where("ticket_id", ticketId).whereIn("user_id", toDelete)
+			}, {
+				...req.historyContext,
+				useParentEntityId: "ticket_id",
+				bulkParentEntityInfo: ticketsToUsers.map((watcher) => ({
+					parentEntityType: 'ticket',
+                    parentEntityId: watcher.ticket_id 
+				}))
+			})
 		}
 
 		res.json({message: "users assigned to tickets successfully!"})
@@ -465,12 +493,19 @@ router.post("/:ticketId/user/bulk-edit", validateTicketUserBulkEdit, handleValid
 
 router.delete("/:ticketId/user/:userId", validateTicketUserGet, handleValidationResult, async (req, res, next) => {
 	try {
-		const assignedUser = await db("tickets_to_users")
-		.where("ticket_id", req.params.ticketId)
-		.where("user_id", req.params.userId)
-		.where("is_watcher", true)
-		.where("is_mention", false)
-		.del()
+		await historyService.bulkDelete("tickets_to_users", (queryBuilder) => {
+			queryBuilder.where("ticket_id", req.params.ticketId)
+			.where("user_id", req.params.userId)
+			.where("is_watcher", true)
+			.where("is_mention", false)
+		}, {
+			...req.historyContext,
+			useParentEntityId: "ticket_id",
+			bulkParentEntityInfo: [{
+				parentEntityType: 'ticket',
+				parentEntityId: req.params.ticketId 
+			}]
+		})
 		res.json({"message": "user unassigned from ticket successfully!"})
 	}	
 	catch (err) {
