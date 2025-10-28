@@ -668,7 +668,6 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 				}))
 			}
 			)
-			// await db("ticket_comments_to_users").insert(ticketCommentsToUsers)
 			await historyService.bulkInsert("ticket_comments_to_users", ticketCommentsToUsers, {
 				...req.historyContext,
 				useParentEntityId: "ticket_comment_id",
@@ -712,7 +711,11 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 
 router.delete("/:ticketId/comment/:commentId", validateTicketCommentDelete, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("ticket_comments").where("id", req.params.commentId).del()
+		await historyService.delete("ticket_comments", req.params.commentId, {
+			...req.historyContext,
+			parentEntityType: "ticket",
+			parentEntityId: req.params.ticketId
+		})
 		res.json({message: "Comment deleted successfully!"})
 	}	
 	catch (err){
@@ -780,11 +783,9 @@ router.get("/:ticketId/relationship/:relationshipId", validateTicketRelationship
 
 router.post("/:ticketId/relationship", validateTicketRelationshipCreate, handleValidationResult, async (req, res, next) => {
 	try {
-		const id = await insertAndGetId("ticket_relationships", {
-			parent_ticket_id: req.params.ticketId,
-			child_ticket_id: req.body.child_ticket_id,
-			ticket_relationship_type_id: req.body.ticket_relationship_type_id
-		})
+		// insert history record for both tickets, where one ticket is the parent entity of the other
+		// in each history record
+		const id = await historyService.createTicketRelationship(req.params.ticketId, req.body.child_ticket_id, req.body.ticket_relationship_type_id, req.historyContext)
 		res.json({id: id, message: "Ticket relationship inserted successfully!"})
 	}	
 	catch (err){
@@ -795,7 +796,7 @@ router.post("/:ticketId/relationship", validateTicketRelationshipCreate, handleV
 
 router.delete("/:ticketId/relationship/:relationshipId", validateTicketRelationshipDelete, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("ticket_relationships").where("id", req.params.relationshipId).del()
+		await historyService.deleteTicketRelationship(req.params.relationshipId, req.historyContext)
 		res.json({message: "ticket relationship deleted successfully!"})
 	}	
 	catch (err) {
