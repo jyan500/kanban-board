@@ -867,10 +867,6 @@ router.get("/:ticketId/activity/:activityId", validateTicketActivityGet, handleV
 router.put("/:ticketId/activity/:activityId", validateTicketActivityUpdate, handleValidationResult, async (req, res, next) => {
 	try {
 		const { description, minutes_spent } = req.body
-		// await db("ticket_activity").where("id", req.params.activityId).update({
-		// 	description, 
-		// 	minutes_spent,
-		// })
 		await historyService.update("ticket_activity", req.params.activityId, {
 			description, minutes_spent
 		}, {
@@ -888,7 +884,6 @@ router.put("/:ticketId/activity/:activityId", validateTicketActivityUpdate, hand
 
 router.delete("/:ticketId/activity/:activityId", validateTicketActivityDelete, handleValidationResult, async (req, res, next) => {
 	try {
-		// await db("ticket_activity").where("id", req.params.activityId).del()
 		await historyService.delete("ticket_activity", req.params.activityId, {
 			...req.historyContext,
 			parentEntityId: req.params.ticketId,
