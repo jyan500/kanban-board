@@ -3,13 +3,29 @@ const { insertAndGetId, bulkInsertAndGetIds } = require("../helpers/functions")
 class HistoryService {
     constructor(knex) {
         this.knex = knex
+        
+        // Define which entities use dedicated history tables
+        this.dedicatedHistoryEntities = ['users']
+        
+        // Default unified history table
+        this.unifiedHistoryTable = 'entity_history'
     }
 
     /**
-     * Get the history table name for a given table
+     * Get the appropriate history table for an entity
      */
-    getHistoryTableName(tableName) {
-        return `${tableName}_history`
+    getHistoryTable(entityType) {
+        if (this.dedicatedHistoryEntities.includes(entityType)) {
+            return `${entityType}_history`
+        }
+        return this.unifiedHistoryTable
+    }
+
+    /**
+     * Check if entity uses dedicated history table
+     */
+    usesDedicatedHistory(entityType) {
+        return this.dedicatedHistoryEntities.includes(entityType)
     }
 
     /**
@@ -40,25 +56,42 @@ class HistoryService {
         return Object.keys(changes).length > 0 ? changes : null
     }
 
-    /**
-     * Record a history entry
-     */
-    async recordHistory(trx, tableName, recordId, data, operation, context = {}) {
-        const historyTable = this.getHistoryTableName(tableName)
-        const primaryKeyName = this.getPrimaryKeyName(tableName)
+    async recordHistory(trx, entityType, entityId, data, operation, context = {}) {
+        const historyTable = this.getHistoryTable(entityType)
+        const primaryKeyName = this.getPrimaryKeyName(entityType)
         
-        const historyEntry = {
-            [primaryKeyName]: recordId,
-            record_data: data, // Store all data in JSONB column
-            operation,
-            changed_by: context.userId,
-            changed_at: new Date(),
-            change_details: context.oldRecord ? this.getChanges(context.oldRecord, data) : null,
-            ip_address: context.ipAddress,
-            user_agent: context.userAgent
-        }
+        if (this.usesDedicatedHistory(entityType)) {
+            // Insert into dedicated history table (e.g., users_history)
+            const historyEntry = {
+                [primaryKeyName]: entityId,
+                record_data: data,
+                operation,
+                changed_by: context.userId,
+                changed_at: new Date(),
+                change_details: context.oldRecord ? this.getChanges(context.oldRecord, data) : null,
+                ip_address: context.ipAddress,
+                user_agent: context.userAgent
+            }
 
-        await trx(historyTable).insert(historyEntry)
+            await trx(historyTable).insert(historyEntry)
+        } else {
+            // Insert into unified history table (entity_history)
+            const historyEntry = {
+                entity_type: entityType,
+                entity_id: entityId,
+                parent_entity_type: context.parentEntityType || null,
+                parent_entity_id: context.parentEntityId || null,
+                record_data: data,
+                operation,
+                changed_by: context.userId,
+                changed_at: new Date(),
+                change_details: context.oldRecord ? this.getChanges(context.oldRecord, data) : null,
+                ip_address: context.ipAddress,
+                user_agent: context.userAgent
+            }
+
+            await trx(historyTable).insert(historyEntry)
+        }
     }
 
     /**
@@ -96,14 +129,25 @@ class HistoryService {
             for (let i = 0; i < insertedIds.length; i++) {
                 const id = insertedIds[i]
                 const recordData = data[i] // Assuming the order of data and insertedIds is consistent
+                let bulkParentContext = null
+                if (context.bulkParentEntityInfo && context.useParentEntityId){
+                    // using the parent entity id of the record, find the appropriate bulk parent context that was passed in
+                    // for example, if searching within "tickets_to_users", "ticket_id" would be the parent,
+                    // so we would be looking for the record within bulkParentEntityInfo that has that ticket id
+                    bulkParentContext = context.bulkParentEntityInfo.find((obj) => Number(obj.parentEntityId) === Number(recordData[context.useParentEntityId]))
+                }
 
                 await this.recordHistory(
                     transaction,
                     tableName,
                     id,
                     recordData,
-                    'INSERT',
-                    context
+                    // if this is a many to many, categorize as "link", otherwise treat as "insert"
+                    context.parentEntityType ? 'LINK' : 'INSERT',
+                    {
+                        ...context, 
+                        ...(bulkParentContext ? bulkParentContext : {})
+                    }
                 )
             }
 
@@ -150,11 +194,9 @@ class HistoryService {
      */
     async bulkUpdate(tableName, ids, data, context, trx = null) {
         const query = async (transaction) => {
-            const primaryKeyName = this.getPrimaryKeyName(tableName)
-
             // Fetch old records before update for history tracking
             const oldRecords = await transaction(tableName)
-                .whereIn(primaryKeyName, ids)
+                .whereIn("id", ids)
                 .select('*')
 
             if (oldRecords.length === 0) {
@@ -163,7 +205,7 @@ class HistoryService {
 
             // Perform the bulk update
             const updatedRowsCount = await transaction(tableName)
-                .whereIn(primaryKeyName, ids)
+                .whereIn("id", ids)
                 .update(data)
 
             // Record history for each updated record
@@ -171,7 +213,7 @@ class HistoryService {
                 await this.recordHistory(
                     transaction,
                     tableName,
-                    oldRecord[primaryKeyName],
+                    oldRecord["id"],
                     { ...oldRecord, ...data }, // Merge old data with new data for history
                     'UPDATE',
                     { ...context, oldRecord }
@@ -194,7 +236,8 @@ class HistoryService {
                 .first()
 
             if (!oldRecord) {
-                throw new Error(`Record with id ${id} not found in ${tableName}`)
+                console.error(`Record with id ${id} not found in ${tableName}`)
+                return
             }
 
             await transaction(tableName).where({ id }).del()
@@ -213,9 +256,50 @@ class HistoryService {
     }
 
     /**
-     * Get history for a specific record
+     * Bulk Delete with history tracking
      */
-    async getHistory(tableName, recordId, options = {}) {
+    async bulkDelete(tableName, customStatement, context, trx = null) {
+        const query = async (transaction) => {
+            const oldRecords = await transaction(tableName).modify(customStatement)
+            if (oldRecords.length === 0){
+                console.error(`Existing records not found in ${tableName}`)
+                return
+            }
+
+            // Perform the bulk delete
+            await transaction(tableName).modify(customStatement).del()
+
+            // Record history for each updated record
+            for (const oldRecord of oldRecords) {
+                let bulkParentContext = null;
+                // using the parent entity id of the record, find the appropriate bulk parent context that was passed in
+                // for example, if searching within "tickets_to_users", "ticket_id" would be the parent,
+                // so we would be looking for the record within bulkParentEntityInfo that has that ticket id
+                if (context.bulkParentEntityInfo && context.useParentEntityId){
+                    bulkParentContext = context.bulkParentEntityInfo.find((obj) => Number(obj.parentEntityId) === Number(oldRecord[context.useParentEntityId]))
+                }
+                await this.recordHistory(
+                    transaction,
+                    tableName,
+                    oldRecord["id"],
+                    oldRecord,
+                    // if this is a many to many, categorize as "unlink", otherwise treat as "delete"
+                    context.parentEntityType ? 'UNLINK' : 'DELETE',
+                    { 
+                        ...context, 
+                        ...(bulkParentContext ? bulkParentContext : {}),
+                        oldRecord 
+                    }
+                )
+            }
+        }
+        return trx ? query(trx) : this.knex.transaction(query)
+    }
+
+    /**
+     * Get history for a specific entity (handles both table types)
+     */
+    async getHistory(entityType, entityId, options = {}) {
         const {
             limit = 100,
             offset = 0,
@@ -224,25 +308,29 @@ class HistoryService {
             operations = null
         } = options
 
-        const historyTable = this.getHistoryTableName(tableName)
-        const primaryKeyName = this.getPrimaryKeyName(tableName)
+        const historyTable = this.getHistoryTable(entityType)
+        const primaryKeyName = this.getPrimaryKeyName(entityType)
 
-        let query = this.knex(historyTable)
-            .select(
-                'history_id',
-                primaryKeyName,
-                'record_data',
-                'operation',
-                'changed_by',
-                'changed_at',
-                'change_details',
-                'ip_address',
-                'user_agent'
-            )
-            .where(primaryKeyName, recordId)
-            .orderBy('changed_at', 'desc')
-            .limit(limit)
-            .offset(offset)
+        let query
+        
+        if (this.usesDedicatedHistory(entityType)) {
+            // Query dedicated history table
+            query = this.knex(historyTable)
+                .where(primaryKeyName, entityId)
+                .orderBy('changed_at', 'desc')
+                .limit(limit)
+                .offset(offset)
+        } else {
+            // Query unified history table
+            query = this.knex(historyTable)
+                .where({
+                    entity_type: entityType,
+                    entity_id: entityId
+                })
+                .orderBy('changed_at', 'desc')
+                .limit(limit)
+                .offset(offset)
+        }
 
         if (startDate) {
             query = query.where('changed_at', '>=', startDate)
@@ -260,17 +348,61 @@ class HistoryService {
     }
 
     /**
-     * Get all changes made by a specific user
+     * Get all changes made by a specific user (searches both tables)
      */
-    async getChangesByUser(tableName, userId, options = {}) {
-        const { limit = 100, offset = 0 } = options
-        const historyTable = this.getHistoryTableName(tableName)
+    async getChangesByUser(userId, options = {}) {
+        const { 
+            limit = 100, 
+            offset = 0,
+            entityType = null
+        } = options
 
-        return this.knex(historyTable)
+        if (entityType && this.usesDedicatedHistory(entityType)) {
+            // Query dedicated history table
+            const historyTable = this.getHistoryTable(entityType)
+            return this.knex(historyTable)
+                .where('changed_by', userId)
+                .orderBy('changed_at', 'desc')
+                .limit(limit)
+                .offset(offset)
+        }
+
+        // Query unified history table
+        let query = this.knex(this.unifiedHistoryTable)
             .where('changed_by', userId)
             .orderBy('changed_at', 'desc')
             .limit(limit)
             .offset(offset)
+
+        if (entityType) {
+            query = query.where('entity_type', entityType)
+        }
+
+        return query
+    }
+
+
+    /**
+     * Get all changes across both history tables for a user
+     */
+    async getAllChangesByUser(userId, options = {}) {
+        const { limit = 100, offset = 0 } = options
+
+        // Get changes from both tables
+        const [userChanges, entityChanges] = await Promise.all([
+            this.knex('users_history')
+                .where('changed_by', userId)
+                .select('*', this.knex.raw("'users' as entity_type")),
+            this.knex(this.unifiedHistoryTable)
+                .where('changed_by', userId)
+                .select('*')
+        ])
+
+        // Combine and sort by changed_at
+        const allChanges = [...userChanges, ...entityChanges]
+            .sort((a, b) => new Date(b.changed_at) - new Date(a.changed_at))
+
+        return allChanges.slice(offset, offset + limit)
     }
 
     /**
@@ -293,6 +425,105 @@ class HistoryService {
 
             await this.update(tableName, recordId, dataToRestore, context, trx)
         })
+    }
+
+    /**
+     * Create ticket relationship (ticket-to-ticket N:N)
+     */
+    async createTicketRelationship(parentTicketId, childTicketId, relationshipTypeId, context, trx = null) {
+        const query = async (transaction) => {
+            const relationshipData = {
+                parent_ticket_id: parentTicketId,
+                child_ticket_id: childTicketId,
+                ticket_relationship_type_id: relationshipTypeId,
+                created_at: new Date()
+            }
+            
+            const [id] = await transaction('ticket_relationships')
+                .insert(relationshipData)
+                .returning('id')
+
+            // Record history for BOTH tickets involved
+            await this.recordHistory(
+                transaction,
+                'ticket_relationships',
+                id,
+                relationshipData,
+                'LINK',
+                {
+                    ...context,
+                    parentEntityType: 'ticket',
+                    parentEntityId: parentTicketId
+                }
+            )
+
+            await this.recordHistory(
+                transaction,
+                'ticket_relationships',
+                id,
+                relationshipData,
+                'LINK',
+                {
+                    ...context,
+                    parentEntityType: 'ticket',
+                    parentEntityId: childTicketId
+                }
+            )
+
+            return id
+        }
+
+        return trx ? query(trx) : this.knex.transaction(query)
+    }
+
+    /**
+     * Delete ticket relationship
+     */
+    async deleteTicketRelationship(relationshipId, context, trx = null) {
+        const query = async (transaction) => {
+            const oldRecord = await transaction('ticket_relationships')
+                .where({ id: relationshipId })
+                .first()
+
+            if (!oldRecord) {
+                throw new Error(`Relationship ${relationshipId} not found`)
+            }
+
+            await transaction('ticket_relationships')
+                .where({ id: relationshipId })
+                .del()
+
+            // Record history for BOTH tickets
+            await this.recordHistory(
+                transaction,
+                'ticket_relationships',
+                relationshipId,
+                oldRecord,
+                'UNLINK',
+                {
+                    ...context,
+                    parentEntityType: 'ticket',
+                    parentEntityId: oldRecord.parent_ticket_id,
+                    oldRecord
+                }
+            )
+
+            await this.recordHistory(
+                transaction,
+                'ticket_relationships',
+                relationshipId,
+                oldRecord,
+                'UNLINK',
+                {
+                    ...context,
+                    parentEntityType: 'ticket',
+                    parentEntityId: oldRecord.child_ticket_id,
+                    oldRecord
+                }
+            )
+        }
+
+        return trx ? query(trx) : this.knex.transaction(query)
     }
 }
 

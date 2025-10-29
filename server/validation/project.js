@@ -1,11 +1,10 @@
 const db = require("../db/db")
-const { checkEntityExistsIn, checkUniqueEntity, entityInOrganization, validateKeyExists } = require("./helper")
-const { BULK_INSERT_LIMIT, MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT, MIN_BOARD_TICKET_LIMIT, MAX_BOARD_TICKET_LIMIT } = require("../constants")
+const { checkEntityExistsIn, entityInOrganization } = require("./helper")
 const { body, param } = require("express-validator")
 
 const editProjectImageValidator = [
 	body("id").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "project", value, "projects")),
-	body("image_url").isURL().withMessage("Must be valid URL")
+	body("image_url").optional().isURL().withMessage("Must be valid URL")
 ]
 
 const projectValidator = (actionType) => {
@@ -21,7 +20,12 @@ const projectValidator = (actionType) => {
 		validationRules = [
 			...validationRules,
 			body("name").notEmpty().withMessage("name is required"),
-			body("image_url").optional().isURL().withMessage("Must be valid URL"),
+			body("image_url").optional().custom((value) => {
+				if (value === "") {
+					return true
+				}
+				return isURL(value)
+			}).withMessage("Must be valid URL"),
 			body("user_id").custom(async (value, {req}) => await checkEntityExistsIn("organization_user_roles", value, [{col: "user_id", value: value}, {col: "organization_id", value: req.user.organization}], "organization_user_roles"))
 		]
 	}

@@ -28,6 +28,9 @@ const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAg
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { getAssigneesFromBoards, getNumTicketsFromBoards, getLastModified, searchTicketByAssignee } = require("../helpers/query-helpers")
+const HistoryService = require('../services/history-service')
+
+historyService = new HistoryService(db)
 
 router.get("/", async (req, res, next) => {
 	try {
@@ -483,7 +486,16 @@ router.post("/:boardId/ticket", validateBoardTicketCreate, handleValidationResul
 	try {
 		const tickets = req.body.ticket_ids
 		const boardId = req.params.boardId
-		await retryTransaction(db("tickets_to_boards").insert(tickets.map((ticketId) => ({board_id: boardId, ticket_id: ticketId}))))
+		const toInsert = tickets.map((ticketId) => ({board_id: boardId, ticket_id: ticketId}) )
+		await historyService.bulkInsert("tickets_to_boards", toInsert, {
+			...req.historyContext,
+			useParentEntityId: "ticket_id",
+			bulkParentEntityInfo: toInsert.map((obj) => ({
+				parentEntityType: 'ticket',
+				parentEntityId: obj.ticket_id
+			}))	
+		})
+
 		res.json({message: "tickets inserted into board successfully!"})
 	}	
 	catch (err) {
@@ -522,7 +534,16 @@ router.get("/:boardId/ticket/:ticketId", validateBoardTicketGet, handleValidatio
 
 router.delete("/:boardId/ticket", validateBoardTicketBulkDelete, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("tickets_to_boards").whereIn("ticket_id", req.body.ticket_ids).where("board_id", req.params.boardId).del()
+		await historyService.bulkDelete("tickets_to_boards", (queryBuilder) => {
+			queryBuilder.whereIn("ticket_id", req.body.ticket_ids).where("board_id", req.params.boardId)
+		}, {
+			...req.historyContext,
+			useParentEntityId: "ticket_id",
+			bulkParentEntityInfo: req.body.ticket_ids.map((id) => ({
+				parentEntityId: id,
+				parentEntityType: "ticket"
+			}))
+		})
 		res.json({message: "tickets deleted from board successfully!"})
 	}
 	catch (err) {
@@ -533,7 +554,15 @@ router.delete("/:boardId/ticket", validateBoardTicketBulkDelete, handleValidatio
 
 router.delete("/:boardId/ticket/:ticketId", validateBoardTicketDelete, handleValidationResult, async (req, res, next) => {
 	try {
-		await db("tickets_to_boards").where("ticket_id", req.params.ticketId).where("board_id", req.params.boardId).del()
+		const existingTicket = await db("tickets_to_boards").where("ticket_id", req.params.ticketId).where("board_id", req.params.boardId).first()
+		if (!existingTicket){
+			throw new Error("ticket was not found!")
+		}
+		await historyService.delete("tickets_to_boards", existingTicket.id, {
+			...req.historyContext,
+			parentEntityType: "ticket",
+			parentEntityId: req.params.ticketId
+		})
 		res.json({message: "ticket deleted from board successfully!"})
 	}
 	catch (err) {

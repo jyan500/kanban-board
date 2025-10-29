@@ -124,6 +124,7 @@ export const BoardForm = ({boardId, projectId}: Props) => {
     const onSubmit = async (values: FormValues) => {
 		setSubmitLoading(true)
     	try {
+			let boardId = currentBoardId
     		if (values.id != null && currentBoardId){
     			await updateBoard(values).unwrap()
 				await bulkEditBoardStatuses({boardId: currentBoardId, statusIds: formStatuses.map((status) => status.id)}).unwrap()
@@ -131,9 +132,10 @@ export const BoardForm = ({boardId, projectId}: Props) => {
     		else {
     			const res = await addBoard(values).unwrap()
 				await bulkEditBoardStatuses({boardId: res.id, statusIds: formStatuses.map((status) => status.id)}).unwrap()
+				boardId = res.id
     		}
-			if (values.projectIdOptions && currentBoardId){
-				await updateBoardProjects({boardId: currentBoardId, ids: values.projectIdOptions.map((optionType) => Number(optionType.value))}).unwrap()
+			if (values.projectIdOptions && boardId){
+				await updateBoardProjects({boardId: boardId, ids: values.projectIdOptions.map((optionType) => Number(optionType.value))}).unwrap()
 			}
     		dispatch(toggleShowModal(false))
     		dispatch(addToast({

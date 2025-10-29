@@ -231,7 +231,7 @@ export const BoardBacklog = () => {
 						}
 					}} >Edit Tickets</Button>
 					{
-						backlogTickets.length && sprintData ?
+						backlogTickets.length && sprintData && sprintData.data.length ?
 						<LoadingButton isLoading={isUpdateTicketsLoading} text={`Move ${backlogTickets.length} ticket(s) to Sprint`} onClick={async (e) => {
 							await onUpdateSprintTickets()
 							// filter out the selected backlog tickets
