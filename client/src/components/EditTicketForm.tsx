@@ -250,7 +250,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			// TODO: need to update this line to include all userIds if allowing multiple 
     			// assignees per ticket
 	    		const assigneeId = !isNaN(Number(values.userIdOption?.value)) ? Number(values.userIdOption?.value) : 0
-    			if (assigneeId){
+				// if the assignee id was changed from its previous value
+    			if (assigneeId && assigneeId !== ticketAssignees?.[0]?.id){
 	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [assigneeId], isWatcher: false}).unwrap()
     			}
     			// if the assignee id was changed from its previous value, and it's not equal to the logged in user,

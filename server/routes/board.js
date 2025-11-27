@@ -233,19 +233,19 @@ router.get("/:boardId/insights", validateGet, handleValidationResult, async (req
 
 		/* Get the count of tickets that were updated in ine last 7 days */
 		const ticketHistoryQuery = db('entity_history')
-		.select('entity_id as ticket_id')
+		.select("entity_id as ticket_id")
 		.where('entity_type', 'tickets')
 		.whereIn('entity_id', ticketIds)
 		.where(db.raw('DATE(entity_history.changed_at)'), ">=", sevenDaysAgo)
 
 		const ticketEntityHistoryQuery = db('entity_history')
-		.select('parent_entity_id as ticket_id')
+		.select("parent_entity_id as ticket_id")
 		.where('parent_entity_type', 'ticket')
 		.whereIn('parent_entity_id', ticketIds)
 		.where(db.raw('DATE(entity_history.changed_at)'), ">=", sevenDaysAgo)
 
 		const unionTickets =  ticketHistoryQuery.union(ticketEntityHistoryQuery).as('totalTickets');
-		const ticketsUpdated = await db.countDistinct('ticket_id as count').from(unionTickets).as("totalTickets")
+		const ticketsUpdated = await db.countDistinct('ticket_id as totalTickets').from(unionTickets).as("totalTickets")
 		/* TODO: Get the count of tickets that were completed in ine last 7 days */
 		/* Get the count of tickets that have a due date AND are due within the next 7 days*/
 		const ticketsDue = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
@@ -304,6 +304,41 @@ router.get("/:boardId/insights", validateGet, handleValidationResult, async (req
 	}
 	catch (err) {
 		console.error(`Error while getting tickets: ${err.message}`)
+		next(err)
+	}
+})
+
+router.get("/:boardId/activity", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		const board = await db("boards").where("id", req.params.boardId).first()
+
+		const sevenDaysAgo = startOfDay(subDays(new Date(), 7))
+		const sevenDaysFromNow = startOfDay(addDays(new Date(), 7))
+		const now = startOfDay(new Date())
+
+		const ticketsToBoards = await db("tickets_to_boards").where("board_id", req.params.boardId)
+		const ticketIds = ticketsToBoards.map((ticket) => ticket.ticket_id)
+		/*
+			Show recent activity within the last 7 days for board tickets
+		*/
+		const ticketActivity = await db("entity_history")
+			.leftJoin("tickets", (queryBuilder) => {
+				queryBuilder.on("tickets.id", "=", "entity_history.entity_id")
+					.orOn("tickets.id", "=", "entity_history.parent_entity_id");
+		})
+		.where((queryBuilder) => {
+			queryBuilder.where("entity_type", "tickets").whereIn("entity_id", ticketIds)
+		}).orWhere((queryBuilder) => {
+			queryBuilder.where("parent_entity_type", "ticket").whereIn("parent_entity_id", ticketIds)
+		}).where(db.raw('DATE(entity_history.changed_at)'), ">=", sevenDaysAgo)
+		.select("entity_history.changed_at as changedAt", "entity_history.operation as operation", "entity_history.changed_by as changedBy", "tickets.name as ticketName", "tickets.id as id", "entity_history.change_details as changeDetails")
+		.orderBy("changed_at", "desc")
+		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})
+		console.log(ticketActivity)
+		res.json(ticketActivity)
+	}
+	catch (err) {
+		console.error(`Error while getting recent activity: ${err.message}`)
 		next(err)
 	}
 })
