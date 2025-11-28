@@ -1,4 +1,5 @@
 const { insertAndGetId, bulkInsertAndGetIds } = require("../helpers/functions")
+const { isEqual, parseISO } = require("date-fns")
 
 class HistoryService {
     constructor(knex) {
@@ -45,12 +46,22 @@ class HistoryService {
         if (!oldRecord) return null
         
         for (const [key, newValue] of Object.entries(newRecord)) {
-            if (oldRecord[key] !== newValue && key !== 'updated_at') {
+            if (oldRecord[key] instanceof Date){
+                const oldDate = new Date(oldRecord[key]).toISOString().split('T')[0]
+                const newDate = new Date(newValue).toISOString().split("T")[0]
+                if (oldDate !== newDate){
+                    changes[key] = {
+                        from: oldDate,
+                        to: newDate 
+                    }
+                }
+            }
+            else if (oldRecord[key] !== newValue && key !== 'updated_at') {
                 changes[key] = {
                     from: oldRecord[key],
                     to: newValue
                 }
-            }
+            }             
         }
         
         return Object.keys(changes).length > 0 ? changes : null
