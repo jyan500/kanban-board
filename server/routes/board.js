@@ -218,8 +218,6 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
 		const board = await db("boards").where("id", req.params.boardId).first()
 
 		const sevenDaysAgo = startOfDay(subDays(new Date(), 7))
-		const sevenDaysFromNow = startOfDay(addDays(new Date(), 7))
-		const now = startOfDay(new Date())
 
 		const ticketsToBoards = await db("tickets_to_boards").where("board_id", req.params.boardId)
 		const ticketIds = ticketsToBoards.map((ticket) => ticket.ticket_id)
