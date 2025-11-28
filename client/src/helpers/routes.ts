@@ -4,6 +4,7 @@ export const LOGIN = "/login"
 export const REGISTER = "/register"
 export const BOARDS = "/boards"
 export const SCHEDULE = `schedule`
+export const SUMMARY = `summary`
 export const BACKLOG = "backlog"
 export const TABLE = `table`
 export const BOARD_ID = ":boardId"

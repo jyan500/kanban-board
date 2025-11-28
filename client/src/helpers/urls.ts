@@ -33,6 +33,8 @@ export const SPRINT_URL = `/${API_VERSION}/sprint`
 export const PROJECT_BOARD_URL = (projectId: number | string) => `/${API_VERSION}/project/${projectId}/board`
 export const BOARD_TICKET_URL = (boardId: number | string, ticketId: number | string) => `/${API_VERSION}/board/${boardId}/ticket` + (ticketId !== "" ? `/${ticketId}` : "")
 export const BOARD_PROJECT_URL = (boardId: number) => `/${API_VERSION}/board/${boardId}/project`
+export const BOARD_SUMMARY_URL = (boardId: number) => `/${API_VERSION}/board/${boardId}/summary`
+export const BOARD_ACTIVITY_URL = (boardId: number) => `/${API_VERSION}/board/${boardId}/activity`
 export const BOARD_STATUS_URL = (boardId: number | string, statusId: number | string) => `/${API_VERSION}/board/${boardId}/status` + (statusId !== "" ? `/${statusId}` : "")
 export const BOARD_BULK_EDIT_STATUS_URL = (boardId: number | string) => `/${API_VERSION}/board/${boardId}/status/bulk-edit`
 export const BOARD_FILTER_URL = (boardId: number | string) => `/${API_VERSION}/board/${boardId}/filter`

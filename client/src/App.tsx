@@ -14,6 +14,7 @@ import { Ticket as TicketPage } from "./pages/tickets/Ticket"
 import { Boards } from "./pages/boards/Boards"
 import { Board } from "./pages/boards/Board" 
 import { BoardSchedule } from "./pages/boards/BoardSchedule"
+import { BoardSummary } from "./pages/boards/BoardSummary"
 import { BoardTable } from "./pages/boards/BoardTable"
 import { BoardBacklog } from "./pages/boards/BoardBacklog"
 import { BoardSprints } from "./pages/boards/BoardSprints"
@@ -67,6 +68,7 @@ import {
 	TICKET_ID, 
 	TABLE,
 	SCHEDULE,
+	SUMMARY,
 	SPRINTS,
 	BACKLOG,
 	USER, 
@@ -216,6 +218,10 @@ const router = createBrowserRouter([
 									{
 										index: true,
 										element: <Kanban/>
+									},
+									{
+										path: SUMMARY,
+										element: <BoardSummary/>
 									},
 									{
 										path: SCHEDULE,

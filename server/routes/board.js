@@ -213,7 +213,7 @@ router.get("/:boardId/last-modified", validateGet, handleValidationResult, async
 	}
 })
 
-router.get("/:boardId/insights", validateGet, handleValidationResult, async (req, res, next) => {
+router.get("/:boardId/summary", validateGet, handleValidationResult, async (req, res, next) => {
 	try {
 		const board = await db("boards").where("id", req.params.boardId).first()
 
