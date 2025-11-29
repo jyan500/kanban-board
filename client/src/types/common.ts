@@ -90,6 +90,16 @@ export interface Board {
 	percentComplete?: number
 }
 
+export interface BoardSummary {
+	ticketsByAssignee: Array<{userId: number, totalTickets: number}>
+	ticketsByPriority: Array<{priorityId: number, totalTickets: number}>
+	ticketsByStatus: Array<{statusId: number, totalTickets: number}>
+	ticketsByTicketType: Array<{ticketTypeId: number, totalTickets: number}>
+	ticketsDue: {totalTickets: number}
+	ticketsCreated: {totalTickets: number}
+	ticketsUpdated: {totalTickets: number}
+}
+
 export interface Sprint {
 	id: number
 	name: string

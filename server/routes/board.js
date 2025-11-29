@@ -218,6 +218,8 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
 		const board = await db("boards").where("id", req.params.boardId).first()
 
 		const sevenDaysAgo = startOfDay(subDays(new Date(), 7))
+		const sevenDaysFromNow = startOfDay(addDays(new Date(), 7))
+		const now = startOfDay(new Date())
 
 		const ticketsToBoards = await db("tickets_to_boards").where("board_id", req.params.boardId)
 		const ticketIds = ticketsToBoards.map((ticket) => ticket.ticket_id)
@@ -243,7 +245,7 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
 		.where(db.raw('DATE(entity_history.changed_at)'), ">=", sevenDaysAgo)
 
 		const unionTickets =  ticketHistoryQuery.union(ticketEntityHistoryQuery).as('totalTickets');
-		const ticketsUpdated = await db.countDistinct('ticket_id as totalTickets').from(unionTickets).as("totalTickets")
+		const ticketsUpdated = await db.countDistinct('ticket_id as totalTickets').from(unionTickets).as("totalTickets").first()
 		/* TODO: Get the count of tickets that were completed in ine last 7 days */
 		/* Get the count of tickets that have a due date AND are due within the next 7 days*/
 		const ticketsDue = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
