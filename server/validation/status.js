@@ -74,7 +74,6 @@ const statusValidator = (actionType) => {
 }
 
 const checkFieldUniqueToStatuses = async (fieldName, field, organizationId, id=null) => {
-
 	try {
 		const statuses = await db("statuses").where(fieldName, field).andWhere("organization_id", organizationId)
 		if (statuses.length){
@@ -93,7 +92,6 @@ const checkFieldUniqueToStatuses = async (fieldName, field, organizationId, id=n
 	catch (err) {
 		console.error(`Error while validating statuses: ${err.message}`)	
 	}
-
 }
 
 module.exports = {

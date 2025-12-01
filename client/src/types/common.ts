@@ -274,5 +274,11 @@ export type GroupByElement = {
 	[property: string]: any
 }
 
+export interface ProgressBarItem {
+	name: string
+	percentage: number
+	[key: string]: any
+}
+
 export type ViewMode = 'week' | 'month'
 

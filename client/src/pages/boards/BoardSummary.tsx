@@ -4,10 +4,11 @@ import { FiCheckCircle, FiEdit, FiFileText, FiCalendar } from 'react-icons/fi'
 import { useGetBoardSummaryQuery } from "../../services/private/board"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { BoardSummary as BoardSummaryType } from "../../types/common"
+import { BoardSummary as BoardSummaryType, ProgressBarItem } from "../../types/common"
 import { PRIORITY_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
+import { HorizontalProgressBarRow } from "../../components/page-elements/HorizontalProgressBarRow"
 
 // Mock data - replace with actual data from API
 const mockData: BoardSummaryType = {
@@ -88,9 +89,10 @@ export const BoardSummary = () => {
         color: STATUS_COLORS[item.statusId] || '#999'
     })) ?? []
 
-    const priorityData = data?.ticketsByPriority.map(item => ({
+    const priorityData: Array<ProgressBarItem> = data?.ticketsByPriority.map(item => ({
         name: PRIORITY_LABELS[item.priorityId] || `Priority ${item.priorityId}`,
-        value: item.totalTickets
+        value: item.totalTickets,
+        percentage: totalTickets > 0 ? Math.round((item.totalTickets/totalTickets) * 100) : 0
     })) ?? []
 
     const typeData = data?.ticketsByTicketType.map(item => ({
@@ -99,7 +101,7 @@ export const BoardSummary = () => {
         percentage: totalTickets > 0 ? Math.round((item.totalTickets / totalTickets) * 100) : 0
     })) ?? []
 
-    const assigneeData = data?.ticketsByAssignee.map(item => ({
+    const assigneeData: Array<ProgressBarItem> = data?.ticketsByAssignee.map(item => ({
         name: item.userId === 0 ? 'Unassigned' : `User ${item.userId}`,
         value: item.totalTickets,
         percentage: totalTickets > 0 ? Math.round((item.totalTickets / totalTickets) * 100) : 0
@@ -301,22 +303,25 @@ export const BoardSummary = () => {
                                 <span>Distribution</span>
                             </div>
                             {typeData.map((item, index) => (
-                                <div key={index} className="tw-space-y-1">
-                                    <div className="tw-flex tw-items-center tw-gap-2">
-                                        <span className="tw-text-sm">{TYPE_LABELS[index + 1]?.icon || '📋'}</span>
-                                        <span className="tw-text-sm">{item.name}</span>
-                                    </div>
-                                    <div className="tw-ml-6">
-                                        <div className="tw-w-full tw-bg-gray-200 tw-rounded tw-h-6">
-                                            <div 
-                                                className="tw-bg-gray-400 tw-h-6 tw-rounded tw-flex tw-items-center tw-justify-end tw-pr-2"
-                                                style={{width: `${item.percentage}%`}}
-                                            >
-                                                <span className="tw-text-xs tw-font-medium tw-text-gray-700">{item.percentage}%</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                // <div key={index} className="tw-space-y-1">
+                                //     <div className="tw-flex tw-items-center tw-gap-2">
+                                //         <span className="tw-text-sm">{TYPE_LABELS[index + 1]?.icon || '📋'}</span>
+                                //         <span className="tw-text-sm">{item.name}</span>
+                                //     </div>
+                                //     <div className="tw-ml-6">
+                                //         <div className="tw-w-full tw-bg-gray-200 tw-rounded tw-h-6">
+                                //             <div 
+                                //                 className="tw-bg-gray-400 tw-h-6 tw-rounded tw-flex tw-items-center tw-justify-end tw-pr-2"
+                                //                 style={{width: `${item.percentage}%`}}
+                                //             >
+                                //                 <span className="tw-text-xs tw-font-medium tw-text-gray-700">{item.percentage}%</span>
+                                //             </div>
+                                //         </div>
+                                //     </div>
+                                // </div>
+                                <HorizontalProgressBarRow
+                                    item={item}
+                                />
                             ))}
                         </div>
                     </div>
