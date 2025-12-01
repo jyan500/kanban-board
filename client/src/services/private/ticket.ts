@@ -142,7 +142,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					is_watcher: isWatcher
 				}
 			}),
-			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary"]
+			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary"]
 		}),
 		addTicketAssignee: builder.mutation<TicketAssigneeResponse, TicketAssigneeRequest>({
 			query: ({ticketId, userIds, isWatcher}) => ({
@@ -153,7 +153,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					is_watcher: isWatcher
 				}
 			}),
-			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary"],
+			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary"],
 		}),
 		deleteTicketAssignee: builder.mutation<TicketAssigneeResponse, SingleTicketAssigneeRequest>({
 			query: ({ticketId, userId}) => ({
@@ -164,7 +164,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					ticket_id: ticketId
 				}
 			}),
-			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary"],
+			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary"],
 		}),
 		addTicket: builder.mutation<{id: number, message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "id" | "createdAt" | "storyPoints" | "dueDate">>({
 			query: (ticket) => ({
@@ -178,7 +178,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					status_id: ticket.statusId
 				},
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets"]
+			invalidatesTags: ["Tickets", "BoardTickets", "BoardSummary"]
 		}),
 		updateTicket: builder.mutation<{message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "createdAt" | "userIdOption" | "userId">>({
 			query: (ticket) => ({
@@ -195,7 +195,15 @@ export const ticketApi = privateApi.injectEndpoints({
 					status_id: ticket.statusId
 				}
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary", "Sprints", "SprintTickets"]
+			invalidatesTags: [
+				"Tickets", 
+				"BoardTickets", 
+				"TicketRelationships", 
+				"TicketSummary", 
+				"Sprints", 
+				"SprintTickets", 
+				"BoardSummary"
+			]
 			// invalidatesTags: (result, error, arg) => [{type: "Tickets", id: arg.id}, {type: "BoardTickets", id: arg.id}]
 		}),
 		bulkEditTickets: builder.mutation<{message: string}, {ticketIds: Array<number>, priorityId: number, userIds: Array<number>, statusId: number}>({
@@ -209,7 +217,15 @@ export const ticketApi = privateApi.injectEndpoints({
 					status_id: statusId,
 				}
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary"]
+			invalidatesTags: [
+				"Tickets", 
+				"BoardTickets", 
+				"TicketRelationships", 
+				"TicketSummary",
+				"Sprints",
+				"SprintTickets",
+				"BoardSummary",
+			]
 		}),
 		bulkWatchTickets: builder.mutation<{message: string}, {toAdd: boolean, ticketIds: Array<number>, userId: number}>({
 			query: ({ticketIds, userId, toAdd}) => ({
@@ -228,7 +244,7 @@ export const ticketApi = privateApi.injectEndpoints({
 				url: `${TICKET_URL}/${ticketId}`,
 				method: "DELETE",
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships"]
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "BoardSummary"]
 		}),
 		updateTicketStatus: builder.mutation<{message: string}, {ticketId: number, statusId: number}>({
 			query: ({ticketId, statusId}) => ({
@@ -236,7 +252,7 @@ export const ticketApi = privateApi.injectEndpoints({
 				method: "PATCH",
 				body: {status_id: statusId}
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary"]
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary", "BoardSummary"]
 		}),
 		getTicketRelationships: builder.query<ListResponse<TicketRelationship>, TicketEntityPaginationRequest>({
 			query: ({ticketId, params}) => ({

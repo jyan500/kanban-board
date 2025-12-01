@@ -91,6 +91,7 @@ export interface Board {
 }
 
 export interface BoardSummary {
+	totalTickets: number
 	ticketsByAssignee: Array<{userId: number, totalTickets: number}>
 	ticketsByPriority: Array<{priorityId: number, totalTickets: number}>
 	ticketsByStatus: Array<{statusId: number, totalTickets: number}>

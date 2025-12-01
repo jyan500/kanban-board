@@ -293,6 +293,7 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
         .count("tickets.id as totalTickets")
 
 		res.json({
+			totalTickets: ticketIds.length,
 			ticketsDue: ticketsDue,
 			ticketsCreated: ticketsCreated,
 			ticketsByAssignee: ticketsByAssignee,

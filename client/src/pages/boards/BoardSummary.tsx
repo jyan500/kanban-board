@@ -6,17 +6,20 @@ import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { BoardSummary as BoardSummaryType } from "../../types/common"
 import { PRIORITY_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
+import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
+import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 
 // Mock data - replace with actual data from API
 const mockData: BoardSummaryType = {
+    totalTickets: 25,
     ticketsByAssignee: [
         {userId: 0, totalTickets: 24}, // Unassigned
         {userId: 1, totalTickets: 1}  // Jansen Yan
     ],
     ticketsByPriority: [
-        {priorityId: 4, totalTickets: 10}, // Medium
         {priorityId: 3, totalTickets: 10}, // Medium
-        {priorityId: 2, totalTickets: 4} // Medium
+        {priorityId: 2, totalTickets: 10}, // Medium
+        {priorityId: 1, totalTickets: 4} // Medium
     ],
     ticketsByStatus: [
         {statusId: 1, totalTickets: 24}, // To Do
@@ -69,40 +72,44 @@ export const BoardSummary = () => {
     const { statuses } = useAppSelector((state) => state.status)
     const { priorities } = useAppSelector((state) => state.priority)
 
-    const { data: boardSummaryData, isLoading } = useGetBoardSummaryQuery(boardInfo ? {boardId: boardInfo?.id} : skipToken)
-    const data = mockData
+    const { data, isLoading } = useGetBoardSummaryQuery(boardInfo ? {boardId: boardInfo?.id} : skipToken)
     
     // Calculate totals
-    const totalTickets = data.ticketsByStatus.reduce((sum, item) => sum + item.totalTickets, 0)
-    const completedTickets = data.ticketsByStatus
+    // const totalTickets = data.ticketsByStatus.reduce((sum, item) => sum + item.totalTickets, 0)
+    const totalTickets = data?.totalTickets ?? 0
+    const completedTickets = data?.ticketsByStatus
         .filter(item => item.statusId === 4)
-        .reduce((sum, item) => sum + item.totalTickets, 0)
+        .reduce((sum, item) => sum + item.totalTickets, 0) ?? 0
 
     // Prepare chart data
-    const statusData = data.ticketsByStatus.map(item => ({
+    const statusData = data?.ticketsByStatus.map(item => ({
         name: STATUS_LABELS[item.statusId] || `Status ${item.statusId}`,
         value: item.totalTickets,
         color: STATUS_COLORS[item.statusId] || '#999'
-    }))
+    })) ?? []
 
-    const priorityData = data.ticketsByPriority.map(item => ({
+    const priorityData = data?.ticketsByPriority.map(item => ({
         name: PRIORITY_LABELS[item.priorityId] || `Priority ${item.priorityId}`,
         value: item.totalTickets
-    }))
+    })) ?? []
 
-    const typeData = data.ticketsByTicketType.map(item => ({
+    const typeData = data?.ticketsByTicketType.map(item => ({
         name: TYPE_LABELS[item.ticketTypeId]?.label || `Type ${item.ticketTypeId}`,
         value: item.totalTickets,
         percentage: totalTickets > 0 ? Math.round((item.totalTickets / totalTickets) * 100) : 0
-    }))
+    })) ?? []
 
-    const assigneeData = data.ticketsByAssignee.map(item => ({
+    const assigneeData = data?.ticketsByAssignee.map(item => ({
         name: item.userId === 0 ? 'Unassigned' : `User ${item.userId}`,
         value: item.totalTickets,
         percentage: totalTickets > 0 ? Math.round((item.totalTickets / totalTickets) * 100) : 0
-    }))
+    })) ?? []
 
     return (
+        isLoading && !data ? 
+        <LoadingSkeleton>
+            <RowPlaceholder/>
+        </LoadingSkeleton> :
         <div className="tw-min-h-screen tw-bg-gray-50 tw-p-6">
             <div className="tw-max-w-7xl tw-mx-auto tw-space-y-6">
                 {/* Top Stats Cards */}
@@ -125,7 +132,7 @@ export const BoardSummary = () => {
                                 <FiEdit className="tw-w-5 tw-h-5 tw-text-gray-600" />
                             </div>
                             <div>
-                                <div className="tw-text-2xl tw-font-semibold">{data.ticketsUpdated.totalTickets} updated</div>
+                                <div className="tw-text-2xl tw-font-semibold">{data?.ticketsUpdated.totalTickets ?? 0} updated</div>
                                 <div className="tw-text-sm tw-text-gray-500">in the last 7 days</div>
                             </div>
                         </div>
@@ -137,7 +144,7 @@ export const BoardSummary = () => {
                                 <FiFileText className="tw-w-5 tw-h-5 tw-text-gray-600" />
                             </div>
                             <div>
-                                <div className="tw-text-2xl tw-font-semibold">{data.ticketsCreated.totalTickets} created</div>
+                                <div className="tw-text-2xl tw-font-semibold">{data?.ticketsCreated.totalTickets ?? 0} created</div>
                                 <div className="tw-text-sm tw-text-gray-500">in the last 7 days</div>
                             </div>
                         </div>
@@ -149,7 +156,7 @@ export const BoardSummary = () => {
                                 <FiCalendar className="tw-w-5 tw-h-5 tw-text-gray-600" />
                             </div>
                             <div>
-                                <div className="tw-text-2xl tw-font-semibold">{data.ticketsDue.totalTickets} due soon</div>
+                                <div className="tw-text-2xl tw-font-semibold">{data?.ticketsDue.totalTickets ?? 0} due soon</div>
                                 <div className="tw-text-sm tw-text-gray-500">in the next 7 days</div>
                             </div>
                         </div>
