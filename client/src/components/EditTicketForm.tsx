@@ -26,7 +26,8 @@ import { displayUser, getUserInitials } from "../helpers/functions"
 import { TicketCommentForm } from "./TicketCommentForm"
 import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
-import { priorityIconMap, PriorityIcon, TicketTypeIcon , colorMap } from "./Ticket"
+import { priorityIconMap, PriorityIcon, TicketTypeIcon } from "./Ticket"
+import { PRIORITY_COLOR_MAP } from "../helpers/constants";
 import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown" 
 import { ImTree as AddToEpicIcon } from "react-icons/im";
 import { IconTree } from "./icons/IconTree"
@@ -424,7 +425,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Priority"}>
 							<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
 								<div className = "tw-w-[2em] tw-shrink-0">
-									{selectFieldLoading["priority"] ? <LoadingSpinner/> : priorityName ? <PriorityIcon type = {priorityName} color = {priorityName in colorMap ? colorMap[priorityName] : ""} className = "tw-shrink-0 tw-w-6 tw-h-6"/> : <></>}
+									{selectFieldLoading["priority"] ? <LoadingSpinner/> : priorityName ? <PriorityIcon type = {priorityName} color = {priorityName in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priorityName] : ""} className = "tw-shrink-0 tw-w-6 tw-h-6"/> : <></>}
 								</div>
 								<div className = "tw-min-w-32 tw-flex tw-flex-1">
 									{prioritySelect}

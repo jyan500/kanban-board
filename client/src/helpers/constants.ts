@@ -108,6 +108,12 @@ export const TICKET_TYPE_COLOR_MAP = {
     "Feature": "var(--bs-success)",
 }
 
+export const PRIORITY_COLOR_MAP: {[key: string]: string} = {
+	"Low": "var(--bs-primary)",
+	"Medium": "var(--bs-warning)",
+	"High": "var(--bs-danger)"	
+}
+
 export const MOVE_OPEN_ITEM_OPTIONS = [
     {value: "NEW SPRINT", label: "New Sprint"},
     {value: "BACKLOG", label: "Backlog"},

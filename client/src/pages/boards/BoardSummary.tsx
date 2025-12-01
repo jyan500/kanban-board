@@ -5,6 +5,7 @@ import { useGetBoardSummaryQuery } from "../../services/private/board"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { BoardSummary as BoardSummaryType } from "../../types/common"
+import { PRIORITY_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 
 // Mock data - replace with actual data from API
 const mockData: BoardSummaryType = {
@@ -37,11 +38,9 @@ const STATUS_COLORS: Record<number, string> = {
 }
 
 const PRIORITY_COLORS: Record<number, string> = {
-    1: '#78909C', // Lowest
-    2: '#78909C', // Low
-    3: '#78909C', // Medium
-    4: '#78909C', // High
-    5: '#78909C'  // Highest
+    1: '#78909C', // Low
+    2: '#78909C', // Medium
+    3: '#78909C', // High
 }
 
 const STATUS_LABELS: Record<number, string> = {
@@ -52,11 +51,9 @@ const STATUS_LABELS: Record<number, string> = {
 }
 
 const PRIORITY_LABELS: Record<number, string> = {
-    1: 'Lowest',
-    2: 'Low',
-    3: 'Medium',
-    4: 'High',
-    5: 'Highest'
+    1: 'Low',
+    2: 'Medium',
+    3: 'High',
 }
 
 const TYPE_LABELS: Record<number, {label: string, icon: string}> = {
@@ -69,6 +66,9 @@ const TYPE_LABELS: Record<number, {label: string, icon: string}> = {
 
 export const BoardSummary = () => {
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
+    const { statuses } = useAppSelector((state) => state.status)
+    const { priorities } = useAppSelector((state) => state.priority)
+
     const { data: boardSummaryData, isLoading } = useGetBoardSummaryQuery(boardInfo ? {boardId: boardInfo?.id} : skipToken)
     const data = mockData
     

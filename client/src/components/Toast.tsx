@@ -12,7 +12,7 @@ export const iconMap: {[key: string]: ReactNode} = {
 	warning: <WarningIcon/>	
 }
 
-export const colorMap: {[key: string]: string} = {
+export const toastColorMap: {[key: string]: string} = {
 	success: "var(--bs-success)",	
 	failure: "var(--bs-danger)",
 	warning: "var(--bs-warning)",
@@ -29,7 +29,7 @@ type Props = {
 
 export const Toast = ({id, message, type, onClose, animationStyle, animationHandler}: Props) => {
 	const toastIcon = iconMap[type] as ReactNode || null
-	const color = colorMap[type] as string
+	const color = toastColorMap[type] as string
 	return (
 		<div id = {id} 
 			onAnimationEnd={(e) => animationHandler(id)}
