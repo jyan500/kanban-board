@@ -136,7 +136,7 @@ export const BoardSummary = () => {
                 </div>
 
                 {/* Main Content Grid */}
-                <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-6">
+                <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-4">
                     {/* Status Overview */}
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Status overview</h2>
