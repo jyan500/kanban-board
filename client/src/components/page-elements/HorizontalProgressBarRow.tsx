@@ -16,10 +16,10 @@ export const HorizontalProgressBarRow = ({icon, item}: Props) => {
             <div className = {`${icon ? "tw-ml-8" : ""}`}>
                 <div className="tw-w-full tw-bg-gray-200 tw-rounded tw-h-6">
                     <div 
-                        className="tw-bg-gray-400 tw-h-6 tw-rounded tw-flex tw-items-center tw-justify-end tw-pr-2"
+                        className="tw-bg-gray-500 tw-h-6 tw-rounded tw-flex tw-items-center tw-justify-end tw-pr-2"
                         style={{width: `${item.percentage}%`}}
                     >
-                        <span className="tw-text-xs tw-font-medium tw-text-gray-700">{item.percentage}%</span>
+                        <span className="tw-text-xs tw-font-medium tw-text-white">{item.percentage}%</span>
                     </div>
                 </div>
             </div>
