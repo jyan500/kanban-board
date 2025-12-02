@@ -211,10 +211,6 @@ export const BoardSummary = () => {
                         </p>
 
                         <div className="tw-space-y-3">
-                            <div className="tw-flex tw-items-center tw-justify-between tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
-                                <span>Assignee</span>
-                                <span>Work distribution</span>
-                            </div>
                             {assigneeData.map((item, index) => {
                                 return (
                                     <div key={index} className = "tw-space-y-1">
