@@ -101,7 +101,7 @@ export const GROUP_BY_OPTIONS = {
 	"PRIORITY": "Priority",
 }
 
-export const TICKET_TYPE_COLOR_MAP = {
+export const TICKET_TYPE_COLOR_MAP: {[key: string]: string} = {
     "Modification": "var(--bs-primary)",
     "Bug": "var(--bs-danger)",
     "Epic": "var(--bs-light-purple)",

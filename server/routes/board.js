@@ -282,15 +282,19 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
         .select("tickets.ticket_type_id as ticketTypeId")
         .count("tickets.id as totalTickets")
 		/* 
-			Get the counts of tickets on the board aggregated by assignee 
+			Get the counts of tickets on the board aggregated by assignee, including unassigned tickets 
 		*/
 		const ticketsByAssignee = await db("tickets")
 		.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
-		.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
-        .where("tickets_to_boards.board_id", req.params.boardId)
-        .groupBy("tickets_to_users.user_id")
-        .select("tickets_to_users.user_id as userId")
-        .count("tickets.id as totalTickets")
+		.leftJoin("tickets_to_users", (queryBuilder) => {
+			queryBuilder.on("tickets_to_users.ticket_id", "=", "tickets.id")
+				.andOn("tickets_to_users.is_watcher", "=", db.raw("?", [false]))
+				.andOn("tickets_to_users.is_mention", "=", db.raw("?", [false]))
+		})
+		.where("tickets_to_boards.board_id", req.params.boardId)
+		.groupBy("tickets_to_users.user_id")
+		.select("tickets_to_users.user_id as userId")
+		.count("tickets.id as totalTickets")
 
 		res.json({
 			totalTickets: ticketIds.length,
