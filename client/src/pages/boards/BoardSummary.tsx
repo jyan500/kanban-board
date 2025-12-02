@@ -1,6 +1,5 @@
 import React, { useEffect } from "react"
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { FiCheckCircle, FiEdit, FiFileText, FiCalendar } from 'react-icons/fi'
 import { useGetBoardSummaryQuery } from "../../services/private/board"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -13,6 +12,10 @@ import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
 import { Avatar } from "../../components/page-elements/Avatar"
 import { displayUser, getUserInitials } from "../../helpers/functions"
 import { IconUser } from "../../components/icons/IconUser"
+import { IconPencil } from "../../components/icons/IconPencil"
+import { IconCircleCheckmark } from "../../components/icons/IconCircleCheckmark"
+import { IconCalendar } from "../../components/icons/IconCalendar"
+import { IconPaper } from "../../components/icons/IconPaper"
 
 export const BoardSummary = () => {
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
@@ -89,7 +92,7 @@ export const BoardSummary = () => {
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <div className="tw-flex tw-items-start tw-gap-3">
                             <div className="tw-p-2 tw-bg-gray-100 tw-rounded">
-                                <FiCheckCircle className="tw-w-5 tw-h-5 tw-text-gray-600" />
+                                <IconCircleCheckmark className="tw-w-5 tw-h-5 tw-text-gray-600" />
                             </div>
                             <div>
                                 <div className="tw-text-2xl tw-font-semibold">{completedTickets} completed</div>
@@ -101,7 +104,7 @@ export const BoardSummary = () => {
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <div className="tw-flex tw-items-start tw-gap-3">
                             <div className="tw-p-2 tw-bg-gray-100 tw-rounded">
-                                <FiEdit className="tw-w-5 tw-h-5 tw-text-gray-600" />
+                                <IconPencil className="tw-w-5 tw-h-5 tw-text-gray-600" />
                             </div>
                             <div>
                                 <div className="tw-text-2xl tw-font-semibold">{data?.ticketsUpdated.totalTickets ?? 0} updated</div>
@@ -113,7 +116,7 @@ export const BoardSummary = () => {
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <div className="tw-flex tw-items-start tw-gap-3">
                             <div className="tw-p-2 tw-bg-gray-100 tw-rounded">
-                                <FiFileText className="tw-w-5 tw-h-5 tw-text-gray-600" />
+                                <IconPaper className="tw-w-5 tw-h-5 tw-text-gray-600" />
                             </div>
                             <div>
                                 <div className="tw-text-2xl tw-font-semibold">{data?.ticketsCreated.totalTickets ?? 0} created</div>
@@ -125,7 +128,7 @@ export const BoardSummary = () => {
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <div className="tw-flex tw-items-start tw-gap-3">
                             <div className="tw-p-2 tw-bg-gray-100 tw-rounded">
-                                <FiCalendar className="tw-w-5 tw-h-5 tw-text-gray-600" />
+                                <IconCalendar className="tw-w-5 tw-h-5 tw-text-gray-600" />
                             </div>
                             <div>
                                 <div className="tw-text-2xl tw-font-semibold">{data?.ticketsDue.totalTickets ?? 0} due soon</div>

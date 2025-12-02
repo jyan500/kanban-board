@@ -1,5 +1,5 @@
-import { FiCheckCircle } from "react-icons/fi";
 import React from "react"
+import { FiFileText } from "react-icons/fi";
 import { BaseIcon } from "./BaseIcon"
 
 interface Props {
@@ -7,11 +7,10 @@ interface Props {
 	className?: string
 }
 
-export const IconCircleCheckmark = ({color, className}: Props) => {
+export const IconPaper = ({color, className}: Props) => {
 	return (
 		<BaseIcon color={color} className={className}>
-			<FiCheckCircle/>
+			<FiFileText/>
 		</BaseIcon>
 	)
 }
-
