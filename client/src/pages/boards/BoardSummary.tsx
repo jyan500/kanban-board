@@ -3,11 +3,12 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveCo
 import { useGetBoardSummaryQuery } from "../../services/private/board"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { BoardSummary as BoardSummaryType, ProgressBarItem, UserProfile } from "../../types/common"
+import { BoardSummary as BoardSummaryType, ProgressBarItem, PieChartItem, UserProfile } from "../../types/common"
 import { PRIORITY_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { HorizontalProgressBarRow } from "../../components/page-elements/HorizontalProgressBarRow"
+import { PieChartWithKey } from "../../components/page-elements/PieChartWithKey" 
 import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile" 
 import { Avatar } from "../../components/page-elements/Avatar"
 import { displayUser, getUserInitials } from "../../helpers/functions"
@@ -48,7 +49,7 @@ export const BoardSummary = () => {
         }
     }) ?? []
 
-    const priorityData = data?.ticketsByPriority.map(item => {
+    const priorityData: Array<PieChartItem> = data?.ticketsByPriority.map(item => {
         const priority = priorities.find((priority) => priority.id === item.priorityId)
         return {
             name: priority ? priority.name : `Priority ${item.priorityId}`,
@@ -57,7 +58,7 @@ export const BoardSummary = () => {
         }
     }) ?? []
 
-    const typeData = data?.ticketsByTicketType.map(item => {
+    const typeData: Array<PieChartItem> = data?.ticketsByTicketType.map(item => {
         const ticketType = ticketTypes.find((ticketType) => ticketType.id === item.ticketTypeId)
         return {
             name: ticketType ? ticketType.name : `Type ${item.ticketTypeId}`,
@@ -164,41 +165,7 @@ export const BoardSummary = () => {
                             <a href="#" className="tw-text-blue-600 hover:tw-underline">How to manage priorities for spaces</a>
                         </p>
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
-                            <div className="tw-relative">
-                                <ResponsiveContainer width={250} height={250}>
-                                    <PieChart>
-                                        <Pie
-                                            data={priorityData}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={70}
-                                            outerRadius={100}
-                                            dataKey="value"
-                                            startAngle={90}
-                                            endAngle={-270}
-                                        >
-                                            {priorityData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                    </PieChart>
-                                </ResponsiveContainer>
-                                <div className="tw-absolute tw-inset-0 tw-flex tw-flex-col tw-items-center tw-justify-center">
-                                    <div className="tw-text-4xl tw-font-bold">{totalTickets}</div>
-                                    <div className="tw-text-sm tw-text-gray-600">Total work item...</div>
-                                </div>
-                            </div>
-                            <div className="tw-space-y-2">
-                                {priorityData.map((item, index) => (
-                                    <div key={index} className="tw-flex tw-items-center tw-gap-2 tw-text-sm">
-                                        <div 
-                                            className="tw-w-3 tw-h-3 tw-rounded-sm" 
-                                            style={{backgroundColor: item.color}}
-                                        />
-                                        <span className="tw-text-gray-700">{item.name}: {item.value}</span>
-                                    </div>
-                                ))}
-                            </div>
+                            <PieChartWithKey data={priorityData} total={totalTickets}/>
                         </div>
                     </div>
 
@@ -233,44 +200,10 @@ export const BoardSummary = () => {
                         </p>
 
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
-                            <div className="tw-relative">
-                                <ResponsiveContainer width={250} height={250}>
-                                    <PieChart>
-                                        <Pie
-                                            data={typeData}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={70}
-                                            outerRadius={100}
-                                            dataKey="value"
-                                            startAngle={90}
-                                            endAngle={-270}
-                                        >
-                                            {typeData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                    </PieChart>
-                                </ResponsiveContainer>
-                                <div className="tw-absolute tw-inset-0 tw-flex tw-flex-col tw-items-center tw-justify-center">
-                                    <div className="tw-text-4xl tw-font-bold">{totalTickets}</div>
-                                    <div className="tw-text-sm tw-text-gray-600">Total work item...</div>
-                                </div>
-                            </div>
-                            <div className = "tw-space-y-2">
-                                {
-                                    typeData.map((type) => {
-                                        return (
-                                            <div key={`type_${type.name}`} className = "tw-flex tw-flex-col tw-gap-y-2 tw-text-sm">
-                                                <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-                                                    <div className = "tw-w-3 tw-h-3 tw-rounded-sm" style={{backgroundColor: type.color}}></div>
-                                                    <span className = "tw-text-gray-700">{type.name}: {type.value}</span>
-                                                </div>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </div>
+                            <PieChartWithKey
+                                data={typeData}
+                                total={totalTickets}
+                            />
                         </div>
                     </div>
                 </div>

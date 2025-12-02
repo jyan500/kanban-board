@@ -280,5 +280,12 @@ export interface ProgressBarItem {
 	[key: string]: any
 }
 
+export interface PieChartItem {
+	name: string
+	value: number
+	color: string
+	[key: string]: any
+}
+
 export type ViewMode = 'week' | 'month'
 
