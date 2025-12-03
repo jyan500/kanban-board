@@ -1,5 +1,5 @@
 import React from "react"
-import { Cell, ResponsiveContainer, PieChart, Pie } from "recharts"
+import { Cell, Label, ResponsiveContainer, PieChart, Pie, PieLabelRenderProps, Text, Tooltip  } from "recharts"
 import { PieChartItem } from "../../types/common"
 
 interface Props {
@@ -7,7 +7,39 @@ interface Props {
     total: number
 }
 
+const renderCenterLabel = (props: any) => {
+    const { viewBox } = props
+    // Calculate center from viewBox dimensions
+    const cx = viewBox.x + viewBox.width / 2
+    const cy = viewBox.y + viewBox.height / 2
+    const value = props.value
+
+    return (
+        <g>
+            <text 
+                x={cx} 
+                y={cy - 10} 
+                textAnchor="middle" 
+                dominantBaseline="middle"
+                style={{ fontSize: '32px', fontWeight: 'bold', fill: '#000' }}
+            >
+                {value}
+            </text>
+            <text 
+                x={cx} 
+                y={cy + 20} 
+                textAnchor="middle" 
+                dominantBaseline="middle"
+                style={{ fontSize: '14px', fill: '#6B7280' }}
+            >
+                Total tickets 
+            </text>
+        </g>
+    )
+}
+
 export const PieChartWithKey = ({data, total}: Props) => {
+
     return (
         <>
             <div className="tw-relative">
@@ -27,12 +59,14 @@ export const PieChartWithKey = ({data, total}: Props) => {
                                 <Cell key={`cell-${index}`} fill={entry.color} />
                             ))}
                         </Pie>
+                        <Label 
+                            value={total} 
+                            position="center" 
+                            content={renderCenterLabel}
+                        />
+                        <Tooltip/>
                     </PieChart>
                 </ResponsiveContainer>
-                <div className="tw-absolute tw-inset-0 tw-flex tw-flex-col tw-items-center tw-justify-center">
-                    <div className="tw-text-4xl tw-font-bold">{total}</div>
-                    <div className="tw-text-sm tw-text-gray-600">Total work item...</div>
-                </div>
             </div>
             <div className = "tw-space-y-2">
                 {

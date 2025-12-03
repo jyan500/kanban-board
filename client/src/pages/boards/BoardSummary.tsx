@@ -149,11 +149,29 @@ export const BoardSummary = () => {
                             <a href="#" className="tw-text-blue-600 hover:tw-underline">View all work items</a>
                         </p>
                         <div className = "tw-space-y-1">
-                            {statusData.map((item, index) => (
+                            {/* {statusData.map((item, index) => (
                                 <HorizontalProgressBarRow
                                     item={item}
                                 />
-                            ))}
+                            ))} */}
+                            <ResponsiveContainer width="100%" height={300}>
+                                <BarChart data={statusData}>
+                                    <XAxis 
+                                        dataKey="name" 
+                                        tick={{fontSize: 12}}
+                                        axisLine={false}
+                                        tickLine={false}
+                                    />
+                                    <YAxis 
+                                        tick={{fontSize: 12}}
+                                        axisLine={false}
+                                        tickLine={false}
+                                        allowDecimals={false}
+                                    />
+                                    <Tooltip />
+                                    <Bar dataKey="value" fill="#78909C" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
                         </div>
                     </div>
 
@@ -174,7 +192,7 @@ export const BoardSummary = () => {
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Team workload</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
                             Monitor the capacity of your team.{' '}
-                            <a href="#" className="tw-text-blue-600 hover:tw-underline">Reassign work items to get the right balance</a>
+                            <a href="#" className="tw-text-blue-600 hover:tw-underline">Reassign tickets to get the right balance</a>
                         </p>
 
                         <div className="tw-space-y-3">
