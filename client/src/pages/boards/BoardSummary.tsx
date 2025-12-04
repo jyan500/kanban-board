@@ -8,10 +8,11 @@ import { PRIORITY_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constan
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { HorizontalProgressBarRow } from "../../components/page-elements/HorizontalProgressBarRow"
-import { PieChartWithKey } from "../../components/page-elements/PieChartWithKey" 
+import { PieChartWithKey } from "../../components/charts/PieChartWithKey" 
 import { useLazyGetUserProfilesQuery } from "../../services/private/userProfile" 
 import { Avatar } from "../../components/page-elements/Avatar"
 import { displayUser, getUserInitials } from "../../helpers/functions"
+import { ChartTooltip } from "../../components/charts/ChartTooltip"
 import { IconUser } from "../../components/icons/IconUser"
 import { IconPencil } from "../../components/icons/IconPencil"
 import { IconCircleCheckmark } from "../../components/icons/IconCircleCheckmark"
@@ -40,12 +41,12 @@ export const BoardSummary = () => {
         .filter(item => item.statusId === 4)
         .reduce((sum, item) => sum + item.totalTickets, 0) ?? 0
 
-    const statusData: Array<ProgressBarItem> = data?.ticketsByStatus.map(item => {
+    const statusData: Array<PieChartItem> = data?.ticketsByStatus.map(item => {
         const status = statuses.find((status) => status.id === item.statusId)
         return {
             name: status ? status.name : `Status ${item.statusId}`,
             value: item.totalTickets,
-            percentage: totalTickets > 0 ? Math.round((item.totalTickets/totalTickets) * 100) : 0
+            color: "#78909C" // Dark Gray
         }
     }) ?? []
 
@@ -149,11 +150,6 @@ export const BoardSummary = () => {
                             <a href="#" className="tw-text-blue-600 hover:tw-underline">View all work items</a>
                         </p>
                         <div className = "tw-space-y-1">
-                            {/* {statusData.map((item, index) => (
-                                <HorizontalProgressBarRow
-                                    item={item}
-                                />
-                            ))} */}
                             <ResponsiveContainer width="100%" height={300}>
                                 <BarChart data={statusData}>
                                     <XAxis 
@@ -168,7 +164,7 @@ export const BoardSummary = () => {
                                         tickLine={false}
                                         allowDecimals={false}
                                     />
-                                    <Tooltip />
+                                    <Tooltip content={<ChartTooltip/>} />
                                     <Bar dataKey="value" fill="#78909C" radius={[4, 4, 0, 0]} />
                                 </BarChart>
                             </ResponsiveContainer>

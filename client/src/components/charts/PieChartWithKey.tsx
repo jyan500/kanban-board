@@ -1,6 +1,8 @@
 import React from "react"
 import { Cell, Label, ResponsiveContainer, PieChart, Pie, PieLabelRenderProps, Text, Tooltip  } from "recharts"
 import { PieChartItem } from "../../types/common"
+import { ColorKey } from "../charts/ColorKey"
+import { ChartTooltip } from "../charts/ChartTooltip"
 
 interface Props {
     data: Array<PieChartItem>
@@ -64,24 +66,11 @@ export const PieChartWithKey = ({data, total}: Props) => {
                             position="center" 
                             content={renderCenterLabel}
                         />
-                        <Tooltip/>
+                        <Tooltip  content={<ChartTooltip/>}/>
                     </PieChart>
                 </ResponsiveContainer>
             </div>
-            <div className = "tw-space-y-2">
-                {
-                    data.map((obj) => {
-                        return (
-                            <div key={`type_${obj.name}`} className = "tw-flex tw-flex-col tw-gap-y-2 tw-text-sm">
-                                <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-                                    <div className = "tw-w-3 tw-h-3 tw-rounded-sm" style={{backgroundColor: obj.color}}></div>
-                                    <span className = "tw-text-gray-700">{obj.name}: {obj.value}</span>
-                                </div>
-                            </div>
-                        )
-                    })
-                }
-            </div>
+            <ColorKey data={data}/>
         </>
     )
 }
