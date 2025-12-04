@@ -73,12 +73,14 @@ export const BoardSummary = () => {
         if (userProfiles){
             profile = userProfiles.data.find((userProfile: UserProfile) => userProfile.id === item.userId)
         }
+        const percentage = totalTickets > 0 ? Math.round((item.totalTickets / totalTickets) * 100) : 0
         return {
             name: !item.userId ? 'Unassigned' : displayUser(profile),
             value: item.totalTickets,
             initials: getUserInitials(profile),
             imageUrl: profile?.imageUrl,
-            percentage: totalTickets > 0 ? Math.round((item.totalTickets / totalTickets) * 100) : 0
+            percentage: percentage,
+            hoverText: `${percentage}% (${item.totalTickets}/${totalTickets} tickets)`,
         }
     }) ?? []
 
