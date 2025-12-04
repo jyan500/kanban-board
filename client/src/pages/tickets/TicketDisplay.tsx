@@ -133,7 +133,7 @@ export const TicketDisplay = () => {
 				const value = searchParams.get(key)
 				if (value) {
 					const numValue = Number(value)
-					resettedFilters[key as keyof TicketFilters] = value === "" ? null : (isNaN(numValue) ? value : numValue) as any
+					resettedFilters[key as keyof TicketFilters] = value === "" ? null : (isNaN(numValue) ? value : numValue) as number
 				}
 			})
 			
@@ -159,31 +159,6 @@ export const TicketDisplay = () => {
 		}
 	}, [isResetFilters])
 	
-	// if there are any search params, add those to the filter
-	useEffect(() => {
-		// Skip this if we're resetting - the reset useEffect handles it
-		if (isResetFilters) return
-		
-		const filterKeys = Object.keys(filters)
-		const filtersFromParams: Record<string, any> = {};
-		
-		filterKeys.forEach((key) => {
-			if (searchParams.get(key)) {
-				const value = searchParams.get(key) 
-				const numValue = Number(value);
-				filtersFromParams[key] = value === "" ? null : (isNaN(numValue) ? value : numValue);
-			}
-		})
-		
-		if (Object.keys(filtersFromParams).length > 0) {
-			const newFilters = {
-				...filters,
-				...filtersFromParams
-			}
-			dispatch(setFilters(newFilters));
-		}
-	}, [searchParams, isResetFilters])
-
 	const onSubmit = (values: FormValues) => {
 		// replace any null values with ""
 		const parsedValues = Object.fromEntries(
