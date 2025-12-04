@@ -7,7 +7,7 @@ import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Ticket, UserProfile, ViewMode } from "../../types/common"
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns"
-import { BoardFilters, setFilterButtonState, setFilters } from "../../slices/boardFilterSlice"
+import { BoardFilters, setFilters } from "../../slices/boardFilterSlice"
 import { ScheduleContainer } from "../../components/boards/ScheduleContainer"
 import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { useForm, FormProvider } from "react-hook-form"
@@ -19,7 +19,7 @@ export interface FormValues {
 
 export const BoardSchedule = () => {
 	const dispatch = useAppDispatch()
-	const { filters, filterButtonState } = useAppSelector((state) => state.boardFilter)
+	const { filters } = useAppSelector((state) => state.boardFilter)
 	const [ page, setPage ] = useState(1)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
     const [currentDate, setCurrentDate] = useState(new Date())
@@ -105,7 +105,6 @@ export const BoardSchedule = () => {
 					setCurrentDate={setCurrentDate}
 					viewMode={viewMode} 
 					periodStart={getCurrentPeriod.start}
-					filterButtonState={filterButtonState}
 					numFilters={numActiveFilters}
 					isTicketsLoading={isBoardTicketLoading}
 					periodEnd={getCurrentPeriod.end}

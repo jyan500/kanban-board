@@ -1,5 +1,4 @@
 import React, { useEffect } from "react"
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { useGetBoardSummaryQuery } from "../../services/private/board"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -18,6 +17,7 @@ import { IconPencil } from "../../components/icons/IconPencil"
 import { IconCircleCheckmark } from "../../components/icons/IconCircleCheckmark"
 import { IconCalendar } from "../../components/icons/IconCalendar"
 import { IconPaper } from "../../components/icons/IconPaper"
+import { BarChart } from "../../components/charts/BarChart"
 
 export const BoardSummary = () => {
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
@@ -44,6 +44,7 @@ export const BoardSummary = () => {
     const statusData: Array<PieChartItem> = data?.ticketsByStatus.map(item => {
         const status = statuses.find((status) => status.id === item.statusId)
         return {
+            id: item.statusId,
             name: status ? status.name : `Status ${item.statusId}`,
             value: item.totalTickets,
             color: "#78909C" // Dark Gray
@@ -53,6 +54,7 @@ export const BoardSummary = () => {
     const priorityData: Array<PieChartItem> = data?.ticketsByPriority.map(item => {
         const priority = priorities.find((priority) => priority.id === item.priorityId)
         return {
+            id: item.priorityId,
             name: priority ? priority.name : `Priority ${item.priorityId}`,
             value: item.totalTickets,
             color: priority ? PRIORITY_COLOR_MAP[priority.name] : '#999'
@@ -62,6 +64,7 @@ export const BoardSummary = () => {
     const typeData: Array<PieChartItem> = data?.ticketsByTicketType.map(item => {
         const ticketType = ticketTypes.find((ticketType) => ticketType.id === item.ticketTypeId)
         return {
+            id: item.ticketTypeId,
             name: ticketType ? ticketType.name : `Type ${item.ticketTypeId}`,
             value: item.totalTickets,
             color: ticketType ? TICKET_TYPE_COLOR_MAP[ticketType.name] : '#999'
@@ -152,24 +155,7 @@ export const BoardSummary = () => {
                             <a href="#" className="tw-text-blue-600 hover:tw-underline">View all work items</a>
                         </p>
                         <div className = "tw-space-y-1">
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={statusData}>
-                                    <XAxis 
-                                        dataKey="name" 
-                                        tick={{fontSize: 12}}
-                                        axisLine={false}
-                                        tickLine={false}
-                                    />
-                                    <YAxis 
-                                        tick={{fontSize: 12}}
-                                        axisLine={false}
-                                        tickLine={false}
-                                        allowDecimals={false}
-                                    />
-                                    <Tooltip content={<ChartTooltip/>} />
-                                    <Bar dataKey="value" fill="#78909C" radius={[4, 4, 0, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
+                            <BarChart data={statusData} searchKey={"statusId"} boardId={boardInfo?.id ?? 0}/>
                         </div>
                     </div>
 
@@ -181,7 +167,7 @@ export const BoardSummary = () => {
                             <a href="#" className="tw-text-blue-600 hover:tw-underline">How to manage priorities for spaces</a>
                         </p>
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
-                            <PieChartWithKey data={priorityData} total={totalTickets}/>
+                            <PieChartWithKey boardId={boardInfo?.id ?? 0} searchKey={"priorityId"} data={priorityData} total={totalTickets}/>
                         </div>
                     </div>
 
@@ -209,14 +195,16 @@ export const BoardSummary = () => {
 
                     {/* Types of Work */}
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
-                        <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Types of work</h2>
+                        <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Types of tickets</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
-                            Get a breakdown of work items by their types.{' '}
-                            <a href="#" className="tw-text-blue-600 hover:tw-underline">View all items</a>
+                            Get a breakdown of tickets by their types.{' '}
+                            <a href="#" className="tw-text-blue-600 hover:tw-underline">View all tickets</a>
                         </p>
 
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
                             <PieChartWithKey
+                                searchKey={"ticketTypeId"}
+                                boardId={boardInfo?.id ?? 0}
                                 data={typeData}
                                 total={totalTickets}
                             />

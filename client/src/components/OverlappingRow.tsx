@@ -17,7 +17,6 @@ type Props = {
 }
 
 export const OverlappingRow = ({imageUrls, imageSize, ignoreScreenSize=false}: Props) => {
-	console.log("ignoreScreenSize: ", ignoreScreenSize)
 	const { width, height } = useScreenSize()
 	const size = `${!ignoreScreenSize ? ((imageSize && imageSize in AVATAR_SIZES && width >= LG_BREAKPOINT) ? AVATAR_SIZES[imageSize] : AVATAR_SIZES.s) : AVATAR_SIZES[imageSize]}` 
 	const total = imageUrls.length

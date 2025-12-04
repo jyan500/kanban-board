@@ -19,7 +19,7 @@ export const SettingsCard = ({title, links}: Props) => {
 			<div className="tw-flex tw-flex-col tw-gap-y-0.5">
 			{
 				links.map((link) => (
-					<NavLink isActive={pathname === link.link} url={link.link} text={link.text}/>
+					<NavLink key={`settings_${link.link}`} isActive={pathname === link.link} url={link.link} text={link.text}/>
 				))
 			}
 			</div>	

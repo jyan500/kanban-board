@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { ticketApi, useGetTicketsQuery } from "../../services/private/ticket" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
-import { Outlet, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { Outlet, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { Ticket, OptionType } from "../../types/common"
 import { TICKETS } from "../../helpers/routes"
 import { PaginationRow } from "../../components/page-elements/PaginationRow"
@@ -15,7 +15,7 @@ import { Filters } from "../../components/tickets/Filters"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { Button } from "../../components/page-elements/Button"
-import { TicketFilters, setFilters, setFilterButtonState } from "../../slices/ticketFilterSlice"
+import { TicketFilters, setFilters } from "../../slices/ticketFilterSlice"
 import { IconFilter } from "../../components/icons/IconFilter"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { setSecondaryModalProps, setSecondaryModalType, toggleShowSecondaryModal } from "../../slices/secondaryModalSlice"
@@ -35,9 +35,10 @@ export const TicketDisplay = () => {
 	const [searchParams, setSearchParams] = useSearchParams()
 	const params = useParams<{ticketId: string}>()
 	const navigate = useNavigate()
-	const { filters, filterButtonState } = useAppSelector((state) => state.ticketFilter)
-	
-	// Count active filters for the badge
+	const location = useLocation()
+	const isResetFilters = location.state?.resetFilters
+	const { filters } = useAppSelector((state) => state.ticketFilter)
+
 	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
 
 	const {data: data, isLoading } = useGetTicketsQuery({
@@ -70,36 +71,118 @@ export const TicketDisplay = () => {
 	const registerOptions = {
 	}
 
-	/* when filters are changed, add to search params */
+	// /* when filters are changed, add to search params */
 	useEffect(() => {
-		const parsedValues = Object.fromEntries(
-			Object.entries(filters).map(([key, value]) => [key, value === null ? "" : value])
-		) as FormValues
-		setSearchParams(prev => ({
-			...Object.fromEntries(prev),
-			...parsedValues,
-			page: "1",
-		}))
+		const newSearchParams = new URLSearchParams(searchParams)
+    
+		// Update or remove filter params based on their values
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value === null) {
+				newSearchParams.delete(key)
+			} else {
+				newSearchParams.set(key, String(value))
+			}
+		})
+		
+		// Reset to page 1 when filters change
+		newSearchParams.set("page", "1")
+		
+		setSearchParams(newSearchParams)
+
 	}, [filters])
 
+	// Sync existing Redux filters to URL on mount (when not resetting)
+	useEffect(() => {
+		if (!isResetFilters) {
+			const hasFiltersInRedux = Object.values(filters).some(value => value !== null)
+			const hasFiltersInUrl = Object.keys(filters).some(key => searchParams.has(key))
+			
+			// If we have Redux filters but they're not in the URL, add them
+			if (hasFiltersInRedux && !hasFiltersInUrl) {
+				const newSearchParams = new URLSearchParams(searchParams)
+				
+				Object.entries(filters).forEach(([key, value]) => {
+					if (value !== null) {
+						newSearchParams.set(key, String(value))
+					} else {
+						newSearchParams.delete(key)
+					}
+				})
+				
+				setSearchParams(newSearchParams, { replace: true })
+			}
+		}
+	}, []) // Run only on mount
+
+	// if we are resetting filters (i.e when navigating to this page from another page with pre-existing search params)
+	useEffect(() => {
+		if (isResetFilters) {
+			
+			// First, reset all filters
+			const resettedFilters: TicketFilters = {
+				ticketTypeId: null,
+				statusId: null,
+				priorityId: null,
+				boardId: null,
+				sprintId: null
+			}
+			
+			// Apply any filters from the incoming search params
+			const filterKeys = Object.keys(resettedFilters)
+			filterKeys.forEach((key) => {
+				const value = searchParams.get(key)
+				if (value) {
+					const numValue = Number(value)
+					resettedFilters[key as keyof TicketFilters] = value === "" ? null : (isNaN(numValue) ? value : numValue) as any
+				}
+			})
+			
+			// Update Redux with the new filters
+			dispatch(setFilters(resettedFilters))
+			
+			// Clean up the URL to only include the new filters plus search/page params
+			const newSearchParams = new URLSearchParams()
+
+			// Keep non-filter params (searchBy, query, page)
+			if (searchParams.get("searchBy")) newSearchParams.set("searchBy", searchParams.get("searchBy") ?? "")
+			if (searchParams.get("query")) newSearchParams.set("query", searchParams.get("query") ?? "")
+			if (searchParams.get("page")) newSearchParams.set("page", searchParams.get("page") ?? "")
+			
+			// Add the new filter params
+			Object.entries(resettedFilters).forEach(([key, value]) => {
+				if (value !== null) {
+					newSearchParams.set(key, String(value))
+				}
+			})
+			
+			setSearchParams(newSearchParams, { replace: true })
+		}
+	}, [isResetFilters])
+	
 	// if there are any search params, add those to the filter
 	useEffect(() => {
-		const filterKeys = Object.keys(filters) // adjust keys as needed for your filters
+		// Skip this if we're resetting - the reset useEffect handles it
+		if (isResetFilters) return
+		
+		const filterKeys = Object.keys(filters)
 		const filtersFromParams: Record<string, any> = {};
+		
 		filterKeys.forEach((key) => {
-			if (searchParams.get(key)){
+			if (searchParams.get(key)) {
 				const value = searchParams.get(key) 
 				const numValue = Number(value);
 				filtersFromParams[key] = value === "" ? null : (isNaN(numValue) ? value : numValue);
 			}
 		})
+		
 		if (Object.keys(filtersFromParams).length > 0) {
-			dispatch(setFilters({
+			const newFilters = {
 				...filters,
 				...filtersFromParams
-			}));
+			}
+			dispatch(setFilters(newFilters));
 		}
-	}, [searchParams])
+	}, [searchParams, isResetFilters])
 
 	const onSubmit = (values: FormValues) => {
 		// replace any null values with ""
@@ -140,7 +223,6 @@ export const TicketDisplay = () => {
 		return (
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<FilterButton 
-					filterButtonState={filterButtonState}
 					numFilters={numActiveFilters}
 					onClick={() => {
 						dispatch(setSecondaryModalType("TICKET_FILTER_MODAL"))

@@ -10,7 +10,7 @@ import { useLazyGetUserQuery } from "../../services/private/userProfile"
 import { notificationApi } from "../../services/private/notification"
 import { displayUser } from "../../helpers/functions"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
-import { setFilters, setFilterButtonState } from "../../slices/notificationFilterSlice"
+import { setFilters } from "../../slices/notificationFilterSlice"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { LoadingButton } from "../../components/page-elements/LoadingButton"
 import { Button } from "../../components/page-elements/Button"
@@ -27,7 +27,7 @@ interface FormValues {
 export const Filters = () => {
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
-	const { filters, filterButtonState } = useAppSelector((state) => state.notificationFilter)
+	const { filters } = useAppSelector((state) => state.notificationFilter)
 	const dispatch = useAppDispatch()
 	const defaultForm: FormValues = {
 		notificationType: "",
@@ -79,9 +79,6 @@ export const Filters = () => {
 			userId: values.user.value !== "" ? Number(values.user.value) : null
 		}
 		dispatch(setFilters(newFilterValues))
-		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
-		const filtersApplied = !(values.notificationType === "" && values.dateFrom === "" && values.dateTo === "" && values.user.value === "" && values.isUnread === false)
-		dispatch(setFilterButtonState(filtersApplied))
 		dispatch(toggleShowSecondaryModal(false))
 		dispatch(setSecondaryModalProps({}))
 		dispatch(setSecondaryModalType(undefined))
@@ -160,7 +157,6 @@ export const Filters = () => {
 					}
 					dispatch(setFilters(resetFilters))
 					dispatch(notificationApi.util.invalidateTags(["Notifications"]))
-					dispatch(setFilterButtonState(false))
 				}}>Clear Filters</Button>	
 			</div>
 		</form>

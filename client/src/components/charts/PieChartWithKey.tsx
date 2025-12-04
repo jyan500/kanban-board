@@ -1,11 +1,25 @@
-import React from "react"
-import { Cell, Label, ResponsiveContainer, PieChart, Pie, PieLabelRenderProps, Text, Tooltip  } from "recharts"
+import React, {useState} from "react"
+import { 
+    Cell, 
+    Label, 
+    ResponsiveContainer, 
+    PieChart, 
+    Pie, 
+    PieLabelRenderProps, 
+    Sector, 
+    Text, 
+    Tooltip  
+} from "recharts"
 import { PieChartItem } from "../../types/common"
 import { ColorKey } from "../charts/ColorKey"
 import { ChartTooltip } from "../charts/ChartTooltip"
+import { useNavigate } from "react-router-dom"
+import { TICKETS } from "../../helpers/routes"
 
 interface Props {
     data: Array<PieChartItem>
+    boardId: number
+    searchKey: string
     total: number
 }
 
@@ -40,8 +54,40 @@ const renderCenterLabel = (props: any) => {
     )
 }
 
-export const PieChartWithKey = ({data, total}: Props) => {
+const renderActiveShape = (props: any) => {
+    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props
+    return (
+        <g>
+            <Sector
+                cx={cx}
+                cy={cy}
+                innerRadius={innerRadius}
+                outerRadius={outerRadius + 5} // Make it slightly larger on hover
+                startAngle={startAngle}
+                endAngle={endAngle}
+                fill={fill}
+                style={{ cursor: 'pointer' }}
+            />
+        </g>
+    )
+}
 
+export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+    const navigate = useNavigate()
+
+    const handlePieClick = (data: any, index: number) => {
+        navigate(`${TICKETS}?boardId=${boardId}&${searchKey}=${data.id}`)
+    }
+
+    const handleMouseEnter = (index: number) => {
+        setHoveredIndex(index)
+    }
+
+    const handleMouseLeave = () => {
+        setHoveredIndex(null)
+    }
+    
     return (
         <>
             <div className="tw-relative">
@@ -56,9 +102,20 @@ export const PieChartWithKey = ({data, total}: Props) => {
                             dataKey="value"
                             startAngle={90}
                             endAngle={-270}
+                            onClick={handlePieClick}
                         >
                             {data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                <Cell 
+                                    key={`cell-${index}`} 
+                                    fill={entry.color} 
+                                    style={{ 
+                                        cursor: 'pointer',
+                                        opacity: hoveredIndex === null || hoveredIndex === index ? 1 : 0.5,
+                                        transition: 'opacity 0.2s ease'
+                                    }} 
+                                    onMouseEnter={() => handleMouseEnter(index)}
+                                    onMouseLeave={handleMouseLeave}
+                                />
                             ))}
                         </Pie>
                         <Label 
@@ -70,7 +127,14 @@ export const PieChartWithKey = ({data, total}: Props) => {
                     </PieChart>
                 </ResponsiveContainer>
             </div>
-            <ColorKey data={data}/>
+            <ColorKey 
+                boardId={boardId}
+                searchKey={searchKey}
+                hoveredIndex={hoveredIndex} 
+                handleMouseEnter={handleMouseEnter}
+                handleMouseLeave={handleMouseLeave}
+                data={data}
+            />
         </>
     )
 }

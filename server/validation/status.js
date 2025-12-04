@@ -94,6 +94,15 @@ const checkFieldUniqueToStatuses = async (fieldName, field, organizationId, id=n
 	}
 }
 
+/* ensure that the amount of statuses for this organization has not exceeded the status limit */
+const checkStatusLimit = async (organizationId) => {
+	try {
+	}
+	catch (err) {
+		console.error(`Error while validating statuses: ${err.message}`)
+	}
+}
+
 module.exports = {
 	validateGet: statusValidator("get"),
 	validateCreate: statusValidator("create"),

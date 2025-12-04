@@ -12,7 +12,6 @@ export interface NotificationFilters {
 
 interface NotificationFilterState {
 	filters: NotificationFilters
-	filterButtonState: boolean
 }
 
 const initialState: NotificationFilterState = {
@@ -23,7 +22,6 @@ const initialState: NotificationFilterState = {
 		dateTo: null,
 		isUnread: null,
 	},
-	filterButtonState: false,
 }
 
 export const notificationFilterSlice = createSlice({
@@ -32,9 +30,6 @@ export const notificationFilterSlice = createSlice({
 	reducers: {
 		setFilters(state, action: PayloadAction<NotificationFilters>){
 			state.filters = action.payload
-		},
-		setFilterButtonState(state, action: PayloadAction<boolean>){
-			state.filterButtonState = action.payload
 		},
 	},
 	extraReducers: (builder) => {
@@ -46,7 +41,6 @@ export const notificationFilterSlice = createSlice({
 
 export const {
 	setFilters,
-	setFilterButtonState,
 } = notificationFilterSlice.actions
 
 export const notificationFilterReducer = notificationFilterSlice.reducer

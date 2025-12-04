@@ -7,7 +7,6 @@ interface ChartTooltipProps {
         name: string
         value: number
         payload: PieChartItem
-        
     }>
 }
 

@@ -281,6 +281,7 @@ export interface ProgressBarItem {
 }
 
 export interface PieChartItem {
+    id: number
 	name: string
 	value: number
 	color: string
