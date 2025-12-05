@@ -231,8 +231,6 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
 		.where(db.raw("DATE(tickets.created_at)"), ">=", sevenDaysAgo)
 		.select("tickets.id as id")
 
-		console.log("ticketsCreated: ", ticketsCreated)
-
 		/* Get the count of tickets that were updated in the last 7 days */
 		const ticketHistoryQuery = db('entity_history')
 		.select("entity_id as ticket_id")
@@ -255,8 +253,6 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
 		.whereNotNull("tickets.due_date")
 		.where(db.raw('DATE(tickets.due_date)'), ">=", now).andWhere(db.raw('DATE(tickets.due_date)'), "<=", sevenDaysFromNow)
 		.select("tickets.id as id")
-
-		console.log("ticketsDue: ", ticketsDue)
 
 		/* Get the count of tickets that were completed in the last 7 days */
 
