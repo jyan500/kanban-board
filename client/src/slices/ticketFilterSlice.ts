@@ -15,7 +15,6 @@ export interface TicketFilters {
 
 interface TicketFilterState {
 	filters: TicketFilters
-	filterButtonState: boolean
 }
 
 const initialState: TicketFilterState = {
@@ -26,7 +25,6 @@ const initialState: TicketFilterState = {
 		boardId: null,
 		sprintId: null
 	},
-	filterButtonState: false,
 }
 
 export const ticketFilterSlice = createSlice({
@@ -35,9 +33,6 @@ export const ticketFilterSlice = createSlice({
 	reducers: {
 		setFilters(state, action: PayloadAction<TicketFilters>){
 			state.filters = action.payload	
-		},
-		setFilterButtonState(state, action: PayloadAction<boolean>){
-			state.filterButtonState = action.payload
 		},
 	},
     extraReducers: (builder) => {
@@ -49,6 +44,5 @@ export const ticketFilterSlice = createSlice({
 
 export const { 
 	setFilters,
-	setFilterButtonState,
 } = ticketFilterSlice.actions
 export const ticketFilterReducer = ticketFilterSlice.reducer 

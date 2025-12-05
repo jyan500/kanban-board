@@ -90,6 +90,18 @@ export interface Board {
 	percentComplete?: number
 }
 
+export interface BoardSummary {
+	totalTickets: number
+	ticketsByAssignee: Array<{userId: number, totalTickets: number}>
+	ticketsByPriority: Array<{priorityId: number, totalTickets: number}>
+	ticketsByStatus: Array<{statusId: number, totalTickets: number}>
+	ticketsByTicketType: Array<{ticketTypeId: number, totalTickets: number}>
+	ticketsDue: Array<number>
+	ticketsCreated: Array<number>
+	ticketsUpdated: Array<number>
+	ticketsCompleted: Array<number>
+}
+
 export interface Sprint {
 	id: number
 	name: string
@@ -261,6 +273,19 @@ export type GroupByElement = {
 	id: number
 	name: string
 	[property: string]: any
+}
+
+export interface ProgressBarItem {
+	name: string
+	percentage: number
+	[key: string]: any
+}
+
+export interface PieChartItem {
+	name: string
+	value: number
+	color: string
+	[key: string]: any
 }
 
 export type ViewMode = 'week' | 'month'

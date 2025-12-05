@@ -9,7 +9,7 @@ import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { SearchToolBar } from "../../components/tickets/SearchToolBar"
 import { useForm, FormProvider } from "react-hook-form"
 import { withUrlParams } from "../../helpers/functions"
-import { setFilters, setFilterButtonState, NotificationFilters } from "../../slices/notificationFilterSlice"
+import { setFilters, NotificationFilters } from "../../slices/notificationFilterSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { Avatar } from "../../components/page-elements/Avatar"
 import { NotificationRow } from "../../components/notifications/NotificationRow"
@@ -43,7 +43,7 @@ export const NotificationDisplay = () => {
 	const [ selectedIds, setSelectedIds ] = useState<Array<number>>([])
 	const [ bulkEditNotifications, { error: bulkEditNotificationsError, isLoading: isBulkEditNotificationsLoading }] = useBulkEditNotificationsMutation()
     const [ updateNotification, {error: updateNotificationError, isLoading: isUpdateNotificationLoading}] = useUpdateNotificationMutation()
-	const { filters, filterButtonState } = useAppSelector((state) => state.notificationFilter)
+	const { filters } = useAppSelector((state) => state.notificationFilter)
 	
 	// Count active filters for the badge
 	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
@@ -193,7 +193,6 @@ export const NotificationDisplay = () => {
 		return (
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<FilterButton 
-					filterButtonState={filterButtonState}
 					numFilters={numActiveFilters}
 					onClick={() => {
 						dispatch(setSecondaryModalType("NOTIFICATION_FILTER_MODAL"))

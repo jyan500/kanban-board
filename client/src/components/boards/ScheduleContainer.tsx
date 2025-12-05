@@ -439,7 +439,6 @@ interface ScheduleContainerSearchBarProps {
     currentPage: number
     onSubmit: (values: FormValues) => void
     groupBy: string
-    filterButtonState: boolean
     numFilters: number
     onGroupBy: (option: GroupByOptionsKey) => void
     boardId: number
@@ -451,7 +450,6 @@ const ScheduleContainerSearchBar = ({
     currentPage,
     onSubmit,
     groupBy,
-    filterButtonState,
     numFilters,
     onGroupBy,
     boardId,
@@ -493,7 +491,6 @@ const ScheduleContainerSearchBar = ({
                                         dispatch(toggleShowSecondaryModal(true))
                                     }}
                                     numFilters={numFilters}
-                                    filterButtonState={filterButtonState}
                                 />
                             </div>
                         )
@@ -522,7 +519,6 @@ interface ScheduleContainerProps {
     setViewMode: (mode: ViewMode) => void
     ticketsData?: ListResponse<Ticket> 
     isTicketsLoading?: boolean
-    filterButtonState: boolean
     numFilters: number
     onSubmit: (values: FormValues) => void
     boardId: number
@@ -537,7 +533,6 @@ export const ScheduleContainer = ({
     currentPage,
     setViewMode, 
     setPage,
-    filterButtonState,
     viewMode, 
     onSubmit,
     numFilters,
@@ -619,7 +614,6 @@ export const ScheduleContainer = ({
                             onSubmit={onSubmit}
                             groupBy={groupBy}
                             onGroupBy={onGroupBy}
-                            filterButtonState={filterButtonState}
                         />
                     </FormProvider>
                     <div className="tw-text-sm tw-text-gray-600 tw-flex tw-gap-x-2 tw-items-center">

@@ -31,7 +31,7 @@ type FormValues = {
 export const ToolBar = () => {
 	const dispatch = useAppDispatch()
 	const { board, boardInfo: primaryBoardInfo, tickets, statusesToDisplay, groupBy } = useAppSelector((state) => state.board)
-	const { filterButtonState, searchTerm, filters } = useAppSelector((state) => state.boardFilter)
+	const { searchTerm, filters } = useAppSelector((state) => state.boardFilter)
 	
 	// Count active filters for the badge
 	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
@@ -108,7 +108,6 @@ export const ToolBar = () => {
 					</form>
 				</FormProvider>
 				<FilterButton 
-					filterButtonState={filterButtonState}
 					numFilters={numActiveFilters}
 					onClick={() => {
 						dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))

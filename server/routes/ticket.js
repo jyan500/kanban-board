@@ -112,12 +112,18 @@ router.get("/", async (req, res, next) => {
 				}
 			}
 			if (req.query.assignedToUser){
-				queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
-				.join("users", "tickets_to_users.user_id", "=", "users.id")
-				.where("users.id", req.query.assignedToUser)
-				// if req.query.isWatching, only get the tickets that the user is watching
-				.where("tickets_to_users.is_watcher", req.query.isWatching == "true" ? true : false)
-				.where("tickets_to_users.is_mention", false)
+				if (req.query.assignedToUser === "unassigned"){
+					queryBuilder.leftJoin("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
+					.where("tickets_to_users.id", null)
+				}
+				else {
+					queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
+					.join("users", "tickets_to_users.user_id", "=", "users.id")
+					.where("users.id", req.query.assignedToUser)
+					// if req.query.isWatching, only get the tickets that the user is watching
+					.where("tickets_to_users.is_watcher", req.query.isWatching == "true" ? true : false)
+					.where("tickets_to_users.is_mention", false)
+				}
 			}
 			if (req.query.sortBy && req.query.order){
 				if (req.query.sortBy === "createdAt"){

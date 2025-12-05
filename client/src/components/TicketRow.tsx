@@ -1,6 +1,7 @@
 import React, {useState} from "react"
 import { Ticket } from "../types/common"
-import { colorMap, priorityIconMap, PriorityIcon, TicketTypeIcon } from "./Ticket" 
+import { priorityIconMap, PriorityIcon, TicketTypeIcon } from "./Ticket" 
+import { PRIORITY_COLOR_MAP } from "../helpers/constants"
 import { CgProfile } from "react-icons/cg"
 import { IconContext } from "react-icons"
 import { useAppSelector } from "../hooks/redux-hooks"
@@ -46,7 +47,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 				<div>
 					{priority && priority in priorityIconMap ? 
 					(
-						<PriorityIcon type={priority} color={priority in colorMap ? colorMap[priority] : ""} className = "--l-icon --icon-thumb"/>
+						<PriorityIcon type={priority} color={priority in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priority] : ""} className = "--l-icon --icon-thumb"/>
 					)
 					: <></>}	
 				</div>

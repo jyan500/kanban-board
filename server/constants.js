@@ -15,6 +15,8 @@ const MAX_COLUMN_LIMIT = 50
 const MIN_BOARD_TICKET_LIMIT = 1
 const MAX_BOARD_TICKET_LIMIT = 1000
 
+const ORG_STATUS_LIMIT = 10
+
 const EXCEEDED_MESSAGE = "You have exceeded the maximum amount of attempts. Please try again later."
 
 module.exports = {
@@ -24,5 +26,6 @@ module.exports = {
 	MAX_COLUMN_LIMIT,
 	MIN_BOARD_TICKET_LIMIT,
 	MAX_BOARD_TICKET_LIMIT,
+	ORG_STATUS_LIMIT,
 	EXCEEDED_MESSAGE,
 }

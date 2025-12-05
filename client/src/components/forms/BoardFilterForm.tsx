@@ -5,7 +5,7 @@ import { Controller, useForm, FormProvider } from "react-hook-form"
 import { AsyncSelect, LoadOptionsType } from "../AsyncSelect"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { LoadingButton } from "../page-elements/LoadingButton"
-import { setBulkEditFilters, setBulkEditFilterButtonState, setFilters, setFilterButtonState } from "../../slices/boardFilterSlice"
+import { setBulkEditFilters, setFilters } from "../../slices/boardFilterSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { useLazyGetUserProfilesQuery, useGetUserBoardFiltersQuery, useUpdateUserBoardFiltersMutation } from "../../services/private/userProfile"
 import { useLazyGetSprintQuery } from "../../services/private/sprint"
@@ -96,7 +96,6 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
 		const { assignee, sprint, ...otherValues} = values
 		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.assignee?.value === "" && values.sprint?.value === "")
-		isBulkEdit ? dispatch(setBulkEditFilterButtonState(filtersApplied)) : dispatch(setFilterButtonState(filtersApplied))
 		dispatch(toggleShowSecondaryModal(false))
 		dispatch(setSecondaryModalProps({}))
 		dispatch(setSecondaryModalType(undefined))
@@ -128,7 +127,6 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 		}
 		isBulkEdit ? dispatch(setBulkEditFilters(resetFilters)) : dispatch(setFilters(resetFilters))
 		dispatch(boardApi.util.invalidateTags(["BoardTickets"]))
-		isBulkEdit ? dispatch(setBulkEditFilterButtonState(false)) : dispatch(setFilterButtonState(false))
 	}
 
 	const setAsDefault = async () => {

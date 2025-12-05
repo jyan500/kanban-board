@@ -13,7 +13,7 @@ import { LoadingButton } from "../page-elements/LoadingButton"
 import { SearchToolBar } from "./SearchToolBar"
 import { Filters } from "../bulk-actions/Filters"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
-import { BoardFilters, setFilterButtonState, setFilters } from "../../slices/boardFilterSlice"
+import { BoardFilters, setFilters } from "../../slices/boardFilterSlice"
 import { Button} from "../page-elements/Button"
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
@@ -48,11 +48,10 @@ export const TicketTable = ({
 }: Props) => {
 	const [ page, setPage ] = useState(1)
 
-	const { filters, bulkEditFilters, bulkEditFilterButtonState, filterButtonState: boardFilterButtonState } = useAppSelector((state) => state.boardFilter)
+	const { filters, bulkEditFilters} = useAppSelector((state) => state.boardFilter)
 
 	// if we're coming from the boards table, use the filters. Otherwise, use bulkEditFilters
 	const selectedFilters = bulkEditAction != undefined ? filters : bulkEditFilters
-	const filterButtonState = bulkEditAction != undefined ? boardFilterButtonState : bulkEditFilterButtonState
 	
 	// Count active filters for the badge
 	const numActiveFilters = Object.values(selectedFilters).filter(value => value !== null).length
@@ -133,7 +132,6 @@ export const TicketTable = ({
 					additionalButtons={() => {
 						return (
 							<FilterButton 
-								filterButtonState={filterButtonState}
 								numFilters={numActiveFilters}
 								onClick={() => {
 									dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))

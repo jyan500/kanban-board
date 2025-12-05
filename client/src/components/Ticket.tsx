@@ -27,7 +27,7 @@ import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdo
 import { useClickOutside } from "../hooks/useClickOutside" 
 import { useScreenSize } from "../hooks/useScreenSize"
 import { getUserInitials } from "../helpers/functions"
-import { LG_BREAKPOINT } from "../helpers/constants"
+import { LG_BREAKPOINT, PRIORITY_COLOR_MAP } from "../helpers/constants"
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
 	"Low": <LowPriorityIcon/>,	
@@ -73,12 +73,6 @@ export const TicketTypeIcon = ({type, className}: TicketTypeIconProps) => {
 	return <div></div>
 }
 
-
-export const colorMap: {[key: string]: string} = {
-	"Low": "var(--bs-primary)",
-	"Medium": "var(--bs-warning)",
-	"High": "var(--bs-danger)"	
-}
 
 type PropType = {
 	ticket: TicketType
@@ -130,7 +124,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 						<TicketTypeIcon type = {ticketType} className = {"tw-shrink-0 tw-w-5 tw-h-5"}/>
 					) : <></>}
 					{
-						priority ? (<PriorityIcon type={priority} color={priority in colorMap ? colorMap[priority] : ""} className={"tw-shrink-0 tw-w-5 tw-h-5"}/>) : <></>
+						priority ? (<PriorityIcon type={priority} color={priority in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priority] : ""} className={"tw-shrink-0 tw-w-5 tw-h-5"}/>) : <></>
 					}
 				</div>
 				<div className = {"tw-inline-block tw-text-left"}>

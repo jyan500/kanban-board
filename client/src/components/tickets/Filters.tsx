@@ -11,7 +11,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { ticketApi } from "../../services/private/ticket"
 import { OptionType } from "../../types/common"
-import { setFilters, setFilterButtonState } from "../../slices/ticketFilterSlice"
+import { setFilters } from "../../slices/ticketFilterSlice"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { Button } from "../page-elements/Button"
@@ -29,7 +29,7 @@ export const Filters = () => {
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
-	const { filters, filterButtonState } = useAppSelector((state) => state.ticketFilter)
+	const { filters } = useAppSelector((state) => state.ticketFilter)
 	const dispatch = useAppDispatch()
 	const defaultForm: FormValues = {
 		ticketTypeId: 0,
@@ -89,9 +89,6 @@ export const Filters = () => {
 			sprintId: values.sprint && values.sprint.value !== "" ? Number(values.sprint.value) : null,
 		}
 		dispatch(setFilters(newFilterValues))
-		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
-		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.board.value === "" && values.sprint.value === "")
-		dispatch(setFilterButtonState(filtersApplied))
 		dispatch(toggleShowSecondaryModal(false))
 		dispatch(setSecondaryModalProps({}))
 		dispatch(setSecondaryModalType(undefined))
@@ -189,7 +186,6 @@ export const Filters = () => {
 					}
 					dispatch(setFilters(resetFilters))
 					dispatch(ticketApi.util.invalidateTags(["Tickets"]))
-					dispatch(setFilterButtonState(false))
 				}}>Clear Filters</Button>	
 			</div>
 		</form>

@@ -11,7 +11,7 @@ import {
 	BOARD_ACTIVITY_URL,
 	BOARD_FILTER_URL,
 } from "../../helpers/urls" 
-import { CustomError, GenericObject, Board, ListResponse, Project, Status, Ticket } from "../../types/common" 
+import { CustomError, GenericObject, Board, BoardSummary, ListResponse, Project, Status, Ticket } from "../../types/common" 
 import { privateApi } from "../private"
 import { parseURLParams } from "../../helpers/functions" 
 
@@ -209,7 +209,7 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["BoardFilters"]
 		}),
-		getBoardSummary: builder.query<Record<string, any>, {boardId: number}>({
+		getBoardSummary: builder.query<BoardSummary, {boardId: number}>({
 			query: ({boardId}) => ({
 				url: BOARD_SUMMARY_URL(boardId),
 				method: "GET"

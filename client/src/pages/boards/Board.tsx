@@ -21,7 +21,7 @@ import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPlaceholder"
 import { BoardPlaceholder } from "../../components/placeholders/BoardPlaceholder"
 import { TabButton } from "../../components/page-elements/TabButton"
-import { setFilters, setFilterIdMap, setFilterButtonState, BoardFilters } from "../../slices/boardFilterSlice"
+import { setFilters, setFilterIdMap, BoardFilters } from "../../slices/boardFilterSlice"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
@@ -87,9 +87,6 @@ export const Board = () => {
 				...(statusId !== 0 ? { statusId: statusId } : {}),	
 				...(priorityId !== 0 ? { priorityId: priorityId } : {}),	
 			}
-			// if there are any filters applied, set filter button state to 1 to show that filters have been applied
-			const filtersApplied = !(ticketTypeId === 0 && priorityId === 0 && statusId === 0 && assigneeId === 0 && sprintId === 0)
-			dispatch(setFilterButtonState(filtersApplied))
 			dispatch(setFilters(newFilters))
 		}
 
