@@ -217,6 +217,7 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
 	try {
 		const board = await db("boards").where("id", req.params.boardId).first()
 
+		const completedStatuses = await db("statuses").where("is_completed", true).where("is_active", true).where("organization_id", req.user.organization)
 		const sevenDaysAgo = startOfDay(subDays(new Date(), 7))
 		const sevenDaysFromNow = startOfDay(addDays(new Date(), 7))
 		const now = startOfDay(new Date())
@@ -228,10 +229,11 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
 		const ticketsCreated = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
 		.where("tickets_to_boards.board_id", req.params.boardId)
 		.where(db.raw("DATE(tickets.created_at)"), ">=", sevenDaysAgo)
-		.count("tickets.id as totalTickets")
-		.first()
+		.select("tickets.id as id")
 
-		/* Get the count of tickets that were updated in ine last 7 days */
+		console.log("ticketsCreated: ", ticketsCreated)
+
+		/* Get the count of tickets that were updated in the last 7 days */
 		const ticketHistoryQuery = db('entity_history')
 		.select("entity_id as ticket_id")
 		.where('entity_type', 'tickets')
@@ -244,16 +246,40 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
 		.whereIn('parent_entity_id', ticketIds)
 		.where(db.raw('DATE(entity_history.changed_at)'), ">=", sevenDaysAgo)
 
-		const unionTickets =  ticketHistoryQuery.union(ticketEntityHistoryQuery).as('totalTickets');
-		const ticketsUpdated = await db.countDistinct('ticket_id as totalTickets').from(unionTickets).as("totalTickets").first()
+		const ticketsUpdated =  await ticketHistoryQuery.union(ticketEntityHistoryQuery).as('totalTickets');
+		// const ticketsUpdated = await db.countDistinct('ticket_id as totalTickets').from(unionTickets).as("totalTickets").first()
 		/* TODO: Get the count of tickets that were completed in ine last 7 days */
 		/* Get the count of tickets that have a due date AND are due within the next 7 days*/
 		const ticketsDue = await db("tickets").join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
 		.where("tickets_to_boards.board_id", req.params.boardId)
 		.whereNotNull("tickets.due_date")
 		.where(db.raw('DATE(tickets.due_date)'), ">=", now).andWhere(db.raw('DATE(tickets.due_date)'), "<=", sevenDaysFromNow)
-		.count("tickets.id as totalTickets")
-		.first()
+		.select("tickets.id as id")
+
+		console.log("ticketsDue: ", ticketsDue)
+
+		/* Get the count of tickets that were completed in the last 7 days */
+
+		// create the placeholders ?,?,? for the raw json extract query
+		const placeholders = completedStatuses.map(() => '?').join(', ');
+		const ticketsCompleted = await db("entity_history")
+		.where("entity_type", "tickets")
+		.whereIn("entity_id", ticketIds)
+		/* 
+			the statement below extracts from the change details column, and searches for "status_id" and "to" 
+			like in the sample below
+			{status_id: {to: 5, from: 4}}
+
+			for example, searching for statuses that were changed to any completed status
+		*/
+		.whereRaw(
+			db.client.config.client.includes('mysql')
+			  ? `JSON_UNQUOTE(JSON_EXTRACT(change_details, '$.status_id.to')) IN (${placeholders})`
+			  : `change_details->'status_id'->>'to' IN (${placeholders})`,
+			completedStatuses.map((status) => status.id)
+		)
+		.where(db.raw("DATE(entity_history.changed_at)"), ">=", sevenDaysAgo)
+
 		/* 
 			Get the counts of tickets on the board aggregated by statuses 
 		*/
@@ -298,13 +324,14 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
 
 		res.json({
 			totalTickets: ticketIds.length,
-			ticketsDue: ticketsDue,
-			ticketsCreated: ticketsCreated,
 			ticketsByAssignee: ticketsByAssignee,
 			ticketsByPriority: ticketsByPriority,
 			ticketsByTicketType: ticketsByTicketType,
-			ticketsUpdated: ticketsUpdated,
 			ticketsByStatus: ticketsByStatus,
+			ticketsUpdated: ticketsUpdated.map((unionObj) => unionObj.ticket_id),
+			ticketsCompleted: ticketsCompleted.map((history) => history.entity_id),
+			ticketsDue: ticketsDue.map((ticket) => ticket.id),
+			ticketsCreated: ticketsCreated.map((ticket) => ticket.id),
 		})
 	}
 	catch (err) {

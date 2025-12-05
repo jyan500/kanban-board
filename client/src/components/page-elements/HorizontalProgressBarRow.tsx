@@ -1,16 +1,19 @@
 import React from "react"
 import { ProgressBarItem } from "../../types/common"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
+import { Link } from "react-router-dom"
+import { TICKETS } from "../../helpers/routes"
 
 interface Props {
     icon?: React.ReactNode
     item: ProgressBarItem
     showTooltip?: boolean
+    link:  string 
 }
 
-export const HorizontalProgressBarRow = ({icon, item, showTooltip=true}: Props) => {
+export const HorizontalProgressBarRow = ({icon, item, link, showTooltip=true}: Props) => {
     return (
-        <div className = "tw-group">
+        <Link to={link} state={{resetFilters: true}} className = "tw-group">
             <div className="tw-flex tw-items-center tw-gap-2">
                 {icon ? <span className="tw-text-sm group-hover:tw-opacity-80">{icon}</span> : null}
                 <span className="group-hover:tw-opacity-80 tw-text-sm">{item.name}</span>
@@ -30,6 +33,6 @@ export const HorizontalProgressBarRow = ({icon, item, showTooltip=true}: Props) 
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     )
 }

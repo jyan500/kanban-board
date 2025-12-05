@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import { useGetBoardSummaryQuery } from "../../services/private/board"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
+import { useNavigate, Link } from "react-router-dom"
 import { BoardSummary as BoardSummaryType, ProgressBarItem, PieChartItem, UserProfile } from "../../types/common"
 import { PRIORITY_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
@@ -18,8 +19,12 @@ import { IconCircleCheckmark } from "../../components/icons/IconCircleCheckmark"
 import { IconCalendar } from "../../components/icons/IconCalendar"
 import { IconPaper } from "../../components/icons/IconPaper"
 import { BarChart } from "../../components/charts/BarChart"
+import { SummaryCard } from "../../components/charts/SummaryCard"
+import { TICKETS } from "../../helpers/routes"
+
 
 export const BoardSummary = () => {
+    const navigate = useNavigate()
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
     const { statuses } = useAppSelector((state) => state.status)
     const { priorities } = useAppSelector((state) => state.priority)
@@ -32,14 +37,13 @@ export const BoardSummary = () => {
         // get all user profiles from the tickets to assignees
         if (data && !isLoading){
             const userIds = data.ticketsByAssignee.map((obj) => obj.userId)
-            trigger({userIds: userIds})
+            if (userIds.length){
+                trigger({userIds: userIds})
+            }
         }
     }, [data, isLoading])
     
     const totalTickets = data?.totalTickets ?? 0
-    const completedTickets = data?.ticketsByStatus
-        .filter(item => item.statusId === 4)
-        .reduce((sum, item) => sum + item.totalTickets, 0) ?? 0
 
     const statusData: Array<PieChartItem> = data?.ticketsByStatus.map(item => {
         const status = statuses.find((status) => status.id === item.statusId)
@@ -78,6 +82,7 @@ export const BoardSummary = () => {
         }
         const percentage = totalTickets > 0 ? Math.round((item.totalTickets / totalTickets) * 100) : 0
         return {
+            id: item.userId,
             name: !item.userId ? 'Unassigned' : displayUser(profile),
             value: item.totalTickets,
             initials: getUserInitials(profile),
@@ -86,6 +91,16 @@ export const BoardSummary = () => {
             hoverText: `${percentage}% (${item.totalTickets}/${totalTickets} tickets)`,
         }
     }) ?? []
+
+    const encodeIds = (ids: Array<number>) => {
+        const params = new URLSearchParams();
+        params.append('ticketIds', ids.join(','));
+        return params.toString();
+    }
+
+    const constructTicketLink = (ids: Array<number>) => {
+        return `${TICKETS}?${encodeIds(ids ?? [])}`
+    }
 
     return (
         isLoading && !data ? 
@@ -96,53 +111,32 @@ export const BoardSummary = () => {
             <div className="tw-max-w-7xl tw-mx-auto tw-space-y-6">
                 {/* Top Stats Cards */}
                 <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 tw-gap-4">
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
-                        <div className="tw-flex tw-items-start tw-gap-3">
-                            <div className="tw-p-2 tw-bg-gray-100 tw-rounded">
-                                <IconCircleCheckmark className="tw-w-5 tw-h-5 tw-text-gray-600" />
-                            </div>
-                            <div>
-                                <div className="tw-text-2xl tw-font-semibold">{completedTickets} completed</div>
-                                <div className="tw-text-sm tw-text-gray-500">in the last 7 days</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
-                        <div className="tw-flex tw-items-start tw-gap-3">
-                            <div className="tw-p-2 tw-bg-gray-100 tw-rounded">
-                                <IconPencil className="tw-w-5 tw-h-5 tw-text-gray-600" />
-                            </div>
-                            <div>
-                                <div className="tw-text-2xl tw-font-semibold">{data?.ticketsUpdated.totalTickets ?? 0} updated</div>
-                                <div className="tw-text-sm tw-text-gray-500">in the last 7 days</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
-                        <div className="tw-flex tw-items-start tw-gap-3">
-                            <div className="tw-p-2 tw-bg-gray-100 tw-rounded">
-                                <IconPaper className="tw-w-5 tw-h-5 tw-text-gray-600" />
-                            </div>
-                            <div>
-                                <div className="tw-text-2xl tw-font-semibold">{data?.ticketsCreated.totalTickets ?? 0} created</div>
-                                <div className="tw-text-sm tw-text-gray-500">in the last 7 days</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
-                        <div className="tw-flex tw-items-start tw-gap-3">
-                            <div className="tw-p-2 tw-bg-gray-100 tw-rounded">
-                                <IconCalendar className="tw-w-5 tw-h-5 tw-text-gray-600" />
-                            </div>
-                            <div>
-                                <div className="tw-text-2xl tw-font-semibold">{data?.ticketsDue.totalTickets ?? 0} due soon</div>
-                                <div className="tw-text-sm tw-text-gray-500">in the next 7 days</div>
-                            </div>
-                        </div>
-                    </div>
+                    <SummaryCard 
+                        icon={<IconCircleCheckmark className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        link={constructTicketLink(data?.ticketsCompleted ?? [])}
+                        header={`${data?.ticketsCompleted.length ?? 0} completed`}
+                        subHeader={"in the last 7 days"}
+                    >
+                    </SummaryCard>
+                    <SummaryCard
+                        icon={<IconPencil className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        link={constructTicketLink(data?.ticketsUpdated ?? [])}
+                        header={`${data?.ticketsUpdated.length ?? 0} updated`}
+                        subHeader={"in the last 7 days"}
+                    >
+                    </SummaryCard>
+                    <SummaryCard
+                        icon={<IconPaper className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        link={constructTicketLink(data?.ticketsCreated ?? [])}
+                        header={`${data?.ticketsCreated.length ?? 0} created`}
+                        subHeader={"in the last 7 days"}
+                    />
+                    <SummaryCard
+                        icon={<IconCalendar className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        link={constructTicketLink(data?.ticketsDue ?? [])}
+                        header={`${data?.ticketsDue.length ?? 0} due soon`}
+                        subHeader={"in the next 7 days"}
+                    />
                 </div>
 
                 {/* Main Content Grid */}
@@ -186,6 +180,7 @@ export const BoardSummary = () => {
                                         <HorizontalProgressBarRow
                                             icon={item.name !== "Unassigned" ? <Avatar userInitials={item.initials} imageUrl={item.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/> : <IconUser className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>}
                                             item={item}
+                                            link={`${TICKETS}?boardId=${boardInfo?.id ?? 0}&assignedToUser=${item.id ?? "unassigned"}`}
                                         />
                                     </div>
                                 )

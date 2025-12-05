@@ -96,9 +96,10 @@ export interface BoardSummary {
 	ticketsByPriority: Array<{priorityId: number, totalTickets: number}>
 	ticketsByStatus: Array<{statusId: number, totalTickets: number}>
 	ticketsByTicketType: Array<{ticketTypeId: number, totalTickets: number}>
-	ticketsDue: {totalTickets: number}
-	ticketsCreated: {totalTickets: number}
-	ticketsUpdated: {totalTickets: number}
+	ticketsDue: Array<number>
+	ticketsCreated: Array<number>
+	ticketsUpdated: Array<number>
+	ticketsCompleted: Array<number>
 }
 
 export interface Sprint {
@@ -281,7 +282,6 @@ export interface ProgressBarItem {
 }
 
 export interface PieChartItem {
-    id: number
 	name: string
 	value: number
 	color: string
