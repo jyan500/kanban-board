@@ -10,6 +10,7 @@ exports.seed = async function(knex) {
     {name: "Mention", template: "{{{sender_name}}} has mentioned you here: {{{ticket_name}}}"},
     {name: "Ticket Assigned", template: "{{{sender_name}}} has assigned you to the ticket: {{{ticket_name}}}"},
     {name: "Bulk Assigned", template: "{{{sender_name}}} has assigned {{{num_tickets}}} tickets to you"},
-    {name: "Bulk Watching", template: "You are now watching {{{num_tickets}}} tickets"}
+    {name: "Bulk Watching", template: "You are now watching {{{num_tickets}}} tickets"},
+    {name: "Ticket Unassigned", template: "{{{sender_name}}} has unassigned you from the ticket: {{{ticket_name}}}"},
   ]);
 };

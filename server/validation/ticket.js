@@ -159,6 +159,11 @@ const ticketUserValidator = (actionType) => {
 				value: req.user.organization
 			}
 			], "organization_user_roles")),
+			...(actionType === "delete" ? 
+				[body("is_watcher").if((value, { req }) => {
+					return req.body.is_watcher
+				}).notEmpty()]
+			: [])
 		]	
 	}
 	else if (actionType === "create" || actionType === "bulk-edit") {
