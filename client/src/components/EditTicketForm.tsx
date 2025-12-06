@@ -254,9 +254,20 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			// TODO: need to update this line to include all userIds if allowing multiple 
     			// assignees per ticket
 	    		const assigneeId: number | null = !isNaN(Number(values.userIdOption?.value)) ? Number(values.userIdOption?.value) : null
-				// if assignee is zero, delete the assignees from the ticket
+				// if there is currently an assignee, but 
+				// the user is unassigning, delete the assignees from the ticket
 				if (assigneeId === 0 && ticketAssignees?.[0]?.id){
 					await deleteTicketAssignee({ticketId: values.id, userId: ticketAssignees[0].id, isWatcher: false}).unwrap()
+					// notify the user that they are unassigned from the ticket
+					if (unassignedNotificationType && userProfile){
+						await addNotification({
+							recipientId: ticketAssignees[0].id,
+							senderId: userProfile.id,
+							ticketId: values.id,
+							objectLink: `${TICKETS}/${values.id}`,
+							notificationTypeId: unassignedNotificationType.id
+						}).unwrap()
+					}
 				}
 				// if the assignee id was changed from its previous value
     			else if (assigneeId != null && assigneeId !== 0 && assigneeId !== ticketAssignees?.[0]?.id){
@@ -264,14 +275,13 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			}
     			// if the assignee id was changed from its previous value, and it's not equal to the logged in user,
     			// send notification
-    			if (assigneeId != null && assigneeId !== ticketAssignees?.[0]?.id && userProfile && assigneeId !== userProfile.id && assigneeNotificationType && unassignedNotificationType){
+    			if (assigneeId != null && assigneeId !== 0 && assigneeId !== ticketAssignees?.[0]?.id && userProfile && assigneeId !== userProfile.id && assigneeNotificationType){
 					await addNotification({
-						// if we're unassigning a user, make sure the recipient is previously assigned user
-						recipientId: assigneeId === 0 && ticketAssignees?.[0]?.id ? ticketAssignees[0].id : assigneeId,
+						recipientId: assigneeId,
 						senderId: userProfile.id,
 						ticketId: values.id,
 						objectLink: `${TICKETS}/${values.id}`,
-						notificationTypeId: assigneeId === 0 ? unassignedNotificationType.id : assigneeNotificationType.id,
+						notificationTypeId: assigneeNotificationType.id,
 					}).unwrap()
     			}
     			const {userIdOption, ...ticketBody} = values

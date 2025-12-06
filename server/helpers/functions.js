@@ -97,22 +97,9 @@ const getNotificationBody = async (notificationType, obj) => {
 				}
 			}
 			break
+		case "Ticket Unassigned":
+		case "Ticket Update":
 		case "Mention":
-			if (ticket && sender && recipient){
-				fields = {
-					ticket_name: ticket?.name, 	
-					sender_name: `${sender?.first_name} ${sender.last_name}`,
-				}
-			}
-			break
-		case "Ticket Update":	
-			if (ticket && sender && recipient){
-				fields = {
-					ticket_name: ticket?.name, 	
-					sender_name: `${sender?.first_name} ${sender?.last_name}`,
-				}
-			}
-			break
 		case "Ticket Assigned":	
 			if (ticket && sender && recipient){
 				fields = {
@@ -122,17 +109,10 @@ const getNotificationBody = async (notificationType, obj) => {
 			}
 			break
 		case "Bulk Watching":
-			if (sender && obj.num_tickets){
-				fields = {
-					num_tickets: obj.num_tickets,
-				}	
-			}
-			break
 		case "Bulk Assigned":
 			if (sender && obj.num_tickets){
 				fields = {
 					num_tickets: obj.num_tickets,
-					sender_name: `${sender?.first_name} ${sender?.last_name}`
 				}	
 			}
 			break
