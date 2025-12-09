@@ -51,14 +51,19 @@ const ticketValidator = (actionType) => {
 			.isArray({min: 0, max: BULK_INSERT_LIMIT})
 			.withMessage("user_ids must be an array")
 			.withMessage(`user_ids cannot have more than ${BULK_INSERT_LIMIT} ids`),
-			body("user_ids.*").custom(async (value, {req}) => await checkEntityExistsIn("user", value, [{
-				col: "user_id",
-				value: value	
-			},
-			{
-				col: "organization_id",
-				value: req.user.organization
-			}], "organization_user_roles")),
+			body("user_ids.*").custom(async (value, {req}) => {
+				if (value === 0){
+					return true
+				}
+				return await checkEntityExistsIn("user", value, [{
+					col: "user_id",
+					value: value	
+				},
+				{
+					col: "organization_id",
+					value: req.user.organization
+				}], "organization_user_roles")
+			}),
 			body("ticket_ids")
 			.isArray({min: 0, max: BULK_INSERT_LIMIT})
 			.withMessage("ticket_ids must be an array")

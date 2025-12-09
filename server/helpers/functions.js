@@ -108,14 +108,20 @@ const getNotificationBody = async (notificationType, obj) => {
 				}
 			}
 			break
-		case "Bulk Watching":
 		case "Bulk Assigned":
 			if (sender && obj.num_tickets){
 				fields = {
+					sender_name: `${sender?.first_name} ${sender?.last_name}`,
 					num_tickets: obj.num_tickets,
 				}	
 			}
 			break
+		case "Bulk Watching":
+			if (obj.num_tickets){
+				fields = {
+					num_tickets: obj.num_tickets,
+				}
+			}
 	}
 	return Mustache.render(`${notificationType.template}`, fields)
 }

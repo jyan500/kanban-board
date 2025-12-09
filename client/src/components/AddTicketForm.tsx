@@ -246,7 +246,8 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, spr
 			                	<AsyncSelect 
 			                		defaultValue={watch("userIdOption") ?? {label: "", value: ""}}
 				                	endpoint={USER_PROFILE_URL} 
-				                	urlParams={{forSelect: true}} 
+									// include the ability to unassign for bulk edit
+				                	urlParams={{forSelect: true, includeUnassigned: isBulkAction}} 
 				                	className={"tw-w-full"}
 				                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 				                		onChange(selectedOption) 	
