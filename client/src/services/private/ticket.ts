@@ -220,6 +220,7 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: [
 				"Tickets", 
+				"TicketAssignees",
 				"BoardTickets", 
 				"TicketRelationships", 
 				"TicketSummary",

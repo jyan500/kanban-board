@@ -54,24 +54,6 @@ const renderCenterLabel = (props: any) => {
     )
 }
 
-const renderActiveShape = (props: any) => {
-    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props
-    return (
-        <g>
-            <Sector
-                cx={cx}
-                cy={cy}
-                innerRadius={innerRadius}
-                outerRadius={outerRadius + 5} // Make it slightly larger on hover
-                startAngle={startAngle}
-                endAngle={endAngle}
-                fill={fill}
-                style={{ cursor: 'pointer' }}
-            />
-        </g>
-    )
-}
-
 export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     const navigate = useNavigate()
