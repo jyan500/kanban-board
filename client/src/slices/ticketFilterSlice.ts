@@ -11,6 +11,7 @@ export interface TicketFilters {
 	priorityId: number | null
 	boardId: number | null
 	sprintId: number | null
+	assignedToUser: number | null
 }
 
 interface TicketFilterState {
@@ -23,7 +24,8 @@ const initialState: TicketFilterState = {
 		statusId: null,
 		priorityId: null,
 		boardId: null,
-		sprintId: null
+		sprintId: null,
+		assignedToUser: null
 	},
 }
 

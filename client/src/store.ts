@@ -69,7 +69,8 @@ export const store = configureStore({
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
 		},
-	}).concat(logger)
+	})
+	//.concat(logger)
 	.concat(publicApi.middleware)
 	.concat(privateApi.middleware)
 })

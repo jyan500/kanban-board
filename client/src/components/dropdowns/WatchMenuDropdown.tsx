@@ -94,7 +94,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 		setSubmitLoading(true)
 		try {
 			if (ticketId && userId){
-				await deleteTicketAssignee({ticketId: ticketId, userId: userId}).unwrap()
+				await deleteTicketAssignee({ticketId: ticketId, userId: userId, isWatcher: true}).unwrap()
 				dispatch(addToast(defaultToast))
 			}
 		}

@@ -10,6 +10,7 @@ import { IconWarning } from "../icons/IconWarning"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { Button } from "../page-elements/Button"
+import { Ticket } from "../../types/common"
 
 interface Props {
 	selectedIds: Array<number>
@@ -19,12 +20,23 @@ interface Props {
 	formValues: BulkEditFormValues
 	operation: BulkEditOperationKey | null | undefined
 	operations: Array<BulkEditOperation>
-	onSubmit: () => void
+	onSubmit: (tickets: Array<Ticket>) => void
 	isSubmitLoading: boolean
 	skipStep3: boolean
 }
 
-export const BulkActionsFormStep4 = ({isSubmitLoading, selectedIds, skipStep3, step, setStep, formValues, setSelectedIds, operation, operations, onSubmit}: Props) => {
+export const BulkActionsFormStep4 = ({
+	isSubmitLoading, 
+	selectedIds, 
+	skipStep3, 
+	step, 
+	setStep, 
+	formValues, 
+	setSelectedIds, 
+	operation, 
+	operations, 
+	onSubmit
+}: Props) => {
 	const [page, setPage] = useState(1)
 	const { data, isLoading, isFetching, isError } = useGetTicketsQuery({
 		page: page,
@@ -63,18 +75,20 @@ export const BulkActionsFormStep4 = ({isSubmitLoading, selectedIds, skipStep3, s
 				{
 					!isLoading && data?.data ? (
 						<>
-							
-								<Table 
-									data={data?.data} 
-									config={config} 
-									tableKey={"bulk-actions-confirmation"}
-								></Table>
+							<Table 
+								data={data?.data} 
+								config={config} 
+								tableKey={"bulk-actions-confirmation"}
+							></Table>
 						</>
 					) : <RowContentLoading/>
 				}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
-				<LoadingButton isLoading={isSubmitLoading} onClick={onSubmit} text={"Confirm"}/>
+				<LoadingButton isLoading={isSubmitLoading} onClick={async () => {
+					await onSubmit(data?.data ?? [])
+				}} text={"Confirm"}/>
+					
 				<Button theme="secondary" onClick={() => {
 					if (step-1 === 3 && skipStep3){
 						setStep(step-2)

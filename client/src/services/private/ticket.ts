@@ -156,12 +156,13 @@ export const ticketApi = privateApi.injectEndpoints({
 			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary"],
 		}),
 		deleteTicketAssignee: builder.mutation<TicketAssigneeResponse, SingleTicketAssigneeRequest>({
-			query: ({ticketId, userId}) => ({
+			query: ({ticketId, userId, isWatcher}) => ({
 				url: TICKET_ASSIGNEE_URL(ticketId, userId),
 				method: "DELETE",
 				body: {
 					user_id: userId,
-					ticket_id: ticketId
+					ticket_id: ticketId,
+					is_watcher: isWatcher
 				}
 			}),
 			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary"],
@@ -219,6 +220,7 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: [
 				"Tickets", 
+				"TicketAssignees",
 				"BoardTickets", 
 				"TicketRelationships", 
 				"TicketSummary",

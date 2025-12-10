@@ -10,9 +10,10 @@ import { toggleShowModal, setModalType, setModalProps } from "../../slices/modal
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketsMutation } from "../../services/private/board"
 import { useBulkEditTicketsMutation, useBulkWatchTicketsMutation } from "../../services/private/ticket"
-import { useAddNotificationMutation } from "../../services/private/notification"
-import { OptionType, Toast } from "../../types/common"
+import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../../services/private/notification"
+import { OptionType, Ticket, Toast } from "../../types/common"
 import { addToast } from "../../slices/toastSlice"
+import { TICKETS } from "../../helpers/routes"
 import { v4 as uuidv4 } from "uuid"
 
 interface Props {
@@ -53,8 +54,10 @@ export const BulkActionsForm = ({boardId, initStep=1, initSelectedIds=[]}: Props
 	const [bulkEditTickets, {isLoading: bulkEditTicketsLoading, error: bulkEditTicketsError}] = useBulkEditTicketsMutation()
 	const [bulkWatchTickets, {isLoading: bulkWatchTicketsLoading, error: bulkWatchTicketsError}] = useBulkWatchTicketsMutation()
 	const [addNotification, {isLoading: addNotificationLoading, error: addNotificationError}] = useAddNotificationMutation()
+	const [bulkCreateNotifications, { isLoading: bulkNotificationsLoading, error: bulkNotificationsError }] = useBulkCreateNotificationsMutation()
 	const bulkWatchNotificationType = notificationTypes?.find((type) => type.name === "Bulk Watching")
 	const bulkAssignNotificationType = notificationTypes?.find((type) => type.name === "Bulk Assigned")
+	const unassignedNotificationType = notificationTypes?.find((notif) => notif.name === "Ticket Unassigned")
 	const steps = [
 		{step: 1, text: "Choose Issues"},
 		{step: 2, text: "Choose Operation"},
@@ -91,7 +94,7 @@ export const BulkActionsForm = ({boardId, initStep=1, initSelectedIds=[]}: Props
 		}
 	]
 
-	const editIssues = async () => {
+	const editIssues = async (selectedTickets: Array<Ticket>) => {
 		let defaultToast: Toast = {
 			id: uuidv4(),
 			message: "Something went wrong while editing tickets.",
@@ -101,9 +104,24 @@ export const BulkActionsForm = ({boardId, initStep=1, initSelectedIds=[]}: Props
 		const { priorityId, statusId, userIdOption } = formValues
 		try {
 			const assigneeId = !isNaN(Number(userIdOption?.value)) ? Number(userIdOption?.value) : 0
-			await bulkEditTickets({ticketIds: selectedIds, priorityId, statusId, userIds: assigneeId ? [assigneeId] : []}).unwrap()
+			await bulkEditTickets({ticketIds: selectedIds, priorityId, statusId, userIds: assigneeId >= 0 ? [assigneeId] : []}).unwrap()
 			// no need to send the notification if you're assigning the tickets to yourself
-			if (userProfile && assigneeId && assigneeId !== userProfile.id && bulkAssignNotificationType){
+			if (userProfile && assigneeId === 0 && unassignedNotificationType && selectedTickets){
+				// notify the user that they are unassigned from the ticket
+				const notifications = selectedTickets.map((ticket) => {
+					if (ticket.assignees?.[0]?.id){
+						return {
+							recipientId: ticket.assignees[0].id,
+							senderId: userProfile.id,
+							ticketId: ticket.id,
+							objectLink: `${TICKETS}/${ticket.id}`,
+							notificationTypeId: unassignedNotificationType.id,
+						}
+					}
+				}).filter((notification) => notification != null)
+				await bulkCreateNotifications(notifications).unwrap()
+			}
+			else if (userProfile && assigneeId && assigneeId !== userProfile.id && bulkAssignNotificationType){
 				await addNotification({
 					senderId: userProfile.id,
 					recipientId: assigneeId,
@@ -240,12 +258,12 @@ export const BulkActionsForm = ({boardId, initStep=1, initSelectedIds=[]}: Props
 		return true
 	}
 
-	const onSubmit = async () => {
+	const onSubmit = async (selectedTickets: Array<Ticket>) => {
 		setSubmitLoading(true)
 		let isSuccess = false
 		switch (operation){
 			case "edit-issues":
-				isSuccess = await editIssues()
+				isSuccess = await editIssues(selectedTickets)
 				break
 			case "move-issues":
 				isSuccess = await moveIssues()

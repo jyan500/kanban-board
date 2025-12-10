@@ -62,12 +62,24 @@ router.get("/", async (req, res, next) => {
 
 			.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 
-		const userProfilesParsed = req.query.forSelect ? userProfiles.data.map((userProfile) => {
+		let userProfilesParsed = req.query.forSelect ? userProfiles.data.map((userProfile) => {
 			return {
 				id: userProfile.id,
 				name: userProfile.firstName + " " + userProfile.lastName
 			}
 		}) : userProfiles.data
+
+		// if for select AND we're including the unassigned value, include the unassigned value with id 0
+		if (req.query.forSelect && req.query.includeUnassigned){
+			userProfilesParsed = [
+				{
+					id: 0,
+					name: "Unassigned"
+				},
+				...userProfilesParsed, 
+			]
+		}
+
 		res.json({
 			...userProfiles,
 			data: userProfilesParsed

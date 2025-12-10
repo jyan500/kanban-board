@@ -396,7 +396,13 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 				queryBuilder.whereNotNull("tickets.due_date")
 			}
 			if (req.query.assignee){
-				queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id").where("tickets_to_users.user_id", req.query.assignee)
+				if (req.query.assignee === "0"){
+					queryBuilder.leftJoin("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
+					.where("tickets_to_users.id", null)
+				}
+				else {
+					queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id").where("tickets_to_users.user_id", req.query.assignee).where("tickets_to_users.is_mention", false).where("tickets_to_users.is_watcher", false)
+				}
 			}
 			if (req.query.ticketTypeId) {
 				queryBuilder.where("tickets.ticket_type_id", req.query.ticketTypeId)

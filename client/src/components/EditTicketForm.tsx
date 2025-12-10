@@ -12,6 +12,7 @@ import {
 	useGetTicketCommentsQuery,
 	useUpdateTicketMutation, 
 	useBulkEditTicketAssigneesMutation,
+	useDeleteTicketAssigneeMutation,
 	useGetTicketActivitiesQuery,
 } from "../services/private/ticket"
 import { useGetUserQuery } from "../services/private/userProfile"
@@ -113,6 +114,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const [ bulkEditTicketAssignees ] = useBulkEditTicketAssigneesMutation()
 	const [ addNotification, {isLoading: isAddNotificationLoading}] = useAddNotificationMutation()
 	const [ bulkCreateNotifications, {isLoading: isBulkCreateNotificationLoading}] = useBulkCreateNotificationsMutation()
+	const [ deleteTicketAssignee, {isLoading: isDeleteTicketAssigneeLoading}] = useDeleteTicketAssigneeMutation()
 	const {
 		showModal
 	} = useAppSelector((state) => state.modal)
@@ -120,6 +122,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const createdAt = ticket?.createdAt ? new Date(ticket?.createdAt).toLocaleDateString() : ""
 	const mentionNotificationType = notificationTypes?.find((notif) => notif.name === "Mention")
 	const assigneeNotificationType = notificationTypes?.find((notif) => notif.name === "Ticket Assigned")
+	const unassignedNotificationType = notificationTypes?.find((notif) => notif.name === "Ticket Unassigned")
 	const [ submitLoading, setSubmitLoading ] = useState(false)
 
 	const [editFieldVisibility, setEditFieldVisibility] = useState<EditFieldVisibility>({
@@ -237,7 +240,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 			setValue("userIdOption", {label: displayUser(ticketAssignees[0]), value: assigneeId}, { shouldDirty: true })
 		}
 		else if (ticketAssignees?.length === 0){
-			setValue("userIdOption", {label: "", value: ""}, { shouldDirty: true })
+			setValue("userIdOption", {label: "Unassigned", value: "0"}, { shouldDirty: true })
 		}
 	}, [isTicketAssigneesLoading, ticketAssignees])
 
@@ -250,22 +253,36 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			// update ticket assignees
     			// TODO: need to update this line to include all userIds if allowing multiple 
     			// assignees per ticket
-	    		const assigneeId = !isNaN(Number(values.userIdOption?.value)) ? Number(values.userIdOption?.value) : 0
+	    		const assigneeId: number | null = !isNaN(Number(values.userIdOption?.value)) ? Number(values.userIdOption?.value) : null
+				// if there is currently an assignee, but 
+				// the user is unassigning, delete the assignees from the ticket
+				if (assigneeId === 0 && ticketAssignees?.[0]?.id){
+					await deleteTicketAssignee({ticketId: values.id, userId: ticketAssignees[0].id, isWatcher: false}).unwrap()
+					// notify the user that they are unassigned from the ticket
+					if (unassignedNotificationType && userProfile){
+						await addNotification({
+							recipientId: ticketAssignees[0].id,
+							senderId: userProfile.id,
+							ticketId: values.id,
+							objectLink: `${TICKETS}/${values.id}`,
+							notificationTypeId: unassignedNotificationType.id
+						}).unwrap()
+					}
+				}
 				// if the assignee id was changed from its previous value
-    			if (assigneeId && assigneeId !== ticketAssignees?.[0]?.id){
+    			else if (assigneeId != null && assigneeId !== 0 && assigneeId !== ticketAssignees?.[0]?.id){
 	    			await bulkEditTicketAssignees({ticketId: values.id, userIds: [assigneeId], isWatcher: false}).unwrap()
     			}
     			// if the assignee id was changed from its previous value, and it's not equal to the logged in user,
     			// send notification
-    			if (assigneeId && assigneeId !== ticketAssignees?.[0]?.id && userProfile && assigneeId !== userProfile.id && assigneeNotificationType){
-    				await addNotification({
-    					recipientId: assigneeId,
-    					senderId: userProfile.id,
-    					ticketId: values.id,
-    					objectLink: `${TICKETS}/${values.id}`,
-    					notificationTypeId: assigneeNotificationType.id,
-
-    				}).unwrap()
+    			if (assigneeId != null && assigneeId !== 0 && assigneeId !== ticketAssignees?.[0]?.id && userProfile && assigneeId !== userProfile.id && assigneeNotificationType){
+					await addNotification({
+						recipientId: assigneeId,
+						senderId: userProfile.id,
+						ticketId: values.id,
+						objectLink: `${TICKETS}/${values.id}`,
+						notificationTypeId: assigneeNotificationType.id,
+					}).unwrap()
     			}
     			const {userIdOption, ...ticketBody} = values
     			const { mentions } = await updateTicket({
@@ -358,7 +375,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
                 	clearable={false}
                 	onBlur={(e) => toggleFieldVisibility("assignees", false)}
                 	defaultValue={watch("userIdOption") ?? null}
-                	urlParams={{forSelect: true, /*filterOnUserRole: true*/}} 
+                	urlParams={{forSelect: true, includeUnassigned: true/*filterOnUserRole: true*/}} 
                 	onSelect={async (selectedOption: OptionType | null) => {
                 		toggleSelectFieldLoading("assignees", true)
             			setValue("userIdOption", selectedOption)

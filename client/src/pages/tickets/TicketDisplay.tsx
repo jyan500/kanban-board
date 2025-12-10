@@ -47,7 +47,6 @@ export const TicketDisplay = () => {
 		page: searchParams.get("page") ?? 1,
 		// these two are passed in from the boards summary page, but aren't part of the filters yet
 		...(searchParams.get("ticketIds") ? {ticketIds: searchParams.get("ticketIds")} : {}),
-		...(searchParams.get("assignedToUser") ? {assignedToUser: searchParams.get("assignedToUser")} : {}),
 		includeAssignees: true,
 		...(Object.keys(filters).reduce((acc: Record<string, any>, key) => {
 			const typedKey = key as keyof TicketFilters
@@ -127,7 +126,8 @@ export const TicketDisplay = () => {
 				statusId: null,
 				priorityId: null,
 				boardId: null,
-				sprintId: null
+				sprintId: null,
+				assignedToUser: null
 			}
 			
 			// Apply any filters from the incoming search params

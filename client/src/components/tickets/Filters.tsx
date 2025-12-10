@@ -3,10 +3,12 @@ import { useFormContext, useForm, FormProvider, SubmitHandler, Controller } from
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { Board, TicketType, Priority, Status } from "../../types/common"
 import { LoadingSpinner } from "../LoadingSpinner"
-import { BOARD_URL, SPRINT_URL } from "../../helpers/urls"
+import { BOARD_URL, SPRINT_URL, USER_PROFILE_URL } from "../../helpers/urls"
+import { displayUser } from "../../helpers/functions"
 import { AsyncSelect, LoadOptionsType } from "../../components/AsyncSelect"
 import { useLazyGetBoardQuery } from "../../services/private/board"
 import { useLazyGetSprintQuery } from "../../services/private/sprint"
+import { useLazyGetUserQuery } from "../../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { ticketApi } from "../../services/private/ticket"
@@ -22,6 +24,7 @@ interface FormValues {
 	priorityId: number | null
 	sprint: OptionType
 	board: OptionType
+	assignedToUser: OptionType
 }
 
 export const Filters = () => {
@@ -36,12 +39,14 @@ export const Filters = () => {
 		priorityId: 0,
 		statusId: 0,
 		board: {value: "", label: ""},
-		sprint: {value: "", label: ""}
+		sprint: {value: "", label: ""},
+		assignedToUser: {value: "", label: ""},
 	}
 	const [ preloadedValues, setPreloadedValues ] = useState<FormValues>()
 	const { reset, register, setValue, getValues, watch, control, handleSubmit } = useForm<FormValues>({defaultValues: preloadedValues})
 	const [ triggerGetBoard, {data: boardInfo, isFetching, isLoading, isError }] = useLazyGetBoardQuery()
 	const [ triggerGetSprint, {data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading }] = useLazyGetSprintQuery()
+	const [ triggerGetUser, {data: userData, isFetching: isUserFetching, isLoading: isUserLoading}] = useLazyGetUserQuery()
 
 	useEffect(() => {
 		if (!showSecondaryModal){
@@ -51,7 +56,7 @@ export const Filters = () => {
 
 	useEffect(() => {
 		if (filters){
-			const { ticketTypeId, priorityId, statusId, boardId, sprintId } = filters
+			const { ticketTypeId, priorityId, statusId, boardId, sprintId, assignedToUser } = filters
 			reset({
 				...defaultForm,
 				ticketTypeId, 
@@ -63,6 +68,17 @@ export const Filters = () => {
 			}
 			if (sprintId){
 				triggerGetSprint({id: sprintId, urlParams: {}})
+			}
+			if (assignedToUser != null){
+				if (assignedToUser === 0){
+					setValue("assignedToUser", {label: "Unassigned", value: "0"})
+				}
+				else if (!isNaN(Number(assignedToUser))){
+					triggerGetUser(Number(assignedToUser))
+				}
+				else {
+					setValue("assignedToUser", {label: "", value: ""})
+				}
 			}
 		}
 	}, [])
@@ -79,7 +95,20 @@ export const Filters = () => {
 		}
 	}, [isSprintFetching, sprintData])
 
+	useEffect(() => {
+		if (!isUserFetching && userData){
+			setValue("assignedToUser", {value: userData.id.toString(), label: displayUser(userData)})
+		}
+	}, [isUserFetching, userData])
+
 	const onSubmit = (values: FormValues) => {
+		let assignedToUser: number | string | null;
+		if (values.assignedToUser?.value !== ""){
+			assignedToUser = values.assignedToUser?.value == "0" ? 0 : Number(values.assignedToUser.value)
+		}
+		else {
+			assignedToUser = null
+		}
 		const newFilterValues = {
             ...filters,
 			ticketTypeId: values.ticketTypeId !== 0 ? values.ticketTypeId : null,
@@ -87,6 +116,7 @@ export const Filters = () => {
 			statusId: values.statusId !== 0 ? values.statusId : null,
 			boardId: values.board && values.board.value !== "" ? Number(values.board.value) : null,
 			sprintId: values.sprint && values.sprint.value !== "" ? Number(values.sprint.value) : null,
+			assignedToUser: assignedToUser 
 		}
 		dispatch(setFilters(newFilterValues))
 		dispatch(toggleShowSecondaryModal(false))
@@ -171,6 +201,30 @@ export const Filters = () => {
 					)
 				}
 			</div>
+			<div className = "tw-flex tw-flex-col">
+				<label className = "label" htmlFor = "filters-assignee">Assignee</label>
+				{
+					!isUserLoading ? (
+						<Controller
+							name={"assignedToUser"}
+							control={control}
+							render={({ field: { onChange, value, name, ref } }) => (
+								<AsyncSelect 
+									endpoint={USER_PROFILE_URL} 
+									urlParams={{forSelect: true, includeUnassigned: true}} 
+									defaultValue={watch("assignedToUser") ?? {value: "", label: ""}}
+									className={"tw-w-64"}
+									onSelect={(selectedOption: {label: string, value: string} | null) => {
+										onChange(selectedOption) 	
+									}}
+								/>
+							)}
+						/>
+					) : (
+						<LoadingSkeleton className= "tw-bg-gray-200" width = "tw-w-64" height="tw-h-10"/>	
+					)
+				}
+			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<LoadingButton type={"submit"} text={"Submit"}/>	
 				<Button theme="secondary" onClick={(e) => {
@@ -183,6 +237,7 @@ export const Filters = () => {
 						statusId: null,
 						boardId: null,
 						sprintId: null,
+						assignedToUser: null,
 					}
 					dispatch(setFilters(resetFilters))
 					dispatch(ticketApi.util.invalidateTags(["Tickets"]))

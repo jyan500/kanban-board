@@ -14,6 +14,7 @@ import { boardApi } from "../../services/private/board"
 import { Button } from "../page-elements/Button"
 import { format } from "date-fns"
 import { addToast } from "../../slices/toastSlice"
+import { displayUser } from "../../helpers/functions"
 import { v4 as uuidv4 } from "uuid"
 
 export type FormValues = {
@@ -68,8 +69,16 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 				priorityId,
 				statusId,
 			})
-			if (assignee){
-				trigger({userIds: [assignee]})
+			if (assignee != null){
+				if (assignee === 0){
+					setValue("assignee", {label: "Unassigned", value: "0"})
+				}
+				else if (!isNaN(Number(assignee))){
+					trigger({userIds: [assignee]})
+				}
+				else {
+					setValue("assignee", {label: "", value: ""})
+				}
 			}
 			if (sprintId){
 				triggerGetSprint({id: sprintId, urlParams: {}})
@@ -81,7 +90,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 		if (!isFetching && data?.data?.length){
 			const user = data?.data?.[0]
 			if (user){
-				setValue("assignee", {value: user.id.toString(), label: user.firstName + " " + user.lastName})
+				setValue("assignee", {value: user.id.toString(), label: displayUser(user)})
 			}
 		}
 	}, [isFetching, data])
@@ -209,7 +218,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 		                	<AsyncSelect 
 		                		defaultValue={watch("assignee") ?? {value: "", label: ""}}
 			                	endpoint={USER_PROFILE_URL} 
-			                	urlParams={{forSelect: true}} 
+			                	urlParams={{forSelect: true, includeUnassigned: true}} 
 			                	className={"tw-w-full"}
 			                	clearable={false}
 			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
