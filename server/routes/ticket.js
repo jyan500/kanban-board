@@ -111,15 +111,16 @@ router.get("/", async (req, res, next) => {
 					.whereNot("tickets.ticket_type_id", epicTicketType?.id)
 				}
 			}
-			if (req.query.assignedToUser){
-				if (req.query.assignedToUser === "unassigned"){
+			if (req.query.assignedToUser || req.query.assignee){
+				const assignee = req.query.assignedToUser ?? req.query.assignee
+				if (assignee === "0"){
 					queryBuilder.leftJoin("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
 					.where("tickets_to_users.id", null)
 				}
 				else {
 					queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
 					.join("users", "tickets_to_users.user_id", "=", "users.id")
-					.where("users.id", req.query.assignedToUser)
+					.where("users.id", assignee)
 					// if req.query.isWatching, only get the tickets that the user is watching
 					.where("tickets_to_users.is_watcher", req.query.isWatching == "true" ? true : false)
 					.where("tickets_to_users.is_mention", false)

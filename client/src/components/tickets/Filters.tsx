@@ -69,12 +69,12 @@ export const Filters = () => {
 			if (sprintId){
 				triggerGetSprint({id: sprintId, urlParams: {}})
 			}
-			if (assignedToUser){
-				if (!isNaN(Number(assignedToUser))){
-					triggerGetUser(Number(assignedToUser))
-				}
-				else if (assignedToUser === "unassigned"){
+			if (assignedToUser != null){
+				if (assignedToUser === 0){
 					setValue("assignedToUser", {label: "Unassigned", value: "0"})
+				}
+				else if (!isNaN(Number(assignedToUser))){
+					triggerGetUser(Number(assignedToUser))
 				}
 				else {
 					setValue("assignedToUser", {label: "", value: ""})
@@ -104,7 +104,7 @@ export const Filters = () => {
 	const onSubmit = (values: FormValues) => {
 		let assignedToUser: number | string | null;
 		if (values.assignedToUser?.value !== ""){
-			assignedToUser = values.assignedToUser?.value == "0" ? "unassigned" : Number(values.assignedToUser.value)
+			assignedToUser = values.assignedToUser?.value == "0" ? 0 : Number(values.assignedToUser.value)
 		}
 		else {
 			assignedToUser = null

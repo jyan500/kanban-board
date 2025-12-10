@@ -235,14 +235,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	}, [showModal, currentTicketId])
 
 	useEffect(() => {
-		console.log("useEffect for ticket assignees")
-		console.log("ticketAssignees: ", ticketAssignees)
 		if (!isTicketAssigneesLoading && ticketAssignees?.length){
 			const assigneeId = ticketAssignees?.[0] ? ticketAssignees?.[0]?.id.toString() : ""
 			setValue("userIdOption", {label: displayUser(ticketAssignees[0]), value: assigneeId}, { shouldDirty: true })
 		}
 		else if (ticketAssignees?.length === 0){
-			console.log("setting value Unassigned")
 			setValue("userIdOption", {label: "Unassigned", value: "0"}, { shouldDirty: true })
 		}
 	}, [isTicketAssigneesLoading, ticketAssignees])

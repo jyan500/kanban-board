@@ -11,7 +11,7 @@ export interface TicketFilters {
 	priorityId: number | null
 	boardId: number | null
 	sprintId: number | null
-	assignedToUser: number | string | null
+	assignedToUser: number | null
 }
 
 interface TicketFilterState {
