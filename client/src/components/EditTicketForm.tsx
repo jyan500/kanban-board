@@ -511,6 +511,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								) : (
 									<div className = "tw-w-1/2">
 										<InlineEdit 
+											autoFocus={true}
 											isLoading={submitLoading}
 											mentionsEnabled={false}
 											type="date"

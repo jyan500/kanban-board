@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { Controller, useForm, FormProvider, useFormContext } from "react-hook-form"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
@@ -18,6 +18,7 @@ type Props = {
 	mentionsEnabled?: boolean
 	minDate?: string
 	maxDate?: string
+	autoFocus?: boolean
 }
 
 export const InlineEdit = (
@@ -32,10 +33,32 @@ export const InlineEdit = (
 		registerOptions, 
 		mentionsEnabled,
 		minDate,
-		maxDate
+		maxDate,
+		autoFocus,
 	}: Props) => {
 	const methods = useFormContext()
 	const { control, handleSubmit, register, resetField, getValues, setValue } = methods
+	const dateInputRef = useRef<HTMLInputElement>(null)  // Add this ref
+
+	useEffect(() => {
+		if (autoFocus && type === "date" && dateInputRef.current){
+			// give enough time for the component to render
+			setTimeout(() => {
+				if (dateInputRef.current){
+					// modern browsers have the ability to directly
+					// show the picker
+					try {
+						dateInputRef.current.showPicker()
+					}
+					// if this fails, focus and click
+					catch (e){
+						dateInputRef.current.focus()
+						dateInputRef.current.click()
+					}
+				}
+			}, 100)
+		}
+	}, [autoFocus, type])
 
 	const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
 		if (e.key === "Escape"){
@@ -59,6 +82,7 @@ export const InlineEdit = (
 					min={minDate ?? ""}
 					max={maxDate ?? ""}
 					onKeyDown={onKeyDown}
+					ref={dateInputRef}
 				/>
 			)
 			break
