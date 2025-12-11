@@ -19,7 +19,7 @@ export const BulkActionsFormStep1 = ({boardId, step, setStep, selectedIds, setSe
 			selectedIds={selectedIds}
 			setSelectedIds={setSelectedIds}
 			tableClassName={"tw-h-96 tw-overflow-y-auto"}
-			key={"bulk-actions"}
+			tableKey={"bulk-actions"}
 			stepButtonRow={
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
  					<Button theme="primary" disabled={selectedIds.length === 0} onClick={() => setStep(step+1)} >Next</Button>	

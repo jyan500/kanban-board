@@ -146,7 +146,7 @@ export const Dashboard = () => {
 							!isBoardsLoading ? (
 								<div className = "tw-flex tw-flex-col tw-gap-y-2">
 									{boards?.data?.map((board) => (
-										<div>
+										<div key={`active-boards-${board.id}`}>
 											<Link to={`${BOARDS}/${board.id}`}><span className = "tw-font-medium">{board.name}</span></Link>
 										</div>
 									))}	
@@ -166,7 +166,7 @@ export const Dashboard = () => {
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
 								{
 									percentageCompletePerBoard?.map((board) => (
-										<div className = "tw-flex tw-flex-row tw-items-center tw-min-h-[24px]">
+										<div key={`progress-bar-${board.id}`} className = "tw-flex tw-flex-row tw-items-center tw-min-h-[24px]">
 											<ProgressBar percentages = {board.percentComplete}/> 
 										</div>
 									))
@@ -183,7 +183,7 @@ export const Dashboard = () => {
 								<div className = "tw-flex tw-flex-col tw-gap-y-2">
 									{
 										timeSpentPerBoard?.map((board) => (
-											<div><span className = "tw-font-medium">{board.minutesSpent}</span></div>
+											<div key={`time-spent-per-board-${board.id}`}><span className = "tw-font-medium">{board.minutesSpent}</span></div>
 										))
 									}
 								</div>

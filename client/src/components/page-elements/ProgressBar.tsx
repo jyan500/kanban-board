@@ -12,7 +12,7 @@ export const ProgressBar = ({percentages}: Props) => {
 			{percentages.map((percentage: ProgressBarPercentage, i: number) => {
 				if (percentage.value > 0){
 					return (
-						<div style={{width: `${percentage.value}%`}} className = {`tw-text-white tw-text-center ${percentage.className}`}></div>
+						<div key={`progress-bar-percentage-${i}`} style={{width: `${percentage.value}%`}} className = {`tw-text-white tw-text-center ${percentage.className}`}></div>
 					)
 				}
 			})}	

@@ -22,7 +22,7 @@ export const BoardTable = () => {
 				}))
 				dispatch(toggleShowModal(true))
 			}}
-			key={`board-${boardInfo?.name.toLowerCase() ?? ""}`} 
+			tableKey={`board-${boardInfo?.name.toLowerCase() ?? ""}`} 
 			header={""}
 		/>
 	)
