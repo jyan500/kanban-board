@@ -8,6 +8,7 @@ import { HiChevronDown as LowPriorityIcon } from "react-icons/hi2";
 import { IconLowPriority } from "./icons/IconLowPriority"
 import { IconMediumPriority } from "./icons/IconMediumPriority"
 import { IconHighPriority } from "./icons/IconHighPriority"
+import { IconLink } from "./icons/IconLink"
 import { IconMenu } from "./icons/IconMenu"
 import { IconContext } from "react-icons"
 import { BugIcon } from "../assets/icons/BugIcon"
