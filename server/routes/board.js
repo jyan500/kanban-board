@@ -521,6 +521,12 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 						const hasRelationship = await db("ticket_relationships")
 						.where("child_ticket_id", ticket.id)
 						.orWhere("parent_ticket_id", ticket.id).limit(1).first() != null
+						const hasNonEpicRelationship = await db("ticket_relationships")
+						.where("ticket_relationship_type_id", "!=", epicTicketRelationshipType?.id)
+						.where((queryBuilder) => {
+							queryBuilder.where("child_ticket_id", ticket.id)
+							.orWhere("parent_ticket_id", ticket.id)
+						}).limit(1).first() != null
 						// figure out if this ticket is attached as a child to a relationship that's typed as an Epic
 						// note that the ticket itself cannot be an epic since you can't attach an epic to itself
 						let epicParentTickets = []
@@ -537,6 +543,7 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 						return {
 							...ticket,
 							hasRelationship,
+							hasNonEpicRelationship,
 							epicParentTickets,
 						}
 					}

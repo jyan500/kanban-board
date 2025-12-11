@@ -141,6 +141,7 @@ export interface Ticket {
 	userId: number
 	createdAt: Date
 	hasRelationship?: boolean
+	hasNonEpicRelationship?: boolean
 	epicParentTickets?: Array<{id: number, name: string}>
 	assignees?: Array<Pick<UserProfile, "id" | "firstName" | "lastName">>
 	timeSpent?: number

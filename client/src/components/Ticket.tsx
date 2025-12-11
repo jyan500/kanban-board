@@ -28,6 +28,7 @@ import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdo
 import { useClickOutside } from "../hooks/useClickOutside" 
 import { useScreenSize } from "../hooks/useScreenSize"
 import { getUserInitials } from "../helpers/functions"
+import { HoverTooltip } from "./page-elements/HoverTooltip";
 import { AVATAR_SIZES, LG_BREAKPOINT, PRIORITY_COLOR_MAP } from "../helpers/constants"
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
@@ -127,6 +128,14 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 					) : <></>}
 					{
 						priority ? (<PriorityIcon type={priority} color={priority in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priority] : ""} className={"tw-shrink-0 tw-w-5 tw-h-5"}/>) : <></>
+					}
+					{
+						ticket.hasNonEpicRelationship ? 
+						<div className = "tw-group tw-relative">
+							<IconLink className = "icon"/>
+							<HoverTooltip text={"Linked issue"} direction={"top"}/>
+						</div>
+						: null
 					}
 				</div>
 				<div className = {"tw-inline-block tw-text-left"}>
