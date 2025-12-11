@@ -2,7 +2,9 @@ import React, {useState, useEffect} from "react"
 import { IconContext } from "react-icons"
 import { CgProfile } from "react-icons/cg"
 import { HiOutlineLink as LinkIcon } from "react-icons/hi";
+import { IconPlus } from "./icons/IconPlus";
 import { IconLink } from "./icons/IconLink"
+import { IconLightning } from "./icons/IconLightning"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { setModalType } from "../slices/modalSlice" 
 import { LoadingSpinner } from "./LoadingSpinner"
@@ -616,18 +618,22 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									</div>
 								</Button>
 								{
-									epicTicketType?.id === ticket?.ticketTypeId ? 
-									(
-										<Button theme="purple" onClick={(e) => {
-										e.preventDefault()	
+									<Button theme="purple" onClick={(e) => {
+									e.preventDefault()	
+									if (epicTicketType?.id === ticket?.ticketTypeId){
 										setShowAddToEpic(!showAddToEpic)
-										}} >
-											<div className = "icon-container">
-												<IconTree className="icon"/>
-												<span>Add To Epic</span>
-											</div>
-										</Button>
-									) : null
+									}
+									else {
+										dispatch(toggleShowSecondaryModal(true))
+										dispatch(setSecondaryModalType("ADD_TO_EPIC_FORM_MODAL"))
+										dispatch(setSecondaryModalProps({"childTicketId": ticket?.id}))
+									}
+									}} >
+										<div className = "icon-container">
+											{epicTicketType?.id === ticket?.ticketTypeId ? <IconTree className="icon"/> : <IconPlus className="icon"/>}
+											<span>{epicTicketType?.id === ticket?.ticketTypeId ? "Link" : "Add"} To Epic</span>
+										</div>
+									</Button>
 								}
 							</div>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
