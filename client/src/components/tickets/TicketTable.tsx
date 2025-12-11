@@ -24,7 +24,7 @@ interface Props {
 	boardId: number | null | undefined
 	selectedIds: Array<number>
 	setSelectedIds: (ids: Array<number>) => void
-	key: string
+	tableKey: string
 	header: string
 	stepButtonRow?: React.ReactNode
 	tableClassName?: string
@@ -38,7 +38,7 @@ export type FormValues = {
 
 export const TicketTable = ({
 	tableClassName, 
-	key, 
+	tableKey, 
 	header, 
 	boardId, 
 	selectedIds, 
@@ -175,7 +175,7 @@ export const TicketTable = ({
 								data={data?.data} 
 								config={config} 
 								itemIds={selectedIds} 
-								tableKey={key}
+								tableKey={tableKey}
 							></Table>
 						</div>
 						{
