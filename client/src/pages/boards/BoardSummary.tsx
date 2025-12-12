@@ -1,9 +1,9 @@
-import React, { useEffect } from "react"
-import { useGetBoardSummaryQuery } from "../../services/private/board"
+import React, { useEffect, useState } from "react"
+import { useGetBoardActivityQuery, useGetBoardSummaryQuery } from "../../services/private/board"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useNavigate, Link } from "react-router-dom"
-import { BoardSummary as BoardSummaryType, ProgressBarItem, PieChartItem, UserProfile } from "../../types/common"
+import { BoardSummary as BoardSummaryType, TicketEntityHistory, ProgressBarItem, PieChartItem, UserProfile, Ticket } from "../../types/common"
 import { PRIORITY_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
@@ -21,7 +21,12 @@ import { IconPaper } from "../../components/icons/IconPaper"
 import { BarChart } from "../../components/charts/BarChart"
 import { SummaryCard } from "../../components/charts/SummaryCard"
 import { TICKETS } from "../../helpers/routes"
+import { format } from "date-fns"
 
+
+type GroupedActivity = TicketEntityHistory & {
+    changedByUser: string
+}
 
 export const BoardSummary = () => {
     const navigate = useNavigate()
@@ -29,19 +34,40 @@ export const BoardSummary = () => {
     const { statuses } = useAppSelector((state) => state.status)
     const { priorities } = useAppSelector((state) => state.priority)
     const { ticketTypes } = useAppSelector((state) => state.ticketType)
+    const [ groupedRecentActivity, setGroupedRecentActivity ] = useState<Record<string, Array<GroupedActivity>>>({})
 
     const { data, isLoading } = useGetBoardSummaryQuery(boardInfo ? {boardId: boardInfo?.id} : skipToken)
+    const { data: boardActivityData, isLoading: isBoardActivityLoading} = useGetBoardActivityQuery(boardInfo ? {boardId: boardInfo?.id} : skipToken)
     const [trigger, { data: userProfiles, isLoading: isUserProfilesLoading}] = useLazyGetUserProfilesQuery()
 
     useEffect(() => {
         // get all user profiles from the tickets to assignees
-        if (data && !isLoading){
+        if (data && boardActivityData && !isLoading && !isBoardActivityLoading){
             const userIds = data.ticketsByAssignee.map((obj) => obj.userId)
+            // make sure the id is not in userIds to avoid duplicates
+            const boardActivityUserIds = boardActivityData.data.map((obj) => obj.changedBy).filter((id) => !userIds.includes(id))
             if (userIds.length){
-                trigger({userIds: userIds})
+                trigger({userIds: [...userIds, ...boardActivityUserIds]})
             }
         }
-    }, [data, isLoading])
+    }, [data, boardActivityData, isLoading, isBoardActivityLoading])
+
+    useEffect(() => {
+        if (!isBoardActivityLoading && boardActivityData && userProfiles && !isUserProfilesLoading){
+            const groupedActivity = boardActivityData.data.reduce((acc: Record<string, Array<GroupedActivity>>, obj: TicketEntityHistory ) => {
+                const changedAt = format(new Date(obj.changedAt), "MMMM dd, yyyy")
+                if (!(changedAt in acc)){
+                    acc[changedAt] = []
+                }
+                acc[changedAt].push({
+                    ...obj,
+                    changedByUser: displayUser(userProfiles.data.find((userProfile) => userProfile.id === obj.changedBy)),
+                })
+                return acc
+            }, {})
+            setGroupedRecentActivity(groupedActivity)
+        }
+    }, [isBoardActivityLoading, boardActivityData, userProfiles, isUserProfilesLoading])
     
     const totalTickets = data?.totalTickets ?? 0
 
@@ -107,8 +133,8 @@ export const BoardSummary = () => {
         <LoadingSkeleton>
             <RowPlaceholder/>
         </LoadingSkeleton> :
-        <div className="tw-min-h-screen tw-bg-gray-50 tw-p-6">
-            <div className="tw-max-w-7xl tw-mx-auto tw-space-y-6">
+        <div className="tw-min-h-screen tw-bg-gray-50 tw-flex tw-flex-row tw-gap-x-4 tw-p-6">
+            <div className="tw-max-w-6xl tw-space-y-6">
                 {/* Top Stats Cards */}
                 <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 tw-gap-4">
                     <SummaryCard 
@@ -206,6 +232,31 @@ export const BoardSummary = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className = "tw-flex tw-flex-col tw-gap-y-2 tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6 tw-flex-1">
+                <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Recent Activity</h2>
+                <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
+                    Stay up to date with what's happening across the space
+                </p>
+                {
+                    Object.keys(groupedRecentActivity).map((date, index) => {
+                        return (
+                            <div key={`recent-activity-group-${index}`} className = "tw-flex tw-flex-col tw-gap-y-4">
+                                <p className = "tw-text-sm tw-text-gray-600">{date}</p>
+                                {
+                                    groupedRecentActivity[date].map((history) => {
+                                        const actions = {"UPDATE": "updated", "INSERT": "created", "DELETE": "deleted"}
+                                        return (
+                                            <div key = {`recent-activity-${history.id}`}>
+                                                {history.changedByUser} {actions[history.operation as keyof typeof actions]} {history.ticketName}
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
+                        )
+                    })
+                }
             </div>
         </div>
     )

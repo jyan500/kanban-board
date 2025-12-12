@@ -359,10 +359,18 @@ router.get("/:boardId/activity", validateGet, handleValidationResult, async (req
 		}).orWhere((queryBuilder) => {
 			queryBuilder.where("parent_entity_type", "ticket").whereIn("parent_entity_id", ticketIds)
 		}).where(db.raw('DATE(entity_history.changed_at)'), ">=", sevenDaysAgo)
-		.select("entity_history.changed_at as changedAt", "entity_history.operation as operation", "entity_history.changed_by as changedBy", "tickets.name as ticketName", "tickets.id as id", "entity_history.change_details as changeDetails")
+		.select(
+			"entity_history.changed_at as changedAt", 
+			"entity_history.operation as operation", 
+			"entity_history.changed_by as changedBy", 
+			"tickets.name as ticketName", 
+			"tickets.id as id", 
+			"entity_history.change_details as changeDetails", 
+			"entity_history.entity_type as entityType", 
+			"entity_history.record_data as recordData"
+		)
 		.orderBy("changed_at", "desc")
 		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})
-		console.log(ticketActivity)
 		res.json(ticketActivity)
 	}
 	catch (err) {
