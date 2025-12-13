@@ -21,7 +21,10 @@ import { IconPaper } from "../../components/icons/IconPaper"
 import { BarChart } from "../../components/charts/BarChart"
 import { SummaryCard } from "../../components/charts/SummaryCard"
 import { TICKETS } from "../../helpers/routes"
+import { PaginationRow } from "../../components/page-elements/PaginationRow"
 import { format } from "date-fns"
+import { MdBreakfastDining } from "react-icons/md"
+import { BOARD_ACTIVITY_URL } from "../../helpers/urls"
 
 
 type GroupedActivity = TicketEntityHistory & {
@@ -35,9 +38,10 @@ export const BoardSummary = () => {
     const { priorities } = useAppSelector((state) => state.priority)
     const { ticketTypes } = useAppSelector((state) => state.ticketType)
     const [ groupedRecentActivity, setGroupedRecentActivity ] = useState<Record<string, Array<GroupedActivity>>>({})
+    const [ historyPage, setHistoryPage ] = useState(1)
 
     const { data, isLoading } = useGetBoardSummaryQuery(boardInfo ? {boardId: boardInfo?.id} : skipToken)
-    const { data: boardActivityData, isLoading: isBoardActivityLoading} = useGetBoardActivityQuery(boardInfo ? {boardId: boardInfo?.id} : skipToken)
+    const { data: boardActivityData, isLoading: isBoardActivityLoading} = useGetBoardActivityQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {page: historyPage}} : skipToken)
     const [trigger, { data: userProfiles, isLoading: isUserProfilesLoading}] = useLazyGetUserProfilesQuery()
 
     useEffect(() => {
@@ -127,6 +131,8 @@ export const BoardSummary = () => {
     const constructTicketLink = (ids: Array<number>) => {
         return `${TICKETS}?${encodeIds(ids ?? [])}`
     }
+
+
 
     return (
         isLoading && !data ? 
@@ -245,10 +251,10 @@ export const BoardSummary = () => {
                                 <p className = "tw-text-sm tw-text-gray-600">{date}</p>
                                 {
                                     groupedRecentActivity[date].map((history) => {
-                                        const actions = {"UPDATE": "updated", "INSERT": "created", "DELETE": "deleted"}
+                                        const displayName = displayUser(userProfiles?.data.find((user) => user.id === history.changedBy))
                                         return (
-                                            <div key = {`recent-activity-${history.id}`}>
-                                                {history.changedByUser} {actions[history.operation as keyof typeof actions]} {history.ticketName}
+                                            <div key = {`recent-activity-${history.historyId}`}>
+                                                {history.displayString}
                                             </div>
                                         )
                                     })
@@ -257,6 +263,7 @@ export const BoardSummary = () => {
                         )
                     })
                 }
+                <PaginationRow setPage={setHistoryPage} currentPage={historyPage} showPageNums={true} paginationData={boardActivityData?.pagination}/>
             </div>
         </div>
     )

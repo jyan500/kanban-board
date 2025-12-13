@@ -216,10 +216,11 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["BoardSummary"]
 		}),
-		getBoardActivity: builder.query<ListResponse<TicketEntityHistory>, {boardId: number}>({
-			query: ({boardId}) => ({
+		getBoardActivity: builder.query<ListResponse<TicketEntityHistory>, {boardId: number, urlParams: Record<string, any>}>({
+			query: ({boardId, urlParams}) => ({
 				url: BOARD_ACTIVITY_URL(boardId),
-				method: "GET"
+				method: "GET",
+				params: urlParams
 			}),
 			providesTags: ["BoardActivity"]
 		})

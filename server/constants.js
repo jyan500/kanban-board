@@ -19,6 +19,44 @@ const ORG_STATUS_LIMIT = 10
 
 const EXCEEDED_MESSAGE = "You have exceeded the maximum amount of attempts. Please try again later."
 
+const TICKET_ENTITY_TYPES = {
+   "tickets_to_users": (ticketName, displayName, action) => {
+		const actionTypes = {"INSERT": "assigned to", "DELETE": "removed from"}
+		if (action in actionTypes){
+			return `${displayName} has been ${actionTypes[action]} ${ticketName}`
+		}
+		return ""
+	}, 
+	"tickets_to_boards": (ticketName, boardName, action) => {
+		const actionTypes = {"INSERT": "added to", "DELETE": "removed from"}
+		if (action in actionTypes){
+			return `${ticketName} has been ${actionTypes[action]} ${boardName}`
+		}
+		return ""
+	}, 
+	"ticket_activity": (ticketName, displayName, time, action) => {
+		const actionTypes = {"INSERT": "logged"}
+		if (action in actionTypes){
+			return `${displayName} has logged ${actionTypes[action]} ${time} to ${ticketName}`
+		}
+		return ""
+	}, 
+	"ticket_comments": (ticketName, displayName, action) => {
+		const actionTypes = {"INSERT": "commented on"}
+		if (action in actionTypes){
+			return `${displayName} commented on ${ticketName}`
+		}
+		return ""
+	}, 
+	"ticket_relationships": (parentTicketName, childTicketName, action) => {
+		const actionTypes = {"LINK": "linked to", "DELETE": "unlinked from"}
+		if (action in actionTypes){
+			return `${childTicketName} has been ${actionTypes[action]} ${parentTicketName}`
+		}
+		return ""
+	}
+}
+
 module.exports = {
 	BULK_INSERT_LIMIT,
 	DEFAULT_STATUSES,
@@ -28,4 +66,5 @@ module.exports = {
 	MAX_BOARD_TICKET_LIMIT,
 	ORG_STATUS_LIMIT,
 	EXCEEDED_MESSAGE,
+	TICKET_ENTITY_TYPES,
 }

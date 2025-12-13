@@ -2,6 +2,7 @@ const db = require("../db/db")
 const { parse } = require('node-html-parser')
 const config = require("../config")
 const Mustache = require("mustache")
+const { TICKET_ENTITY_TYPES } = require("../constants")
 /*
 turns an object of the following from knex into an object where the key is the id of the row, mapped
 to the rest of the row as an object, or a specific column
@@ -157,6 +158,43 @@ const aggregateCompletedAndOpenSprintTickets = async (sprintId, completedStatusI
 }
 
 /* 
+	Takes in entity history object, and returns the display string for that particular entity type
+*/
+const getHistoryDisplayString = async (history) => {
+	const user = await db("users").where("id", history.changedBy).first()
+	const displayName = `${user?.first_name ?? ""} ${user?.last_name ?? ""}`
+	let displayText = ""
+	const ticketActions = {"INSERT": "created", "UPDATE": "updated", "DELETE": "deleted"}
+	const data = history.recordData
+	if (history.entityType === "tickets"){
+		displayText = `${displayName} has ${history.operation in ticketActions ? ticketActions[history.operation] : ""} ${history.ticketName}` 
+	}
+	else {
+		switch (history.entityType){
+			case "ticket_comments":
+				displayText = TICKET_ENTITY_TYPES["ticket_comments"](history.ticketName, displayName, history.operation)
+				break
+			case "tickets_to_boards":
+				const board = await db("boards").where("id", Number(data.board_id)).first()
+				displayText = TICKET_ENTITY_TYPES["tickets_to_boards"](history.ticketName, board?.name ?? "", history.operation)
+				break 
+			case "tickets_to_users":
+				displayText = TICKET_ENTITY_TYPES["tickets_to_users"](history.ticketName, displayName, history.operation)
+				break 
+			case "ticket_relationships":
+				const childTicket = await db("tickets").where("id", Number(data.child_ticket_id)).first()
+				const parentTicket = await db("tickets").where("id", Number(data.parent_ticket_id)).first()
+				displayText = TICKET_ENTITY_TYPES["ticket_relationships"](parentTicket?.name ?? "", childTicket?.name ?? "", history.operation)
+				break
+			// case "ticket_activity":
+			//     displayText = displayFunction()
+			//     break
+		}
+	}
+	return displayText
+}
+
+/* 
 	convert string dot notation into the syntax to retrieve an object 
 	i.e 
 	input: 
@@ -261,5 +299,6 @@ module.exports = {
 	insertAndGetId,
 	bulkInsertAndGetIds,
 	retryTransaction,
-	aggregateCompletedAndOpenSprintTickets
+	aggregateCompletedAndOpenSprintTickets,
+	getHistoryDisplayString,
 }

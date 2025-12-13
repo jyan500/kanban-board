@@ -24,7 +24,7 @@ const {
 }  = require("../validation/board")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const db = require("../db/db")
-const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject } = require("../helpers/functions") 
+const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject, getHistoryDisplayString } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { getAssigneesFromBoards, getNumTicketsFromBoards, getLastModified, searchTicketByAssignee } = require("../helpers/query-helpers")
@@ -349,7 +349,7 @@ router.get("/:boardId/activity", validateGet, handleValidationResult, async (req
 		/*
 			Show recent activity within the last 7 days for board tickets
 		*/
-		const ticketActivity = await db("entity_history")
+		const ticketHistory = await db("entity_history")
 			.leftJoin("tickets", (queryBuilder) => {
 				queryBuilder.on("tickets.id", "=", "entity_history.entity_id")
 					.orOn("tickets.id", "=", "entity_history.parent_entity_id");
@@ -358,20 +358,42 @@ router.get("/:boardId/activity", validateGet, handleValidationResult, async (req
 			queryBuilder.where("entity_type", "tickets").whereIn("entity_id", ticketIds)
 		}).orWhere((queryBuilder) => {
 			queryBuilder.where("parent_entity_type", "ticket").whereIn("parent_entity_id", ticketIds)
+			// we don't need to include when tickets are added to the sprint as a part of the history
+			.where("entity_type", "!=", "tickets_to_sprints")
 		}).where(db.raw('DATE(entity_history.changed_at)'), ">=", sevenDaysAgo)
 		.select(
 			"entity_history.changed_at as changedAt", 
 			"entity_history.operation as operation", 
+			"entity_history.history_id as historyId",
 			"entity_history.changed_by as changedBy", 
 			"tickets.name as ticketName", 
 			"tickets.id as id", 
+			"entity_history.entity_id as entityId",
+			"entity_history.parent_entity_id as parentEntityId",
 			"entity_history.change_details as changeDetails", 
 			"entity_history.entity_type as entityType", 
 			"entity_history.record_data as recordData"
 		)
 		.orderBy("changed_at", "desc")
 		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})
-		res.json(ticketActivity)
+
+		let parsedTicketHistory = await Promise.all(ticketHistory.data.map(async (ticketHistory) => {
+			const data = ticketHistory.recordData
+			// because the ticket relationships is two way, ignore the relationship from parent -> child
+			if (ticketHistory.entityType === "ticket_relationships" && Number(data.parent_ticket_id) === ticketHistory.parentEntityId){
+				return
+			}
+			const displayString = await getHistoryDisplayString(ticketHistory)
+			return {
+				...ticketHistory,
+				displayString
+			}
+		}))
+		parsedTicketHistory = parsedTicketHistory.filter((history) => history != null)
+		res.json({
+			data: parsedTicketHistory,
+			pagination: ticketHistory.pagination
+		})
 	}
 	catch (err) {
 		console.error(`Error while getting recent activity: ${err.message}`)
