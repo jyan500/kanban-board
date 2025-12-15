@@ -367,9 +367,9 @@ router.get("/:boardId/activity", validateGet, handleValidationResult, async (req
 			"entity_history.history_id as historyId",
 			"entity_history.changed_by as changedBy", 
 			"tickets.name as ticketName", 
-			"tickets.id as id", 
 			"entity_history.entity_id as entityId",
 			"entity_history.parent_entity_id as parentEntityId",
+			"entity_history.parent_entity_type as parentEntityType",
 			"entity_history.change_details as changeDetails", 
 			"entity_history.entity_type as entityType", 
 			"entity_history.record_data as recordData"
@@ -383,9 +383,20 @@ router.get("/:boardId/activity", validateGet, handleValidationResult, async (req
 			if (ticketHistory.entityType === "ticket_relationships" && Number(data.parent_ticket_id) === ticketHistory.parentEntityId){
 				return
 			}
+			// if entity type is ticket, the entity id is the ticket id, 
+			// however if parent entity type is ticket, the parent entity type is the ticket id
+			let ticketId;
+			if (ticketHistory.entityType === "tickets"){
+				ticketId = ticketHistory.entityId
+			}
+			else if (ticketHistory.parentEntityType === "ticket"){
+				ticketId = ticketHistory.parentEntityId
+			}
+
 			const displayString = await getHistoryDisplayString(ticketHistory)
 			return {
 				...ticketHistory,
+				ticketId: ticketId,
 				displayString
 			}
 		}))
@@ -609,7 +620,7 @@ router.post("/:boardId/ticket", validateBoardTicketCreate, handleValidationResul
 			...req.historyContext,
 			useParentEntityId: "ticket_id",
 			bulkParentEntityInfo: toInsert.map((obj) => ({
-				parentEntityType: 'ticket',
+				parentEntityType: 'tickets',
 				parentEntityId: obj.ticket_id
 			}))	
 		})
@@ -659,7 +670,7 @@ router.delete("/:boardId/ticket", validateBoardTicketBulkDelete, handleValidatio
 			useParentEntityId: "ticket_id",
 			bulkParentEntityInfo: req.body.ticket_ids.map((id) => ({
 				parentEntityId: id,
-				parentEntityType: "ticket"
+				parentEntityType: "tickets"
 			}))
 		})
 		res.json({message: "tickets deleted from board successfully!"})
@@ -678,7 +689,7 @@ router.delete("/:boardId/ticket/:ticketId", validateBoardTicketDelete, handleVal
 		}
 		await historyService.delete("tickets_to_boards", existingTicket.id, {
 			...req.historyContext,
-			parentEntityType: "ticket",
+			parentEntityType: "tickets",
 			parentEntityId: req.params.ticketId
 		})
 		res.json({message: "ticket deleted from board successfully!"})

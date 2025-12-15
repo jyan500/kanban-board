@@ -103,7 +103,6 @@ export interface BoardSummary {
 }
 
 export type EntityHistory = {
-	id: number
 	changedBy: number
 	changedAt: Date
 	changeDetails: Record<string, any> | null
@@ -118,6 +117,7 @@ export type EntityHistory = {
 
 export type TicketEntityHistory = EntityHistory & {
 	ticketName: string
+	ticketId: number
 }
 
 export interface Sprint {

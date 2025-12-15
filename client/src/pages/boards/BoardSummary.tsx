@@ -239,11 +239,13 @@ export const BoardSummary = () => {
                     </div>
                 </div>
             </div>
-            <div className = "tw-flex tw-flex-col tw-gap-y-2 tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6 tw-flex-1">
-                <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Recent Activity</h2>
-                <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
-                    Stay up to date with what's happening across the space
-                </p>
+            <div className = "tw-flex tw-flex-col tw-gap-y-4 tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6 tw-flex-1">
+                <div>
+                    <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Recent Activity</h2>
+                    <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
+                        Stay up to date with what's happening across the space
+                    </p>
+                </div>
                 {
                     Object.keys(groupedRecentActivity).map((date, index) => {
                         return (
@@ -252,9 +254,11 @@ export const BoardSummary = () => {
                                 {
                                     groupedRecentActivity[date].map((history) => {
                                         const displayName = displayUser(userProfiles?.data.find((user) => user.id === history.changedBy))
+                                        const user = userProfiles?.data?.find((user) => user.id === history.changedBy) ?? null
                                         return (
-                                            <div key = {`recent-activity-${history.historyId}`}>
-                                                {history.displayString}
+                                            <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center" key = {`recent-activity-${history.historyId}`}>
+                                                <Avatar userInitials={getUserInitials(user)} imageUrl={user?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>
+                                                <span className = "tw-line-clamp-2">{history.displayString}</span>
                                             </div>
                                         )
                                     })
@@ -263,7 +267,11 @@ export const BoardSummary = () => {
                         )
                     })
                 }
-                <PaginationRow setPage={setHistoryPage} currentPage={historyPage} showPageNums={true} paginationData={boardActivityData?.pagination}/>
+                {
+                    !isBoardActivityLoading && boardActivityData?.pagination ? 
+                    <PaginationRow setPage={setHistoryPage} currentPage={historyPage} showPageNums={true} paginationData={boardActivityData?.pagination}/>
+                    : null 
+                }
             </div>
         </div>
     )

@@ -463,7 +463,7 @@ class HistoryService {
                 'LINK',
                 {
                     ...context,
-                    parentEntityType: 'ticket',
+                    parentEntityType: 'tickets',
                     parentEntityId: parentTicketId
                 }
             )
@@ -476,7 +476,7 @@ class HistoryService {
                 'LINK',
                 {
                     ...context,
-                    parentEntityType: 'ticket',
+                    parentEntityType: 'tickets',
                     parentEntityId: childTicketId
                 }
             )
@@ -513,7 +513,7 @@ class HistoryService {
                 'UNLINK',
                 {
                     ...context,
-                    parentEntityType: 'ticket',
+                    parentEntityType: 'tickets',
                     parentEntityId: oldRecord.parent_ticket_id,
                     oldRecord
                 }
@@ -527,7 +527,7 @@ class HistoryService {
                 'UNLINK',
                 {
                     ...context,
-                    parentEntityType: 'ticket',
+                    parentEntityType: 'tickets',
                     parentEntityId: oldRecord.child_ticket_id,
                     oldRecord
                 }
