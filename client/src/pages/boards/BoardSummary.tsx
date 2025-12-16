@@ -177,8 +177,8 @@ export const BoardSummary = () => {
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Status overview</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
-                            Get a snapshot of the status of your work items.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">View all work items</Link>
+                            Get a snapshot of the status of your tickets.{' '}
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">View all tickets</Link>
                         </p>
                         <div className = "tw-space-y-1">
                             <BarChart data={statusData} searchKey={"statusId"} boardId={boardInfo?.id ?? 0}/>
@@ -189,8 +189,8 @@ export const BoardSummary = () => {
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Priority breakdown</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
-                            Get a holistic view of how work is being prioritized.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">How to manage priorities for spaces</Link>
+                            Get a holistic view of how tickets are being prioritized.{' '}
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">Manage priorities</Link>
                         </p>
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
                             <PieChartWithKey boardId={boardInfo?.id ?? 0} searchKey={"priorityId"} data={priorityData} total={totalTickets}/>
@@ -202,7 +202,7 @@ export const BoardSummary = () => {
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Team workload</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
                             Monitor the capacity of your team.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">Reassign tickets to get the right balance</Link>
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">Reassign tickets</Link>
                         </p>
 
                         <div className="tw-space-y-3">
@@ -220,7 +220,7 @@ export const BoardSummary = () => {
                         </div>
                     </div>
 
-                    {/* Types of Work */}
+                    {/* Ticket Types */}
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Types of tickets</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
