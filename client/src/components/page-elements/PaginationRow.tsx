@@ -39,19 +39,31 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
 							{
 								showPageNums ? (
 									<div className = "tw-flex tw-flex-wrap tw-gap-x-1">
-										{
-											Array.from(Array(paginationData.lastPage), (_, i) => {
-												const urlParamsWithPage = {
-													[customPageParam ?? "page"]: i+1,
-													...urlParams
-												}
+									{
+										Array.from(Array(paginationData.lastPage), (_, i) => {
+											if (!url){
+												return (
+													<button
+														className={`tw-px-0.5 tw-border-b ${i+1 === currentPage ? "tw-font-bold tw-border-gray-800" : "tw-border-transparent"}`}
+														key={`pagination-page-${i}`}
+														onClick={() => setPage(i+1)}
+													>
+														{i+1}
+													</button>
+												)
+											}
+											const urlParamsWithPage = {
+												[customPageParam ?? "page"]: i+1,
+												...urlParams
+											}
 											return (
-											<Link 
-												className = {`tw-px-0.5 ${i+1 === currentPage ? "tw-font-bold tw-border-b tw-border-gray-800" : ""}`}
-												key={`pagination_page_${i}`} 
-												to={`${url}?${parseURLParams(urlParamsWithPage)}`}>
-												{i+1}
-											</Link>	)
+												<Link 
+													className={`tw-px-0.5 tw-border-b ${i+1 === currentPage ? "tw-font-bold tw-border-gray-800" : "tw-border-transparent"}`}
+													key={`pagination_page_${i}`} 
+													to={`${url}?${parseURLParams(urlParamsWithPage)}`}>
+													{i+1}
+												</Link>	
+											)
 										})
 									}	
 									</div>

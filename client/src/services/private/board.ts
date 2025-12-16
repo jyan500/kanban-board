@@ -11,7 +11,7 @@ import {
 	BOARD_ACTIVITY_URL,
 	BOARD_FILTER_URL,
 } from "../../helpers/urls" 
-import { CustomError, GenericObject, Board, BoardSummary, ListResponse, Project, Status, Ticket } from "../../types/common" 
+import { CustomError, GenericObject, Board, BoardSummary, ListResponse, Project, Status, Ticket, TicketEntityHistory } from "../../types/common" 
 import { privateApi } from "../private"
 import { parseURLParams } from "../../helpers/functions" 
 
@@ -216,10 +216,11 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["BoardSummary"]
 		}),
-		getBoardActivity: builder.query<Record<string, any>, {boardId: number}>({
-			query: ({boardId}) => ({
+		getBoardActivity: builder.query<ListResponse<TicketEntityHistory>, {boardId: number, urlParams: Record<string, any>}>({
+			query: ({boardId, urlParams}) => ({
 				url: BOARD_ACTIVITY_URL(boardId),
-				method: "GET"
+				method: "GET",
+				params: urlParams
 			}),
 			providesTags: ["BoardActivity"]
 		})
@@ -230,6 +231,7 @@ export const {
 	useGetBoardQuery, 
 	useLazyGetBoardQuery,
 	useGetBoardsQuery, 
+	useGetBoardActivityQuery,
 	useGetBoardSummaryQuery,
 	useGetBoardTicketsQuery,
 	useGetBoardFiltersQuery,

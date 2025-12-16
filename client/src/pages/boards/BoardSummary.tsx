@@ -1,9 +1,9 @@
-import React, { useEffect } from "react"
-import { useGetBoardSummaryQuery } from "../../services/private/board"
+import React, { useEffect, useState } from "react"
+import { useGetBoardActivityQuery, useGetBoardSummaryQuery } from "../../services/private/board"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useNavigate, Link } from "react-router-dom"
-import { BoardSummary as BoardSummaryType, ProgressBarItem, PieChartItem, UserProfile } from "../../types/common"
+import { BoardSummary as BoardSummaryType, TicketEntityHistory, ProgressBarItem, PieChartItem, UserProfile, Ticket } from "../../types/common"
 import { PRIORITY_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
@@ -21,7 +21,15 @@ import { IconPaper } from "../../components/icons/IconPaper"
 import { BarChart } from "../../components/charts/BarChart"
 import { SummaryCard } from "../../components/charts/SummaryCard"
 import { TICKETS } from "../../helpers/routes"
+import { PaginationRow } from "../../components/page-elements/PaginationRow"
+import { format } from "date-fns"
+import { MdBreakfastDining } from "react-icons/md"
+import { BOARD_ACTIVITY_URL } from "../../helpers/urls"
 
+
+type GroupedActivity = TicketEntityHistory & {
+    changedByUser: string
+}
 
 export const BoardSummary = () => {
     const navigate = useNavigate()
@@ -29,19 +37,41 @@ export const BoardSummary = () => {
     const { statuses } = useAppSelector((state) => state.status)
     const { priorities } = useAppSelector((state) => state.priority)
     const { ticketTypes } = useAppSelector((state) => state.ticketType)
+    const [ groupedRecentActivity, setGroupedRecentActivity ] = useState<Record<string, Array<GroupedActivity>>>({})
+    const [ historyPage, setHistoryPage ] = useState(1)
 
     const { data, isLoading } = useGetBoardSummaryQuery(boardInfo ? {boardId: boardInfo?.id} : skipToken)
+    const { data: boardActivityData, isLoading: isBoardActivityLoading} = useGetBoardActivityQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {page: historyPage}} : skipToken)
     const [trigger, { data: userProfiles, isLoading: isUserProfilesLoading}] = useLazyGetUserProfilesQuery()
 
     useEffect(() => {
         // get all user profiles from the tickets to assignees
-        if (data && !isLoading){
+        if (data && boardActivityData && !isLoading && !isBoardActivityLoading){
             const userIds = data.ticketsByAssignee.map((obj) => obj.userId)
+            // make sure the id is not in userIds to avoid duplicates
+            const boardActivityUserIds = boardActivityData.data.map((obj) => obj.changedBy).filter((id) => !userIds.includes(id))
             if (userIds.length){
-                trigger({userIds: userIds})
+                trigger({userIds: [...userIds, ...boardActivityUserIds]})
             }
         }
-    }, [data, isLoading])
+    }, [data, boardActivityData, isLoading, isBoardActivityLoading])
+
+    useEffect(() => {
+        if (!isBoardActivityLoading && boardActivityData && userProfiles && !isUserProfilesLoading){
+            const groupedActivity = boardActivityData.data.reduce((acc: Record<string, Array<GroupedActivity>>, obj: TicketEntityHistory ) => {
+                const changedAt = format(new Date(obj.changedAt), "MMMM dd, yyyy")
+                if (!(changedAt in acc)){
+                    acc[changedAt] = []
+                }
+                acc[changedAt].push({
+                    ...obj,
+                    changedByUser: displayUser(userProfiles.data.find((userProfile) => userProfile.id === obj.changedBy)),
+                })
+                return acc
+            }, {})
+            setGroupedRecentActivity(groupedActivity)
+        }
+    }, [isBoardActivityLoading, boardActivityData, userProfiles, isUserProfilesLoading])
     
     const totalTickets = data?.totalTickets ?? 0
 
@@ -102,13 +132,15 @@ export const BoardSummary = () => {
         return `${TICKETS}?${encodeIds(ids ?? [])}`
     }
 
+
+
     return (
         isLoading && !data ? 
         <LoadingSkeleton>
             <RowPlaceholder/>
         </LoadingSkeleton> :
-        <div className="tw-min-h-screen tw-bg-gray-50 tw-p-6">
-            <div className="tw-max-w-7xl tw-mx-auto tw-space-y-6">
+        <div className="tw-min-h-screen tw-bg-gray-50 tw-flex tw-flex-row tw-gap-x-4 tw-p-6">
+            <div className="tw-max-w-6xl tw-space-y-6">
                 {/* Top Stats Cards */}
                 <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 tw-gap-4">
                     <SummaryCard 
@@ -145,8 +177,8 @@ export const BoardSummary = () => {
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Status overview</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
-                            Get a snapshot of the status of your work items.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">View all work items</Link>
+                            Get a snapshot of the status of your tickets.{' '}
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">View all tickets</Link>
                         </p>
                         <div className = "tw-space-y-1">
                             <BarChart data={statusData} searchKey={"statusId"} boardId={boardInfo?.id ?? 0}/>
@@ -157,8 +189,8 @@ export const BoardSummary = () => {
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Priority breakdown</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
-                            Get a holistic view of how work is being prioritized.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">How to manage priorities for spaces</Link>
+                            Get a holistic view of how tickets are being prioritized.{' '}
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">Manage priorities</Link>
                         </p>
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
                             <PieChartWithKey boardId={boardInfo?.id ?? 0} searchKey={"priorityId"} data={priorityData} total={totalTickets}/>
@@ -170,7 +202,7 @@ export const BoardSummary = () => {
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Team workload</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
                             Monitor the capacity of your team.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">Reassign tickets to get the right balance</Link>
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} state={{resetFilters: true}} className="tw-text-blue-600 hover:tw-underline">Reassign tickets</Link>
                         </p>
 
                         <div className="tw-space-y-3">
@@ -188,7 +220,7 @@ export const BoardSummary = () => {
                         </div>
                     </div>
 
-                    {/* Types of Work */}
+                    {/* Ticket Types */}
                     <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Types of tickets</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
@@ -206,6 +238,45 @@ export const BoardSummary = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className = "tw-flex tw-flex-col tw-gap-y-4 tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6 tw-flex-1">
+                <div>
+                    <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Recent Activity</h2>
+                    <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
+                        Stay up to date with what's happening across the space
+                    </p>
+                </div>
+                {
+                    !Object.keys(groupedRecentActivity).length ?     
+                    <LoadingSkeleton>
+                        <RowPlaceholder/>
+                    </LoadingSkeleton>
+                    : 
+                    Object.keys(groupedRecentActivity).map((date, index) => {
+                        return (
+                            <div key={`recent-activity-group-${index}`} className = "tw-flex tw-flex-col tw-gap-y-4">
+                                <p className = "tw-text-sm tw-text-gray-600">{date}</p>
+                                {
+                                    groupedRecentActivity[date].map((history) => {
+                                        const displayName = displayUser(userProfiles?.data.find((user) => user.id === history.changedBy))
+                                        const user = userProfiles?.data?.find((user) => user.id === history.changedBy) ?? null
+                                        return (
+                                            <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center" key = {`recent-activity-${history.historyId}`}>
+                                                <Avatar userInitials={getUserInitials(user)} imageUrl={user?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>
+                                                <Link to={`${TICKETS}/${history.ticketId}`} className = "hover:tw-opacity-70 tw-line-clamp-2">{history.displayString}</Link>
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
+                        )
+                    })
+                }
+                {
+                    !isBoardActivityLoading && boardActivityData?.pagination && Object.keys(groupedRecentActivity).length ? 
+                    <PaginationRow setPage={setHistoryPage} currentPage={historyPage} showPageNums={true} paginationData={boardActivityData?.pagination}/>
+                    : null 
+                }
             </div>
         </div>
     )

@@ -214,7 +214,7 @@ router.post("/:sprintId/complete", validateSprintComplete, handleValidationResul
 				...req.historyContext,
 				useParentEntityId: "ticket_id",
 				bulkParentEntityInfo: toInsert.map((obj) => ({
-					parentEntityType: "ticket",
+					parentEntityType: "tickets",
 					parentEntityId: obj.ticket_id
 				}))
 			})
@@ -325,7 +325,7 @@ router.post("/:sprintId/ticket", validateSprintTicketUpdate, handleValidationRes
 			...req.historyContext,
 			useParentEntityId: "ticket_id",
 			bulkParentEntityInfo: toInsert.map((obj) => ({
-				parentEntityType: 'ticket',
+				parentEntityType: 'tickets',
 				parentEntityId: obj.ticket_id 
 			}))
 		})
@@ -346,7 +346,7 @@ router.delete("/:sprintId/ticket", validateSprintTicketDelete, handleValidationR
 			...req.historyContext,
 			useParentEntityId: "ticket_id",		
 			bulkParentEntityInfo: existingTickets.map((obj) => ({
-				parentEntityType: "ticket",
+				parentEntityType: "tickets",
 				parentEntityId: obj.ticket_id
 			}))
 		})

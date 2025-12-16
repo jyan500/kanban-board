@@ -102,6 +102,24 @@ export interface BoardSummary {
 	ticketsCompleted: Array<number>
 }
 
+export type EntityHistory = {
+	changedBy: number
+	changedAt: Date
+	changeDetails: Record<string, any> | null
+	entityId: number
+	operation: string
+	entityType: string
+	recordData: Record<string, any> | null
+	displayString: string
+	historyId: number
+	parentEntityId: number
+}
+
+export type TicketEntityHistory = EntityHistory & {
+	ticketName: string
+	ticketId: number
+}
+
 export interface Sprint {
 	id: number
 	name: string

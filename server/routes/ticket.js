@@ -247,7 +247,7 @@ router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, 
 				...req.historyContext,
 				useParentEntityId: "ticket_id",
 				bulkParentEntityInfo: req.body.ticket_ids.map((id) => ({
-					parentEntityType: 'ticket',
+					parentEntityType: 'tickets',
                     parentEntityId: id 
 				}))
 			})
@@ -262,7 +262,7 @@ router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, 
 					...req.historyContext,
 					useParentEntityId: "ticket_id",
 					bulkParentEntityInfo: req.body.ticket_ids.map((id) => ({
-						parentEntityType: 'ticket',
+						parentEntityType: 'tickets',
 						parentEntityId: id 
 					}))
 				})
@@ -296,7 +296,7 @@ router.post("/bulk-watch", validateBulkWatch, handleValidationResult, async (req
 				...req.historyContext,
 				useParentEntityId: "ticket_id",
 				bulkParentEntityInfo: ticketIdsToWatch.filter((id) => id).map((id) => ({
-					parentEntityType: 'ticket',
+					parentEntityType: 'tickets',
                     parentEntityId: id 
 				}))
 			})
@@ -316,7 +316,7 @@ router.post("/bulk-watch", validateBulkWatch, handleValidationResult, async (req
 				...req.historyContext,
 				useParentEntityId: "ticket_id",
 				bulkParentEntityInfo: ticketsToUsersIds.filter((watcher) => watcher).map((watcher) => ({
-					parentEntityType: 'ticket',
+					parentEntityType: 'tickets',
                     parentEntityId: watcher.ticket_id 
 				}))
 			})
@@ -351,7 +351,7 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 				...req.historyContext,
 				useParentEntityId: "ticket_id",
 				bulkParentEntityInfo: ticketsToUsers.map((obj) => ({
-					parentEntityType: 'ticket',
+					parentEntityType: 'tickets',
                     parentEntityId: obj.ticket_id 
 				}))
 			})
@@ -447,7 +447,7 @@ router.post("/:ticketId/user/", validateTicketUserCreate, handleValidationResult
 				...req.historyContext,
 				useParentEntityId: "ticket_id",
 				bulkParentEntityInfo: ticketsToUsers.map((obj) => ({
-					parentEntityType: 'ticket',
+					parentEntityType: 'tickets',
                     parentEntityId: obj.ticket_id 
 				}))
 			})
@@ -462,7 +462,7 @@ router.post("/:ticketId/user/", validateTicketUserCreate, handleValidationResult
 				...req.historyContext,
 				useParentEntityId: "ticket_id",
 				bulkParentEntityInfo: ticketsToUsers.map((watcher) => ({
-					parentEntityType: 'ticket',
+					parentEntityType: 'tickets',
                     parentEntityId: watcher.ticket_id 
 				}))
 			})
@@ -491,7 +491,7 @@ router.post("/:ticketId/user/bulk-edit", validateTicketUserBulkEdit, handleValid
 			...req.historyContext,
 			useParentEntityId: "ticket_id",
 			bulkParentEntityInfo: existingAssignedUsers.map((ticketUser) => ({
-				parentEntityType: 'ticket',
+				parentEntityType: 'tickets',
 				parentEntityId: ticketUser.ticket_id 
 			}))
 		})
@@ -500,7 +500,7 @@ router.post("/:ticketId/user/bulk-edit", validateTicketUserBulkEdit, handleValid
 			...req.historyContext,
 			useParentEntityId: "ticket_id",
 			bulkParentEntityInfo: toInsert.map((obj) => ({
-				parentEntityType: 'ticket',
+				parentEntityType: 'tickets',
 				parentEntityId: obj.ticket_id
 			}))
 		})
@@ -524,7 +524,7 @@ router.delete("/:ticketId/user/:userId", validateTicketUserDelete, handleValidat
 			...req.historyContext,
 			useParentEntityId: "ticket_id",
 			bulkParentEntityInfo: [{
-				parentEntityType: 'ticket',
+				parentEntityType: 'tickets',
 				parentEntityId: req.params.ticketId 
 			}]
 		})
@@ -597,7 +597,7 @@ router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationR
 			user_id: req.user.id
 		}, {
 				...req.historyContext,
-				parentEntityType: "ticket",
+				parentEntityType: "tickets",
 				parentEntityId: req.params.ticketId,
 			}
 		)
@@ -608,7 +608,7 @@ router.post("/:ticketId/comment", validateTicketCommentCreate, handleValidationR
 				...req.historyContext,
 				useParentEntityId: "ticket_comment_id",
 				bulkParentEntityInfo: ticketCommentsToUsers.map((obj) => ({
-					parentEntityType: 'ticket_comment',
+					parentEntityType: 'ticket_comments',
 					parentEntityId: obj.ticket_comment_id 
 				}))
 			})
@@ -634,7 +634,7 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 			{ comment: req.body.comment },
 			{
 				...req.historyContext,
-				parentEntityType: "ticket",
+				parentEntityType: "tickets",
 				parentEntityId: req.params.ticketId 
 			}
 		)
@@ -657,7 +657,7 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 				...req.historyContext,
 				useParentEntityId: "ticket_comment_id",
 				bulkParentEntityInfo: existingMentions.map((obj) => ({
-					parentEntityType: "ticket_comment",
+					parentEntityType: "ticket_comments",
 					parentEntityId: obj.ticket_comment_id
 				}))
 			}
@@ -666,7 +666,7 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 				...req.historyContext,
 				useParentEntityId: "ticket_comment_id",
 				bulkParentEntityInfo: ticketCommentsToUsers.map((obj) => ({
-					parentEntityType: 'ticket_comment',
+					parentEntityType: 'ticket_comments',
 					parentEntityId: obj.ticket_comment_id 
 				}))
 			})
@@ -682,7 +682,7 @@ router.put("/:ticketId/comment/:commentId", validateTicketCommentUpdate, handleV
 				...req.historyContext,
 				useParentEntityId: "ticket_comment_id",
 				bulkParentEntityInfo: existingMentions.map((obj) => ({
-					parentEntityType: "ticket_comment",
+					parentEntityType: "ticket_comments",
 					parentEntityId: obj.ticket_comment_id
 				}))
 			}
@@ -707,7 +707,7 @@ router.delete("/:ticketId/comment/:commentId", validateTicketCommentDelete, hand
 	try {
 		await historyService.delete("ticket_comments", req.params.commentId, {
 			...req.historyContext,
-			parentEntityType: "ticket",
+			parentEntityType: "tickets",
 			parentEntityId: req.params.ticketId
 		})
 		res.json({message: "Comment deleted successfully!"})
@@ -848,7 +848,7 @@ router.post("/:ticketId/activity", validateTicketActivityAdd, handleValidationRe
 			user_id: req.user.id
 		}, {
 			...req.historyContext,
-			parentEntityType: "ticket",
+			parentEntityType: "tickets",
 			parentEntityId: req.params.ticketId,
 		})
 		res.json({message: "ticket activity created successfully!"})
@@ -884,7 +884,7 @@ router.put("/:ticketId/activity/:activityId", validateTicketActivityUpdate, hand
 			description, minutes_spent
 		}, {
 			...req.historyContext,
-			parentEntityType: "ticket",
+			parentEntityType: "tickets",
 			parentEntityId: req.params.ticketId
 		})
 		res.json({message: "Ticket activity updated successfully!"})
@@ -900,7 +900,7 @@ router.delete("/:ticketId/activity/:activityId", validateTicketActivityDelete, h
 		await historyService.delete("ticket_activity", req.params.activityId, {
 			...req.historyContext,
 			parentEntityId: req.params.ticketId,
-			parentEntityType: "ticket"
+			parentEntityType: "tickets"
 		})
 		res.json({message: "Ticket activity deleted successfully!"})
 	}
@@ -942,7 +942,7 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 				...req.historyContext,
 				useParentEntityId: "ticket_id",
 				bulkParentEntityInfo: ticketsToUsers.map((obj) => ({
-					parentEntityType: 'ticket',
+					parentEntityType: 'tickets',
                     parentEntityId: obj.ticket_id 
 				}))
 			})
@@ -950,7 +950,7 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 				...req.historyContext,
 				useParentEntityId: "ticket_id",
 				bulkParentEntityInfo: ticketsToUsers.map((obj) => ({
-					parentEntityType: 'ticket',
+					parentEntityType: 'tickets',
                     parentEntityId: obj.ticket_id
 				}))
 			})
@@ -966,7 +966,7 @@ router.put("/:ticketId", validateUpdate, handleValidationResult, async (req, res
 				...req.historyContext,
 				useParentEntityId: "ticket_id",
 				bulkParentEntityInfo: existingMentions.map((obj) => ({
-					parentEntityType: 'ticket',
+					parentEntityType: 'tickets',
                     parentEntityId: obj.ticket_id 
 				}))
 			})
