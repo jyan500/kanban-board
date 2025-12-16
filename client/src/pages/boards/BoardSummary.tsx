@@ -247,6 +247,11 @@ export const BoardSummary = () => {
                     </p>
                 </div>
                 {
+                    !Object.keys(groupedRecentActivity).length ?     
+                    <LoadingSkeleton>
+                        <RowPlaceholder/>
+                    </LoadingSkeleton>
+                    : 
                     Object.keys(groupedRecentActivity).map((date, index) => {
                         return (
                             <div key={`recent-activity-group-${index}`} className = "tw-flex tw-flex-col tw-gap-y-4">
@@ -268,7 +273,7 @@ export const BoardSummary = () => {
                     })
                 }
                 {
-                    !isBoardActivityLoading && boardActivityData?.pagination ? 
+                    !isBoardActivityLoading && boardActivityData?.pagination && Object.keys(groupedRecentActivity).length ? 
                     <PaginationRow setPage={setHistoryPage} currentPage={historyPage} showPageNums={true} paginationData={boardActivityData?.pagination}/>
                     : null 
                 }

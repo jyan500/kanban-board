@@ -357,7 +357,7 @@ router.get("/:boardId/activity", validateGet, handleValidationResult, async (req
 		.where((queryBuilder) => {
 			queryBuilder.where("entity_type", "tickets").whereIn("entity_id", ticketIds)
 		}).orWhere((queryBuilder) => {
-			queryBuilder.where("parent_entity_type", "ticket").whereIn("parent_entity_id", ticketIds)
+			queryBuilder.where("parent_entity_type", "tickets").whereIn("parent_entity_id", ticketIds)
 			// we don't need to include when tickets are added to the sprint as a part of the history
 			.where("entity_type", "!=", "tickets_to_sprints")
 		}).where(db.raw('DATE(entity_history.changed_at)'), ">=", sevenDaysAgo)
