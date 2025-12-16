@@ -82,6 +82,14 @@ export const InlineEdit = (
 					min={minDate ?? ""}
 					max={maxDate ?? ""}
 					onKeyDown={onKeyDown}
+					onChange={(e) => {
+						// Explicitly set the value in React Hook Form, fixes
+						// issue where the date is left blank when calendar appears on click
+						setValue(registerField, e.target.value, { 
+							shouldValidate: true,
+							shouldDirty: true 
+						})
+					}}
 					ref={dateInputRef}
 				/>
 			)
