@@ -385,14 +385,7 @@ router.get("/:boardId/activity", validateGet, handleValidationResult, async (req
 			}
 			// if entity type is ticket, the entity id is the ticket id, 
 			// however if parent entity type is ticket, the parent entity type is the ticket id
-			let ticketId;
-			if (ticketHistory.entityType === "tickets"){
-				ticketId = ticketHistory.entityId
-			}
-			else if (ticketHistory.parentEntityType === "ticket"){
-				ticketId = ticketHistory.parentEntityId
-			}
-
+			let ticketId = ticketHistory.entityType === "tickets" ? ticketHistory.entityId : ticketHistory.parentEntityId
 			const displayString = await getHistoryDisplayString(ticketHistory)
 			return {
 				...ticketHistory,

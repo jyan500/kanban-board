@@ -258,7 +258,7 @@ export const BoardSummary = () => {
                                         return (
                                             <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center" key = {`recent-activity-${history.historyId}`}>
                                                 <Avatar userInitials={getUserInitials(user)} imageUrl={user?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>
-                                                <span className = "tw-line-clamp-2">{history.displayString}</span>
+                                                <Link to={`${TICKETS}/${history.ticketId}`} className = "hover:tw-opacity-70 tw-line-clamp-2">{history.displayString}</Link>
                                             </div>
                                         )
                                     })

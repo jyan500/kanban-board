@@ -44,7 +44,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
 											if (!url){
 												return (
 													<button
-														className = {`tw-px-0.5 ${i+1 === currentPage ? "tw-font-bold tw-border-b tw-border-gray-800" : ""}`}
+														className={`tw-px-0.5 tw-border-b ${i+1 === currentPage ? "tw-font-bold tw-border-gray-800" : "tw-border-transparent"}`}
 														key={`pagination-page-${i}`}
 														onClick={() => setPage(i+1)}
 													>
@@ -58,7 +58,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
 											}
 											return (
 												<Link 
-													className = {`tw-px-0.5 ${i+1 === currentPage ? "tw-font-bold tw-border-b tw-border-gray-800" : ""}`}
+													className={`tw-px-0.5 tw-border-b ${i+1 === currentPage ? "tw-font-bold tw-border-gray-800" : "tw-border-transparent"}`}
 													key={`pagination_page_${i}`} 
 													to={`${url}?${parseURLParams(urlParamsWithPage)}`}>
 													{i+1}
