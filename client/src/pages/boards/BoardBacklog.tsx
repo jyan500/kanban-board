@@ -283,7 +283,7 @@ export const BoardBacklog = () => {
 			)
 			}
 			{
-				 !boardTicketData && boardInfo ? (
+				 !boardTicketData && !boardInfo ? (
 					<LoadingSkeleton>
 						<RowPlaceholder/>
 					</LoadingSkeleton>

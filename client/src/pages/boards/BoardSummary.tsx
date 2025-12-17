@@ -25,6 +25,8 @@ import { PaginationRow } from "../../components/page-elements/PaginationRow"
 import { format } from "date-fns"
 import { MdBreakfastDining } from "react-icons/md"
 import { BOARD_ACTIVITY_URL } from "../../helpers/urls"
+import { useScreenSize } from "../../hooks/useScreenSize"
+import { LG_BREAKPOINT } from "../../helpers/constants"
 
 
 type GroupedActivity = TicketEntityHistory & {
@@ -39,6 +41,7 @@ export const BoardSummary = () => {
     const { ticketTypes } = useAppSelector((state) => state.ticketType)
     const [ groupedRecentActivity, setGroupedRecentActivity ] = useState<Record<string, Array<GroupedActivity>>>({})
     const [ historyPage, setHistoryPage ] = useState(1)
+    const { width, height } = useScreenSize()
 
     const { data, isLoading } = useGetBoardSummaryQuery(boardInfo ? {boardId: boardInfo?.id} : skipToken)
     const { data: boardActivityData, isLoading: isBoardActivityLoading} = useGetBoardActivityQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {page: historyPage}} : skipToken)
@@ -139,10 +142,10 @@ export const BoardSummary = () => {
         <LoadingSkeleton>
             <RowPlaceholder/>
         </LoadingSkeleton> :
-        <div className="tw-min-h-screen tw-bg-gray-50 tw-flex tw-flex-row tw-gap-x-4 tw-p-6">
-            <div className="tw-max-w-6xl tw-space-y-6">
+        <div className="tw-min-h-screen tw-bg-gray-50 tw-flex-col tw-flex xl:tw-flex-row xl:tw-gap-x-4 tw-gap-y-4 tw-p-6">
+            <div className="tw-flex tw-flex-col tw-gap-y-6">
                 {/* Top Stats Cards */}
-                <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 tw-gap-4">
+                <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 xl:tw-grid-cols-4 tw-gap-4">
                     <SummaryCard 
                         icon={<IconCircleCheckmark className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
                         link={constructTicketLink(data?.ticketsCompleted ?? [])}
@@ -213,6 +216,7 @@ export const BoardSummary = () => {
                                             icon={item.name !== "Unassigned" ? <Avatar userInitials={item.initials} imageUrl={item.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/> : <IconUser className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>}
                                             item={item}
                                             link={`${TICKETS}?boardId=${boardInfo?.id ?? 0}&assignedToUser=${item.id ?? "0"}`}
+                                            showPercentages={false}
                                         />
                                     </div>
                                 )

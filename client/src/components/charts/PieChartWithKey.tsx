@@ -71,7 +71,7 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     }
     
     return (
-        <>
+        <div className = "tw-flex tw-flex-col lg:tw-flex-row lg:tw-gap-x-2 tw-gap-y-2 lg:tw-items-center">
             <div className="tw-relative">
                 <ResponsiveContainer width={250} height={250}>
                     <PieChart>
@@ -117,6 +117,6 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
                 handleMouseLeave={handleMouseLeave}
                 data={data}
             />
-        </>
+        </div>
     )
 }

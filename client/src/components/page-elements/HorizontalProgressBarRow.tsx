@@ -2,6 +2,8 @@ import React from "react"
 import { ProgressBarItem } from "../../types/common"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
 import { Link } from "react-router-dom"
+import { LG_BREAKPOINT } from "../../helpers/constants"
+import { useScreenSize } from "../../hooks/useScreenSize"
 import { TICKETS } from "../../helpers/routes"
 
 interface Props {
@@ -9,9 +11,11 @@ interface Props {
     item: ProgressBarItem
     showTooltip?: boolean
     link:  string 
+    showPercentages?: boolean
 }
 
-export const HorizontalProgressBarRow = ({icon, item, link, showTooltip=true}: Props) => {
+export const HorizontalProgressBarRow = ({icon, item, link, showTooltip=true, showPercentages=true}: Props) => {
+    const { width, height } = useScreenSize()
     return (
         <Link to={link} state={{resetFilters: true}} className = "tw-group">
             <div className="tw-flex tw-items-center tw-gap-2">
@@ -24,7 +28,7 @@ export const HorizontalProgressBarRow = ({icon, item, link, showTooltip=true}: P
                         className="tw-relative tw-bg-gray-500 tw-h-6 tw-rounded tw-flex tw-items-center tw-justify-end tw-pr-2"
                         style={{width: `${item.percentage}%`}}
                     >
-                        <span className="tw-text-xs tw-font-medium tw-text-white">{item.percentage}%</span>
+                        {showPercentages && (item.percentage >= 20 || width >= LG_BREAKPOINT) ? <span className="tw-text-xs tw-font-medium tw-text-white">{item.percentage}%</span> : null}
                         {
                             showTooltip ? 
                             <HoverTooltip direction="right" text={item.hoverText}/>
