@@ -11,9 +11,10 @@ interface Props {
     item: ProgressBarItem
     showTooltip?: boolean
     link:  string 
+    showPercentages?: boolean
 }
 
-export const HorizontalProgressBarRow = ({icon, item, link, showTooltip=true}: Props) => {
+export const HorizontalProgressBarRow = ({icon, item, link, showTooltip=true, showPercentages=true}: Props) => {
     const { width, height } = useScreenSize()
     return (
         <Link to={link} state={{resetFilters: true}} className = "tw-group">
@@ -27,7 +28,7 @@ export const HorizontalProgressBarRow = ({icon, item, link, showTooltip=true}: P
                         className="tw-relative tw-bg-gray-500 tw-h-6 tw-rounded tw-flex tw-items-center tw-justify-end tw-pr-2"
                         style={{width: `${item.percentage}%`}}
                     >
-                        {item.percentage >= 20 || width >= LG_BREAKPOINT? <span className="tw-text-xs tw-font-medium tw-text-white">{item.percentage}%</span> : null}
+                        {showPercentages && (item.percentage >= 20 || width >= LG_BREAKPOINT) ? <span className="tw-text-xs tw-font-medium tw-text-white">{item.percentage}%</span> : null}
                         {
                             showTooltip ? 
                             <HoverTooltip direction="right" text={item.hoverText}/>
