@@ -30,13 +30,13 @@ export const ActivityContainer = ({
 }: Props) => {
 	const [isActive, setIsActive] = useState<number>(0)
 	const dispatch = useAppDispatch()
-	return (
+return (
 		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-2">
 				<p className = "tw-font-semibold">Activity</p>
 				<button onClick={() => {
 					dispatch(setSecondaryModalType("TICKET_AI_FEATURES_MODAL"))
-					dispatch(setSecondaryModalProps({ticketId: currentTicketId ?? ""}))
+					dispatch(setSecondaryModalProps({ticketId: currentTicketId ?? "", loadSmartSummary: true}))
 					dispatch(toggleShowSecondaryModal(true))
 				}} className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
 					<IconSparkle className = "tw-text-light-purple tw-ml-3 --m-icon"/>

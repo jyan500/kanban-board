@@ -7,14 +7,21 @@ import { BackendErrorMessage } from "../page-elements/BackendErrorMessage"
 
 export type TicketAIFeaturesModalProps = {
 	ticketId: number
+	loadSmartSummary?: boolean
 }
 
-export const TicketAIFeaturesModal = ({ticketId}: TicketAIFeaturesModalProps) => {
+export const TicketAIFeaturesModal = ({ticketId, loadSmartSummary}: TicketAIFeaturesModalProps) => {
 	const dispatch = useAppDispatch()
 	const [ trigger, { data, error, isFetching }] = useLazyGetTicketSummaryQuery()
 	const cachedResult = useAppSelector((state) => {
         return ticketApi.endpoints.getTicketSummary.select({ticketId: ticketId})(state)
     })
+
+	useEffect(() => {
+		if (loadSmartSummary){
+			trigger({ticketId: ticketId}, true)
+		}
+	}, [loadSmartSummary])
 
 	const onClick = () => {
 		trigger({ticketId: ticketId}, true)

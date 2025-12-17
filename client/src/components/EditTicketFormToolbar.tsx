@@ -58,7 +58,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 
 	return (
 		<div className = "tw-pt-2 tw-pb-2 tw-flex tw-flex-row tw-justify-end tw-w-full">
-			<Tooltip className = "tw-w-36" handler={() => {
+			{/* <Tooltip className = "tw-w-36" handler={() => {
 				dispatch(setSecondaryModalType("TICKET_AI_FEATURES_MODAL"))
 				dispatch(setSecondaryModalProps({ticketId: ticket?.id ?? ""}))
 				dispatch(toggleShowSecondaryModal(true))
@@ -73,7 +73,17 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 						<IconSparkle className = "tw-text-light-purple tw-ml-3 --l-icon"/>
 					</div>
 				</button>	
-			}/>
+			}/> */}
+			<button className = "hover:tw-opacity-60" onClick={(e) => {
+					e.preventDefault()	
+					dispatch(setSecondaryModalType("TICKET_AI_FEATURES_MODAL"))
+					dispatch(setSecondaryModalProps({ticketId: ticket?.id ?? ""}))
+					dispatch(toggleShowSecondaryModal(true))
+				}}>
+				<div className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
+					<IconSparkle className = "tw-text-light-purple tw-ml-3 --l-icon"/>
+				</div>
+			</button>	
 			<div className = "tw-relative tw-inline-block tw-text-left">
 				<button className = "hover:tw-opacity-60" ref = {watchButtonRef} onClick={(e) => {
 					e.preventDefault()	
