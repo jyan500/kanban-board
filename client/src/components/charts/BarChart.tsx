@@ -1,9 +1,11 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { BarChart as ReBarChart, Bar, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { ChartTooltip } from "./ChartTooltip"
 import { PieChartItem } from "../../types/common"
 import { useNavigate } from "react-router-dom"
 import { TICKETS } from "../../helpers/routes"
+import { useScreenSize } from "../../hooks/useScreenSize"
+import { LG_BREAKPOINT } from "../../helpers/constants"
 
 interface Props {
     data: Array<PieChartItem>
@@ -13,42 +15,68 @@ interface Props {
 
 export const BarChart = ({data, searchKey, boardId}: Props) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+    const { width, height } = useScreenSize()
     const navigate = useNavigate()
 
     const handleBarClick = (data: any) => {
         navigate(`${TICKETS}?boardId=${boardId}&${searchKey}=${data.id}`,  { state: { resetFilters: true } })
     }
 
-    return (
-        <ResponsiveContainer width="100%" height={300}>
-            <ReBarChart data={data}>
-                <XAxis 
-                    dataKey="name" 
-                    tick={{fontSize: 12}}
-                    axisLine={false}
-                    tickLine={false}
-                />
-                <YAxis 
-                    tick={{fontSize: 12}}
-                    axisLine={false}
-                    tickLine={false}
-                    allowDecimals={false}
-                />
-                <Tooltip cursor={false} content={<ChartTooltip/>} />
-                <Bar 
-                    style={{cursor: "pointer"}} 
-                    onMouseEnter={(data, index) => setHoveredIndex(index)}
+    const CustomLegend = () => (
+        <div className="tw-mt-4 tw-grid tw-grid-cols-2 tw-gap-2 tw-text-sm">
+            {data.map((item, index) => (
+                <div 
+                    key={`legend-${index}`}
+                    className="tw-flex tw-items-center tw-gap-2 tw-p-2 tw-rounded hover:tw-bg-gray-100 tw-cursor-pointer"
+                    onClick={() => handleBarClick(item)}
+                    onMouseEnter={() => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
-                    onClick={handleBarClick} dataKey="value" fill="#78909C" radius={[4, 4, 0, 0]}>
-                    {data.map((entry, index) => (
-                        <Cell 
-                            key={`cell-${index}`}
-                            fill={hoveredIndex === index ? '#5a6c7d' : '#78909C'} // Darker on hover
-                            style={{ cursor: 'pointer' }}
-                        />
-                    ))}
-                </Bar>
-            </ReBarChart>
-        </ResponsiveContainer>
+                >
+                    <span className="tw-flex-1 tw-truncate" title={item.name}>
+                        {item.name}
+                    </span>
+                    <span className="tw-font-semibold tw-text-gray-700">
+                        {item.value}
+                    </span>
+                </div>
+            ))}
+        </div>
+    )
+
+    return (
+        <div className = "tw-flex tw-flex-col tw-gap-y-2">
+            <ResponsiveContainer width="100%" height={300}>
+                <ReBarChart data={data}>
+                    <XAxis 
+                        dataKey="name" 
+                        tick={width >= LG_BREAKPOINT ? {fontSize: 12} : false}
+                        axisLine={false}
+                        tickLine={false}
+                    />
+                    <YAxis 
+                        tick={{fontSize: 12}}
+                        axisLine={false}
+                        tickLine={false}
+                        allowDecimals={false}
+                        width={10}
+                    />
+                    <Tooltip cursor={false} content={<ChartTooltip/>} />
+                    <Bar 
+                        style={{cursor: "pointer"}} 
+                        onMouseEnter={(data, index) => setHoveredIndex(index)}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                        onClick={handleBarClick} dataKey="value" fill="#78909C" radius={[4, 4, 0, 0]}>
+                        {data.map((entry, index) => (
+                            <Cell 
+                                key={`cell-${index}`}
+                                fill={hoveredIndex === index ? '#5a6c7d' : '#78909C'} // Darker on hover
+                                style={{ cursor: 'pointer' }}
+                            />
+                        ))}
+                    </Bar>
+                </ReBarChart>
+            </ResponsiveContainer>
+            { width < LG_BREAKPOINT ? <CustomLegend/> : null}
+        </div>
     )
 }
