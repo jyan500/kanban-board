@@ -39,7 +39,7 @@ export const TicketAIFeaturesModal = ({ticketId, loadSmartSummary}: TicketAIFeat
 					<p className = "tw-medium">Don't want to read pages of comments to catch up? Try out the Ticket Smart Summary to receive
 						a summarized report of the ticket's progress! </p>
 					<div>
-						<LoadingButton onClick={(e) => onClick()} isLoading={isFetching} className = "button" text="Generate Summary"/>
+						<LoadingButton disabled={isFetching} onClick={(e) => onClick()} isLoading={isFetching} className = "button" text="Generate Summary"/>
 					</div>
 					{cachedResult?.data ? 
 					<div className = "tw-flex tw-flex-col tw-gap-x-2">
