@@ -161,7 +161,7 @@ const aggregateCompletedAndOpenSprintTickets = async (sprintId, completedStatusI
 	Takes in entity history object, and returns the display string for that particular entity type
 */
 const getHistoryDisplayString = async (history) => {
-	const user = await db("users").where("id", history.changedBy).first()
+	const user = await db("users").where("id", history.entityType === "tickets_to_users" ? history.recordData.user_id : history.changedBy).first()
 	const displayName = `${user?.first_name ?? ""} ${user?.last_name ?? ""}`
 	let displayText = ""
 	const ticketActions = {"INSERT": "created", "UPDATE": "updated", "DELETE": "deleted"}
@@ -186,9 +186,9 @@ const getHistoryDisplayString = async (history) => {
 				const parentTicket = await db("tickets").where("id", Number(data.parent_ticket_id)).first()
 				displayText = TICKET_ENTITY_TYPES["ticket_relationships"](parentTicket?.name ?? "", childTicket?.name ?? "", history.operation)
 				break
-			// case "ticket_activity":
-			//     displayText = displayFunction()
-			//     break
+			case "ticket_activity":
+			    // displayText = displayFunction()
+			    break
 		}
 	}
 	return displayText
