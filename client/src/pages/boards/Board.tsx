@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom" 
 import { useGetUserBoardFiltersQuery } from "../../services/private/userProfile"
 import { 
@@ -22,6 +22,8 @@ import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPla
 import { BoardPlaceholder } from "../../components/placeholders/BoardPlaceholder"
 import { TabButton } from "../../components/page-elements/TabButton"
 import { setFilters, setFilterIdMap, BoardFilters } from "../../slices/boardFilterSlice"
+import { useScreenSize } from "../../hooks/useScreenSize"
+import { SM_BREAKPOINT, LG_BREAKPOINT } from "../../helpers/constants"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
@@ -36,7 +38,9 @@ export const Board = () => {
 	const [trigger, {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError }] = useLazyGetBoardTicketsQuery()
 	const {data: statusData, isLoading: isGetBoardStatusesLoading, isError: isGetBoardStatusesError } = useGetBoardStatusesQuery(boardId ? {id: boardId, isActive: true} : skipToken)
 	const { pathname } = useLocation()
+	const { width, height } = useScreenSize()
 	const board = useAppSelector((state) => state.board)
+	const buttonRef = useRef(null)
 
 	const getBoardFilterAttribute = (arrayData: Array<GenericObject>, name: string, attribute: string) => {
 		if (arrayData.length){
@@ -145,6 +149,18 @@ export const Board = () => {
 
 	const boardPath = `${BOARDS}/${boardId}`
 
+	const additionalLinks = [
+		{
+			pathname: `${boardPath}/${TABLE}`, text: "Table",
+		},
+		{
+			pathname: `${boardPath}/${BACKLOG}`, text: "Backlog"
+		},
+		{
+			pathname: `${boardPath}/${SPRINTS}`, text: "Past Sprints",
+		}
+	]
+
 	const defaultLinks = [
 		{
 			pathname: `${boardPath}/${SUMMARY}`, text: "Summary"	
@@ -155,15 +171,13 @@ export const Board = () => {
 		{
 			pathname: `${boardPath}/${SCHEDULE}`, text: "Schedule",
 		},
-		{
-			pathname: `${boardPath}/${TABLE}`, text: "Table",
-		},
-		{
-			pathname: `${boardPath}/${BACKLOG}`, text: "Backlog"
-		},
-		{
-			pathname: `${boardPath}/${SPRINTS}`, text: "Past Sprints",
-		}
+		...(width >= SM_BREAKPOINT ? 
+			additionalLinks
+		: [
+			{
+				pathname: "", text: "More"
+			}
+		])
 	]
 
 
@@ -181,6 +195,15 @@ export const Board = () => {
 					<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
 						{
 							defaultLinks.map((link: {pathname: string, text: string}) => {
+								if (link.text === "More"){
+									<div className = "tw-relative">
+										<TabButton ref={buttonRef} key={`filter-button-more`} isActive={false} onClick={(e) => {
+
+										}}>
+											{link.text}	
+										</TabButton>
+									</div>
+								}
 							 	return (
 							 		<TabButton key={`filter_button_${link.text}`} isActive={link.pathname === pathname} onClick={(e) => {
 							 			navigate(link.pathname)
