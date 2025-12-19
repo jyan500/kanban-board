@@ -12,19 +12,29 @@ export const useClickOutside = (
 	addEventListener = true
 ) => {
 	const handleClick = (event: MouseEvent) => {
-		if (ref.current && !ref.current.contains(event.target as HTMLElement) 
-			&& (ignoreClickRef?.current && !ignoreClickRef.current.contains(event.target as HTMLElement))){
-			callback()
+		// If there's an ignoreClickRef and the click is inside it, do nothing
+		if (ignoreClickRef?.current?.contains(event.target as HTMLElement)) {
+			return;
+		}
+		
+		// // If click is outside the ref, trigger callback
+		if (ref.current && !ref.current.contains(event.target as HTMLElement)) {
+			callback();
 		}
 	}
 
 	useEffect(() => {
+		/* 
+			The mousedown event fires before the click event, 
+			so it processes the "click outside" logic before the parent button's onClick handler 
+			fires to open the dropdown.
+		*/
 		if (addEventListener){
-			document.addEventListener("click", handleClick)
+			document.addEventListener("mousedown", handleClick)
 		}
 
 		return () => {
-			document.removeEventListener("click", handleClick)
+			document.removeEventListener("mousedown", handleClick)
 		}
 	}, [addEventListener])
 }
