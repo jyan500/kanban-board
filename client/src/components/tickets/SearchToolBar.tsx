@@ -60,12 +60,14 @@ export const SearchToolBar = ({
 					}} className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-gap-x-2">
 						{searchOptions && Object.keys(searchOptions).length > 0 ? 
 							(
-								<select {...register("searchBy", registerOptions.searchBy)}>
-									{Object.keys(searchOptions).map((option) => {
-										const value = searchOptions[option as keyof typeof searchOptions]
-										return <option key = {option} value = {option}>{value}</option>
-									})}
-								</select>
+								<div>
+									<select {...register("searchBy", registerOptions.searchBy)}>
+										{Object.keys(searchOptions).map((option) => {
+											const value = searchOptions[option as keyof typeof searchOptions]
+											return <option key = {option} value = {option}>{value}</option>
+										})}
+									</select>
+								</div>
 							) : null
 						}
 						<div className = "tw-flex tw-flex-row tw-gap-x-2">
@@ -103,7 +105,9 @@ export const SearchToolBar = ({
 						) : null}
 					</form>
 				</FormProvider>
-				{additionalButtons ? additionalButtons() : null}
+				<div>
+					{additionalButtons ? additionalButtons() : null}
+				</div>
 			</div>
 			{/* 
 			For some reason, error messages when retrieved from useFormContext() have to be converted to strings explicitly, see below:

@@ -32,6 +32,7 @@ export const useBoardConfig = () => {
 					props: {
 						imageUrls: userProfiles?.map((profile) => ({name: displayUser(profile), imageUrl: profile.imageUrl, initials: getUserInitials(profile)})) ?? [],
 						imageSize: "m",
+						ignoreScreenSize: true
 					}
 				}
 			}

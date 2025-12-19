@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom" 
 import { useGetUserBoardFiltersQuery } from "../../services/private/userProfile"
 import { 
@@ -22,12 +22,19 @@ import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPla
 import { BoardPlaceholder } from "../../components/placeholders/BoardPlaceholder"
 import { TabButton } from "../../components/page-elements/TabButton"
 import { setFilters, setFilterIdMap, BoardFilters } from "../../slices/boardFilterSlice"
+import { useScreenSize } from "../../hooks/useScreenSize"
+import { useClickOutside } from "../../hooks/useClickOutside"
+import { SM_BREAKPOINT, LG_BREAKPOINT } from "../../helpers/constants"
+import { BoardNavDropdown } from "../../components/dropdowns/BoardNavDropdown"
+import { IconArrowDown } from "../../components/icons/IconArrowDown"
+import { IconArrowRight } from "../../components/icons/IconArrowRight"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
 	const navigate = useNavigate()
 	const boardId = params.boardId ? parseInt(params.boardId) : undefined 
 	const dispatch = useAppDispatch()
+	const [showDropdown, setShowDropdown] = useState(false)
 	const { filters, searchTerm, filterIdMap } = useAppSelector((state) => state.boardFilter)
 	const { tickets } = useAppSelector((state) => state.board)
 	const {data: boardFilterData, isLoading: isBoardFilterDataLoading} = useGetBoardFiltersQuery(boardId ? {boardId} : skipToken)
@@ -36,7 +43,10 @@ export const Board = () => {
 	const [trigger, {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError }] = useLazyGetBoardTicketsQuery()
 	const {data: statusData, isLoading: isGetBoardStatusesLoading, isError: isGetBoardStatusesError } = useGetBoardStatusesQuery(boardId ? {id: boardId, isActive: true} : skipToken)
 	const { pathname } = useLocation()
+	const { width, height } = useScreenSize()
 	const board = useAppSelector((state) => state.board)
+	const dropdownRef = useRef(null)
+	const buttonRef = useRef(null)
 
 	const getBoardFilterAttribute = (arrayData: Array<GenericObject>, name: string, attribute: string) => {
 		if (arrayData.length){
@@ -44,6 +54,12 @@ export const Board = () => {
 		}
 		return 0
 	}
+
+	const onClickOutside = () => {
+		setShowDropdown(false)	
+	}
+
+	useClickOutside(dropdownRef, onClickOutside, buttonRef, showDropdown)
 
 	// only reset the "group by" on the toolbar if we're navigating to this page
 	useEffect(() => {
@@ -145,6 +161,18 @@ export const Board = () => {
 
 	const boardPath = `${BOARDS}/${boardId}`
 
+	const additionalLinks = [
+		{
+			pathname: `${boardPath}/${TABLE}`, text: "Table",
+		},
+		{
+			pathname: `${boardPath}/${BACKLOG}`, text: "Backlog"
+		},
+		{
+			pathname: `${boardPath}/${SPRINTS}`, text: "Past Sprints",
+		}
+	]
+
 	const defaultLinks = [
 		{
 			pathname: `${boardPath}/${SUMMARY}`, text: "Summary"	
@@ -155,15 +183,13 @@ export const Board = () => {
 		{
 			pathname: `${boardPath}/${SCHEDULE}`, text: "Schedule",
 		},
-		{
-			pathname: `${boardPath}/${TABLE}`, text: "Table",
-		},
-		{
-			pathname: `${boardPath}/${BACKLOG}`, text: "Backlog"
-		},
-		{
-			pathname: `${boardPath}/${SPRINTS}`, text: "Past Sprints",
-		}
+		...(width >= SM_BREAKPOINT ? 
+			additionalLinks
+		: [
+			{
+				pathname: "", text: "More"
+			}
+		])
 	]
 
 
@@ -181,6 +207,25 @@ export const Board = () => {
 					<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
 						{
 							defaultLinks.map((link: {pathname: string, text: string}) => {
+								if (link.text === "More"){
+									return (
+										<div key={`filter_button_more`} className = "tw-relative">
+											<TabButton ref={buttonRef} isActive={false} onClick={(e) => {
+												setShowDropdown(!showDropdown)
+											}}>
+												<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+													{showDropdown ? <IconArrowRight/> : <IconArrowDown/>}
+													{link.text}	
+												</div>
+											</TabButton>
+											{
+												showDropdown ? 
+													<BoardNavDropdown ref={dropdownRef} additionalLinks={additionalLinks} closeDropdown={() => setShowDropdown(false)}/>
+												: null
+											}
+										</div>
+									)
+								}
 							 	return (
 							 		<TabButton key={`filter_button_${link.text}`} isActive={link.pathname === pathname} onClick={(e) => {
 							 			navigate(link.pathname)

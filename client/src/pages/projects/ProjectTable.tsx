@@ -73,10 +73,12 @@ export const ProjectTable = () => {
                             <Button theme="primary" type = "submit">Search</Button>
                         </form>
                         {userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN") ? (
-                            <Button theme="primary" onClick={(e) => {
-                                e.preventDefault()
-                                addNewProject()
-                            }}>Add New Project</Button>
+                            <div>
+                                <Button theme="primary" onClick={(e) => {
+                                    e.preventDefault()
+                                    addNewProject()
+                                }}>Add New Project</Button>
+                            </div>
                         ) : null}
                     </FormProvider>
                 </div>

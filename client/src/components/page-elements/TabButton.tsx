@@ -1,13 +1,17 @@
 import React from "react"
 
-type TabButtonProps = {
+interface TabButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	isActive: boolean
-	onClick: (e: React.MouseEvent) => void
 	children: React.ReactNode
 }
 
-export const TabButton = ({isActive, onClick, children}: TabButtonProps) => {
+export const TabButton = React.forwardRef<HTMLButtonElement, TabButtonProps>(({isActive, children, ...props}, ref) => {
 	return (
-		<button className = {`tw-p-1.5 tw-rounded-sm tw-font-semibold hover:tw-bg-light-primary hover:tw-text-primary ${isActive ? "tw-text-primary tw-bg-light-primary tw-font-bold" : ""} tw-transition tw-duration-100 tw-ease-in-out`} onClick={onClick}>{children}</button>
+		<button 
+		ref={ref} 
+		{...props} 
+		className = {`tw-p-1.5 tw-rounded-sm tw-font-semibold hover:tw-bg-light-primary hover:tw-text-primary ${isActive ? "tw-text-primary tw-bg-light-primary tw-font-bold" : ""} tw-transition tw-duration-100 tw-ease-in-out`}>
+			{children}
+		</button>
 	)
-}
+})
