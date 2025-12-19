@@ -34,10 +34,10 @@ const TICKET_ENTITY_TYPES = {
 		}
 		return ""
 	}, 
-	"ticket_activity": (ticketName, displayName, time, action) => {
+	"ticket_activity": (ticketName, displayName, action) => {
 		const actionTypes = {"INSERT": "logged"}
 		if (action in actionTypes){
-			return `${displayName} has logged ${actionTypes[action]} ${time} to ${ticketName}`
+			return `${displayName} has ${actionTypes[action]} time to ${ticketName}`
 		}
 		return ""
 	}, 
