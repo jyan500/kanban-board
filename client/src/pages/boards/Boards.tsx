@@ -77,10 +77,12 @@ export const Boards = () => {
 								<Button theme="primary" type = "submit">Search</Button>
 							</form>
 							{userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN") ? (
-								<Button theme="primary" onClick={(e) => {
-									e.preventDefault()
-									addNewBoard()
-								}}>Add New Board</Button>
+								<div>
+									<Button theme="primary" onClick={(e) => {
+										e.preventDefault()
+										addNewBoard()
+									}}>Add New Board</Button>
+								</div>
 							) : null}
 						</FormProvider>
 					</div>
