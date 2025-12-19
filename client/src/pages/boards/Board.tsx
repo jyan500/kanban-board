@@ -220,7 +220,7 @@ export const Board = () => {
 											</TabButton>
 											{
 												showDropdown ? 
-													<BoardNavDropdown ref={dropdownRef} additionalLinks={additionalLinks} boardId={boardId} closeDropdown={() => setShowDropdown(false)}/>
+													<BoardNavDropdown ref={dropdownRef} additionalLinks={additionalLinks} closeDropdown={() => setShowDropdown(false)}/>
 												: null
 											}
 										</div>
