@@ -25,13 +25,18 @@ interface Props {
 export const PaginationRow = ({showPageNums, showNumResults, paginationData, setPage, url, urlParams, currentPage, customPageParam}: Props) => {
     const [showInputIndex, setShowInputIndex] = useState<number>(0)
     const [inputValue, setInputValue] = useState("")
+    const [errorState, setErrorState] = useState(false)
 
     const handleGoToPage = () => {
         const pageNum = parseInt(inputValue)
         if (pageNum >= 1 && pageNum <= (paginationData?.lastPage || 1)) {
+        	setErrorState(false)
             setPage(pageNum)
             setShowInputIndex(0)
             setInputValue("")
+        }
+        else {
+        	setErrorState(true)
         }
     }
 
@@ -111,7 +116,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
 	                                    value={inputValue}
 	                                    onChange={(e) => setInputValue(e.target.value)}
 	                                    onKeyPress={handleInputKeyPress}
-	                                    className="!tw-p-1 tw-w-16"
+	                                    className={`${errorState ? "!tw-border-red-500" : ""} !tw-p-1 tw-w-16`}
 	                                    placeholder="Page"
 	                                    autoFocus
 	                                />
@@ -129,6 +134,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
 										className = "tw-p-1"
 										onClick={(e) => {
 											e.preventDefault()
+											setErrorState(false)
 											setShowInputIndex(0)
 											setInputValue("")
 										}}
