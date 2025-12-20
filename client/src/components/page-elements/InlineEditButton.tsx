@@ -6,12 +6,13 @@ interface Props {
 	onClick: (e: React.MouseEvent) => void 	
 	children: React.ReactNode
 	isLoading?: boolean
+	className?: string
 }
 
-export const InlineEditButton = ({onClick, isLoading, children}: Props) => {
+export const InlineEditButton = ({onClick, isLoading, className, children}: Props) => {
 	return (
 		<button 
-			className="tw-p-2 tw-bg-gray-100 hover:tw-bg-gray-200 tw-transition-colors tw-duration-150"
+			className={`${!className ? "tw-p-2" : className} tw-bg-gray-100 hover:tw-bg-gray-200 tw-transition-colors tw-duration-150`}
 			onClick={onClick}
 		>
 			{!isLoading ? <>{children}</> : <LoadingSpinner/>}

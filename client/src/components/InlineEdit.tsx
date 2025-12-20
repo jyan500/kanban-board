@@ -133,26 +133,25 @@ export const InlineEdit = (
 			<div>
 				{element}
 			</div>
-		<div className="tw-absolute tw-right-0 tw-mt-2 tw-flex tw-flex-row tw-gap-x-2">
-			<InlineEditButton 
-				isLoading={isLoading}
-				onClick={(e) => {
-				e.preventDefault()
-				onSubmit()
-			}}>
-				<IconCheckmark/>
-			</InlineEditButton>
-			<InlineEditButton
-				onClick={(e) => {
-				e.preventDefault()
-				customReset ? customReset() : resetField(registerField)
-				onCancel()
-				}}
-			>
-				<IconClose/>
-			</InlineEditButton>
-      </div>
-			
+			<div className="tw-absolute tw-right-0 tw-mt-2 tw-flex tw-flex-row tw-gap-x-2">
+				<InlineEditButton 
+					isLoading={isLoading}
+					onClick={(e) => {
+					e.preventDefault()
+					onSubmit()
+				}}>
+					<IconCheckmark/>
+				</InlineEditButton>
+				<InlineEditButton
+					onClick={(e) => {
+					e.preventDefault()
+					customReset ? customReset() : resetField(registerField)
+					onCancel()
+					}}
+				>
+					<IconClose/>
+				</InlineEditButton>
+	        </div>
 		</div>
 	)
 }
