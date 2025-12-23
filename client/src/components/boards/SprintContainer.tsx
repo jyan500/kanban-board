@@ -72,7 +72,7 @@ export const SprintContainer = ({
     }
 
     return (
-        sprintData && sprintData.data.length ? (
+        sprintData && sprintData.data.length && sprintTicketData?.data.length ? (
             <BulkEditTicketContainer 
                 itemIds={itemIds} 
                 onCheck={onCheck} 
