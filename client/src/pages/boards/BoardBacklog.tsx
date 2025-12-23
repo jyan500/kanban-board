@@ -263,9 +263,9 @@ export const BoardBacklog = () => {
 				</>
 			</BulkEditToolbar>
 			{
-				!sprintTicketData && !sprintData && !boardInfo ? (
+				!(sprintTicketData?.data.length && sprintData?.data.length && boardInfo) ? (
 					<LoadingSkeleton>
-						<RowPlaceholder/>
+						<RowPlaceholder numRows={4}/>
 					</LoadingSkeleton>
 				) : (
 				<FormProvider {...sprintMethods}>
@@ -280,12 +280,12 @@ export const BoardBacklog = () => {
 							setId(id, "sprint", itemIds, setItemIds)
 					}} itemIds={sprintTickets.map((obj) => obj.id)} boardId={boardInfo?.id ?? 0}/>
 				</FormProvider>
-			)
+				)
 			}
 			{
-				 !boardTicketData && !boardInfo ? (
+				 !(boardTicketData?.data.length && boardInfo) ? (
 					<LoadingSkeleton>
-						<RowPlaceholder/>
+						<RowPlaceholder numRows={4}/>
 					</LoadingSkeleton>
 				) : (
 					<FormProvider {...backlogMethods}>

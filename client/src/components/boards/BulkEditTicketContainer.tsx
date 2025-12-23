@@ -6,6 +6,8 @@ import { IconArrowRight } from "../icons/IconArrowRight"
 import { Ticket } from "../../types/common"
 import { IconButton } from "../page-elements/IconButton"
 import { LoadingSpinner } from "../LoadingSpinner"
+import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
+import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 import { toggleShowModal, setModalType } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { IconHelp } from "../icons/IconHelp"
@@ -111,7 +113,7 @@ export const BulkEditTicketContainer = ({
                             }}><TicketRow ticket={ticket} borderless={true}/></button>
                         </div>
                     )}
-                </div> : null
+                </div> : <LoadingSkeleton><RowPlaceholder/></LoadingSkeleton> 
             }
             {
                 createButton ?? null

@@ -19,7 +19,7 @@ export const BarChart = ({data, searchKey, boardId}: Props) => {
     const navigate = useNavigate()
 
     const handleBarClick = (data: any) => {
-        navigate(`${TICKETS}?boardId=${boardId}&${searchKey}=${data.id}`,  { state: { resetFilters: true } })
+        navigate(`${TICKETS}?boardId=${boardId}&${searchKey}=${data.id}`,  { replace: true })
     }
 
     const CustomLegend = () => (

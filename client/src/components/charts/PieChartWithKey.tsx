@@ -59,7 +59,7 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     const navigate = useNavigate()
 
     const handlePieClick = (data: any, index: number) => {
-        navigate(`${TICKETS}?boardId=${boardId}&${searchKey}=${data.id}`,  { state: { resetFilters: true } })
+        navigate(`${TICKETS}?boardId=${boardId}&${searchKey}=${data.id}`,  { replace: true })
     }
 
     const handleMouseEnter = (index: number) => {

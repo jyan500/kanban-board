@@ -60,7 +60,6 @@ export const Dashboard = () => {
 	const [assignedSearchParams, setAssignedSearchParams] = useState<Record<string, any>>({})
 	const [watchSearchParams, setWatchSearchParams] = useState<Record<string, any>>({})
 	const { statuses } = useAppSelector((state) => state.status)
-	const nonCompletedStatusIds = statuses.filter((status) => !status.isCompleted).map((status) => status.id)
 	const {data: assignedTickets, isLoading: isAssignedTicketsLoading} = useGetTicketsQuery(Object.keys(assignedSearchParams).length > 0 ? assignedSearchParams : skipToken)
 	const {data: watchedTickets, isLoading: isWatchedTicketsLoading} = useGetTicketsQuery(Object.keys(watchSearchParams).length > 0 ? watchSearchParams : skipToken)
 	const {data: boards, isLoading: isBoardsLoading} = useGetBoardsQuery({includeUserDashboardInfo: true, perPage: 5})
@@ -84,7 +83,8 @@ export const Dashboard = () => {
 	})
 
 	useEffect(() => {
-		if (userProfile){
+		if (userProfile && statuses?.length){
+			const nonCompletedStatusIds = statuses.filter((status) => !status.isCompleted).map((status) => status.id)
 			const params = {
 				sortBy: "createdAt", 
 				order: "desc", 
@@ -97,7 +97,7 @@ export const Dashboard = () => {
 			setAssignedSearchParams(params)
 			setWatchSearchParams({...params, isWatching: true})
 		}
-	}, [userProfile])
+	}, [userProfile, statuses])
 
 	const setWatchFilter = (filterById: number | undefined) => {
 		setWatchSearchParams({
