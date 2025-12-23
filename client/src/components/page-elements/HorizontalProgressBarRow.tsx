@@ -17,7 +17,7 @@ interface Props {
 export const HorizontalProgressBarRow = ({icon, item, link, showTooltip=true, showPercentages=true}: Props) => {
     const { width, height } = useScreenSize()
     return (
-        <Link to={link} state={{resetFilters: true}} className = "tw-group">
+        <Link to={link} className = "tw-group">
             <div className="tw-flex tw-items-center tw-gap-2">
                 {icon ? <span className="tw-text-sm group-hover:tw-opacity-80">{icon}</span> : null}
                 <span className="group-hover:tw-opacity-80 tw-text-sm">{item.name}</span>

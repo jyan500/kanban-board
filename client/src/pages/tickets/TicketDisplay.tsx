@@ -36,7 +36,6 @@ export const TicketDisplay = () => {
 	const params = useParams<{ticketId: string}>()
 	const navigate = useNavigate()
 	const location = useLocation()
-	const isResetFilters = location.state?.resetFilters
 	const { filters } = useAppSelector((state) => state.ticketFilter)
 
 	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
@@ -75,6 +74,7 @@ export const TicketDisplay = () => {
 
 	// /* when filters are changed, add to search params */
 	useEffect(() => {
+		console.log("the filters have changed, we are setting the filters and adding to search params")
 		const newSearchParams = new URLSearchParams(searchParams)
     
 		// Update or remove filter params based on their values
@@ -89,78 +89,53 @@ export const TicketDisplay = () => {
 		// Reset to page 1 when filters change
 		newSearchParams.set("page", "1")
 		
-		setSearchParams(newSearchParams)
+		setSearchParams(newSearchParams, { replace: true })
 
 	}, [filters])
 
-	// Sync existing Redux filters to URL on mount (when not resetting)
+	// on mount, reset all filters and pre-populate the filters based on URL search params 
 	useEffect(() => {
-		if (!isResetFilters) {
-			const hasFiltersInRedux = Object.values(filters).some(value => value !== null)
-			const hasFiltersInUrl = Object.keys(filters).some(key => searchParams.has(key))
 			
-			// If we have Redux filters but they're not in the URL, add them
-			if (hasFiltersInRedux && !hasFiltersInUrl) {
-				const newSearchParams = new URLSearchParams(searchParams)
-				
-				Object.entries(filters).forEach(([key, value]) => {
-					if (value !== null) {
-						newSearchParams.set(key, String(value))
-					} else {
-						newSearchParams.delete(key)
-					}
-				})
-				
-				setSearchParams(newSearchParams, { replace: true })
-			}
+		// First, reset all filters
+		const resettedFilters: TicketFilters = {
+			ticketTypeId: null,
+			statusId: null,
+			priorityId: null,
+			boardId: null,
+			sprintId: null,
+			assignedToUser: null
 		}
-	}, []) // Run only on mount
-
-	// if we are resetting filters (i.e when navigating to this page from another page with pre-existing search params)
-	useEffect(() => {
-		if (isResetFilters) {
-			
-			// First, reset all filters
-			const resettedFilters: TicketFilters = {
-				ticketTypeId: null,
-				statusId: null,
-				priorityId: null,
-				boardId: null,
-				sprintId: null,
-				assignedToUser: null
+		
+		// Apply any filters from the incoming search params
+		const filterKeys = Object.keys(resettedFilters)
+		filterKeys.forEach((key) => {
+			const value = searchParams.get(key)
+			if (value) {
+				const numValue = Number(value)
+				resettedFilters[key as keyof TicketFilters] = value === "" ? null : (isNaN(numValue) ? value : numValue) as number
 			}
-			
-			// Apply any filters from the incoming search params
-			const filterKeys = Object.keys(resettedFilters)
-			filterKeys.forEach((key) => {
-				const value = searchParams.get(key)
-				if (value) {
-					const numValue = Number(value)
-					resettedFilters[key as keyof TicketFilters] = value === "" ? null : (isNaN(numValue) ? value : numValue) as number
-				}
-			})
-			
-			// Update Redux with the new filters
-			dispatch(setFilters(resettedFilters))
-			
-			// Clean up the URL to only include the new filters plus search/page params
-			const newSearchParams = new URLSearchParams()
+		})
+		
+		// Update Redux with the new filters
+		dispatch(setFilters(resettedFilters))
+		
+		// Clean up the URL to only include the new filters plus search/page params
+		const newSearchParams = new URLSearchParams()
 
-			// Keep non-filter params (searchBy, query, page)
-			if (searchParams.get("searchBy")) newSearchParams.set("searchBy", searchParams.get("searchBy") ?? "")
-			if (searchParams.get("query")) newSearchParams.set("query", searchParams.get("query") ?? "")
-			if (searchParams.get("page")) newSearchParams.set("page", searchParams.get("page") ?? "")
-			
-			// Add the new filter params
-			Object.entries(resettedFilters).forEach(([key, value]) => {
-				if (value !== null) {
-					newSearchParams.set(key, String(value))
-				}
-			})
-			
-			setSearchParams(newSearchParams, { replace: true })
-		}
-	}, [isResetFilters])
+		// Keep non-filter params (searchBy, query, page)
+		if (searchParams.get("searchBy")) newSearchParams.set("searchBy", searchParams.get("searchBy") ?? "")
+		if (searchParams.get("query")) newSearchParams.set("query", searchParams.get("query") ?? "")
+		if (searchParams.get("page")) newSearchParams.set("page", searchParams.get("page") ?? "")
+		
+		// Add the new filter params
+		Object.entries(resettedFilters).forEach(([key, value]) => {
+			if (value !== null) {
+				newSearchParams.set(key, String(value))
+			}
+		})
+		
+		setSearchParams(newSearchParams, { replace: true })
+	}, [])
 	
 	const onSubmit = (values: FormValues) => {
 		// replace any null values with ""
