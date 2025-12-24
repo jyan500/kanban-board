@@ -1,11 +1,15 @@
-import React, {useEffect, useState, useCallback} from "react"
+import React, {useEffect, useState, useRef, useMemo, useCallback} from "react"
 import { Controller, FormProvider, useFormContext } from "react-hook-form"
 import ReactQuill, {Quill} from "react-quill"
 import "quill-mention";
 import "react-quill/dist/quill.snow.css"
 import "quill-mention/dist/quill.mention.css"
+import MarkdownShortcuts from 'quill-markdown-shortcuts'
 import { useLazyGenericFetchQuery } from "../../services/private/generic"
 import { USER_PROFILE_URL } from "../../helpers/urls"
+
+// Register the markdown shortcuts module
+Quill.register('modules/markdownShortcuts', MarkdownShortcuts)
 
 type Props = {
 	registerField: string
@@ -18,6 +22,7 @@ type Props = {
 export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, mentionsUrl, mentionsUrlParams}: Props) => {
 	const { control, handleSubmit, register, resetField, getValues, setValue } = useFormContext()
 	const [ genericFetch ] = useLazyGenericFetchQuery()
+	const quillRef = useRef<ReactQuill>(null)
 	// modified from: https://github.com/zenoamaro/react-quill/issues/324#issuecomment-1186874701
 	const source = useCallback(async (searchTerm: string, renderList: Function, _: string) => {
 		/* TODO: figure how to integrate react select with this component (if possible with this library),
@@ -34,28 +39,40 @@ export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, m
 		}).unwrap()
 		renderList(data, searchTerm)
 	}, [])
-	const modules = {
-		...(mentionsEnabled ? {mention: {
-			allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/, 
-			mentionDenotationChars: ["@"],
-			source: source 
-		}} : {}),
-		toolbar: [
-			[{ header: [1, 2, 3, false] }],
-			[{ 'color': [] }],
-			[{ 'font': [] }],
-			[{ 'align': [] }],
-			["bold", "italic", "underline", "strike", "blockquote"],
-			[
-				{ list: "ordered" },
-				{ list: "bullet" },
-				{ indent: "-1" },
-				{ indent: "+1" }
-			],
-			["link", "code"],
-			["clean"],
-		]
-	}
+
+	const modules = useMemo(() => {
+        return {
+            markdownShortcuts: {}, // Enable markdown shortcuts including backticks
+            ...(mentionsEnabled ? {mention: {
+                allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/, 
+                mentionDenotationChars: ["@"],
+                source: source,
+                // isolateCharacter and fixMentionsToQuill prevents interference
+                // with the quill markdown shortcuts module
+	            isolateCharacter: false,
+	            fixMentionsToQuill: false,
+	            positioningStrategy: 'normal',
+	            onOpen: () => true,
+	            onClose: () => true, 
+            }} : {}),
+            toolbar: [
+                [{ header: [1, 2, 3, false] }],
+                [{ 'color': [] }],
+                [{ 'font': [] }],
+                [{ 'align': [] }],
+                ["bold", "italic", "underline", "strike", "blockquote"],
+                [
+                    { list: "ordered" },
+                    { list: "bullet" },
+                    { indent: "-1" },
+                    { indent: "+1" }
+                ],
+                ["link", "code"],
+                ["clean"],
+            ]
+        }
+    }, [mentionsEnabled, source])
+
 	return (
 		<div id="quillContainer">
 			<Controller
@@ -64,6 +81,7 @@ export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, m
 				control={control}
 				render={({field}) => (
 					<ReactQuill 
+						ref={quillRef}
 						modules={modules}
 						/* prevent quill popups from going out of bounds*/
 						bounds={'#quillContainer'}
