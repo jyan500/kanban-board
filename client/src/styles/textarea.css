@@ -2,7 +2,7 @@
   background-color: #e8e8e8;
   padding: 2px 4px;
   border-radius: 3px;
-  color: #d63384; /* Optional: add color for better visibility */
+  color: #d63384; /* pinkish-red */
 }
 
 /* When displaying saved content (not in editor) */
@@ -10,7 +10,7 @@
   background-color: #e8e8e8;
   padding: 2px 4px;
   border-radius: 3px;
-  color: #d63384;
+  color: #d63384; /* pinkish-red */
 }
 
 /* Remove the left padding when HTML is displayed outside of the editor itself */
