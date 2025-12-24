@@ -103,8 +103,8 @@ export const BulkActionsForm = ({boardId, initStep=1, initSelectedIds=[]}: Props
 		}	
 		const { priorityId, statusId, userIdOption } = formValues
 		try {
-			const assigneeId = !isNaN(Number(userIdOption?.value)) ? Number(userIdOption?.value) : 0
-			await bulkEditTickets({ticketIds: selectedIds, priorityId, statusId, userIds: assigneeId >= 0 ? [assigneeId] : []}).unwrap()
+			const assigneeId: number | null = !isNaN(Number(userIdOption?.value)) ? Number(userIdOption?.value) : null
+			await bulkEditTickets({ticketIds: selectedIds, priorityId, statusId, userIds: assigneeId != null ? [assigneeId] : []}).unwrap()
 			// no need to send the notification if you're assigning the tickets to yourself
 			if (userProfile && assigneeId === 0 && unassignedNotificationType && selectedTickets){
 				// notify the user that they are unassigned from the ticket
