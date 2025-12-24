@@ -1,3 +1,25 @@
+.ql-editor code {
+  background-color: #e8e8e8;
+  padding: 2px 4px;
+  border-radius: 3px;
+  color: #d63384; /* Optional: add color for better visibility */
+}
+
+/* When displaying saved content (not in editor) */
+.quill-content code {
+  background-color: #e8e8e8;
+  padding: 2px 4px;
+  border-radius: 3px;
+  color: #d63384;
+}
+
+/* Remove the left padding when HTML is displayed outside of the editor itself */
+.quill-display .ql-editor,
+.quill-display {
+  padding-left: 0 !important;
+}
+
+/* EDIT: The following is currently unused */
 .DraftEditor-root {
     @apply tw-text-gray-800 tw-leading-relaxed;
 }
@@ -65,5 +87,4 @@
         padding: 1px 3px;
     }
 }
-
 

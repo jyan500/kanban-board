@@ -52,7 +52,7 @@ export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, m
 				{ indent: "-1" },
 				{ indent: "+1" }
 			],
-			["link", "code-block"],
+			["link", "code"],
 			["clean"],
 		]
 	}
