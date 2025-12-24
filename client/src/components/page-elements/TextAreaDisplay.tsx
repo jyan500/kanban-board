@@ -9,7 +9,7 @@ type Props = {
 /* Display the converted content from Draft.js, ignoring normalized styles */
 export const TextAreaDisplay = ({rawHTMLString}: Props) => {
 	return (
-		<div className = "ql-editor" dangerouslySetInnerHTML={{ __html: rawHTMLString }}></div>
+		<div className = "quill-display ql-editor" dangerouslySetInnerHTML={{ __html: rawHTMLString }}></div>
 	)
 }
 
