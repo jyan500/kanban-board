@@ -355,11 +355,15 @@ router.get("/:boardId/activity", validateGet, handleValidationResult, async (req
 					.orOn("tickets.id", "=", "entity_history.parent_entity_id");
 		})
 		.where((queryBuilder) => {
-			queryBuilder.where("entity_type", "tickets").whereIn("entity_id", ticketIds)
-		}).orWhere((queryBuilder) => {
-			queryBuilder.where("parent_entity_type", "tickets").whereIn("parent_entity_id", ticketIds)
-			// we don't need to include when tickets are added to the sprint as a part of the history
-			.where("entity_type", "!=", "tickets_to_sprints")
+	        queryBuilder
+	            .where((qb) => {
+	                qb.where("entity_type", "tickets").whereIn("entity_id", ticketIds)
+	            })
+	            .orWhere((qb) => {
+	                qb.where("parent_entity_type", "tickets")
+	                    .whereIn("parent_entity_id", ticketIds)
+	                    .where("entity_type", "!=", "tickets_to_sprints")
+	            })
 		}).where(db.raw('DATE(entity_history.changed_at)'), ">=", sevenDaysAgo)
 		.select(
 			"entity_history.changed_at as changedAt", 
@@ -383,10 +387,18 @@ router.get("/:boardId/activity", validateGet, handleValidationResult, async (req
 			if (ticketHistory.entityType === "ticket_relationships" && Number(data.parent_ticket_id) === ticketHistory.parentEntityId){
 				return
 			}
+			// ignore instances of users mentioning each other or watching tickets
+			if (ticketHistory.entityType === "tickets_to_users" && ("is_mention" in data || "is_watcher" in data)){
+				return	
+			}
 			// if entity type is ticket, the entity id is the ticket id, 
 			// however if parent entity type is ticket, the parent entity type is the ticket id
 			let ticketId = ticketHistory.entityType === "tickets" ? ticketHistory.entityId : ticketHistory.parentEntityId
 			const displayString = await getHistoryDisplayString(ticketHistory)
+
+			// note that if we haven't handled this type of operation (i.e deleting a comment), don't include
+			if (displayString === "") return
+
 			return {
 				...ticketHistory,
 				ticketId: ticketId,
