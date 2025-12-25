@@ -4,12 +4,8 @@ import ReactQuill, {Quill} from "react-quill"
 import "quill-mention";
 import "react-quill/dist/quill.snow.css"
 import "quill-mention/dist/quill.mention.css"
-import MarkdownShortcuts from 'quill-markdown-shortcuts'
 import { useLazyGenericFetchQuery } from "../../services/private/generic"
 import { USER_PROFILE_URL } from "../../helpers/urls"
-
-// Register the markdown shortcuts module
-Quill.register('modules/markdownShortcuts', MarkdownShortcuts)
 
 type Props = {
 	registerField: string
@@ -23,6 +19,7 @@ export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, m
 	const { control, handleSubmit, register, resetField, getValues, setValue } = useFormContext()
 	const [ genericFetch ] = useLazyGenericFetchQuery()
 	const quillRef = useRef<ReactQuill>(null)
+
 	// modified from: https://github.com/zenoamaro/react-quill/issues/324#issuecomment-1186874701
 	const source = useCallback(async (searchTerm: string, renderList: Function, _: string) => {
 		/* TODO: figure how to integrate react select with this component (if possible with this library),
@@ -42,13 +39,12 @@ export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, m
 
 	const modules = useMemo(() => {
         return {
-            markdownShortcuts: {}, // Enable markdown shortcuts including backticks
             ...(mentionsEnabled ? {mention: {
                 allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/, 
                 mentionDenotationChars: ["@"],
                 source: source,
                 // isolateCharacter and fixMentionsToQuill prevents interference
-                // with the quill markdown shortcuts module
+                // with future keyboard handling libraries
 	            isolateCharacter: false,
 	            fixMentionsToQuill: false,
 	            positioningStrategy: 'normal',
