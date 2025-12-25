@@ -134,6 +134,7 @@ export const Board = () => {
 					"statusIds": statusData.map((status)=>status.id),
 					"skipPaginate": true, 
 					"includeAssignees": true, 
+					"includeIsWatching": true,
 					"includeRelationshipInfo": true, 
 					"limit": true
 				}

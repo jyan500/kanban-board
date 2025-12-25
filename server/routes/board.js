@@ -545,6 +545,25 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			}
 		}
 
+		if (req.query.includeIsWatching){
+			tickets = {
+				...tickets,
+				data: await Promise.all(
+					tickets.data.map(async (ticket) => {
+						const isWatching = await db("tickets_to_users")
+							.where("tickets_to_users.ticket_id", ticket.id)
+							.where("tickets_to_users.user_id", req.user.id)
+							.where("tickets_to_users.is_watcher", true)
+							.first()
+						return {
+							...ticket,
+							isWatching: isWatching != null ? true : false
+						}
+					})
+				)
+			}
+		}
+
 		if (req.query.includeRelationshipInfo){
 			const epicTicketRelationshipType = await db("ticket_relationship_types").where("name" , "Epic").first()
 			const epicTicketType = await db("ticket_types").where("name", "Epic").first()

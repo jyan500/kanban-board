@@ -10,6 +10,7 @@ import { IconMediumPriority } from "./icons/IconMediumPriority"
 import { IconHighPriority } from "./icons/IconHighPriority"
 import { IconLink } from "./icons/IconLink"
 import { IconMenu } from "./icons/IconMenu"
+import { IconEye } from "./icons/IconEye"
 import { IconContext } from "react-icons"
 import { BugIcon } from "../assets/icons/BugIcon"
 import { ModificationIcon } from "../assets/icons/ModificationIcon"
@@ -133,9 +134,17 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 						ticket.hasNonEpicRelationship ? 
 						<div className = "tw-group tw-relative">
 							<IconLink className = "icon"/>
-							<HoverTooltip text={"Linked issue"} direction={"top"}/>
+							<HoverTooltip text={"Linked ticket"} direction={"top"}/>
 						</div>
 						: null
+					}
+					{
+						ticket.isWatching ? 
+						<div className = "tw-group tw-relative">
+							<IconEye className = "tw-text-primary icon"/>	
+							<HoverTooltip text={"You are watching this ticket"} direction={"top"}/>
+						</div> : 
+						null
 					}
 				</div>
 				<div className = {"tw-inline-block tw-text-left"}>

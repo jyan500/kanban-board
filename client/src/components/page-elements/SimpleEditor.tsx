@@ -43,18 +43,18 @@ export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, m
 	const modules = useMemo(() => {
         return {
             markdownShortcuts: {}, // Enable markdown shortcuts including backticks
-            ...(mentionsEnabled ? {mention: {
-                allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/, 
-                mentionDenotationChars: ["@"],
-                source: source,
-                // isolateCharacter and fixMentionsToQuill prevents interference
-                // with the quill markdown shortcuts module
-	            isolateCharacter: false,
-	            fixMentionsToQuill: false,
-	            positioningStrategy: 'normal',
-	            onOpen: () => true,
-	            onClose: () => true, 
-            }} : {}),
+            // ...(mentionsEnabled ? {mention: {
+            //     allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/, 
+            //     mentionDenotationChars: ["@"],
+            //     source: source,
+            //     // isolateCharacter and fixMentionsToQuill prevents interference
+            //     // with the quill markdown shortcuts module
+	        //     isolateCharacter: false,
+	        //     fixMentionsToQuill: false,
+	        //     positioningStrategy: 'normal',
+	        //     onOpen: () => true,
+	        //     onClose: () => true, 
+            // }} : {}),
             toolbar: [
                 [{ header: [1, 2, 3, false] }],
                 [{ 'color': [] }],
