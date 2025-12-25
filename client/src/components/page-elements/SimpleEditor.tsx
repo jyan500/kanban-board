@@ -8,9 +8,6 @@ import MarkdownShortcuts from 'quill-markdown-shortcuts'
 import { useLazyGenericFetchQuery } from "../../services/private/generic"
 import { USER_PROFILE_URL } from "../../helpers/urls"
 
-// Register the markdown shortcuts module
-Quill.register('modules/markdownShortcuts', MarkdownShortcuts)
-
 type Props = {
 	registerField: string
 	registerOptions?: Record<string, any> 
@@ -42,7 +39,6 @@ export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, m
 
 	const modules = useMemo(() => {
         return {
-            markdownShortcuts: {}, // Enable markdown shortcuts including backticks
             ...(mentionsEnabled ? {mention: {
                 allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/, 
                 mentionDenotationChars: ["@"],
