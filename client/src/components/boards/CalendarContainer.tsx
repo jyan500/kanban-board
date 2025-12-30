@@ -67,6 +67,13 @@ export const CalendarContainer: React.FC = () => {
         return eachDayOfInterval({ start: calendarStart, end: calendarEnd })
     }
 
+    /* 
+    Based on the week start date,
+    calculate how many columns the ticket should span for that week,
+    as well as the ticket's start column within the 2-D weeks array to
+    be used in the CSS rule for grid-column: start / end
+
+    */
     const getTicketDisplayForWeek = (ticket: Ticket, weekStartDate: Date) => {
         const weekEndDate = addDays(weekStartDate, 6)
     
@@ -80,11 +87,23 @@ export const CalendarContainer: React.FC = () => {
         Otherwise use the ticket's actual end date.
         */
         const displayEnd = isAfter(ticket.endDate, weekEndDate) ? weekEndDate : ticket.endDate
-        
+        /* 
+        get only the day number of the date i.e Dec 3 -> 3,
+        */ 
         const startDay = getDate(displayStart)
         const endDay = getDate(displayEnd)
+        /* 
+        Day of the week returns 0=Sunday,1=Monday,6=Saturday,
+        to convert this to the grid where Monday=0 (since its indexed by 0 in the 2-D array),
+        if Sunday, convert to 6. Otherwise, subtract 1 from the current day number
+        */
         const dayOfWeek = getDay(displayStart)
         const startCol = dayOfWeek === 0 ? 6 : dayOfWeek - 1 // Convert to Monday = 0
+        /* 
+        calculates how many columns the ticket should span, for example
+        Day 3 to Day 5 = 5 - 3 + 1 = 3 columns, since both the start
+        and end dates are inclusive.
+        */
         const span = endDay - startDay + 1
         
         return {
@@ -160,10 +179,15 @@ export const CalendarContainer: React.FC = () => {
                                     {week.map((date, dayIndex) => (
                                         <div
                                             key={dayIndex}
-                                            className={`tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
+                                            className={`hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
                                                 !isCurrentMonth(date) ? 'tw-bg-gray-50' : ''
                                             }`}
                                         >
+                                            {/* 
+                                                Highlight today's date with a blue circle within the calendar cell.
+                                                If a date is not in the current month (but still in the current week),
+                                                the cell will be gray colored
+                                            */}
                                             <div className={`tw-text-sm ${
                                                 isTodayFns(date) 
                                                     ? 'tw-bg-blue-500 tw-text-white tw-rounded-full tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center' 
@@ -177,12 +201,16 @@ export const CalendarContainer: React.FC = () => {
                                     ))}
                                 </div>
                                 
-                                {/* Tickets overlay */}
-                                <div className="tw-absolute tw-top-8 tw-left-0 tw-right-0 tw-space-y-1">
+                                {/* 
+                                    Tickets overlay 
+                                    Uses pointer-events-none as a hack so that the overlay that spans the entire week row doesn't
+                                    interfere with the hover on each cell. However, pointer-events are enabled on the ticket itself.
+                                */}
+                                <div className="tw-pointer-events-none tw-absolute tw-top-8 tw-left-0 tw-right-0 tw-space-y-1">
                                     {weekTickets.map((ticket) => (
                                         <div
                                             key={`${ticket.id}-${weekIndex}`}
-                                            className="tw-grid tw-grid-cols-7 tw-gap-0"
+                                            className="tw-grid tw-grid-cols-7 tw-gap-0 tw-pointer-events-auto tw-cursor-pointer"
                                             style={{ gridColumn: '1 / span 7' }}
                                         >
                                             <div
