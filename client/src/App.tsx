@@ -14,6 +14,7 @@ import { Ticket as TicketPage } from "./pages/tickets/Ticket"
 import { Boards } from "./pages/boards/Boards"
 import { Board } from "./pages/boards/Board" 
 import { BoardSchedule } from "./pages/boards/BoardSchedule"
+import { BoardCalendar } from "./pages/boards/BoardCalendar"
 import { BoardSummary } from "./pages/boards/BoardSummary"
 import { BoardTable } from "./pages/boards/BoardTable"
 import { BoardBacklog } from "./pages/boards/BoardBacklog"
@@ -67,6 +68,7 @@ import {
 	TICKETS, 
 	TICKET_ID, 
 	TABLE,
+	CALENDAR,
 	SCHEDULE,
 	SUMMARY,
 	SPRINTS,
@@ -226,6 +228,10 @@ const router = createBrowserRouter([
 									{
 										path: SCHEDULE,
 										element: <BoardSchedule/> 
+									},
+									{
+										path: CALENDAR,
+										element: <BoardCalendar/>
 									},
 									{
 										path: TABLE,
