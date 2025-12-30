@@ -8,9 +8,9 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Ticket, UserProfile, ViewMode } from "../../types/common"
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns"
 import { BoardFilters, setFilters } from "../../slices/boardFilterSlice"
-import { ScheduleContainer } from "../../components/boards/ScheduleContainer"
 import { TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { useForm, FormProvider } from "react-hook-form"
+import { CalendarContainer } from "../../components/boards/CalendarContainer"
 
 export interface FormValues { 
 	query: string
@@ -83,7 +83,7 @@ export const BoardCalendar = () => {
 	return (
 		<div className = "tw-relative tw-w-full">
 			<FormProvider {...methods}>
-				<div>Calendar Container Here</div>
+				<CalendarContainer/>
 			</FormProvider>
 		</div>
 	)
