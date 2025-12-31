@@ -235,8 +235,6 @@ export const CalendarContainer = ({
                             const weekStartDate = week[0]
                             const weekEndDate = week[6]
                             
-                            console.log("weekStartDate: ", weekStartDate)
-                            console.log("weedEndDate: ", weekEndDate)
                             // Filter elements that appear in this week
                             const weekData = calendarData
                                 .filter(data => 
