@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { useGetUserProfilesQuery, useLazyGetUserProfilesQuery } from "../../services/private/userProfile"
 import { boardApi, useGetBoardTicketsQuery } from "../../services/private/board"
+import { useGetSprintsQuery } from "../../services/private/sprint"
 import { toggleShowModal, setModalType, setModalProps } from "../../slices/modalSlice"
 import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -17,9 +18,19 @@ export interface FormValues {
 	searchBy: string
 }
 
+export interface CalendarData {
+    id: number
+    name: string
+    startDate: Date
+    endDate: Date
+    color: string
+    type: "Ticket" | "Sprint"
+}
+
 export const BoardCalendar = () => {
 	const dispatch = useAppDispatch()
 	const { filters } = useAppSelector((state) => state.boardFilter)
+	const [calendarData, setCalendarData] = useState<Array<CalendarData>>([])
 	const [ page, setPage ] = useState(1)
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
     const [currentDate, setCurrentDate] = useState(new Date())
@@ -67,6 +78,16 @@ export const BoardCalendar = () => {
 		"limit": true,
 	}} : skipToken)
 
+	const { data: sprintData, isLoading: isSprintsLoading, isError: isSprintsError } = useGetSprintsQuery(boardInfo ? {
+		urlParams: {
+			boardId: boardInfo.id,
+			startDate: format(getCurrentPeriod.start, "yyyy-MM-dd"),
+			endDate: format(getCurrentPeriod.end, "yyyy-MM-dd"),
+			page: page,
+			checkOverlapping: true,
+		}
+	} : skipToken)
+
 	// Count active filters for the badge
 	const numActiveFilters = Object.values(filters).filter(value => value !== null).length
 
@@ -80,10 +101,47 @@ export const BoardCalendar = () => {
 		setPage(1)
 	}, [getCurrentPeriod])
 
+	useEffect(() => {
+		if (!isBoardTicketLoading && !isSprintsLoading && sprintData?.data && boardTicketData?.data){
+			setCalendarData([
+				...sprintData.data.map((sprint) => {
+					return {
+						id: sprint.id,
+						type: "Sprint",
+						name: sprint.name,
+						startDate: new Date(sprint.startDate),
+						endDate: new Date(sprint.endDate),
+			            color: "tw-bg-blue-200",
+					}
+				}), 
+				...boardTicketData.data.map((ticket) => {
+					return {
+						id: ticket.id,
+						type: "Ticket",
+						name: ticket.name,
+						startDate: new Date(ticket.createdAt),
+						endDate: new Date(ticket.dueDate),
+			            color: "tw-bg-blue-300",
+					}
+				})
+			])
+		}
+	}, [sprintData, boardTicketData, isSprintsLoading, isBoardTicketLoading])
+
 	return (
 		<div className = "tw-relative tw-w-full">
 			<FormProvider {...methods}>
-				<CalendarContainer/>
+				<CalendarContainer
+					currentDate={currentDate}
+					setCurrentDate={setCurrentDate}
+					periodStart={getCurrentPeriod.start}
+					periodEnd={getCurrentPeriod.end}
+					boardId={boardInfo?.id ?? 0}
+					numFilters={numActiveFilters}
+					calendarData={calendarData}
+					onSubmit={onSubmit}
+					isCalendarLoading={(isSprintsLoading && !sprintData) || (isBoardTicketLoading && !boardTicketData)}
+				/>
 			</FormProvider>
 		</div>
 	)

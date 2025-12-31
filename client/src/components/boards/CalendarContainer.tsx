@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { IoChevronBack, IoChevronForward } from 'react-icons/io5'
 import { 
     format, 
@@ -12,45 +13,99 @@ import {
     getDay,
     isBefore,
     isAfter,
+    differenceInDays,
     getDate,
     eachDayOfInterval
 } from 'date-fns'
+import { SearchToolBar } from "../tickets/SearchToolBar"
+import type { CalendarData } from "../../pages/boards/BoardCalendar"
+import { Ticket, Sprint } from "../../types/common"
+import { FilterButton } from "../../components/page-elements/FilterButton"
+import { useForm, FormProvider, useFormContext} from "react-hook-form"
+import { LoadingSkeleton } from '../page-elements/LoadingSkeleton'
+import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
 
-interface Ticket {
-    id: string
-    title: string
-    startDate: Date
-    endDate: Date
-    color: string
+// interface Ticket {
+//     id: string
+//     title: string
+//     startDate: Date
+//     endDate: Date
+//     color: string
+// }
+
+interface Props {
+    currentDate: Date
+    periodStart: Date
+    periodEnd: Date
+    setCurrentDate: (date: Date) => void
+    isCalendarLoading?: boolean
+    numFilters: number
+    onSubmit: (values: FormValues) => void
+    calendarData: Array<CalendarData>
+    boardId: number
 }
 
-export const CalendarContainer: React.FC = () => {
-    const [currentDate, setCurrentDate] = useState(new Date())
+interface CalendarContainerSearchBarProps { 
+    onSubmit: (values: FormValues) => void
+    numFilters: number
+    boardId: number
+}
 
-    // Mock ticket data - assumes these are already filtered for the current month
-    const tickets: Ticket[] = [
-        {
-            id: '1',
-            title: 'ST Sprint 3',
-            startDate: new Date(2025, 11, 5), // Dec 1, 2024
-            endDate: new Date(2025, 11, 7), // Dec 18, 2024
-            color: 'tw-bg-blue-200'
-        },
-        {
-            id: '2',
-            title: 'ST-28 test test',
-            startDate: new Date(2025, 11, 12), // Jan 1, 2025
-            endDate: new Date(2025, 11, 13), // Jan 1, 2025
-            color: 'tw-bg-blue-300'
-        },
-        {
-            id: '3',
-            title: 'ST-29 test test',
-            startDate: new Date(2025, 11, 11), // Jan 1, 2025
-            endDate: new Date(2025, 11, 14), // Jan 1, 2025
-            color: 'tw-bg-blue-300'
-        }
-    ]
+const CalendarContainerSearchBar = ({
+    onSubmit,
+    numFilters,
+    boardId,
+}: CalendarContainerSearchBarProps) => {
+    const dispatch = useAppDispatch()
+    const methods = useFormContext<FormValues>()
+    const { handleSubmit } = methods
+    return (
+        <div className = "tw-flex tw-flex-col tw-gap-y-2 sm:tw-w-full lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
+            <FormProvider {...methods}>
+                <SearchToolBar 
+                    hidePagination={true}
+                    registerOptions={{}}
+                    searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+                    additionalButtons={
+                    () => {
+                        return (
+                            <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+                                <FilterButton
+                                    onClick={() => {
+                                        dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
+                                        dispatch(setSecondaryModalProps({boardId: boardId, isBulkEdit: false}))
+                                        dispatch(toggleShowSecondaryModal(true))
+                                    }}
+                                    numFilters={numFilters}
+                                />
+                            </div>
+                        )
+                    }
+                    }
+                    onFormSubmit={async () => {
+                        await handleSubmit(onSubmit)()
+                    }}
+                    hidePagination={true}
+                >
+                </SearchToolBar>
+            </FormProvider>
+
+        </div>
+    )
+}
+
+export const CalendarContainer = ({
+    calendarData, 
+    currentDate,
+    setCurrentDate,
+    periodStart, 
+    periodEnd, 
+    onSubmit,
+    numFilters,
+    boardId,
+    isCalendarLoading=false, 
+}: Props) => {
+    const methods = useFormContext<FormValues>()
 
     const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -74,19 +129,19 @@ export const CalendarContainer: React.FC = () => {
     be used in the CSS rule for grid-column: start / end
 
     */
-    const getTicketDisplayForWeek = (ticket: Ticket, weekStartDate: Date) => {
+    const getElementDisplayForWeek = (element: CalendarData, weekStartDate: Date) => {
         const weekEndDate = addDays(weekStartDate, 6)
     
         /* 
         If ticket started before this week, show it starting from Monday of this week. 
         Otherwise, use the ticket's actual start date.
         */        
-        const displayStart = isBefore(ticket.startDate, weekStartDate) ? weekStartDate : ticket.startDate
+        const displayStart = isBefore(element.startDate, weekStartDate) ? weekStartDate : element.startDate
         /* 
         If a ticket ends after this week, show it ending on Sunday of this week.
         Otherwise use the ticket's actual end date.
         */
-        const displayEnd = isAfter(ticket.endDate, weekEndDate) ? weekEndDate : ticket.endDate
+        const displayEnd = isAfter(element.endDate, weekEndDate) ? weekEndDate : element.endDate
         /* 
         get only the day number of the date i.e Dec 3 -> 3,
         */ 
@@ -96,18 +151,17 @@ export const CalendarContainer: React.FC = () => {
         Day of the week returns 0=Sunday,1=Monday,6=Saturday,
         to convert this to the grid where Monday=0 (since its indexed by 0 in the 2-D array),
         if Sunday, convert to 6. Otherwise, subtract 1 from the current day number
+
+        subtract the difference between the columns + 1 to get the total span
         */
         const dayOfWeek = getDay(displayStart)
+        const endDayOfWeek = getDay(displayEnd)
         const startCol = dayOfWeek === 0 ? 6 : dayOfWeek - 1 // Convert to Monday = 0
-        /* 
-        calculates how many columns the ticket should span, for example
-        Day 3 to Day 5 = 5 - 3 + 1 = 3 columns, since both the start
-        and end dates are inclusive.
-        */
-        const span = endDay - startDay + 1
+        const endCol = endDayOfWeek === 0 ? 6 : endDayOfWeek - 1 // Convert to Monday = 0
+        const span = endCol - startCol + 1
         
         return {
-            ...ticket,
+            ...element,
             startCol,
             span
         }
@@ -118,6 +172,11 @@ export const CalendarContainer: React.FC = () => {
     }
 
     const calendarDays = generateCalendarDays()
+
+    /* 
+    Generate a 2-D array structure that contains X amount of weeks
+    in the month as rows, and 7 days per week as columns
+    */
     const weeks: Date[][] = []
     for (let i = 0; i < calendarDays.length; i += 7) {
         weeks.push(calendarDays.slice(i, i + 7))
@@ -129,105 +188,118 @@ export const CalendarContainer: React.FC = () => {
 
     return (
         <div className="tw-max-w-7xl tw-mx-auto tw-p-4">
-            <div className="tw-bg-white tw-rounded-lg tw-border">
+            <div className="tw-bg-white tw-rounded-lg tw-border tw-flex tw-flex-col tw-gap-y-4">
                 {/* Header */}
-                <div className="tw-flex tw-items-center tw-justify-between tw-p-4 tw-border-b">
-                    <h2 className="tw-text-xl tw-font-semibold">
-                        {format(currentDate, 'MMMM yyyy')}
-                    </h2>
-                    <div className="tw-flex tw-gap-2">
-                        <button
-                            onClick={() => changeMonth(-1)}
-                            className="tw-p-2 hover:tw-bg-gray-100 tw-rounded"
-                        >
-                            <IoChevronBack className="tw-w-5 tw-h-5" />
-                        </button>
-                        <button
-                            onClick={() => changeMonth(1)}
-                            className="tw-p-2 hover:tw-bg-gray-100 tw-rounded"
-                        >
-                            <IoChevronForward className="tw-w-5 tw-h-5" />
-                        </button>
+                <div className = "tw-flex tw-flex-col tw-gap-y-2 tw-p-4">
+                    <div className="tw-flex tw-items-center tw-justify-between">
+                        <h2 className="tw-text-xl tw-font-semibold">
+                            {format(currentDate, 'MMMM yyyy')}
+                        </h2>
+                        <div className="tw-flex tw-flex-row tw-items-center tw-gap-2">
+                            <button
+                                onClick={() => changeMonth(-1)}
+                                className="tw-p-2 hover:tw-bg-gray-100 tw-rounded"
+                            >
+                                <IoChevronBack className="tw-w-5 tw-h-5" />
+                            </button>
+                            <button
+                                onClick={() => changeMonth(1)}
+                                className="tw-p-2 hover:tw-bg-gray-100 tw-rounded"
+                            >
+                                <IoChevronForward className="tw-w-5 tw-h-5" />
+                            </button>
+                        </div>
                     </div>
+                    <FormProvider {...methods}>
+                        <CalendarContainerSearchBar
+                            onSubmit={onSubmit}
+                            numFilters={numFilters}
+                            boardId={boardId}
+                        />
+                    </FormProvider>
                 </div>
 
                 {/* Days of week header */}
-                <div className="tw-grid tw-grid-cols-7 tw-border-b">
-                    {daysOfWeek.map(day => (
-                        <div key={day} className="tw-p-3 tw-text-center tw-text-sm tw-font-medium tw-text-gray-600 tw-border-r last:tw-border-r-0">
-                            {day}
-                        </div>
-                    ))}
-                </div>
-
-                {/* Calendar grid */}
-                <div className="tw-divide-y">
-                    {weeks.map((week, weekIndex) => {
-                        const weekStartDate = week[0]
-                        const weekEndDate = week[6]
-                        
-                        // Filter tickets that appear in this week
-                        const weekTickets = tickets
-                            .filter(ticket => 
-                                !(isAfter(ticket.startDate, weekEndDate) || isBefore(ticket.endDate, weekStartDate))
-                            )
-                            .map(ticket => getTicketDisplayForWeek(ticket, weekStartDate))
-                        
-                        return (
-                            <div key={weekIndex} className="tw-relative">
-                                <div className="tw-grid tw-grid-cols-7 tw-min-h-32">
-                                    {week.map((date, dayIndex) => (
-                                        <div
-                                            key={dayIndex}
-                                            className={`hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
-                                                !isCurrentMonth(date) ? 'tw-bg-gray-50' : ''
-                                            }`}
-                                        >
-                                            {/* 
-                                                Highlight today's date with a blue circle within the calendar cell.
-                                                If a date is not in the current month (but still in the current week),
-                                                the cell will be gray colored
-                                            */}
-                                            <div className={`tw-text-sm ${
-                                                isTodayFns(date) 
-                                                    ? 'tw-bg-blue-500 tw-text-white tw-rounded-full tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center' 
-                                                    : !isCurrentMonth(date) 
-                                                    ? 'tw-text-gray-400'
-                                                    : ''
-                                            }`}>
-                                                {format(date, 'd')}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                                
-                                {/* 
-                                    Tickets overlay 
-                                    Uses pointer-events-none as a hack so that the overlay that spans the entire week row doesn't
-                                    interfere with the hover on each cell. However, pointer-events are enabled on the ticket itself.
-                                */}
-                                <div className="tw-pointer-events-none tw-absolute tw-top-8 tw-left-0 tw-right-0 tw-space-y-1">
-                                    {weekTickets.map((ticket) => (
-                                        <div
-                                            key={`${ticket.id}-${weekIndex}`}
-                                            className="tw-grid tw-grid-cols-7 tw-gap-0 tw-pointer-events-auto tw-cursor-pointer"
-                                            style={{ gridColumn: '1 / span 7' }}
-                                        >
-                                            <div
-                                                className={`${ticket.color} tw-rounded tw-px-2 tw-py-1 tw-text-xs tw-flex tw-items-center`}
-                                                style={{
-                                                    gridColumn: `${ticket.startCol + 1} / span ${ticket.span}`
-                                                }}
-                                            >
-                                                <span className="tw-mr-1">🔄</span>
-                                                {ticket.title}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                <div className = "tw-border-t">
+                    <div className="tw-grid tw-grid-cols-7 tw-border-b">
+                        {daysOfWeek.map(day => (
+                            <div key={day} className="tw-p-3 tw-text-center tw-text-sm tw-font-medium tw-text-gray-600 tw-border-r last:tw-border-r-0">
+                                {day}
                             </div>
-                        )
-                    })}
+                        ))}
+                    </div>
+
+                    {/* Calendar grid */}
+                    <div className="tw-divide-y">
+                        {weeks.map((week, weekIndex) => {
+                            const weekStartDate = week[0]
+                            const weekEndDate = week[6]
+                            
+                            console.log("weekStartDate: ", weekStartDate)
+                            console.log("weedEndDate: ", weekEndDate)
+                            // Filter elements that appear in this week
+                            const weekData = calendarData
+                                .filter(data => 
+                                    !(isAfter(data.startDate, weekEndDate) || isBefore(data.endDate, weekStartDate))
+                                )
+                                .map(data => getElementDisplayForWeek(data, weekStartDate))
+                            
+                            return (
+                                <div key={weekIndex} className="tw-relative">
+                                    <div className="tw-grid tw-grid-cols-7 tw-min-h-32">
+                                        {week.map((date, dayIndex) => (
+                                            <button
+                                                key={dayIndex}
+                                                className={`tw-relative hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
+                                                    !isCurrentMonth(date) ? 'tw-bg-gray-50' : ''
+                                                }`}
+                                            >
+                                                {/* 
+                                                    Highlight today's date with a blue circle within the calendar cell.
+                                                    If a date is not in the current month (but still in the current week),
+                                                    the cell will be gray colored
+                                                */}
+                                                <div className={`tw-absolute tw-top-0 tw-left-0 tw-ml-1 tw-mt-1 tw-text-sm ${
+                                                    isTodayFns(date) 
+                                                        ? 'tw-bg-blue-500 tw-text-white tw-rounded-full tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center' 
+                                                        : !isCurrentMonth(date) 
+                                                        ? 'tw-text-gray-400'
+                                                        : ''
+                                                }`}>
+                                                    {format(date, 'd')}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    
+                                    {/* 
+                                        Tickets overlay 
+                                        Uses pointer-events-none as a hack so that the overlay that spans the entire week row doesn't
+                                        interfere with the hover on each cell. However, pointer-events are enabled on the ticket itself.
+                                    */}
+                                    <div className="tw-pointer-events-none tw-absolute tw-top-8 tw-left-0 tw-right-0 tw-space-y-1">
+                                        {weekData.map((data) => (
+                                            <div
+                                                key={`${data.id}-${weekIndex}`}
+                                                className="tw-grid tw-grid-cols-7 tw-gap-0"
+                                                style={{ gridColumn: `1 / -1` }}
+                                            >
+                                                <button
+                                                    className={`${data.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-pointer-events-auto`}
+                                                    style={{
+                                                        gridColumn: `${data.startCol + 1} / span ${data.span}`
+                                                    }}
+                                                >
+                                                    <span className="tw-mr-1">🔄</span>
+                                                    {data.name}
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
             </div>
         </div>
