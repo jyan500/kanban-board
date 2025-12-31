@@ -25,14 +25,6 @@ import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { LoadingSkeleton } from '../page-elements/LoadingSkeleton'
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
 
-// interface Ticket {
-//     id: string
-//     title: string
-//     startDate: Date
-//     endDate: Date
-//     color: string
-// }
-
 interface Props {
     currentDate: Date
     periodStart: Date

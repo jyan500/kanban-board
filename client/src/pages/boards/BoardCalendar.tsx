@@ -85,6 +85,7 @@ export const BoardCalendar = () => {
 			endDate: format(getCurrentPeriod.end, "yyyy-MM-dd"),
 			page: page,
 			checkOverlapping: true,
+			filterInProgress: true,
 		}
 	} : skipToken)
 
