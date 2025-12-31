@@ -263,7 +263,7 @@ export const BoardBacklog = () => {
 				</>
 			</BulkEditToolbar>
 			{
-				(isSprintTicketLoading || isSprintLoading || !boardInfo) ? (
+				(isSprintLoading || !boardInfo) ? (
 					<LoadingSkeleton>
 						<RowPlaceholder numRows={4}/>
 					</LoadingSkeleton>
