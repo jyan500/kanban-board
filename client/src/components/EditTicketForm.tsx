@@ -517,7 +517,6 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 											isLoading={submitLoading}
 											mentionsEnabled={false}
 											type="date"
-											minDate={new Date().toISOString().split("T")[0]}
 											customReset={() => {
 												if (ticket?.dueDate){
 													// TODO: Fix error where due date needs to be a string

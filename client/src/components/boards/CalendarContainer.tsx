@@ -13,6 +13,7 @@ import {
     getDay,
     isBefore,
     isAfter,
+    isSameDay,
     differenceInDays,
     getDate,
     eachDayOfInterval
@@ -23,6 +24,7 @@ import { Ticket, Sprint } from "../../types/common"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { LoadingSkeleton } from '../page-elements/LoadingSkeleton'
+import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
 
 interface Props {
@@ -116,22 +118,23 @@ export const CalendarContainer = ({
 
     /* 
     Based on the week start date,
-    calculate how many columns the ticket should span for that week,
+    calculate how many columns the element should span for that week,
     as well as the ticket's start column within the 2-D weeks array to
     be used in the CSS rule for grid-column: start / end
-
-    */
-    const getElementDisplayForWeek = (element: CalendarData, weekStartDate: Date) => {
-        const weekEndDate = addDays(weekStartDate, 6)
     
+    Note that currently, only sprints will span across multiple dates on the calendar,
+    but tickets will only show on their due date
+    */
+    const getSprintDisplayForWeek = (element: CalendarData, weekStartDate: Date) => {
+        const weekEndDate = addDays(weekStartDate, 6)
         /* 
-        If ticket started before this week, show it starting from Monday of this week. 
+        If sprint started before this week, show it starting from Monday of this week. 
         Otherwise, use the ticket's actual start date.
         */        
         const displayStart = isBefore(element.startDate, weekStartDate) ? weekStartDate : element.startDate
         /* 
-        If a ticket ends after this week, show it ending on Sunday of this week.
-        Otherwise use the ticket's actual end date.
+        If a sprint ends after this week, show it ending on Sunday of this week.
+        Otherwise use the sprint's actual end date.
         */
         const displayEnd = isAfter(element.endDate, weekEndDate) ? weekEndDate : element.endDate
         /* 
@@ -157,6 +160,12 @@ export const CalendarContainer = ({
             startCol,
             span
         }
+    }
+
+    const getTicketsForDate = (date: Date) => {
+        return calendarData.filter(data => {
+            return data.type === "Ticket" && isSameDay(data.endDate, date)
+        })
     }
 
     const changeMonth = (delta: number) => {
@@ -227,39 +236,75 @@ export const CalendarContainer = ({
                             const weekStartDate = week[0]
                             const weekEndDate = week[6]
                             
-                            // Filter elements that appear in this week
-                            const weekData = calendarData
+                            // Filter sprints that appear in this week
+                            const weekSprints = calendarData
                                 .filter(data => 
-                                    !(isAfter(data.startDate, weekEndDate) || isBefore(data.endDate, weekStartDate))
+                                    data.type === "Sprint" && 
+                                    (!(isAfter(data.startDate, weekEndDate) || isBefore(data.endDate, weekStartDate)))
                                 )
-                                .map(data => getElementDisplayForWeek(data, weekStartDate))
-                            
+                                .map(data => getSprintDisplayForWeek(data, weekStartDate))
+
                             return (
                                 <div key={weekIndex} className="tw-relative">
                                     <div className="tw-grid tw-grid-cols-7 tw-min-h-32">
-                                        {week.map((date, dayIndex) => (
-                                            <button
-                                                key={dayIndex}
-                                                className={`tw-relative hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
-                                                    !isCurrentMonth(date) ? 'tw-bg-gray-50' : ''
-                                                }`}
-                                            >
-                                                {/* 
-                                                    Highlight today's date with a blue circle within the calendar cell.
-                                                    If a date is not in the current month (but still in the current week),
-                                                    the cell will be gray colored
-                                                */}
-                                                <div className={`tw-absolute tw-top-0 tw-left-0 tw-ml-1 tw-mt-1 tw-text-sm ${
-                                                    isTodayFns(date) 
-                                                        ? 'tw-bg-blue-500 tw-text-white tw-rounded-full tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center' 
-                                                        : !isCurrentMonth(date) 
-                                                        ? 'tw-text-gray-400'
-                                                        : ''
-                                                }`}>
-                                                    {format(date, 'd')}
-                                                </div>
-                                            </button>
-                                        ))}
+                                        {week.map((date, dayIndex) => {
+                                            const dateTickets = getTicketsForDate(date)
+                                            /* 
+                                                The overlapping is determined by the day indices,
+                                                for example 0 = Monday, ... 6 = Sunday
+                                                If sprint has a startCol of index 1 and ends at index 6,
+                                                and the day we're checking for is 0, we can see that this 
+                                                condition would return False since 0 < 1
+                                            */
+                                            const sprintsOverlappingDate = weekSprints.filter(sprint => {
+                                                const sprintStartsOnOrBefore = dayIndex >= sprint.startCol
+                                                const sprintEndsOnOrAfter = dayIndex < sprint.startCol + sprint.span
+                                                return sprintStartsOnOrBefore && sprintEndsOnOrAfter
+                                            })
+                                            return (
+                                                <button
+                                                    key={dayIndex}
+                                                    className={`tw-flex tw-flex-col tw-relative hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
+                                                        !isCurrentMonth(date) ? 'tw-bg-gray-50' : ''
+                                                    }`}
+                                                >
+                                                    {/* 
+                                                        Highlight today's date with a blue circle within the calendar cell.
+                                                        If a date is not in the current month (but still in the current week),
+                                                        the cell will be gray colored
+                                                    */}
+                                                    <div className={`tw-absolute tw-top-0 tw-left-0 tw-ml-1 tw-mt-1 tw-text-sm ${
+                                                        isTodayFns(date) 
+                                                            ? 'tw-bg-blue-500 tw-text-white tw-rounded-full tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center' 
+                                                            : !isCurrentMonth(date) 
+                                                            ? 'tw-text-gray-400'
+                                                            : ''
+                                                    }`}>
+                                                        {format(date, 'd')}
+                                                    </div>
+
+                                                    <div className = "tw-py-3"></div>
+                                                    {/* Space for sprints only if they overlap this date */}
+                                                    {sprintsOverlappingDate.length > 0 ? (
+                                                        <div style={{ height: `${(sprintsOverlappingDate.length * 26) + ((sprintsOverlappingDate.length + 2) * 2)}px` }} />
+                                                    ) : null}
+                                                    
+                                                    <div className = "tw-flex tw-flex-col tw-gap-y-1 tw-w-full">
+                                                        {dateTickets.map((ticket) => {
+                                                            return (
+                                                                <button 
+                                                                    className = {`${ticket.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-w-full tw-text-left`}
+                                                                    key={ticket.id}
+                                                                >
+                                                                    <span className="tw-mr-1">📋</span>
+                                                                    <span className="tw-truncate">{ticket.name}</span>
+                                                                </button>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                </button>
+                                            )
+                                        })}
                                     </div>
                                     
                                     {/* 
@@ -268,7 +313,7 @@ export const CalendarContainer = ({
                                         interfere with the hover on each cell. However, pointer-events are enabled on the ticket itself.
                                     */}
                                     <div className="tw-pointer-events-none tw-absolute tw-top-8 tw-left-0 tw-right-0 tw-space-y-1">
-                                        {weekData.map((data) => (
+                                        {weekSprints.map((data) => (
                                             <div
                                                 key={`${data.id}-${weekIndex}`}
                                                 className="tw-grid tw-grid-cols-7 tw-gap-0"
