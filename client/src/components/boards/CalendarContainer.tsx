@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
-import { IoChevronBack, IoChevronForward } from 'react-icons/io5'
+import { IconArrowRight } from "../../components/icons/IconArrowRight"
+import { IconArrowLeft } from "../../components/icons/IconArrowLeft"
 import { 
     format, 
     startOfMonth, 
@@ -22,6 +23,8 @@ import { SearchToolBar } from "../tickets/SearchToolBar"
 import type { CalendarData } from "../../pages/boards/BoardCalendar"
 import { Ticket, Sprint } from "../../types/common"
 import { FilterButton } from "../../components/page-elements/FilterButton"
+import { IconTicket } from "../../components/icons/IconTicket"
+import { IconCycle } from "../../components/icons/IconCycle"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { LoadingSkeleton } from '../page-elements/LoadingSkeleton'
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
@@ -201,13 +204,13 @@ export const CalendarContainer = ({
                                 onClick={() => changeMonth(-1)}
                                 className="tw-p-2 hover:tw-bg-gray-100 tw-rounded"
                             >
-                                <IoChevronBack className="tw-w-5 tw-h-5" />
+                                <IconArrowLeft className="tw-w-5 tw-h-5" />
                             </button>
                             <button
                                 onClick={() => changeMonth(1)}
                                 className="tw-p-2 hover:tw-bg-gray-100 tw-rounded"
                             >
-                                <IoChevronForward className="tw-w-5 tw-h-5" />
+                                <IconArrowRight className="tw-w-5 tw-h-5" />
                             </button>
                         </div>
                     </div>
@@ -284,9 +287,11 @@ export const CalendarContainer = ({
                                                     </div>
 
                                                     <div className = "tw-py-3"></div>
-                                                    {/* Space for sprints only if they overlap this date */}
+                                                    {/* Space for sprints only if they overlap this date so the tickets display under the sprints. 
+                                                    For each additional sprint, you need to include additional padding
+                                                    to account for the slight padding that occurs between each sprint */}
                                                     {sprintsOverlappingDate.length > 0 ? (
-                                                        <div style={{ height: `${(sprintsOverlappingDate.length * 26) + ((sprintsOverlappingDate.length + 2) * 2)}px` }} />
+                                                        <div style={{ height: `${(sprintsOverlappingDate.length * 26) + ((sprintsOverlappingDate.length + .20) * 2)}px` }} />
                                                     ) : null}
                                                     
                                                     <div className = "tw-flex tw-flex-col tw-gap-y-1 tw-w-full">
@@ -296,7 +301,7 @@ export const CalendarContainer = ({
                                                                     className = {`${ticket.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-w-full tw-text-left`}
                                                                     key={ticket.id}
                                                                 >
-                                                                    <span className="tw-mr-1">📋</span>
+                                                                    <span className="tw-mr-1"><IconTicket/></span>
                                                                     <span className="tw-truncate">{ticket.name}</span>
                                                                 </button>
                                                             )
@@ -325,7 +330,7 @@ export const CalendarContainer = ({
                                                         gridColumn: `${data.startCol + 1} / span ${data.span}`
                                                     }}
                                                 >
-                                                    <span className="tw-mr-1">🔄</span>
+                                                    <span className="tw-mr-1"><IconCycle/></span>
                                                     {data.name}
                                                 </button>
                                             </div>
