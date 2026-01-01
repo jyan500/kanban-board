@@ -15,7 +15,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { ArrowButton } from "../../components/page-elements/ArrowButton"
 import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { Link } from "react-router-dom"
-import { SCHEDULE, TABLE, BACKLOG, BOARDS, TICKETS, SPRINTS, SUMMARY } from "../../helpers/routes"
+import { SCHEDULE, TABLE, BACKLOG, BOARDS, TICKETS, SPRINTS, SUMMARY, CALENDAR } from "../../helpers/routes"
 import { Banner } from "../../components/page-elements/Banner"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { SearchBarPlaceholder } from "../../components/placeholders/SearchBarPlaceholder"
@@ -163,6 +163,9 @@ export const Board = () => {
 	const boardPath = `${BOARDS}/${boardId}`
 
 	const additionalLinks = [
+		{
+			pathname: `${boardPath}/${CALENDAR}`, text: "Calendar",
+		},
 		{
 			pathname: `${boardPath}/${TABLE}`, text: "Table",
 		},

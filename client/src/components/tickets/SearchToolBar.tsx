@@ -13,9 +13,9 @@ import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
 
 type Props = {
-	currentPage: number
-	paginationData: IPagination | undefined
-	setPage: (pageNum: number) => void
+	currentPage?: number
+	paginationData?: IPagination | undefined
+	setPage?: (pageNum: number) => void
 	registerOptions: Record<string, any>
 	onFormSubmit: () => void
 	filters?: Array<string>
@@ -124,7 +124,7 @@ export const SearchToolBar = ({
 				) : null
 			}
 			{
-				!hidePagination ? (
+				!hidePagination && currentPage && setPage && paginationData ? (
 					<div className = "tw-w-full lg:tw-w-1/3 tw-p-4 tw-rounded-md tw-border tw-border-gray-300">
 						<PaginationRow
 							showNumResults={true}

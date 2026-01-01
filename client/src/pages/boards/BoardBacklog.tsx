@@ -263,7 +263,7 @@ export const BoardBacklog = () => {
 				</>
 			</BulkEditToolbar>
 			{
-				!(sprintTicketData?.data.length && sprintData?.data.length && boardInfo) ? (
+				(isSprintLoading || !boardInfo) ? (
 					<LoadingSkeleton>
 						<RowPlaceholder numRows={4}/>
 					</LoadingSkeleton>
@@ -283,7 +283,7 @@ export const BoardBacklog = () => {
 				)
 			}
 			{
-				 !(boardTicketData?.data.length && boardInfo) ? (
+				(isBoardTicketLoading || !boardInfo) ? (
 					<LoadingSkeleton>
 						<RowPlaceholder numRows={4}/>
 					</LoadingSkeleton>
