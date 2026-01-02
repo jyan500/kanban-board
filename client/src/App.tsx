@@ -18,6 +18,8 @@ import { BoardCalendar } from "./pages/boards/BoardCalendar"
 import { BoardSummary } from "./pages/boards/BoardSummary"
 import { BoardTable } from "./pages/boards/BoardTable"
 import { BoardBacklog } from "./pages/boards/BoardBacklog"
+import { BoardBacklogDisplay } from "./pages/boards/BoardBacklogDisplay"
+import { Sprint } from "./pages/boards/Sprint"
 import { BoardSprints } from "./pages/boards/BoardSprints"
 import { Kanban } from "./pages/boards/Kanban"
 import { OrganizationDisplay } from "./pages/organization/OrganizationDisplay"
@@ -67,6 +69,7 @@ import {
 	BOARD_ID, 
 	TICKETS, 
 	TICKET_ID, 
+	SPRINT_ID,
 	TABLE,
 	CALENDAR,
 	SCHEDULE,
@@ -239,7 +242,20 @@ const router = createBrowserRouter([
 									},
 									{
 										path: BACKLOG,
-										element: <BoardBacklog/>
+										element: <BoardBacklogDisplay/>,
+										children: [
+											{
+												index: true,
+												element: <BoardBacklog/>
+											},
+											{
+												path: SPRINT_ID,	
+												element: <>
+													<ScrollRestoration/>
+													<Sprint/>
+												</>
+											}
+										]
 									},
 									{
 										path: SPRINTS,

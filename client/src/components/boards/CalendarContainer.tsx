@@ -20,7 +20,7 @@ import {
     eachDayOfInterval
 } from 'date-fns'
 import { SearchToolBar } from "../tickets/SearchToolBar"
-import type { CalendarData } from "../../pages/boards/BoardCalendar"
+import type { FormValues, CalendarData } from "../../pages/boards/BoardCalendar"
 import { Ticket, Sprint } from "../../types/common"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { IconTicket } from "../../components/icons/IconTicket"
@@ -82,7 +82,6 @@ const CalendarContainerSearchBar = ({
                     onFormSubmit={async () => {
                         await handleSubmit(onSubmit)()
                     }}
-                    hidePagination={true}
                 >
                 </SearchToolBar>
             </FormProvider>

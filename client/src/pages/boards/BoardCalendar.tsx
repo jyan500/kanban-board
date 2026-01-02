@@ -113,7 +113,7 @@ export const BoardCalendar = () => {
 						startDate: new Date(sprint.startDate),
 						endDate: new Date(sprint.endDate),
 			            color: "tw-bg-blue-200",
-					}
+					} as CalendarData
 				}), 
 				...boardTicketData.data.map((ticket) => {
 					return {
@@ -123,7 +123,7 @@ export const BoardCalendar = () => {
 						startDate: new Date(ticket.createdAt),
 						endDate: new Date(ticket.dueDate),
 			            color: "tw-bg-blue-300",
-					}
+					} as CalendarData
 				})
 			])
 		}

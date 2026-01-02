@@ -223,7 +223,7 @@ export const boardApi = privateApi.injectEndpoints({
 				params: urlParams
 			}),
 			providesTags: ["BoardActivity"]
-		})
+		}),
 	}),
 })
 

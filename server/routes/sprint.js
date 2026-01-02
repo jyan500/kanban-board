@@ -96,6 +96,11 @@ router.get("/:sprintId", validateSprintGetById, handleValidationResult, async (r
 		const completedStatusIds = completedStatuses.map((status) => status.id)
 		const sprint = await db("sprints")
 		.where("sprints.id", sprintId)
+		.modify((queryBuilder) => {
+			if (req.query.boardId){
+				queryBuilder.where("board_id", req.query.boardId)
+			}
+		})
 		.select(
 			"sprints.id",
 			"sprints.name",
