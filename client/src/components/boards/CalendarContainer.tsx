@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { IconArrowRight } from "../../components/icons/IconArrowRight"
 import { IconArrowLeft } from "../../components/icons/IconArrowLeft"
@@ -26,9 +26,14 @@ import { FilterButton } from "../../components/page-elements/FilterButton"
 import { IconTicket } from "../../components/icons/IconTicket"
 import { IconCycle } from "../../components/icons/IconCycle"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
+import { Link } from "react-router-dom"
+import { BOARDS, BACKLOG } from "../../helpers/routes"
 import { LoadingSkeleton } from '../page-elements/LoadingSkeleton'
+import { selectCurrentTicketId } from '../../slices/boardSlice'
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
+import { SprintPreviewDropdown } from '../dropdowns/SprintPreviewDropdown'
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
+import { CalendarSprintContainer } from './CalendarSprintContainer'
 
 interface Props {
     currentDate: Date
@@ -101,7 +106,10 @@ export const CalendarContainer = ({
     boardId,
     isCalendarLoading=false, 
 }: Props) => {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
     const methods = useFormContext<FormValues>()
+    const dispatch = useAppDispatch()
 
     const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -299,6 +307,11 @@ export const CalendarContainer = ({
                                                                 <button 
                                                                     className = {`${ticket.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-w-full tw-text-left`}
                                                                     key={ticket.id}
+                                                                    onClick={(e) => {
+                                                                        dispatch(toggleShowModal(true))
+                                                                        dispatch(setModalType("EDIT_TICKET_FORM"))
+                                                                        dispatch(selectCurrentTicketId(ticket.id))
+                                                                    }}
                                                                 >
                                                                     <span className="tw-mr-1"><IconTicket/></span>
                                                                     <span className="tw-truncate">{ticket.name}</span>
@@ -318,21 +331,30 @@ export const CalendarContainer = ({
                                     */}
                                     <div className="tw-pointer-events-none tw-absolute tw-top-8 tw-left-0 tw-right-0 tw-space-y-1">
                                         {weekSprints.map((data) => (
-                                            <div
-                                                key={`${data.id}-${weekIndex}`}
-                                                className="tw-grid tw-grid-cols-7 tw-gap-0"
-                                                style={{ gridColumn: `1 / -1` }}
-                                            >
-                                                <button
-                                                    className={`${data.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-pointer-events-auto`}
-                                                    style={{
-                                                        gridColumn: `${data.startCol + 1} / span ${data.span}`
-                                                    }}
-                                                >
-                                                    <span className="tw-mr-1"><IconCycle/></span>
-                                                    {data.name}
-                                                </button>
-                                            </div>
+                                            <CalendarSprintContainer data={data} uniqueKey={`${data.id}-${weekIndex}`}/>
+                                            // <div
+                                            //     key={`${data.id}-${weekIndex}`}
+                                            //     className="tw-relative tw-grid tw-grid-cols-7 tw-gap-0"
+                                            //     style={{ gridColumn: `1 / -1` }}
+                                            // >
+                                            //     <button
+                                            //         onClick={(e) => {
+
+                                            //         }}
+                                            //         className={`${data.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-pointer-events-auto`}
+                                            //         style={{
+                                            //             gridColumn: `${data.startCol + 1} / span ${data.span}`
+                                            //         }}
+                                            //     >
+                                            //         <span className="tw-mr-1"><IconCycle/></span>
+                                            //         {data.name}
+                                            //     </button>
+                                            //     {
+                                            //         isDropdownOpen ? 
+                                            //         <SprintPreviewDropdown closeDropdown={() => setIsDropdownOpen(false)} sprint={data}/>
+                                            //         : null
+                                            //     }
+                                            // </div>
                                         ))}
                                     </div>
                                 </div>
