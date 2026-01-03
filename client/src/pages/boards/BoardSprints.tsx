@@ -67,9 +67,9 @@ export const BoardSprints = () => {
 	                                hidePagination={true}
 	                                additionalButtons={() => {
 	                                	return (<>
-								<Button theme="primary" onClick={(e) => {
-							                            	navigate(`${boardPage}/${BACKLOG}`, {state: {"createSprint": true}})
-							                            }} >Create Sprint</Button>
+											<Button theme="primary" onClick={(e) => {
+				                            	navigate(`${boardPage}/${BACKLOG}`, {state: {"createSprint": true}})
+				                            }} >Create Sprint</Button>
 	                                	</>)
 	                                }}
 	                            >

@@ -18,6 +18,18 @@ const validateKeyExists = async (key, keyValue, tableName) => {
 	})	
 }
 
+const isEntityFlagEnabled = async (key, idValue, colValue, tableName) => {
+	return new Promise((resolve, reject) => {
+		let query = db(tableName).where("id", idValue).where(key, colValue)
+		query.then((res) => {
+			if (res?.length === 0){
+				reject(new Error(`${key} value must be ${colValue}`))
+			}
+			resolve(true)
+		})
+	})	
+}
+
 const entityInOrganization = async (orgId, key, keyValue, tableName) => {
 	return new Promise((resolve, reject) => {
 		db(tableName).where("id", keyValue).where("organization_id", orgId).then((res) => {
@@ -44,6 +56,7 @@ const checkEntityExistsIn = async (key, colValue, colValues, tableName) => {
 		})
 	})	
 }
+
 
 /* 
 	For use in express validator 
@@ -159,6 +172,7 @@ module.exports = {
 	checkEntityExistsIn,
 	checkUniqueEntity,
 	entityInOrganization,
+	isEntityFlagEnabled,
 	validateKeyExists,
 	validatePasswordAndConfirmation,
 	validateUniqueUserEmail,

@@ -1,5 +1,5 @@
 const db = require("../db/db")
-const { checkUniqueEntity, checkEntityExistsIn, entityInOrganization, validateKeyExists } = require("./helper")
+const { checkUniqueEntity, checkEntityExistsIn, entityInOrganization, validateKeyExists, isEntityFlagEnabled } = require("./helper")
 const { BULK_INSERT_LIMIT, MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT, MIN_BOARD_TICKET_LIMIT, MAX_BOARD_TICKET_LIMIT } = require("../constants")
 const { body, param } = require("express-validator")
 
@@ -48,9 +48,11 @@ const sprintTicketValidator = (actionType) => {
 		param("ticketId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "ticket", value, "tickets"))
     }
 
-	if (actionType === "update" || actionType === "delete") {
+	if (actionType === "update" || actionType === "delete" || actionType === "create") {
 		validationRules = [
 			...validationRules,
+			// ensure that tickets cannot be added, updated or removed from the sprint once it is completed
+			param("sprintId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "sprint", value, "sprints") && await isEntityFlagEnabled("is_completed", value, false, "sprints")),
 			body("ticket_ids").isArray({ min: 0, max: BULK_INSERT_LIMIT })
 			.withMessage("ticket_ids must be an array")
 			.withMessage(`cannot have more than ${BULK_INSERT_LIMIT} ids`),
