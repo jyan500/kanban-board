@@ -60,7 +60,9 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 			"sprints.created_at as createdAt",
 			"sprints.num_open_tickets as numOpenTickets",
 			"sprints.num_completed_tickets as numCompletedTickets"
-		).paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		)
+		.orderBy("start_date", "desc")
+		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		let data = sprints.data
 		if (req.query.includeTicketStats){
 			data = await Promise.all(sprints.data.map(async (sprint) => {
