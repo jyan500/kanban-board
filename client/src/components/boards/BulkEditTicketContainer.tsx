@@ -14,6 +14,7 @@ import { IconHelp } from "../icons/IconHelp"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
+import { IconCircleCheckmark } from "../icons/IconCircleCheckmark"
 
 interface Props {
     totalTickets: number
@@ -25,6 +26,7 @@ interface Props {
     title: React.ReactNode 
     isLoading?: boolean
     searchBar?: React.ReactNode
+    isSprintComplete?: boolean
     actionButtons?: React.ReactNode
     createButton?: React.ReactNode
 }
@@ -44,6 +46,7 @@ export const BulkEditTicketContainer = ({
     helpText,
     pagination,
     searchBar,
+    isSprintComplete,
     isLoading,
     createButton,
 }: Props) => {
@@ -51,7 +54,7 @@ export const BulkEditTicketContainer = ({
     const dispatch = useAppDispatch()
     const { width, height } = useScreenSize()
     return (
-        <div className = "tw-p-2 tw-w-full lg:tw-w-[90%] tw-flex tw-flex-col tw-gap-y-2 tw-border tw-bg-gray-100">
+        <div className = "tw-p-2 tw-w-full tw-flex tw-flex-col tw-gap-y-2 tw-border tw-bg-gray-100">
             <div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
                 {
                     width >= LG_BREAKPOINT ? (
@@ -63,8 +66,8 @@ export const BulkEditTicketContainer = ({
                                 {title}
                                 <span>({totalTickets} items)</span>
                                 <div className = "tw-group tw-relative">
-                                    <IconHelp className = "tw-w-5 tw-h-5"/>
-                                    <HoverTooltip direction={"top"} width={"tw-w-64 lg:tw-w-96"} text={helpText}/>
+                                    {!isSprintComplete ? <IconHelp className = "tw-w-5 tw-h-5"/> : <IconCircleCheckmark className="tw-text-green-500 tw-w-5 tw-h-5"/>}
+                                    <HoverTooltip direction={"top"} width={!isSprintComplete ? "tw-w-64 lg:tw-w-96" : "tw-w-32 lg:tw-w-48"} text={helpText}/>
                                 </div>
                                 {isLoading ? <LoadingSpinner/>: null}
                             </div>
@@ -105,7 +108,7 @@ export const BulkEditTicketContainer = ({
                 <div className = {`${tickets.length ? "tw-border" : ""} tw-bg-white tw-flex tw-flex-col tw-gap-y-2`}>
                     {tickets.map((ticket) => 
                         <div key={`bulk-edit-ticket-${ticket.id}`} className = "tw-pl-4 tw-flex tw-flex-row tw-gap-x-2"> 
-                            <input id={`bulk-edit-ticket-${ticket.id}-checkmark`} checked={itemIds.includes(ticket.id)} onChange={(e) => onCheck(ticket.id)} type = "checkbox"/>
+                            {!isSprintComplete ? <input id={`bulk-edit-ticket-${ticket.id}-checkmark`} checked={itemIds.includes(ticket.id)} onChange={(e) => onCheck(ticket.id)} type = "checkbox"/> : null}
                             <button className = "tw-w-full" onClick={(e) => {
                                 dispatch(toggleShowModal(true))
                                 dispatch(setModalType("EDIT_TICKET_FORM"))

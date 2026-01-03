@@ -36,7 +36,7 @@ export type FormValues = {
 	query: string	
 }
 
-export const BacklogSprintContainer = ({sprint, isSprintLoading, setSprintId}: Props) => {
+export const BacklogSprintContainer = ({sprint, isSprintLoading}: Props) => {
     const dispatch = useAppDispatch()
     const location = useLocation()
 	const sprintDefaultForm: FormValues = {
@@ -60,14 +60,6 @@ export const BacklogSprintContainer = ({sprint, isSprintLoading, setSprintId}: P
 	const nonCompletedStatuses = statuses.filter((status) => !status.isCompleted).map((status) => status.id) ?? []
 	const [ deleteSprintTickets, { isLoading: isDeleteTicketsLoading }] = useDeleteSprintTicketsMutation()
 	const [ updateSprintTickets, { isLoading: isUpdateTicketsLoading }] = useUpdateSprintTicketsMutation()
-	// const { data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading} = useGetSprintsQuery(boardInfo ? {urlParams: {
-	// 	// get only the most recent sprint
-	// 	perPage: 1,
-	// 	includeTicketStats: true,
-    //     boardId: boardInfo.id,
-	// 	filterInProgress: true,
-    //     recent: true,
-    // }} : skipToken)
     const [trigger, { data: sprintTicketData, isFetching: isSprintTicketFetching, isLoading: isSprintTicketLoading, isError: isSprintTicketError }] = useLazyGetSprintTicketsQuery()
 	const [triggerGetBoardTicketData, { data: boardTicketData, isFetching: isBoardTicketFetching, isLoading: isBoardTicketLoading, isError: isBoardTicketError }] = useLazyGetBoardTicketsQuery()
 	const [ itemIds, setItemIds ] = useState<Array<BacklogBulkItem>>([])
@@ -235,7 +227,7 @@ export const BacklogSprintContainer = ({sprint, isSprintLoading, setSprintId}: P
 						}
 					}} >Edit Tickets</Button>
 					{
-						backlogTickets.length && sprint ?
+						backlogTickets.length && sprint && !sprint.isCompleted ?
 						<LoadingButton isLoading={isUpdateTicketsLoading} text={`Move ${backlogTickets.length} ticket(s) to Sprint`} onClick={async (e) => {
 							await onUpdateSprintTickets()
 							// filter out the selected backlog tickets
@@ -250,7 +242,7 @@ export const BacklogSprintContainer = ({sprint, isSprintLoading, setSprintId}: P
 						: null
 					}
 					{
-						sprintTickets.length ? 
+						sprintTickets.length && !sprint?.isCompleted ? 
 						<LoadingButton isLoading={isDeleteTicketsLoading} text={`Remove ${sprintTickets.length} ticket(s) from Sprint`} onClick={async (e) => {
 							await onDeleteSprintTickets()	
 							// filter out the selected sprint tickets

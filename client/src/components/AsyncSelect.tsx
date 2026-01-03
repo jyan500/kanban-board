@@ -94,7 +94,7 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 			styles={{
 			    control: (baseStyles, state) => ({
 			      ...baseStyles,
-			      height: "44px",
+			      height: "43px",
 			      border: "var(--width-input-border) solid var(--bs-light-gray)",
 			      padding: ".1em",
 			    }),

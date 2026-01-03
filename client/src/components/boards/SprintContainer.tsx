@@ -5,9 +5,10 @@ import { useGetSprintsQuery, useLazyGetSprintTicketsQuery } from "../../services
 import { BulkEditTicketContainer } from "./BulkEditTicketContainer"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
-import { ListResponse, Sprint, Ticket } from "../../types/common"
+import { OptionType, ListResponse, Sprint, Ticket } from "../../types/common"
 import { PaginationRow } from "../page-elements/PaginationRow"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import { FormValues } from "../../components/boards/BacklogSprintContainer"
 import { Badge } from "../page-elements/Badge"
@@ -15,6 +16,9 @@ import { Button } from "../page-elements/Button"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
 import { IconPlus } from "../icons/IconPlus"
 import { IconHelp } from "../icons/IconHelp"
+import { AsyncSelect } from "../AsyncSelect"
+import { SPRINT_URL } from "../../helpers/urls"
+import { BOARDS, BACKLOG } from "../../helpers/routes"
 
 interface Props {
     itemIds: Array<number>
@@ -40,8 +44,8 @@ export const SprintContainer = ({
     onSubmit
 }: Props) => {
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
     const { statuses } = useAppSelector((state) => state.status)
-
     const methods = useFormContext<FormValues>()
     const { handleSubmit } = methods
     
@@ -75,6 +79,7 @@ export const SprintContainer = ({
         <BulkEditTicketContainer 
             itemIds={itemIds} 
             onCheck={onCheck} 
+            isSprintComplete={sprintData?.isCompleted}
             isLoading={isLoading}
             actionButtons={
                 <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
@@ -92,11 +97,28 @@ export const SprintContainer = ({
                         </> : null
                     }
                     {
-                        sprintData && sprintTicketData?.data.length ? 
+                        sprintData && sprintTicketData?.data.length && !sprintData.isCompleted ? 
                         <Button theme="primary" onClick={(e) => completeSprint()}>Complete Sprint</Button>
-                        : null
+                        : null 
                     }
-                    <Button onClick={(e) => editSprint()}>Edit Sprint</Button>
+                    {
+                        <Button onClick={(e) => editSprint()}>Edit Sprint</Button>
+                    }
+                    {
+                        <div className = "tw-w-56">
+                            <AsyncSelect
+                                endpoint={SPRINT_URL} 
+                                clearable={true}
+                                defaultValue={{label: sprintData?.name ?? "", value: sprintData?.id.toString() ?? ""}}
+                                urlParams={{forSelect: true, boardId: boardId}} 
+                                onSelect={async (selectedOption: OptionType | null) => {
+                                    if (selectedOption){
+                                        navigate(`${BOARDS}/${boardId}/${BACKLOG}/${selectedOption.value}`, {replace: true})
+                                    }
+                                }}
+                            />
+                        </div>
+                    }
                 </div>
                 
             }
@@ -114,24 +136,28 @@ export const SprintContainer = ({
                     </span>
                 </div>
             } 
-            helpText={`This is your current sprint. To add tickets, click on the "Add Ticket" button below, or check off a ticket under the "Backlog" section to
-                add it to the current sprint.`}
+            helpText={!sprintData?.isCompleted ? `This is your current sprint. To add tickets, click on the "Add Ticket" button below, or check off a ticket under the "Backlog" section to
+                add it to the current sprint.` : `This sprint is completed`}
             totalTickets={sprintTicketData?.pagination?.total ?? 0} 
             tickets={sprintTicketData?.data ?? []}
             createButton={
-                <div className = "tw-flex tw-flex-row tw-gap-x-2">
-                    <Button onClick={(e) => {
-                        dispatch(setModalType("ADD_TICKET_FORM"))
-                        dispatch(setModalProps({
-                            boardId: boardId,
-                            sprintId: sprintData?.id,
-                            statusesToDisplay: statuses,
-                        }))
-                        dispatch(toggleShowModal(true))
-                    }}>
-                        Add Ticket
-                    </Button>
-                </div>
+                !sprintData?.isCompleted ? (
+                    <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                        <Button onClick={(e) => {
+                            dispatch(setModalType("ADD_TICKET_FORM"))
+                            dispatch(setModalProps({
+                                boardId: boardId,
+                                sprintId: sprintData?.id,
+                                statusesToDisplay: statuses,
+                            }))
+                            dispatch(toggleShowModal(true))
+                        }}>
+                            Add Ticket
+                        </Button>
+                    </div>
+                )
+                : <></>
+                
             }
             searchBar={
                 <div className = "tw-flex tw-flex-col tw-gap-y-2 sm:tw-w-full lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
