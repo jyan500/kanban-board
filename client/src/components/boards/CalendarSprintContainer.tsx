@@ -6,10 +6,11 @@ import { useClickOutside } from "../../hooks/useClickOutside"
 
 interface Props {
     data: CalendarData & {startCol: number, span: number}
+    boardId: number
     uniqueKey: string
 }
 
-export const CalendarSprintContainer = ({data, uniqueKey}: Props) => {
+export const CalendarSprintContainer = ({data, boardId, uniqueKey}: Props) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const buttonRef = useRef(null)
     const dropdownRef = useRef(null)
@@ -25,6 +26,8 @@ export const CalendarSprintContainer = ({data, uniqueKey}: Props) => {
                 onClick={(e) => {
                     setIsDropdownOpen(!isDropdownOpen)
                 }}
+                /* The pointer events auto ensures that the button can still be clicked, even though the absolutely positioned parent has pointer-events-none,
+                in order to allow the cell below it to be clicked. */ 
                 className={`${data.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-pointer-events-auto`}
                 style={{
                     gridColumn: `${data.startCol + 1} / span ${data.span}`
@@ -35,7 +38,10 @@ export const CalendarSprintContainer = ({data, uniqueKey}: Props) => {
             </button>
             {
                 isDropdownOpen ? 
-                <SprintPreviewDropdown ref={dropdownRef} closeDropdown={() => setIsDropdownOpen(false)} sprint={data}/>
+                /* the dropdown also needs pointer events auto to prevent the click from being eaten by the parent's pointer-events-none*/
+                <div className = "tw-pointer-events-auto">
+                    <SprintPreviewDropdown ref={dropdownRef} closeDropdown={() => setIsDropdownOpen(false)} boardId={boardId} sprint={data}/>
+                </div>
                 : null
             }
         </div>

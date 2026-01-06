@@ -18,7 +18,7 @@ router.get("/", async (req, res, next) => {
 	try {
 		// pulled from token middleware 
 		const {id: userId, organization: organizationId, userRole} = req.user
-		const userProfiles = await db("organization_user_roles")
+		let userProfiles = db("organization_user_roles")
 			.where("organization_user_roles.organization_id", organizationId)
 			.join("users", "users.id", "=", "organization_user_roles.user_id")
 			.join("user_roles", "user_roles.id", "=", "organization_user_roles.user_role_id")
@@ -60,7 +60,19 @@ router.get("/", async (req, res, next) => {
 				"users.image_url as imageUrl",
 				"users.email as email") 
 
-			.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		
+		// hack to keep the users paginate data format into {data, pagination},
+		// which finds the total amount of data and 
+		// loads all data into one page. Should prioritize using pagination when possible.
+		if (req.query.skipPaginate){
+			const userProfilesAmt = await userProfiles
+			const total = userProfilesAmt.length
+			userProfiles = await userProfiles.paginate({ perPage: total, currentPage: 1, isLengthAware: true})
+		}
+		else {
+			userProfiles = await userProfiles.paginate({ perPage: 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
+		}
+
 
 		let userProfilesParsed = req.query.forSelect ? userProfiles.data.map((userProfile) => {
 			return {

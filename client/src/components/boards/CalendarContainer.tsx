@@ -34,6 +34,7 @@ import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType
 import { SprintPreviewDropdown } from '../dropdowns/SprintPreviewDropdown'
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
 import { CalendarSprintContainer } from './CalendarSprintContainer'
+import { v4 as uuidv4 } from "uuid"
 
 interface Props {
     currentDate: Date
@@ -272,9 +273,9 @@ export const CalendarContainer = ({
                                                 return sprintStartsOnOrBefore && sprintEndsOnOrAfter
                                             })
                                             return (
-                                                <button
+                                                <div
                                                     key={dayIndex}
-                                                    className={`tw-flex tw-flex-col tw-relative hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
+                                                    className={`tw-z-0 tw-flex tw-flex-col tw-relative hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
                                                         !isCurrentMonth(date) ? 'tw-bg-gray-50' : ''
                                                     }`}
                                                 >
@@ -319,7 +320,7 @@ export const CalendarContainer = ({
                                                             )
                                                         })}
                                                     </div>
-                                                </button>
+                                                </div>
                                             )
                                         })}
                                     </div>
@@ -331,30 +332,9 @@ export const CalendarContainer = ({
                                     */}
                                     <div className="tw-pointer-events-none tw-absolute tw-top-8 tw-left-0 tw-right-0 tw-space-y-1">
                                         {weekSprints.map((data) => (
-                                            <CalendarSprintContainer data={data} uniqueKey={`${data.id}-${weekIndex}`}/>
-                                            // <div
-                                            //     key={`${data.id}-${weekIndex}`}
-                                            //     className="tw-relative tw-grid tw-grid-cols-7 tw-gap-0"
-                                            //     style={{ gridColumn: `1 / -1` }}
-                                            // >
-                                            //     <button
-                                            //         onClick={(e) => {
-
-                                            //         }}
-                                            //         className={`${data.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-pointer-events-auto`}
-                                            //         style={{
-                                            //             gridColumn: `${data.startCol + 1} / span ${data.span}`
-                                            //         }}
-                                            //     >
-                                            //         <span className="tw-mr-1"><IconCycle/></span>
-                                            //         {data.name}
-                                            //     </button>
-                                            //     {
-                                            //         isDropdownOpen ? 
-                                            //         <SprintPreviewDropdown closeDropdown={() => setIsDropdownOpen(false)} sprint={data}/>
-                                            //         : null
-                                            //     }
-                                            // </div>
+                                            <div key={`${data.id}-${weekIndex}`}>
+                                                <CalendarSprintContainer data={data} boardId={boardId} uniqueKey={uuidv4()}/>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
