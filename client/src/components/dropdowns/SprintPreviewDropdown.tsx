@@ -38,11 +38,11 @@ export const SprintPreviewDropdown = React.forwardRef<HTMLDivElement, Props>(({i
 				<div className = "tw-flex tw-flex-row tw-items-center tw-justify-between">
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						<p className = "tw-text-sm tw-text-gray-700">Start</p>
-						<p>{format(sprint.startDate, "MMMM dd, yyyy")}</p>
+						<p>{format(sprint.startDate, "MMM dd, yyyy")}</p>
 					</div>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						<p className = "tw-text-sm tw-text-gray-700">End</p>
-						<p>{format(sprint.endDate, "MMMM dd, yyyy")}</p>
+						<p>{format(sprint.endDate, "MMM dd, yyyy")}</p>
 					</div>
 				</div>
 			</div>

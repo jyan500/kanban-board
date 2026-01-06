@@ -24,6 +24,7 @@ export interface CalendarData {
     startDate: Date
     endDate: Date
     color: string
+	hoverColor: string
     type: "Ticket" | "Sprint"
 }
 
@@ -113,6 +114,7 @@ export const BoardCalendar = () => {
 						startDate: new Date(sprint.startDate),
 						endDate: new Date(sprint.endDate),
 			            color: "tw-bg-blue-200",
+						hoverColor: "hover:tw-bg-blue-300",
 					} as CalendarData
 				}), 
 				...boardTicketData.data.map((ticket) => {
@@ -123,6 +125,7 @@ export const BoardCalendar = () => {
 						startDate: new Date(ticket.createdAt),
 						endDate: new Date(ticket.dueDate),
 			            color: "tw-bg-blue-300",
+						hoverColor: "hover:tw-bg-blue-400",
 					} as CalendarData
 				})
 			])
@@ -139,6 +142,7 @@ export const BoardCalendar = () => {
 					periodEnd={getCurrentPeriod.end}
 					boardId={boardInfo?.id ?? 0}
 					numFilters={numActiveFilters}
+					statusesToDisplay={statusesToDisplay}
 					calendarData={calendarData}
 					onSubmit={onSubmit}
 					isCalendarLoading={(isSprintsLoading && !sprintData) || (isBoardTicketLoading && !boardTicketData)}

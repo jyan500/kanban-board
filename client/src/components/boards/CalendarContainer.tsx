@@ -21,7 +21,7 @@ import {
 } from 'date-fns'
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import type { FormValues, CalendarData } from "../../pages/boards/BoardCalendar"
-import { Ticket, Sprint } from "../../types/common"
+import { Ticket, Sprint, Status } from "../../types/common"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { IconTicket } from "../../components/icons/IconTicket"
 import { IconCycle } from "../../components/icons/IconCycle"
@@ -46,6 +46,7 @@ interface Props {
     onSubmit: (values: FormValues) => void
     calendarData: Array<CalendarData>
     boardId: number
+    statusesToDisplay: Array<Status>
 }
 
 interface CalendarContainerSearchBarProps { 
@@ -100,6 +101,7 @@ export const CalendarContainer = ({
     calendarData, 
     currentDate,
     setCurrentDate,
+    statusesToDisplay,
     periodStart, 
     periodEnd, 
     onSubmit,
@@ -275,9 +277,22 @@ export const CalendarContainer = ({
                                             return (
                                                 <div
                                                     key={dayIndex}
-                                                    className={`tw-z-0 tw-flex tw-flex-col tw-relative hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
+                                                    className={`tw-cursor-pointer tw-flex tw-flex-col tw-relative hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
                                                         !isCurrentMonth(date) ? 'tw-bg-gray-50' : ''
                                                     }`}
+                                                    onClick={(e) => {
+                                                        if (e.defaultPrevented){
+                                                            return
+                                                        }
+                                                        console.log("date split: ", date.toISOString().split("T")[0])
+                                                        dispatch(setModalProps({
+                                                            boardId,
+                                                            statusesToDisplay,
+                                                            dueDate: date.toISOString().split("T")[0]
+                                                        }))
+                                                        dispatch(setModalType("ADD_TICKET_FORM"))
+                                                        dispatch(toggleShowModal(true))
+                                                    }}
                                                 >
                                                     {/* 
                                                         Highlight today's date with a blue circle within the calendar cell.
@@ -306,9 +321,10 @@ export const CalendarContainer = ({
                                                         {dateTickets.map((ticket) => {
                                                             return (
                                                                 <button 
-                                                                    className = {`${ticket.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-w-full tw-text-left`}
+                                                                    className = {`${ticket.color} ${ticket.hoverColor} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-w-full tw-text-left`}
                                                                     key={ticket.id}
                                                                     onClick={(e) => {
+                                                                        e.preventDefault()
                                                                         dispatch(toggleShowModal(true))
                                                                         dispatch(setModalType("EDIT_TICKET_FORM"))
                                                                         dispatch(selectCurrentTicketId(ticket.id))

@@ -46,6 +46,7 @@ type Props = {
 	boardId?: number | null | undefined
 	ticket?: Ticket | null | undefined
 	statusId?: number | null | undefined
+	dueDate?: string | null | undefined
 	sprintId?: number | null | undefined
 	statusesToDisplay?: Array<Status>
 	isBulkAction?: boolean
@@ -56,7 +57,20 @@ type Props = {
 	step?: number
 }
 
-export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, sprintId, isBulkAction, title, buttonBar, step, formValues, onSubmit: propsOnSubmit}: Props) => {
+export const AddTicketForm = ({
+	boardId, 
+	ticket, 
+	dueDate,
+	statusesToDisplay, 
+	statusId,
+	sprintId, 
+	isBulkAction,
+	title, 
+	buttonBar, 
+	step, 
+	formValues, 
+	onSubmit: propsOnSubmit
+}: Props) => {
 	const dispatch = useAppDispatch()
 	const { priorities } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
@@ -131,7 +145,10 @@ export const AddTicketForm = ({boardId, ticket, statusesToDisplay, statusId, spr
 	    		...values, 
 	    		// this value is unused, just for typescript purposes
 	    		userId: assigneeId,
-	    		description: values.description
+	    		description: values.description,
+				...(dueDate != null ? {
+					dueDate: dueDate
+				} : {})
 	    	}).unwrap()
 			if (mentionNotificationType && userProfile && mentions.length){
     			const notifications = mentions.map((mention: Mention) => {
