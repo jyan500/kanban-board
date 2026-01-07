@@ -41,6 +41,7 @@ interface Props {
     currentDate: Date
     setCurrentDate: (date: Date) => void
     isWeekView: boolean
+    setViewOption: (option: string) => void
     isCalendarLoading?: boolean
     numFilters: number
     onSubmit: (values: FormValues) => void
@@ -53,11 +54,15 @@ interface CalendarContainerSearchBarProps {
     onSubmit: (values: FormValues) => void
     numFilters: number
     boardId: number
+    isWeekView: boolean
+    setViewOption: (weekOption: string) => void
 }
 
 const CalendarContainerSearchBar = ({
     onSubmit,
     numFilters,
+    setViewOption,
+    isWeekView,
     boardId,
 }: CalendarContainerSearchBarProps) => {
     const dispatch = useAppDispatch()
@@ -82,6 +87,12 @@ const CalendarContainerSearchBar = ({
                                     }}
                                     numFilters={numFilters}
                                 />
+                                <select value={isWeekView ? "Week": "Month"} onChange={(e) => {
+                                    setViewOption(e.target.value)
+                                }}>
+                                    <option value={"Month"}>Month</option>
+                                    <option value={"Week"}>Week</option>
+                                </select>
                             </div>
                         )
                     }
@@ -102,6 +113,7 @@ export const CalendarContainer = ({
     currentDate,
     setCurrentDate,
     isWeekView,
+    setViewOption,
     statusesToDisplay,
     onSubmit,
     numFilters,
@@ -115,22 +127,25 @@ export const CalendarContainer = ({
 
     const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
+    const weekViewCalendarStart = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
+    const weekViewCalendarEnd = endOfWeek(currentDate, { weekStartsOn: 1 })
+
     /* 
     generate all calendar days in the month, this includes the entire week during
     the 1st day of the month, and also the entire week of the last day of the month.
     */
     const generateCalendarDays = () => {
-        const monthStart = startOfMonth(currentDate)
-        const monthEnd = endOfMonth(currentDate)
         let calendarStart: Date;
         let calendarEnd: Date;
         if (!isWeekView){
+            const monthStart = startOfMonth(currentDate)
+            const monthEnd = endOfMonth(currentDate)
             calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 }) // Monday
             calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
         }
         else {
-            calendarStart = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
-            calendarEnd = endOfWeek(currentDate, { weekStartsOn: 1 })
+            calendarStart = weekViewCalendarStart // Monday
+            calendarEnd = weekViewCalendarEnd
         }
 
         return eachDayOfInterval({ start: calendarStart, end: calendarEnd })
@@ -212,6 +227,16 @@ export const CalendarContainer = ({
         return date.getMonth() === currentDate.getMonth()
     }
 
+    const generateHeader = () => {
+        const monthYear = format(currentDate, "MMMM yyyy")
+        if (isWeekView){
+            const weekStart = format(weekViewCalendarStart, "MMM d, yyyy")
+            const weekEnd = format(weekViewCalendarEnd, "MMM d, yyyy")
+            return `${weekStart} to ${weekEnd}`
+        }
+        return monthYear
+    }
+
     return (
         <div className="tw-max-w-7xl tw-mx-auto tw-p-4">
             <div className="tw-bg-white tw-rounded-lg tw-border tw-flex tw-flex-col tw-gap-y-4">
@@ -219,7 +244,7 @@ export const CalendarContainer = ({
                 <div className = "tw-flex tw-flex-col tw-gap-y-2 tw-p-4">
                     <div className="tw-flex tw-items-center tw-justify-between">
                         <h2 className="tw-text-xl tw-font-semibold">
-                            {format(currentDate, 'MMMM yyyy')}
+                            {generateHeader()}
                         </h2>
                         <div className="tw-flex tw-flex-row tw-items-center tw-gap-2">
                             <button
@@ -241,6 +266,8 @@ export const CalendarContainer = ({
                             onSubmit={onSubmit}
                             numFilters={numFilters}
                             boardId={boardId}
+                            isWeekView={isWeekView}
+                            setViewOption={setViewOption}
                         />
                     </FormProvider>
                 </div>
@@ -248,7 +275,7 @@ export const CalendarContainer = ({
                 {/* Days of week header */}
                 <div className = "tw-border-t">
                     <div className="tw-grid tw-grid-cols-7 tw-border-b">
-                        {daysOfWeek.map(day => (
+                        { daysOfWeek.map(day => (
                             <div key={day} className="tw-p-3 tw-text-center tw-text-sm tw-font-medium tw-text-gray-600 tw-border-r last:tw-border-r-0">
                                 {day}
                             </div>
@@ -296,7 +323,6 @@ export const CalendarContainer = ({
                                                         if (e.defaultPrevented){
                                                             return
                                                         }
-                                                        console.log("date split: ", date.toISOString().split("T")[0])
                                                         dispatch(setModalProps({
                                                             boardId,
                                                             statusesToDisplay,

@@ -33,6 +33,7 @@ export const BoardCalendar = () => {
 	const { filters } = useAppSelector((state) => state.boardFilter)
 	const [calendarData, setCalendarData] = useState<Array<CalendarData>>([])
 	const [ page, setPage ] = useState(1)
+	const [ viewOption, setViewOption ] = useState<string>("Month")
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
     const [currentDate, setCurrentDate] = useState(new Date())
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -140,7 +141,8 @@ export const BoardCalendar = () => {
 					setCurrentDate={setCurrentDate}
 					boardId={boardInfo?.id ?? 0}
 					numFilters={numActiveFilters}
-					isWeekView={true}
+					isWeekView={viewOption === "Week"}
+					setViewOption={setViewOption}
 					statusesToDisplay={statusesToDisplay}
 					calendarData={calendarData}
 					onSubmit={onSubmit}
