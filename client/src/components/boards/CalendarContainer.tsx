@@ -298,7 +298,7 @@ export const CalendarContainer = ({
 
                             return (
                                 <div key={weekIndex} className="tw-relative">
-                                    <div className="tw-grid tw-grid-cols-7 tw-min-h-32">
+                                    <div className={`tw-grid tw-grid-cols-7 ${isWeekView ? "tw-min-h-96" : "tw-min-h-32"}`}>
                                         {week.map((date, dayIndex) => {
                                             const dateTickets = getTicketsForDate(date)
                                             /* 
