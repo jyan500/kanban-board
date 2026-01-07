@@ -9,6 +9,7 @@ import {
     startOfWeek, 
     endOfWeek, 
     addDays, 
+    addWeeks,
     addMonths, 
     isToday as isTodayFns,
     getDay,
@@ -38,9 +39,8 @@ import { v4 as uuidv4 } from "uuid"
 
 interface Props {
     currentDate: Date
-    periodStart: Date
-    periodEnd: Date
     setCurrentDate: (date: Date) => void
+    isWeekView: boolean
     isCalendarLoading?: boolean
     numFilters: number
     onSubmit: (values: FormValues) => void
@@ -101,9 +101,8 @@ export const CalendarContainer = ({
     calendarData, 
     currentDate,
     setCurrentDate,
+    isWeekView,
     statusesToDisplay,
-    periodStart, 
-    periodEnd, 
     onSubmit,
     numFilters,
     boardId,
@@ -123,8 +122,16 @@ export const CalendarContainer = ({
     const generateCalendarDays = () => {
         const monthStart = startOfMonth(currentDate)
         const monthEnd = endOfMonth(currentDate)
-        const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 }) // Monday
-        const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
+        let calendarStart: Date;
+        let calendarEnd: Date;
+        if (!isWeekView){
+            calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 }) // Monday
+            calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
+        }
+        else {
+            calendarStart = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
+            calendarEnd = endOfWeek(currentDate, { weekStartsOn: 1 })
+        }
 
         return eachDayOfInterval({ start: calendarStart, end: calendarEnd })
     }
@@ -182,7 +189,12 @@ export const CalendarContainer = ({
     }
 
     const changeMonth = (delta: number) => {
-        setCurrentDate(addMonths(currentDate, delta))
+        if (!isWeekView){
+            setCurrentDate(addMonths(currentDate, delta))
+        }
+        else {
+            setCurrentDate(addWeeks(currentDate, delta))
+        }
     }
 
     const calendarDays = generateCalendarDays()

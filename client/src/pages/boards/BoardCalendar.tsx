@@ -138,10 +138,9 @@ export const BoardCalendar = () => {
 				<CalendarContainer
 					currentDate={currentDate}
 					setCurrentDate={setCurrentDate}
-					periodStart={getCurrentPeriod.start}
-					periodEnd={getCurrentPeriod.end}
 					boardId={boardInfo?.id ?? 0}
 					numFilters={numActiveFilters}
+					isWeekView={true}
 					statusesToDisplay={statusesToDisplay}
 					calendarData={calendarData}
 					onSubmit={onSubmit}
