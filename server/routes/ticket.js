@@ -340,7 +340,8 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 				status_id: body.status_id,
 				ticket_type_id: body.ticket_type_id,
 				organization_id: body.organization_id,
-				user_id: req.user.id
+				user_id: req.user.id,
+				...(body.due_date != null ? {due_date: body.due_date.toISOString().split('T')[0]} : {})
 			},
 			req.historyContext
 		)

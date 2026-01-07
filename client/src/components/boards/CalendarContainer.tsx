@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { IconArrowRight } from "../../components/icons/IconArrowRight"
 import { IconArrowLeft } from "../../components/icons/IconArrowLeft"
@@ -9,6 +9,7 @@ import {
     startOfWeek, 
     endOfWeek, 
     addDays, 
+    addWeeks,
     addMonths, 
     isToday as isTodayFns,
     getDay,
@@ -21,36 +22,47 @@ import {
 } from 'date-fns'
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import type { FormValues, CalendarData } from "../../pages/boards/BoardCalendar"
-import { Ticket, Sprint } from "../../types/common"
+import { Ticket, Sprint, Status } from "../../types/common"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { IconTicket } from "../../components/icons/IconTicket"
 import { IconCycle } from "../../components/icons/IconCycle"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
+import { Link } from "react-router-dom"
+import { BOARDS, BACKLOG } from "../../helpers/routes"
 import { LoadingSkeleton } from '../page-elements/LoadingSkeleton'
+import { selectCurrentTicketId } from '../../slices/boardSlice'
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
+import { SprintPreviewDropdown } from '../dropdowns/SprintPreviewDropdown'
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
+import { CalendarSprintContainer } from './CalendarSprintContainer'
+import { v4 as uuidv4 } from "uuid"
 
 interface Props {
     currentDate: Date
-    periodStart: Date
-    periodEnd: Date
     setCurrentDate: (date: Date) => void
+    isWeekView: boolean
+    setViewOption: (option: string) => void
     isCalendarLoading?: boolean
     numFilters: number
     onSubmit: (values: FormValues) => void
     calendarData: Array<CalendarData>
     boardId: number
+    statusesToDisplay: Array<Status>
 }
 
 interface CalendarContainerSearchBarProps { 
     onSubmit: (values: FormValues) => void
     numFilters: number
     boardId: number
+    isWeekView: boolean
+    setViewOption: (weekOption: string) => void
 }
 
 const CalendarContainerSearchBar = ({
     onSubmit,
     numFilters,
+    setViewOption,
+    isWeekView,
     boardId,
 }: CalendarContainerSearchBarProps) => {
     const dispatch = useAppDispatch()
@@ -75,6 +87,12 @@ const CalendarContainerSearchBar = ({
                                     }}
                                     numFilters={numFilters}
                                 />
+                                <select value={isWeekView ? "Week": "Month"} onChange={(e) => {
+                                    setViewOption(e.target.value)
+                                }}>
+                                    <option value={"Month"}>Month</option>
+                                    <option value={"Week"}>Week</option>
+                                </select>
                             </div>
                         )
                     }
@@ -94,26 +112,41 @@ export const CalendarContainer = ({
     calendarData, 
     currentDate,
     setCurrentDate,
-    periodStart, 
-    periodEnd, 
+    isWeekView,
+    setViewOption,
+    statusesToDisplay,
     onSubmit,
     numFilters,
     boardId,
     isCalendarLoading=false, 
 }: Props) => {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
     const methods = useFormContext<FormValues>()
+    const dispatch = useAppDispatch()
 
     const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+    const weekViewCalendarStart = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
+    const weekViewCalendarEnd = endOfWeek(currentDate, { weekStartsOn: 1 })
 
     /* 
     generate all calendar days in the month, this includes the entire week during
     the 1st day of the month, and also the entire week of the last day of the month.
     */
     const generateCalendarDays = () => {
-        const monthStart = startOfMonth(currentDate)
-        const monthEnd = endOfMonth(currentDate)
-        const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 }) // Monday
-        const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
+        let calendarStart: Date;
+        let calendarEnd: Date;
+        if (!isWeekView){
+            const monthStart = startOfMonth(currentDate)
+            const monthEnd = endOfMonth(currentDate)
+            calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 }) // Monday
+            calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
+        }
+        else {
+            calendarStart = weekViewCalendarStart // Monday
+            calendarEnd = weekViewCalendarEnd
+        }
 
         return eachDayOfInterval({ start: calendarStart, end: calendarEnd })
     }
@@ -171,7 +204,12 @@ export const CalendarContainer = ({
     }
 
     const changeMonth = (delta: number) => {
-        setCurrentDate(addMonths(currentDate, delta))
+        if (!isWeekView){
+            setCurrentDate(addMonths(currentDate, delta))
+        }
+        else {
+            setCurrentDate(addWeeks(currentDate, delta))
+        }
     }
 
     const calendarDays = generateCalendarDays()
@@ -189,6 +227,16 @@ export const CalendarContainer = ({
         return date.getMonth() === currentDate.getMonth()
     }
 
+    const generateHeader = () => {
+        const monthYear = format(currentDate, "MMMM yyyy")
+        if (isWeekView){
+            const weekStart = format(weekViewCalendarStart, "MMM d, yyyy")
+            const weekEnd = format(weekViewCalendarEnd, "MMM d, yyyy")
+            return `${weekStart} to ${weekEnd}`
+        }
+        return monthYear
+    }
+
     return (
         <div className="tw-max-w-7xl tw-mx-auto tw-p-4">
             <div className="tw-bg-white tw-rounded-lg tw-border tw-flex tw-flex-col tw-gap-y-4">
@@ -196,7 +244,7 @@ export const CalendarContainer = ({
                 <div className = "tw-flex tw-flex-col tw-gap-y-2 tw-p-4">
                     <div className="tw-flex tw-items-center tw-justify-between">
                         <h2 className="tw-text-xl tw-font-semibold">
-                            {format(currentDate, 'MMMM yyyy')}
+                            {generateHeader()}
                         </h2>
                         <div className="tw-flex tw-flex-row tw-items-center tw-gap-2">
                             <button
@@ -218,6 +266,8 @@ export const CalendarContainer = ({
                             onSubmit={onSubmit}
                             numFilters={numFilters}
                             boardId={boardId}
+                            isWeekView={isWeekView}
+                            setViewOption={setViewOption}
                         />
                     </FormProvider>
                 </div>
@@ -225,7 +275,7 @@ export const CalendarContainer = ({
                 {/* Days of week header */}
                 <div className = "tw-border-t">
                     <div className="tw-grid tw-grid-cols-7 tw-border-b">
-                        {daysOfWeek.map(day => (
+                        { daysOfWeek.map(day => (
                             <div key={day} className="tw-p-3 tw-text-center tw-text-sm tw-font-medium tw-text-gray-600 tw-border-r last:tw-border-r-0">
                                 {day}
                             </div>
@@ -248,7 +298,7 @@ export const CalendarContainer = ({
 
                             return (
                                 <div key={weekIndex} className="tw-relative">
-                                    <div className="tw-grid tw-grid-cols-7 tw-min-h-32">
+                                    <div className={`tw-grid tw-grid-cols-7 ${isWeekView ? "tw-min-h-96" : "tw-min-h-32"}`}>
                                         {week.map((date, dayIndex) => {
                                             const dateTickets = getTicketsForDate(date)
                                             /* 
@@ -264,11 +314,23 @@ export const CalendarContainer = ({
                                                 return sprintStartsOnOrBefore && sprintEndsOnOrAfter
                                             })
                                             return (
-                                                <button
+                                                <div
                                                     key={dayIndex}
-                                                    className={`tw-flex tw-flex-col tw-relative hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
+                                                    className={`tw-cursor-pointer tw-flex tw-flex-col tw-relative hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
                                                         !isCurrentMonth(date) ? 'tw-bg-gray-50' : ''
                                                     }`}
+                                                    onClick={(e) => {
+                                                        if (e.defaultPrevented){
+                                                            return
+                                                        }
+                                                        dispatch(setModalProps({
+                                                            boardId,
+                                                            statusesToDisplay,
+                                                            dueDate: date.toISOString().split("T")[0]
+                                                        }))
+                                                        dispatch(setModalType("ADD_TICKET_FORM"))
+                                                        dispatch(toggleShowModal(true))
+                                                    }}
                                                 >
                                                     {/* 
                                                         Highlight today's date with a blue circle within the calendar cell.
@@ -297,8 +359,14 @@ export const CalendarContainer = ({
                                                         {dateTickets.map((ticket) => {
                                                             return (
                                                                 <button 
-                                                                    className = {`${ticket.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-w-full tw-text-left`}
+                                                                    className = {`${ticket.color} ${ticket.hoverColor} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-w-full tw-text-left`}
                                                                     key={ticket.id}
+                                                                    onClick={(e) => {
+                                                                        e.preventDefault()
+                                                                        dispatch(toggleShowModal(true))
+                                                                        dispatch(setModalType("EDIT_TICKET_FORM"))
+                                                                        dispatch(selectCurrentTicketId(ticket.id))
+                                                                    }}
                                                                 >
                                                                     <span className="tw-mr-1"><IconTicket/></span>
                                                                     <span className="tw-truncate">{ticket.name}</span>
@@ -306,7 +374,7 @@ export const CalendarContainer = ({
                                                             )
                                                         })}
                                                     </div>
-                                                </button>
+                                                </div>
                                             )
                                         })}
                                     </div>
@@ -318,20 +386,8 @@ export const CalendarContainer = ({
                                     */}
                                     <div className="tw-pointer-events-none tw-absolute tw-top-8 tw-left-0 tw-right-0 tw-space-y-1">
                                         {weekSprints.map((data) => (
-                                            <div
-                                                key={`${data.id}-${weekIndex}`}
-                                                className="tw-grid tw-grid-cols-7 tw-gap-0"
-                                                style={{ gridColumn: `1 / -1` }}
-                                            >
-                                                <button
-                                                    className={`${data.color} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-pointer-events-auto`}
-                                                    style={{
-                                                        gridColumn: `${data.startCol + 1} / span ${data.span}`
-                                                    }}
-                                                >
-                                                    <span className="tw-mr-1"><IconCycle/></span>
-                                                    {data.name}
-                                                </button>
+                                            <div key={`${data.id}-${weekIndex}`}>
+                                                <CalendarSprintContainer data={data} boardId={boardId} uniqueKey={uuidv4()}/>
                                             </div>
                                         ))}
                                     </div>

@@ -9,7 +9,8 @@
 	--bs-light: #f8f9fa;
 	--bs-light-gray: #B3BAC5;
 	--bs-light-purple: #904ee2;
-	--bs-dark-gray: #5E6C84;
+	/* --bs-dark-gray: #5E6C84; */
+	--bs-dark-gray: #374151;
 	--co-body-accent: #07c;
 	--co-btn-text: #fff;
 	--co-btn-bg: var(--co-body-accent);
@@ -262,12 +263,14 @@ select {
   background-color: white;
   border: 1px solid #ccc;
   padding: 10px;
-  font-size: 16px;
-  border-radius: 4px;
+  color: var(--bs-dark-gray);
+  font-size: 14px;
+  border-radius: 6px;
+  font-weight: 500;
   cursor: pointer;
   outline: none;
   width: 100%;
-  height: 43px;
+  height: 42.5px;
   min-height: 40px;
   line-height: normal;
 

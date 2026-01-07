@@ -167,7 +167,7 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary"],
 		}),
-		addTicket: builder.mutation<{id: number, message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "id" | "createdAt" | "storyPoints" | "dueDate">>({
+		addTicket: builder.mutation<{id: number, message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "id" | "createdAt" | "storyPoints" | "dueDate"> & {dueDate?: string | undefined}>({
 			query: (ticket) => ({
 				url: `${TICKET_URL}`,
 				method: "POST",
@@ -176,7 +176,8 @@ export const ticketApi = privateApi.injectEndpoints({
 					description: ticket.description,
 					priority_id: ticket.priorityId,
 					ticket_type_id: ticket.ticketTypeId,
-					status_id: ticket.statusId
+					status_id: ticket.statusId,
+					...(ticket.dueDate != null ? {due_date: ticket.dueDate} : {})
 				},
 			}),
 			invalidatesTags: ["Tickets", "BoardTickets", "BoardSummary"]

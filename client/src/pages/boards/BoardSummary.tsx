@@ -53,8 +53,9 @@ export const BoardSummary = () => {
             const userIds = data.ticketsByAssignee.map((obj) => obj.userId)
             // make sure the id is not in userIds to avoid duplicates
             const boardActivityUserIds = boardActivityData.data.map((obj) => obj.changedBy).filter((id) => !userIds.includes(id))
+            const allUserIds = [...userIds, ...boardActivityUserIds]
             if (userIds.length){
-                trigger({userIds: [...userIds, ...boardActivityUserIds]})
+                trigger({userIds: allUserIds, skipPaginate: true})
             }
         }
     }, [data, boardActivityData, isLoading, isBoardActivityLoading])

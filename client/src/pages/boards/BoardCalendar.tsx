@@ -24,6 +24,7 @@ export interface CalendarData {
     startDate: Date
     endDate: Date
     color: string
+	hoverColor: string
     type: "Ticket" | "Sprint"
 }
 
@@ -32,6 +33,7 @@ export const BoardCalendar = () => {
 	const { filters } = useAppSelector((state) => state.boardFilter)
 	const [calendarData, setCalendarData] = useState<Array<CalendarData>>([])
 	const [ page, setPage ] = useState(1)
+	const [ viewOption, setViewOption ] = useState<string>("Month")
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
     const [currentDate, setCurrentDate] = useState(new Date())
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
@@ -113,6 +115,7 @@ export const BoardCalendar = () => {
 						startDate: new Date(sprint.startDate),
 						endDate: new Date(sprint.endDate),
 			            color: "tw-bg-blue-200",
+						hoverColor: "hover:tw-bg-blue-300",
 					} as CalendarData
 				}), 
 				...boardTicketData.data.map((ticket) => {
@@ -123,6 +126,7 @@ export const BoardCalendar = () => {
 						startDate: new Date(ticket.createdAt),
 						endDate: new Date(ticket.dueDate),
 			            color: "tw-bg-blue-300",
+						hoverColor: "hover:tw-bg-blue-400",
 					} as CalendarData
 				})
 			])
@@ -135,10 +139,11 @@ export const BoardCalendar = () => {
 				<CalendarContainer
 					currentDate={currentDate}
 					setCurrentDate={setCurrentDate}
-					periodStart={getCurrentPeriod.start}
-					periodEnd={getCurrentPeriod.end}
 					boardId={boardInfo?.id ?? 0}
 					numFilters={numActiveFilters}
+					isWeekView={viewOption === "Week"}
+					setViewOption={setViewOption}
+					statusesToDisplay={statusesToDisplay}
 					calendarData={calendarData}
 					onSubmit={onSubmit}
 					isCalendarLoading={(isSprintsLoading && !sprintData) || (isBoardTicketLoading && !boardTicketData)}

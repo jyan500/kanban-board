@@ -12,7 +12,7 @@ export const Sprint = () => {
     const sprintId = params.sprintId ? parseInt(params.sprintId) : undefined
 	const { data: sprintData, isFetching: isSprintFetching, isLoading: isSprintLoading, isError: isSprintError} = useGetSprintQuery(sprintId && boardInfo ? {id: sprintId, urlParams: {boardId: boardInfo.id}} : skipToken)
 
-    if (!sprintData){
+    if (!isSprintLoading && !sprintData){
         return <Banner message={"The sprint you were looking for does not exist!"} type={"failure"}/>
     }
 
