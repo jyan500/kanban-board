@@ -282,6 +282,23 @@ const ticketRelationshipValidator = (actionType) => {
 	return validationRules
 }
 
+const ticketDueDateValidator = () => {
+	let validationRules = [
+		param("ticketId").custom(async (value, {req}) => await checkEntityExistsIn("ticket", req.params.ticketId, [{
+			col: "id", 
+			value: req.params.ticketId 
+		},
+		{
+			col: "organization_id",
+			value: req.user.organization
+		}], "tickets")),
+		body("due_date").if((value, { req }) => {
+			return req.body.due_date
+		}).isISO8601().toDate().withMessage("must be valid date"),
+	]	
+	return validationRules
+}
+
 module.exports = {
 	validateGet: ticketValidator("get"),
 	validateCreate: ticketValidator("create"),
@@ -305,4 +322,5 @@ module.exports = {
 	validateTicketActivityAdd: ticketActivityValidator("add"),
 	validateTicketActivityUpdate: ticketActivityValidator("update"),
 	validateTicketActivityDelete: ticketActivityValidator("delete"),
+	validateTicketDueDateUpdate: ticketDueDateValidator(),
 }

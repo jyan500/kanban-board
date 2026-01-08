@@ -15,34 +15,44 @@ import {
     getDay,
     isBefore,
     isAfter,
+    isEqual,
     isSameDay,
-    differenceInDays,
     getDate,
     eachDayOfInterval
 } from 'date-fns'
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import type { FormValues, CalendarData } from "../../pages/boards/BoardCalendar"
-import { Ticket, Sprint, Status } from "../../types/common"
+import { ListResponse, Ticket, Toast, Sprint, Status } from "../../types/common"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { IconTicket } from "../../components/icons/IconTicket"
 import { IconCycle } from "../../components/icons/IconCycle"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { Link } from "react-router-dom"
+import { useUpdateTicketDueDateMutation } from "../../services/private/ticket"
 import { BOARDS, BACKLOG } from "../../helpers/routes"
 import { LoadingSkeleton } from '../page-elements/LoadingSkeleton'
+import { LoadingSpinner } from '../LoadingSpinner'
 import { selectCurrentTicketId } from '../../slices/boardSlice'
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { SprintPreviewDropdown } from '../dropdowns/SprintPreviewDropdown'
 import { setModalType, setModalProps, toggleShowModal } from "../../slices/modalSlice"
+import { useScreenSize } from '../../hooks/useScreenSize'
+import { PaginationRow } from '../page-elements/PaginationRow'
+import { TicketRow } from "../TicketRow"
 import { CalendarSprintContainer } from './CalendarSprintContainer'
 import { v4 as uuidv4 } from "uuid"
+import { LG_BREAKPOINT } from '../../helpers/constants'
+import { addToast } from '../../slices/toastSlice'
 
 interface Props {
     currentDate: Date
     setCurrentDate: (date: Date) => void
     isWeekView: boolean
     setViewOption: (option: string) => void
+    unscheduledTicketsPage: number,
+    setUnscheduledTicketsPage: (page: number) => void,
     isCalendarLoading?: boolean
+    unscheduledTickets: ListResponse<Ticket> | undefined
     numFilters: number
     onSubmit: (values: FormValues) => void
     calendarData: Array<CalendarData>
@@ -113,18 +123,25 @@ export const CalendarContainer = ({
     currentDate,
     setCurrentDate,
     isWeekView,
+    unscheduledTicketsPage,
+    setUnscheduledTicketsPage,
     setViewOption,
     statusesToDisplay,
+    unscheduledTickets,
     onSubmit,
     numFilters,
     boardId,
     isCalendarLoading=false, 
 }: Props) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+	const [dragTicketId, setDragTicketId] = useState<number | null>()
+    const [dragCellIndex, setDragCellIndex] = useState<Array<number>>([])
+    const [ updateTicketDueDate, { isLoading, isError }] = useUpdateTicketDueDateMutation()
 
     const methods = useFormContext<FormValues>()
     const dispatch = useAppDispatch()
 
+    const { width, height } = useScreenSize()
     const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
     const weekViewCalendarStart = startOfWeek(currentDate, { weekStartsOn: 1 }) // Monday
@@ -237,9 +254,62 @@ export const CalendarContainer = ({
         return monthYear
     }
 
+    /* Handlers from drag and drop between the unscheduled tickets and calendar cells */
+    const dragStart = (e: React.DragEvent<HTMLDivElement>) => {
+		e.dataTransfer.setData("text", e.currentTarget.id)
+	}
+
+	const enableDropping = (e: React.DragEvent<HTMLDivElement>) => {
+		/* 
+			Because of the side scroll that appears on smaller screens, 
+			disabling ticket dragging and movement for smaller screens
+		*/
+		if (width >= LG_BREAKPOINT){
+			e.preventDefault()
+		}
+	}
+
+	const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+		const ticketId = parseInt(e.dataTransfer.getData("text").replace("to_update_ticket_", ""))
+		const [weekIndex, dayIndex] = e.currentTarget.id.split("_").filter((part) => part !== "date")
+        const parsedWeekIndex = parseInt(weekIndex)
+        const parsedDayIndex = parseInt(dayIndex)
+        const cellDate = weeks[parsedWeekIndex][parsedDayIndex]
+		setDragTicketId(ticketId)
+        setDragCellIndex([parsedWeekIndex, parsedDayIndex])
+		// if the calendar does not contain this ticket, OR it does exist but has a different date, 
+        // we can add it
+        const existingTicketWithDate = calendarData.find(data => 
+            data.type === "Ticket" && 
+            data.id === ticketId &&
+            isEqual(data.endDate, cellDate)
+        )
+        const toast: Toast = {
+            id: uuidv4(),
+            animationType: "animation-in",
+            message: "Due date set successfully!",
+            type: "success"
+        }
+        if (!existingTicketWithDate){
+            try {
+                await updateTicketDueDate({ticketId, dueDate: cellDate.toISOString().split("T")[0]}).unwrap()
+                dispatch(addToast(toast))
+            }
+            catch (e){ 
+                dispatch(addToast({
+                    ...toast,
+                    type: "failure",
+                    message: "Something went wrong while updating ticket"
+                }))
+            }
+        }
+		setDragTicketId(null)
+        setDragCellIndex([])
+	}
+
     return (
-        <div className="tw-max-w-7xl tw-mx-auto tw-p-4">
-            <div className="tw-bg-white tw-rounded-lg tw-border tw-flex tw-flex-col tw-gap-y-4">
+        <div className="tw-flex tw-flex-col tw-gap-y-4 lg:tw-flex-row lg:tw-gap-x-6 tw-py-4">
+            <div className="tw-bg-white tw-max-w-7xl tw-rounded-lg tw-border tw-flex tw-flex-col tw-gap-y-4">
                 {/* Header */}
                 <div className = "tw-flex tw-flex-col tw-gap-y-2 tw-p-4">
                     <div className="tw-flex tw-items-center tw-justify-between">
@@ -315,7 +385,10 @@ export const CalendarContainer = ({
                                             })
                                             return (
                                                 <div
-                                                    key={dayIndex}
+                                                    key={`date_${weekIndex}_${dayIndex}`}
+                                                    id = {`date_${weekIndex}_${dayIndex}`} 
+                                                    onDrop={handleDrop} 
+                                                    onDragOver={enableDropping} 
                                                     className={`tw-cursor-pointer tw-flex tw-flex-col tw-relative hover:tw-bg-gray-100 tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
                                                         !isCurrentMonth(date) ? 'tw-bg-gray-50' : ''
                                                     }`}
@@ -346,6 +419,13 @@ export const CalendarContainer = ({
                                                     }`}>
                                                         {format(date, 'd')}
                                                     </div>
+                                                    {
+                                                        dragCellIndex[0] === weekIndex && dragCellIndex[1] === dayIndex ?
+                                                        <div className = {`tw-absolute tw-top-0 tw-right-0 tw-mr-1 tw-mt-1`}>
+                                                            <LoadingSpinner/>
+                                                        </div>
+                                                        : null
+                                                    }
 
                                                     <div className = "tw-py-3"></div>
                                                     {/* Space for sprints only if they overlap this date so the tickets display under the sprints. 
@@ -358,9 +438,12 @@ export const CalendarContainer = ({
                                                     <div className = "tw-flex tw-flex-col tw-gap-y-1 tw-w-full">
                                                         {dateTickets.map((ticket) => {
                                                             return (
-                                                                <button 
+                                                                <div 
                                                                     className = {`${ticket.color} ${ticket.hoverColor} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-w-full tw-text-left`}
-                                                                    key={ticket.id}
+                                                                    draggable
+                                                                    onDragStart={dragStart}
+                                                                    key={`to_update_ticket_${ticket.id}`}
+                                                                    id={`to_update_ticket_${ticket.id}`}
                                                                     onClick={(e) => {
                                                                         e.preventDefault()
                                                                         dispatch(toggleShowModal(true))
@@ -370,7 +453,7 @@ export const CalendarContainer = ({
                                                                 >
                                                                     <span className="tw-mr-1"><IconTicket/></span>
                                                                     <span className="tw-truncate">{ticket.name}</span>
-                                                                </button>
+                                                                </div>
                                                             )
                                                         })}
                                                     </div>
@@ -396,6 +479,42 @@ export const CalendarContainer = ({
                         })}
                     </div>
                 </div>
+            </div>
+            <div className = "tw-flex tw-flex-1 tw-flex-col tw-gap-y-4 tw-border tw-rounded-lg tw-bg-white tw-p-4">
+                <p className = "tw-font-semibold tw-text-gray-700 tw-text-lg">Unscheduled Tickets</p>
+                <p className = "tw-text-gray-700">
+                    Drag the ticket onto the calendar to set a due date for the ticket.
+                </p>
+                <div className = "tw-flex tw-flex-col tw-gap-x-1">
+                {
+                    unscheduledTickets?.data?.map((ticket) => {
+                        return (
+                            <div 
+                                key={`to_update_ticket_${ticket.id}`}
+                                id={`to_update_ticket_${ticket.id}`}
+                                draggable
+                                onDragStart={dragStart}
+                                onClick={(e) => {
+                                if (dragTicketId === ticket.id && isLoading){
+                                    return
+                                }
+                                dispatch(setModalType("EDIT_TICKET_FORM"))
+                                dispatch(selectCurrentTicketId(ticket.id))
+                                dispatch(toggleShowModal(true))
+                            }}><TicketRow isLoadingState={isLoading && dragTicketId === ticket.id} hideProfilePicture={width >= LG_BREAKPOINT} ticket={ticket}/></div>
+                        )
+                    })
+                }
+                </div>
+                {
+                    unscheduledTickets?.pagination.nextPage || unscheduledTickets?.pagination.prevPage ? 
+                    <PaginationRow
+                        paginationData={unscheduledTickets?.pagination}
+                        setPage={setUnscheduledTicketsPage}
+                        currentPage={unscheduledTicketsPage}
+                        showPageNums={true}
+                    /> : null
+                }
             </div>
         </div>
     )

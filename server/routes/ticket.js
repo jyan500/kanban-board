@@ -23,7 +23,7 @@ const {
 	validateTicketActivityGet,
 	validateTicketActivityUpdate,
 	validateTicketActivityDelete,
-
+	validateTicketDueDateUpdate,
 }  = require("../validation/ticket")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { retryTransaction, parseMentions, insertAndGetId } = require("../helpers/functions")
@@ -995,6 +995,23 @@ router.patch("/:ticketId/status", validateTicketStatusUpdate, handleValidationRe
 			req.historyContext
 		)
 		res.json({message: `Ticket status updated successfully!`})
+	}
+	catch (err) {
+		console.error(`Error while updating ticket: ${err.message}`)
+		next(err)
+	}
+})
+
+router.patch("/:ticketId/due-date", validateTicketDueDateUpdate, handleValidationResult, async (req, res, next) => {
+	try {
+		await historyService.update("tickets",
+			req.params.ticketId,
+			{
+				due_date: req.body.due_date.toISOString().split('T')[0]
+			},
+			req.historyContext
+		)
+		res.json({message: `Ticket due date updated successfully!`})
 	}
 	catch (err) {
 		console.error(`Error while updating ticket: ${err.message}`)

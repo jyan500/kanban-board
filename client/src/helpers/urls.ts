@@ -44,6 +44,7 @@ export const TICKET_BULK_EDIT_ASSIGNEES_URL = (ticketId: number | string) => `/$
 export const TICKET_ASSIGNEE_URL = (ticketId: number | string, userId: number | string) => `/${API_VERSION}/ticket/${ticketId}/user/${userId}`
 export const TICKET_COMMENT_URL = (ticketId: number | string, commentId: number | string) => `/${API_VERSION}/ticket/${ticketId}/comment` + (commentId !== "" ? `/${commentId}` : "")
 export const TICKET_STATUS_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/status`
+export const TICKET_DUE_DATE_URL = (ticketId: number | string) => `/${API_VERSION}/ticket/${ticketId}/due-date`
 export const TICKET_RELATIONSHIP_URL = (ticketId: number | string, relationshipId: number | string) => `/${API_VERSION}/ticket/${ticketId}/relationship` + (relationshipId !== "" ? `/${relationshipId}` : "")
 export const TICKET_ACTIVITY_URL = (ticketId: number | string, activityId: number | string) => `/${API_VERSION}/ticket/${ticketId}/activity` + (activityId !== "" ? `/${activityId}` : "")
 export const USER_PROFILE_REGISTRATION_REQUEST_URL = (userId: number | string) => `${API_VERSION}/user-profile/${userId}/registration-request`
