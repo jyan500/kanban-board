@@ -13,6 +13,7 @@ import { IconArrowRight } from "../icons/IconArrowRight"
 import { IconArrowLeft } from "../icons/IconArrowLeft"
 import { IconArrowDown } from "../icons/IconArrowDown"
 import { IconArrowUp } from "../icons/IconArrowUp"
+import { IconTicket } from '../icons/IconTicket'
 import { GROUP_BY_OPTIONS } from "../../helpers/constants"
 import { IconCalendar } from "../icons/IconCalendar"
 import { IconClock } from "../icons/IconClock"
@@ -210,14 +211,14 @@ const ScheduleContainerRowTicket = ({openModal, ticket, position, ticketType}: S
             {/* Absolutely positioned task bar */}
             <button
                 onClick={(e) => openModal(ticket.id)}
-                className="hover:tw-opacity-70 tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-medium tw-shadow-sm"
+                className={`${isBefore(ticket.dueDate, new Date()) ? "tw-bg-red-300" : "tw-bg-blue-300"} hover:tw-opacity-70 tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-medium tw-shadow-sm`}
                 style={{
                     left: position.left,
                     width: position.width,
-                    backgroundColor: TICKET_TYPE_COLOR_MAP[ticketType as keyof typeof TICKET_TYPE_COLOR_MAP] || '#3B82F6',
                     minWidth: '2px'
                 }}
             >
+                <IconTicket/>
                 <span className="tw-truncate tw-px-2">{ticket.name}</span>
             </button>
         </div>
