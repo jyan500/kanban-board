@@ -316,7 +316,7 @@ export const CalendarContainer = ({
 
     return (
         <div className="tw-flex tw-flex-col tw-gap-y-4 lg:tw-flex-row lg:tw-gap-x-6 tw-py-4">
-            <div className="tw-bg-white lg:tw-max-w-2/3 tw-rounded-lg tw-border tw-flex tw-flex-col tw-gap-y-4">
+            <div className="tw-bg-white tw-flex-1 tw-rounded-lg tw-border tw-flex tw-flex-col tw-gap-y-4">
                 {/* Header */}
                 <div className = "tw-flex tw-flex-col tw-gap-y-2 tw-p-4">
                     <div className="tw-flex tw-items-center tw-justify-between">
@@ -487,7 +487,7 @@ export const CalendarContainer = ({
                     </div>
                 </div>
             </div>
-            <div className = "tw-flex tw-flex-1 lg:tw-w-1/3 tw-flex-col tw-gap-y-4 tw-border tw-rounded-lg tw-bg-white tw-p-4">
+            <div className = "tw-flex lg:tw-w-1/3 tw-flex-col tw-gap-y-4 tw-border tw-rounded-lg tw-bg-white tw-p-4">
                 <p className = "tw-font-semibold tw-text-lg">Unscheduled Tickets</p>
                 <p className = "tw-text-gray-700">
                     {width >= LG_BREAKPOINT ? "Drag the ticket onto the calendar to set a due date for the ticket." : "Click on a ticket to assign a due date." }
