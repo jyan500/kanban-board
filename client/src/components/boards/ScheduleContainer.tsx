@@ -128,7 +128,7 @@ export const ScheduleContainerLeftColumn = ({
                         const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
                         return (
                             <>
-                                <div key={`group-by-${groupByElement}-${groupById}`} className="tw-flex tw-flex-row tw-justify-center tw-items-center tw-p-3 tw-h-16 tw-font-medium tw-text-gray-800 tw-bg-gray-50 tw-text-sm tw-truncate">
+                                <div key={`group-by-${groupByElement?.name}-${groupById}`} className="tw-flex tw-flex-row tw-justify-center tw-items-center tw-p-3 tw-h-16 tw-font-medium tw-text-gray-800 tw-bg-gray-50 tw-text-sm tw-truncate">
                                     <button className = "hover:tw-opacity-60" onClick={() => {
                                         setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})
                                     }}>
