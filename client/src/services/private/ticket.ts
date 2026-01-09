@@ -11,6 +11,7 @@ import {
 	TICKET_RELATIONSHIP_URL,
 	TICKET_ACTIVITY_URL,
 	TICKET_SUMMARY_URL,
+	TICKET_DUE_DATE_URL,
 } 
 from "../../helpers/urls" 
 import { CustomError, Mention, ListResponse, Ticket, TicketComment, TicketActivity, TicketRelationship, UserProfile } from "../../types/common" 
@@ -257,6 +258,14 @@ export const ticketApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary", "BoardSummary"]
 		}),
+		updateTicketDueDate: builder.mutation<{message: string}, {ticketId: number, dueDate: string}>({
+			query: ({ticketId, dueDate}) => ({
+				url: TICKET_DUE_DATE_URL(ticketId),
+				method: "PATCH",
+				body: {due_date: dueDate}
+			}),
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary", "BoardSummary"]
+		}),
 		getTicketRelationships: builder.query<ListResponse<TicketRelationship>, TicketEntityPaginationRequest>({
 			query: ({ticketId, params}) => ({
 				url: `${TICKET_RELATIONSHIP_URL(ticketId, "")}`,
@@ -351,6 +360,7 @@ export const {
 	useBulkWatchTicketsMutation,
 	useUpdateTicketMutation,
 	useUpdateTicketStatusMutation,
+	useUpdateTicketDueDateMutation,
 	useDeleteTicketMutation,
 	useGetTicketAssigneesQuery,
 	useAddTicketAssigneeMutation,

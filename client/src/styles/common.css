@@ -263,10 +263,10 @@ select {
   background-color: white;
   border: 1px solid #ccc;
   padding: 10px;
-  color: var(--bs-dark-gray);
+  color: black;
   font-size: 14px;
   border-radius: 6px;
-  font-weight: 500;
+  font-weight: 400;
   cursor: pointer;
   outline: none;
   width: 100%;

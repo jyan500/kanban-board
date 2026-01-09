@@ -33,6 +33,7 @@ import { priorityIconMap, PriorityIcon, TicketTypeIcon } from "./Ticket"
 import { PRIORITY_COLOR_MAP } from "../helpers/constants";
 import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown" 
 import { ImTree as AddToEpicIcon } from "react-icons/im";
+import { IconWarning } from "./icons/IconWarning";
 import { IconTree } from "./icons/IconTree"
 import { Badge } from "./page-elements/Badge"
 import { PaginationRow } from "./page-elements/PaginationRow"
@@ -52,6 +53,7 @@ import { useScreenSize } from "../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../helpers/constants"
 import { isValidDateString, convertMinutesToTimeDisplay } from "../helpers/functions"
 import { format, toDate } from "date-fns-tz"
+import { isBefore } from "date-fns"
 import { TicketActivityModalProps } from "./secondary-modals/TicketActivityModal"
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "./placeholders/RowPlaceholder"
@@ -507,7 +509,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Due Date"}>
 							{
 								!editFieldVisibility["due-date"] ? (
-									<button onClick = {(e) => toggleFieldVisibility("due-date", true)} className = "hover:tw-opacity-60">
+									<button onClick = {(e) => toggleFieldVisibility("due-date", true)} className = {`${isBefore(toDate(watch("dueDate")), new Date()) ? "tw-p-1 tw-border tw-border-red-400 tw-text-red-400 tw-font-medium" : ""} hover:tw-opacity-60 tw-flex tw-flex-row tw-items-center tw-gap-x-2`}>
+										{isBefore(toDate(watch("dueDate")), new Date()) ? <IconWarning className = "tw-text-red-500"/> : null}
 										{isValidDateString(watch("dueDate")) ? format(toDate(watch("dueDate")), "MM/dd/yyyy") : "None"}
 									</button>
 								) : (

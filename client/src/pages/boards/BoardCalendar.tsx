@@ -33,11 +33,21 @@ export const BoardCalendar = () => {
 	const { filters } = useAppSelector((state) => state.boardFilter)
 	const [calendarData, setCalendarData] = useState<Array<CalendarData>>([])
 	const [ page, setPage ] = useState(1)
+	const [ unscheduledTicketsPage, setUnscheduledTicketsPage ] = useState(1)
 	const [ viewOption, setViewOption ] = useState<string>("Month")
 	const { board, boardInfo, tickets, statusesToDisplay } = useAppSelector((state) => state.board)	
     const [currentDate, setCurrentDate] = useState(new Date())
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { statuses } = useAppSelector((state) => state.status)
+	const { data: unscheduledTickets, isLoading, isError } = useGetBoardTicketsQuery(boardInfo?.id ? {
+		id: boardInfo.id, 
+		urlParams: {
+			"statusIds": statusesToDisplay.filter((status) => !status.isCompleted).map((status)=>status.id),
+			"withoutDueDate": true,
+			"limit": true,
+			"page": unscheduledTicketsPage, 
+		}
+	} : skipToken)
 	const { priorities } = useAppSelector((state) => state.priority)
 	const nonCompletedStatuses = statuses.filter((status) => !status.isCompleted).map((status) => status.id) ?? []
 	const defaultForm: FormValues = {
@@ -75,7 +85,6 @@ export const BoardCalendar = () => {
 		"includeAssignees": true, 
 		"requireDueDate": true,
 		"checkOverlapping": true,
-		"page": page,
 		"includeRelationshipInfo": true, 
 		"limit": true,
 	}} : skipToken)
@@ -85,7 +94,6 @@ export const BoardCalendar = () => {
 			boardId: boardInfo.id,
 			startDate: format(getCurrentPeriod.start, "yyyy-MM-dd"),
 			endDate: format(getCurrentPeriod.end, "yyyy-MM-dd"),
-			page: page,
 			checkOverlapping: true,
 			filterInProgress: true,
 		}
@@ -143,6 +151,9 @@ export const BoardCalendar = () => {
 					numFilters={numActiveFilters}
 					isWeekView={viewOption === "Week"}
 					setViewOption={setViewOption}
+					unscheduledTicketsPage={unscheduledTicketsPage}
+					setUnscheduledTicketsPage={setUnscheduledTicketsPage}
+					unscheduledTickets={unscheduledTickets}
 					statusesToDisplay={statusesToDisplay}
 					calendarData={calendarData}
 					onSubmit={onSubmit}

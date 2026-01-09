@@ -438,6 +438,9 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			if (req.query.limit){
 				queryBuilder.limit(board.ticket_limit)
 			}
+			if (req.query.withoutDueDate){
+				queryBuilder.whereNull("tickets.due_date")
+			}
 			if (req.query.requireDueDate){
 				queryBuilder.whereNotNull("tickets.due_date")
 			}

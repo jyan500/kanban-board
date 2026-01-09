@@ -199,7 +199,7 @@ export const Board = () => {
 
 	return (
 		<div className = "tw-space-y-2">
-			<ArrowButton text="Back" onClick={() => navigate(-1)}/>
+			<ArrowButton text="Back" onClick={() => navigate(`${BOARDS}`)}/>
 			{(isGetBoardError || isGetBoardTicketsError || isGetBoardStatusesError) ? 
 				(
 					<Banner message = {"Something went wrong!"} type = "failure"/>
