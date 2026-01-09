@@ -481,7 +481,7 @@ export const CalendarContainer = ({
                 </div>
             </div>
             <div className = "tw-flex tw-flex-1 lg:tw-w-1/3 tw-flex-col tw-gap-y-4 tw-border tw-rounded-lg tw-bg-white tw-p-4">
-                <p className = "tw-font-semibold tw-text-gray-700 tw-text-lg">Unscheduled Tickets</p>
+                <p className = "tw-font-semibold tw-text-lg">Unscheduled Tickets</p>
                 <p className = "tw-text-gray-700">
                     Drag the ticket onto the calendar to set a due date for the ticket.
                 </p>
