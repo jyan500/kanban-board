@@ -254,6 +254,13 @@ export const CalendarContainer = ({
         return monthYear
     }
 
+    const getTicketColor = (ticket: CalendarData) => {
+        if (isBefore(ticket.endDate, new Date())){
+           return "tw-bg-red-300 hover:tw-bg-red-400" 
+        }
+        return `${ticket.color} ${ticket.hoverColor}`
+    }
+
     /* Handlers from drag and drop between the unscheduled tickets and calendar cells */
     const dragStart = (e: React.DragEvent<HTMLDivElement>) => {
 		e.dataTransfer.setData("text", e.currentTarget.id)
@@ -309,7 +316,7 @@ export const CalendarContainer = ({
 
     return (
         <div className="tw-flex tw-flex-col tw-gap-y-4 lg:tw-flex-row lg:tw-gap-x-6 tw-py-4">
-            <div className="tw-bg-white lg:tw-w-2/3 tw-rounded-lg tw-border tw-flex tw-flex-col tw-gap-y-4">
+            <div className="tw-bg-white lg:tw-max-w-2/3 tw-rounded-lg tw-border tw-flex tw-flex-col tw-gap-y-4">
                 {/* Header */}
                 <div className = "tw-flex tw-flex-col tw-gap-y-2 tw-p-4">
                     <div className="tw-flex tw-items-center tw-justify-between">
@@ -439,7 +446,7 @@ export const CalendarContainer = ({
                                                         {dateTickets.map((ticket) => {
                                                             return (
                                                                 <div 
-                                                                    className = {`${ticket.color} ${ticket.hoverColor} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-w-full tw-text-left`}
+                                                                    className = {`${getTicketColor(ticket)} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-w-full tw-text-left`}
                                                                     draggable
                                                                     onDragStart={dragStart}
                                                                     key={`to_update_ticket_${ticket.id}`}
@@ -483,7 +490,7 @@ export const CalendarContainer = ({
             <div className = "tw-flex tw-flex-1 lg:tw-w-1/3 tw-flex-col tw-gap-y-4 tw-border tw-rounded-lg tw-bg-white tw-p-4">
                 <p className = "tw-font-semibold tw-text-lg">Unscheduled Tickets</p>
                 <p className = "tw-text-gray-700">
-                    Drag the ticket onto the calendar to set a due date for the ticket.
+                    {width >= LG_BREAKPOINT ? "Drag the ticket onto the calendar to set a due date for the ticket." : "Click on a ticket to assign a due date." }
                 </p>
                 <div className = "tw-flex tw-flex-col tw-gap-y-1">
                 {
