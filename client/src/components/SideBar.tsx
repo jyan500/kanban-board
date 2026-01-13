@@ -14,6 +14,13 @@ import { Avatar } from "./page-elements/Avatar"
 import { NavLink } from "./page-elements/NavLink"
 import { GradientContainer } from "./page-elements/GradientContainer"
 import { PROJECTS, ORGANIZATION, USERS, ACCOUNT, BOARDS, HOME, TICKETS } from "../helpers/routes"
+import { IconBars } from "./icons/IconBars";
+import { IconBoard } from "./icons/IconBoard";
+import { IconTicket } from "./icons/IconTicket";
+import { IconUser } from "./icons/IconUser";
+import { IconBuildingUser } from "./icons/IconBuildingUser";
+import { IconBuilding } from "./icons/IconBuilding";
+import { IconProject } from "./icons/IconProject";
 
 export const SideBar = () => {
 	const sideBar = useAppSelector((state) => state.nav)
@@ -24,21 +31,21 @@ export const SideBar = () => {
 	
 	const defaultLinks = [
 		{
-			pathname: HOME, text: "Dashboard",
+			pathname: HOME, text: "Dashboard", icon: <IconBars/>
 		},
 		{
-			pathname: PROJECTS, text: "Projects",
+			pathname: PROJECTS, text: "Projects", icon: <IconProject/>
 		},			
 		{
-			pathname: BOARDS, text: "Boards",
+			pathname: BOARDS, text: "Boards", icon: <IconBoard/>,
 		},
 		{
-			pathname: TICKETS, text: "Tickets",
+			pathname: TICKETS, text: "Tickets", icon: <IconTicket/>,
 		},
 	]
 	const accountLink = [
 		{
-			pathname: ACCOUNT, text: "Account",
+			pathname: ACCOUNT, text: "Account", icon: <IconUser/>,
 		},
 	]
 	const [ links, setLinks ] = useState([
@@ -56,10 +63,10 @@ export const SideBar = () => {
 				...userProfile?.isActive ? defaultLinks : [],
 				...(isAdmin && userProfile?.isActive ? [
 				{
-					pathname: USERS, text: "Users"
+					pathname: USERS, text: "Users", icon: <IconBuildingUser/>
 				},
 				{
-					pathname: ORGANIZATION, text: "Organization"
+					pathname: ORGANIZATION, text: "Organization", icon: <IconBuilding/>
 				}
 				]: []),
 				...accountLink
@@ -88,7 +95,7 @@ export const SideBar = () => {
 						<div className = "sidebar__links">
 							{ 
 								links.map((link) => 
-									<NavLink isActive={link.pathname === pathname} key={`sidebar_${link.text}`} text={link.text} url={link.pathname} onClick={() => dispatch(toggleSideBar(false))}/>
+									<NavLink icon={link.icon} isActive={link.pathname === pathname} key={`sidebar_${link.text}`} text={link.text} url={link.pathname} onClick={() => dispatch(toggleSideBar(false))}/>
 								)
 							}
 						</div>
