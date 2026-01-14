@@ -25,6 +25,7 @@ import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { Button } from "../../components/page-elements/Button"
 import { IconFilter } from "../../components/icons/IconFilter"
+import { useBulkEditToolbar } from "../../contexts/BulkEditToolbarContext"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 
 export type FormValues = {
@@ -74,6 +75,8 @@ export const NotificationDisplay = () => {
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const methods = useForm<FormValues>({defaultValues: preloadedValues})
 	const { register, handleSubmit, reset, watch, setValue, formState: {errors} } = methods
+	const { registerToolbar, unregisterToolbar } = useBulkEditToolbar()
+
 	const registerOptions = {
 	}
 
@@ -106,6 +109,22 @@ export const NotificationDisplay = () => {
 			}));
 		}
 	}, [searchParams])
+
+	useEffect(() => {
+		registerToolbar({
+			applyActionToAll: async () => {
+				await markMessagesRead(selectedIds)
+				setSelectedIds([])
+			},
+			updateIds: setSelectedIds,
+			actionText: "Mark as Read",
+			itemIds: selectedIds
+		})
+
+		return () => {
+			unregisterToolbar()
+		}
+	}, [selectedIds, setSelectedIds])
 
 	// TODO: unsure if this functionality should be on this page
 	const markMessagesRead = async (notificationIds: Array<number>) => {
@@ -225,18 +244,6 @@ export const NotificationDisplay = () => {
 				</LoadingSkeleton>
 			) : (
 				<>
-					{
-						selectedIds.length > 0 ? 	
-						<BulkEditToolbar
-							applyActionToAll={async () => {
-								await markMessagesRead(selectedIds)
-								setSelectedIds([])
-							}}
-							updateIds={setSelectedIds}
-							actionText={"Mark as Read"}
-							itemIds={selectedIds}
-						/> : null
-					}
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
 						{Object.entries(groupedByDate(data?.data)).map(([key, value]) => {
 							return (
