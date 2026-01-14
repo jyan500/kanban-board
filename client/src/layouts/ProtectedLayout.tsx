@@ -3,6 +3,7 @@ import { Link, Outlet, Navigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
 import { SideBar } from "../components/SideBar"
 import { Modal } from "../components/Modal" 
+import { BottomBulkEditToolbar } from "../components/page-elements/BottomBulkEditToolbar"
 import { SecondaryModal } from "../components/SecondaryModal" 
 import { LoadingSkeleton } from "../components/page-elements/LoadingSkeleton"
 import { BoardPlaceholder } from "../components/placeholders/BoardPlaceholder"
@@ -26,6 +27,7 @@ import { setPriorities } from "../slices/prioritySlice"
 import { setNotificationTypes } from "../slices/notificationTypeSlice"
 import { UserRole } from "../types/common" 
 import { TEMP, ACCOUNT, LOGIN } from "../helpers/routes"
+import { BulkEditToolbarProvider } from "../contexts/BulkEditToolbarContext"
 
 const ProtectedLayout = () => {
 	const {token, isTemp} = useAppSelector((state) => state.auth)	
@@ -89,26 +91,29 @@ const ProtectedLayout = () => {
 	}
 	
 	return (
-		<div>
-			<SideBar/>
-			<div className = "tw-flex tw-flex-col tw-gap-y-4">
-				<div className = "tw-px-4 md:tw-px-16 tw-w-full tw-min-h-screen">
-					<TopNav/>
-					{isDataLoaded ? (
-						<div className = "tw-space-y-2">
-							<Outlet/>
-						</div>
-					): 
-					<LoadingSkeleton
-					>
-						<BoardPlaceholder/>	
-					</LoadingSkeleton>}
+		<BulkEditToolbarProvider>
+			<div>
+				<SideBar/>
+				<div className = "tw-flex tw-flex-col tw-gap-y-4">
+					<div className = "tw-px-4 md:tw-px-16 tw-w-full tw-min-h-screen">
+						<TopNav/>
+						{isDataLoaded ? (
+							<div className = "tw-space-y-2">
+								<Outlet/>
+							</div>
+						): 
+						<LoadingSkeleton
+						>
+							<BoardPlaceholder/>	
+						</LoadingSkeleton>}
+					</div>
+					<Footer/>
 				</div>
-				<Footer/>
+				<Modal/>
+				<SecondaryModal/>
+				<BottomBulkEditToolbar/>
 			</div>
-			<Modal/>
-			<SecondaryModal/>
-		</div>
+		</BulkEditToolbarProvider>
 	)
 }
 

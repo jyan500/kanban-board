@@ -6,7 +6,6 @@ import { Table } from "../Table"
 import { useBoardTicketConfig } from "../../helpers/table-config/useBoardTicketConfig"
 import { PaginationRow } from "../page-elements/PaginationRow"
 import { BOARD_TICKET_URL } from "../../helpers/urls"
-import { BulkEditToolbar } from "../page-elements/BulkEditToolbar"
 import { useForm, FormProvider } from "react-hook-form"
 import { Ticket } from "../../types/common"
 import { LoadingButton } from "../page-elements/LoadingButton"
@@ -19,6 +18,7 @@ import { setModalType, setModalProps, toggleShowModal } from "../../slices/modal
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { IconFilter } from "../icons/IconFilter"
 import { FilterButton } from "../page-elements/FilterButton"
+import { useBulkEditToolbar } from "../../contexts/BulkEditToolbarContext"
 
 interface Props {
 	boardId: number | null | undefined
@@ -113,6 +113,31 @@ export const TicketTable = ({
 		setPreloadedValues(values)
 	}
 
+	const { registerToolbar, unregisterToolbar } = useBulkEditToolbar()
+
+	// Register toolbar config when component mounts or when relevant props change
+	useEffect(() => {
+		if (!isLoading && data?.data && boardId) {
+			registerToolbar({
+				itemIds: selectedIds,
+				updateIds: (ids: Array<number>) => setSelectedIds(ids),
+				applyActionToAll: bulkEditAction ? bulkEditAction : undefined,
+				actionText: bulkEditAction ? "Bulk Edit" : undefined,
+				children: (
+					<>
+						<Button theme="primary" onClick={selectCurrentPageIds}>Select current page</Button>	
+						<Button theme="secondary" onClick={unselectCurrentPageIds}>Unselect current page</Button>	
+					</>
+				)
+			})
+		}
+
+		// Cleanup: unregister when component unmounts
+		return () => {
+			unregisterToolbar()
+		}
+	}, [selectedIds, bulkEditAction, isLoading, data?.data, boardId, registerToolbar, unregisterToolbar, setSelectedIds, selectCurrentPageIds, unselectCurrentPageIds])
+
 	// if the bulkEditAction is defined, that means we're coming from the board table instead of the bulk actions form
 	const config = useBoardTicketConfig(true, selectedIds, setSelectedIds, bulkEditAction != undefined)
 	return (
@@ -147,17 +172,6 @@ export const TicketTable = ({
 			{
 				!isLoading && data?.data && boardId ? (
 					<>
-						<BulkEditToolbar 
-							updateIds={(ids: Array<number>) => setSelectedIds(ids)} 
-							applyActionToAll={bulkEditAction ? bulkEditAction : undefined}
-							actionText={bulkEditAction ? "Bulk Edit" : undefined}
-							itemIds={selectedIds} 
-						>
-							<>
-								<Button theme="primary" onClick={selectCurrentPageIds}>Select current page</Button>	
-								<Button theme="secondary" onClick={unselectCurrentPageIds}>Unselect current page</Button>	
-							</>
-						</BulkEditToolbar>
 						{
 							data?.pagination.nextPage || data?.pagination.prevPage ? (
 								<PaginationRow

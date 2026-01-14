@@ -16,7 +16,7 @@ type Props = {
 export const BulkEditToolbar = ({itemIds, applyActionToAll, applyRemoveToAll, actionText, removeText, updateIds, children}: Props) => {
 	return (
 		itemIds.length > 0 ? 
-		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center tw-relative tw-border tw-w-full tw-gap-x-2 tw-p-4 tw-rounded-md tw-shadow">
+		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center tw-relative tw-w-full tw-gap-x-2">
 			<button onClick={() => {
 				updateIds([])
 			}
