@@ -28,6 +28,13 @@ import { SM_BREAKPOINT, LG_BREAKPOINT } from "../../helpers/constants"
 import { BoardNavDropdown } from "../../components/dropdowns/BoardNavDropdown"
 import { IconArrowDown } from "../../components/icons/IconArrowDown"
 import { IconArrowRight } from "../../components/icons/IconArrowRight"
+import { IconBoard } from "../../components/icons/IconBoard"
+import { IconCalendar } from "../../components/icons/IconCalendar"
+import { IconTimeline } from "../../components/icons/IconTimeline"
+import { IconTable } from "../../components/icons/IconTable"
+import { IconBacklog } from "../../components/icons/IconBacklog"
+import { IconClock } from "../../components/icons/IconClock"
+import { IconBars } from "../../components/icons/IconBars"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
@@ -164,28 +171,28 @@ export const Board = () => {
 
 	const additionalLinks = [
 		{
-			pathname: `${boardPath}/${CALENDAR}`, text: "Calendar",
+			pathname: `${boardPath}/${CALENDAR}`, text: "Calendar", icon: <IconCalendar/>,
 		},
 		{
-			pathname: `${boardPath}/${TABLE}`, text: "Table",
+			pathname: `${boardPath}/${TABLE}`, text: "Table", icon: <IconTable/>,
 		},
 		{
-			pathname: `${boardPath}/${BACKLOG}`, text: "Backlog"
+			pathname: `${boardPath}/${BACKLOG}`, text: "Backlog", icon: <IconBacklog/>,
 		},
 		{
-			pathname: `${boardPath}/${SPRINTS}`, text: "Past Sprints",
+			pathname: `${boardPath}/${SPRINTS}`, text: "Past Sprints", icon: <IconClock/>,
 		}
 	]
 
 	const defaultLinks = [
 		{
-			pathname: `${boardPath}/${SUMMARY}`, text: "Summary"	
+			pathname: `${boardPath}/${SUMMARY}`, text: "Summary", icon: <IconBars/>,	
 		},
 		{
-			pathname: `${boardPath}`, text: "Board",
+			pathname: `${boardPath}`, text: "Board", icon: <IconBoard/>,
 		},
 		{
-			pathname: `${boardPath}/${SCHEDULE}`, text: "Schedule",
+			pathname: `${boardPath}/${SCHEDULE}`, text: "Schedule", icon: <IconTimeline/>,
 		},
 		...(width >= SM_BREAKPOINT ? 
 			additionalLinks
@@ -210,7 +217,7 @@ export const Board = () => {
 					<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>
 					<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
 						{
-							defaultLinks.map((link: {pathname: string, text: string}) => {
+							defaultLinks.map((link: {pathname: string, text: string, icon?: React.ReactElement}) => {
 								if (link.text === "More"){
 									return (
 										<div key={`filter_button_more`} className = "tw-relative">
@@ -219,6 +226,7 @@ export const Board = () => {
 											}}>
 												<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 													{showDropdown ? <IconArrowRight/> : <IconArrowDown/>}
+													{link.icon}
 													{link.text}	
 												</div>
 											</TabButton>
@@ -234,7 +242,10 @@ export const Board = () => {
 							 		<TabButton key={`filter_button_${link.text}`} isActive={link.pathname === pathname} onClick={(e) => {
 							 			navigate(link.pathname)
 							 		}}>
-							 			{link.text}
+										<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+											{link.icon}
+											{link.text}
+										</div>
 							 		</TabButton>
 								)
 							})
