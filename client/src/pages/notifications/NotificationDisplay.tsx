@@ -20,7 +20,6 @@ import {
 	useUpdateNotificationMutation,
 	useBulkEditNotificationsMutation, 
 } from "../../services/private/notification"
-import { BulkEditToolbar } from "../../components/page-elements/BulkEditToolbar"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { Button } from "../../components/page-elements/Button"
