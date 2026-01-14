@@ -27,7 +27,7 @@ export const BottomBulkEditToolbar = () => {
     }, [shouldShow, toolbarConfig])
 
     return (
-        <div className = {`${TOOLBAR_Z_INDEX} tw-p-4 tw-rounded-md tw-shadow-lg tw-bg-white tw-fixed tw-left-1/2 -tw-translate-x-1/2 tw-w-[800px] tw-max-w-[90vw] tw-transition-transform tw-duration-350 tw-ease-out ${
+        <div className = {`${TOOLBAR_Z_INDEX} tw-border tw-border-gray-300 tw-p-4 tw-rounded-md tw-shadow-lg tw-bg-white tw-fixed tw-left-1/2 -tw-translate-x-1/2 tw-w-[800px] tw-max-w-[90vw] tw-transition-transform tw-duration-350 tw-ease-out ${
             shouldShow ? 'tw-bottom-4 tw-translate-y-0' : 'tw-translate-y-full tw-bottom-0'
         }`}>
             {displayConfig && displayConfig.itemIds.length > 0 ? (
