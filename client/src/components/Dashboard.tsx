@@ -31,6 +31,7 @@ import { SwitchOrganizationForm } from "./forms/SwitchOrganizationForm"
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
 import { RowContentLoading } from "./page-elements/RowContentLoading"
 import { RowPlaceholder } from "./placeholders/RowPlaceholder"
+import { RecentlyViewed } from "./page-elements/RecentlyViewed"
 
 type DashboardSectionProps = {
 	title: string
@@ -213,6 +214,7 @@ export const Dashboard = () => {
 					}
 				</div>
 			</div>
+			<RecentlyViewed/>
 		</div>
 	)	
 }

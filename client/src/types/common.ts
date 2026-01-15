@@ -310,3 +310,10 @@ export interface PieChartItem {
 
 export type ViewMode = 'week' | 'month'
 
+export interface ViewedItem {
+	type: string
+	id: number
+	name: string
+	viewedAt: Date
+}
+

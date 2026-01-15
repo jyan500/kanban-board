@@ -3,6 +3,7 @@ import { useGetSprintsQuery } from "../../services/private/sprint"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { BacklogSprintContainer } from "../../components/boards/BacklogSprintContainer"
+import { useTrackRecentlyViewed } from "../../hooks/useTrackRecentlyViewed"
 
 export const BoardBacklog = () => {
 	const { boardInfo } = useAppSelector((state) => state.board)	
@@ -14,6 +15,13 @@ export const BoardBacklog = () => {
 		filterInProgress: true,
         recent: true,
     }} : skipToken)
+
+	useTrackRecentlyViewed({
+		id: sprintData?.data?.[0]?.id,
+		type: "sprint",
+		name: sprintData?.data?.[0]?.name,
+		enabled: !isSprintLoading && sprintData != null
+	})
 
 	return (
 		<BacklogSprintContainer

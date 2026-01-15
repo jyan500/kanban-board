@@ -57,6 +57,7 @@ import { isBefore } from "date-fns"
 import { TicketActivityModalProps } from "./secondary-modals/TicketActivityModal"
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "./placeholders/RowPlaceholder"
+import { useTrackRecentlyViewed } from "../hooks/useTrackRecentlyViewed";
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -185,6 +186,13 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const ticketTypeName = ticketTypes.find((ticketType) => ticketType.id === watch("ticketTypeId"))?.name
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	const priorityName = priorities.find((priority) => priority.id === watch("priorityId"))?.name
+
+	useTrackRecentlyViewed({
+		type: "ticket",
+		id: currentTicketId,
+		name: ticket?.name,
+		enabled: ticket != null
+	})
 
 	const toggleFieldVisibility = (field: string, flag: boolean) => {
 		toggleHelper(field, flag, editFieldVisibility, setEditFieldVisibility)
