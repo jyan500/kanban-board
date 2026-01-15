@@ -19,6 +19,7 @@ import { useForm, Controller, FormProvider } from "react-hook-form"
 import { useLocation, useParams } from "react-router-dom"
 import { AsyncSelect } from "../../components/AsyncSelect"
 import { Button } from "../../components/page-elements/Button"
+import { useBulkEditToolbar } from "../../contexts/BulkEditToolbarContext"
 
 interface BacklogBulkItem {
 	id: number
@@ -66,6 +67,8 @@ export const BacklogSprintContainer = ({sprint, isSprintLoading}: Props) => {
 
 	const backlogTickets = itemIds.filter((obj) => obj.type === "backlog")
 	const sprintTickets = itemIds.filter((obj) => obj.type === "sprint")
+
+	const { registerToolbar, unregisterToolbar } = useBulkEditToolbar()
 
 	useEffect(() => {
 		// if we're coming from the past sprints page to create a sprint, pop up the create sprints modal
@@ -120,6 +123,82 @@ export const BacklogSprintContainer = ({sprint, isSprintLoading}: Props) => {
 			}}, true)
 		}
 	}, [isSprintLoading, sprint, boardInfo, backlogPreloadedValues, backlogPage])
+
+	useEffect(() => {
+		registerToolbar({
+			itemIds: itemIds.map((obj) => obj.id),
+			updateIds: (ids: Array<number>) => {
+				setItemIds([])
+			},
+			children:( 
+				<>
+					<Button theme="secondary" onClick={(e) => {
+						const allSprintTickets = sprintTicketData?.data ? sprintTicketData?.data.map((sprintTicket) => {
+							return {
+								id: sprintTicket.id,
+								type: "sprint"
+							} as BacklogBulkItem
+						}) : []
+						const allBacklogTickets = boardTicketData?.data ? boardTicketData?.data.map((boardTicket) => {
+							return {
+								id: boardTicket.id,
+								type: "backlog"
+							} as BacklogBulkItem
+						}) : []
+						setItemIds([...allSprintTickets, ...allBacklogTickets])
+					}} >Select All</Button>
+					<Button theme="primary" onClick={(e) => {
+						if (boardInfo){
+							dispatch(setModalType("BULK_ACTIONS_MODAL"))
+							dispatch(setModalProps({
+								boardId: boardInfo.id,
+								initSelectedIds: itemIds,
+								// default to step 2 since we've selected ids to edit
+								initStep: 2
+							}))
+							dispatch(toggleShowModal(true))
+						}
+						unregisterToolbar()
+						setItemIds([])
+					}} >Edit Tickets</Button>
+					{
+						backlogTickets.length && sprint && !sprint.isCompleted ?
+						<LoadingButton isLoading={isUpdateTicketsLoading} text={`Move ${backlogTickets.length} ticket(s) to Sprint`} onClick={async (e) => {
+							await onUpdateSprintTickets()
+							// filter out the selected backlog tickets
+							setItemIds(itemIds.filter((obj) => obj.type !== "backlog"))
+							// if the current pagination page no longer has any items due to being removed, 
+							// go back to the previous page
+							// this will re-trigger a query to grab the previous page of results
+							if (boardTicketData?.pagination.prevPage){
+								setBacklogPage(boardTicketData?.pagination.prevPage)
+							}
+						}} />
+						: null
+					}
+					{
+					sprintTickets.length && !sprint?.isCompleted ? 
+					<LoadingButton isLoading={isDeleteTicketsLoading} text={`Remove ${sprintTickets.length} ticket(s) from Sprint`} onClick={async (e) => {
+						await onDeleteSprintTickets()	
+						// filter out the selected sprint tickets
+						setItemIds(itemIds.filter((obj) => obj.type !== "sprint"))
+						// if the current pagination page no longer has any items due to being removed, 
+						// go back to the previous page
+						// this will re-trigger a query to grab the previous page of results
+						if (sprintTicketData?.data.length === 0 && sprintTicketData?.pagination.prevPage){
+							setSprintPage(sprintTicketData?.pagination.prevPage)
+						}
+					}} />
+					: null
+					}
+				</>
+			)
+		})
+
+		return () => {
+			unregisterToolbar()
+		}
+	}, [itemIds])
 	// in order for ease of use with the existing bulk edit toolbar, track a "combined" array of both 
 	// selected backlog and sprint tickets
 	const setId = (id: number, type: "sprint" | "backlog", items: Array<BacklogBulkItem>, setter: (items: Array<BacklogBulkItem>) => void) => {
@@ -195,69 +274,6 @@ export const BacklogSprintContainer = ({sprint, isSprintLoading}: Props) => {
 
     return (
 		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
-			<BulkEditToolbar itemIds={itemIds.map((obj) => obj.id)} updateIds={(ids: Array<number>) => {
-				setItemIds([])
-			}}>
-				<>
-					<Button theme="secondary" onClick={(e) => {
-						const allSprintTickets = sprintTicketData?.data ? sprintTicketData?.data.map((sprintTicket) => {
-							return {
-								id: sprintTicket.id,
-								type: "sprint"
-							} as BacklogBulkItem
-						}) : []
-						const allBacklogTickets = boardTicketData?.data ? boardTicketData?.data.map((boardTicket) => {
-							return {
-								id: boardTicket.id,
-								type: "backlog"
-							} as BacklogBulkItem
-						}) : []
-						setItemIds([...allSprintTickets, ...allBacklogTickets])
-					}} >Select All</Button>
-					<Button theme="primary" onClick={(e) => {
-						if (boardInfo){
-							dispatch(setModalType("BULK_ACTIONS_MODAL"))
-							dispatch(setModalProps({
-								boardId: boardInfo.id,
-								initSelectedIds: itemIds,
-								// default to step 2 since we've selected ids to edit
-								initStep: 2
-							}))
-							dispatch(toggleShowModal(true))
-						}
-					}} >Edit Tickets</Button>
-					{
-						backlogTickets.length && sprint && !sprint.isCompleted ?
-						<LoadingButton isLoading={isUpdateTicketsLoading} text={`Move ${backlogTickets.length} ticket(s) to Sprint`} onClick={async (e) => {
-							await onUpdateSprintTickets()
-							// filter out the selected backlog tickets
-							setItemIds(itemIds.filter((obj) => obj.type !== "backlog"))
-							// if the current pagination page no longer has any items due to being removed, 
-							// go back to the previous page
-							// this will re-trigger a query to grab the previous page of results
-							if (boardTicketData?.pagination.prevPage){
-								setBacklogPage(boardTicketData?.pagination.prevPage)
-							}
-						}} />
-						: null
-					}
-					{
-						sprintTickets.length && !sprint?.isCompleted ? 
-						<LoadingButton isLoading={isDeleteTicketsLoading} text={`Remove ${sprintTickets.length} ticket(s) from Sprint`} onClick={async (e) => {
-							await onDeleteSprintTickets()	
-							// filter out the selected sprint tickets
-							setItemIds(itemIds.filter((obj) => obj.type !== "sprint"))
-							// if the current pagination page no longer has any items due to being removed, 
-							// go back to the previous page
-							// this will re-trigger a query to grab the previous page of results
-							if (sprintTicketData?.data.length === 0 && sprintTicketData?.pagination.prevPage){
-								setSprintPage(sprintTicketData?.pagination.prevPage)
-							}
-						}} />
-						: null
-					}
-				</>
-			</BulkEditToolbar>
 			{
 				(isSprintLoading || !boardInfo) ? (
 					<LoadingSkeleton>

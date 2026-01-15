@@ -10,12 +10,12 @@ import { useUserProfileConfig } from "../../helpers/table-config/useUserProfileC
 import { LoadingSpinner } from "../../components/LoadingSpinner"
 import { USERS } from "../../helpers/routes"
 import { PaginationRow } from "../../components/page-elements/PaginationRow"
-import { BulkEditToolbar } from "../../components/page-elements/BulkEditToolbar"
 import { useForm, FormProvider } from "react-hook-form"
 import { getUserInitials, withUrlParams } from "../../helpers/functions"
 import { SearchBar } from "../../components/SearchBar"
 import { RowContentLoading } from "../../components/page-elements/RowContentLoading"
 import { Button } from "../../components/page-elements/Button"
+import { useBulkEditToolbar } from "../../contexts/BulkEditToolbarContext"
 
 type RegFormValues = {
 	regQuery: string
@@ -49,6 +49,7 @@ const UserForm = ({filters}: UserFormProps) => {
 
 	const registerOptions = {
 	}
+
 
 	const setUserProfPage = (page: number) => {
 		let pageUrl = `${USERS}?regPage=${regCurrentPage}&userPage=${page}`
@@ -123,9 +124,25 @@ const RegForm = ({filters}: RegFormProps) => {
 	const methods = useForm<RegFormValues>({defaultValues: preloadedValues})
 	const { register, handleSubmit, reset, watch, setValue, formState: {errors} } = methods
 	const regRequestConfig = useRegistrationRequestConfig(regSelectedIds, setRegSelectedIds, true)
+	const { registerToolbar, unregisterToolbar } = useBulkEditToolbar()
 
 	const registerOptions = {
 	}
+
+	useEffect(() => {
+		registerToolbar({
+			updateIds: (ids: Array<number>) => setRegSelectedIds(ids),
+			itemIds: regSelectedIds,
+			applyActionToAll: () => regRequestConfig.bulkEdit.approveAll(),
+			applyRemoveToAll: () => regRequestConfig.bulkEdit.denyAll(),
+			removeText: "Deny All",
+			actionText: "Approve All",
+		})
+
+		return () => {
+			unregisterToolbar()
+		}
+	}, [regSelectedIds])
 
 	const setRegRequestPage = (page: number) => {
 		let pageUrl = `${USERS}?regPage=${page}&userPage=${userCurrentPage}`
@@ -157,14 +174,6 @@ const RegForm = ({filters}: RegFormProps) => {
 					</FormProvider>
 				</div>
 				{errors?.regQuery ? <small className = "--text-alert">{errors?.regQuery?.message}</small> : null}
-				<BulkEditToolbar 
-					updateIds={(ids: Array<number>) => setRegSelectedIds(ids)} 
-					itemIds={regSelectedIds} 
-					applyActionToAll={() => regRequestConfig.bulkEdit.approveAll()} 
-					applyRemoveToAll={() => regRequestConfig.bulkEdit.denyAll()}
-					removeText={"Deny All"}
-					actionText = {"Approve All"}
-				/>
 				<Table 
 					tableKey={"reg-request"} 
 					itemIds={regSelectedIds} 

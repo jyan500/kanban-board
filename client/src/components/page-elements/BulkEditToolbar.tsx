@@ -16,15 +16,15 @@ type Props = {
 export const BulkEditToolbar = ({itemIds, applyActionToAll, applyRemoveToAll, actionText, removeText, updateIds, children}: Props) => {
 	return (
 		itemIds.length > 0 ? 
-		<div className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center tw-relative tw-border tw-w-full tw-gap-x-2 tw-p-4 tw-rounded-md tw-shadow">
-			<button onClick={() => {
+		<div className = "tw-pl-6 tw-pr-6 tw-py-4 tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-flex-nowrap tw-relative tw-gap-x-2 tw-w-full">
+			<button className = "tw-mr-0.5 tw-mt-0.5 tw-absolute tw-right-0 tw-top-0" onClick={() => {
 				updateIds([])
 			}
 			}>
-				<IoMdClose className = "icon close-button"/>
+				<IoMdClose className = "icon"/>
 			</button>
-			<div><p className = "tw-font-bold tw-text-lg">{itemIds.length} Selected</p></div>
-			<div className = "tw-flex tw-flex-row tw-gap-x-2">
+			<div className="tw-whitespace-nowrap"><p className = "tw-font-bold tw-text-lg">{itemIds.length} Selected</p></div>
+			<div className = "tw-flex tw-flex-row tw-flex-nowrap tw-gap-x-2">
 				{children}
 				<Button theme="secondary" onClick={(e) => updateIds([])}>Unselect All</Button>
 				{
