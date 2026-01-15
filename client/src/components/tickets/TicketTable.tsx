@@ -121,7 +121,11 @@ export const TicketTable = ({
 			registerToolbar({
 				itemIds: selectedIds,
 				updateIds: (ids: Array<number>) => setSelectedIds(ids),
-				applyActionToAll: bulkEditAction ? bulkEditAction : undefined,
+				applyActionToAll: bulkEditAction ? () => {
+					bulkEditAction(selectedIds)
+					unregisterToolbar()
+					setSelectedIds([])
+				} : undefined,
 				actionText: bulkEditAction ? "Bulk Edit" : undefined,
 				children: (
 					<>
@@ -136,7 +140,7 @@ export const TicketTable = ({
 		return () => {
 			unregisterToolbar()
 		}
-	}, [selectedIds, bulkEditAction, isLoading, data?.data, boardId, registerToolbar, unregisterToolbar, setSelectedIds, selectCurrentPageIds, unselectCurrentPageIds])
+	}, [selectedIds])
 
 	// if the bulkEditAction is defined, that means we're coming from the board table instead of the bulk actions form
 	const config = useBoardTicketConfig(true, selectedIds, setSelectedIds, bulkEditAction != undefined)
