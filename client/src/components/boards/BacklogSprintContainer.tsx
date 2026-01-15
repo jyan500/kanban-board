@@ -158,6 +158,8 @@ export const BacklogSprintContainer = ({sprint, isSprintLoading}: Props) => {
 							}))
 							dispatch(toggleShowModal(true))
 						}
+						unregisterToolbar()
+						setItemIds([])
 					}} >Edit Tickets</Button>
 					{
 						backlogTickets.length && sprint && !sprint.isCompleted ?
@@ -196,7 +198,7 @@ export const BacklogSprintContainer = ({sprint, isSprintLoading}: Props) => {
 		return () => {
 			unregisterToolbar()
 		}
-	}, [itemIds, backlogTickets, sprint, sprintTickets, boardTicketData, sprintTicketData])
+	}, [itemIds])
 	// in order for ease of use with the existing bulk edit toolbar, track a "combined" array of both 
 	// selected backlog and sprint tickets
 	const setId = (id: number, type: "sprint" | "backlog", items: Array<BacklogBulkItem>, setter: (items: Array<BacklogBulkItem>) => void) => {
