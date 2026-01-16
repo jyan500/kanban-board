@@ -26,6 +26,7 @@ import { Button } from "../../components/page-elements/Button"
 import { IconFilter } from "../../components/icons/IconFilter"
 import { useBulkEditToolbar } from "../../contexts/BulkEditToolbarContext"
 import { FilterButton } from "../../components/page-elements/FilterButton"
+import { useFilterSync } from "../../hooks/useFilterSync"
 
 export type FormValues = {
 	searchBy: string
@@ -87,39 +88,38 @@ export const Notifications = ({fromDashboard}: Props) => {
 	const registerOptions = {
 	}
 
-	/* when filters are changed, add to search params */
-	useEffect(() => {
-        if (!fromDashboard){
-            const parsedValues = Object.fromEntries(
-                Object.entries(filters).map(([key, value]) => [key, value === null ? "" : value])
-            ) as FormValues
-            setSearchParams(prev => ({
-                ...Object.fromEntries(prev),
-                ...parsedValues,
-                page: "1",
-            }))
-        }
-	}, [fromDashboard, filters])
+	// Default filters object for resetting
+	const defaultFilters: NotificationFilters = {
+		notificationType: null,
+		userId: null,
+		dateFrom: null,
+		dateTo: null,
+		isUnread: null,
+	}
 
-	// if there are any search params, add those to the filter
-	useEffect(() => {
-        if (!fromDashboard){
-            const filterKeys = Object.keys(filters) // adjust keys as needed for your filters
-            const filtersFromParams: Record<string, any> = {};
-            filterKeys.forEach((key) => {
-                if (searchParams.get(key)){
-                    const value = searchParams.get(key) 
-                    filtersFromParams[key] = value !== "" ? value : null
-                }
-            })
-            if (Object.keys(filtersFromParams).length > 0) {
-                dispatch(setFilters({
-                    ...filters,
-                    ...filtersFromParams
-                }));
-            }
-        }
-	}, [fromDashboard, searchParams])
+	// Parse filter value from URL string - userId is number, others are string
+	const parseFilterValue = (key: string, value: string): any => {
+		if (value === "") {
+			return null
+		}
+		if (key === 'userId') {
+			const numValue = Number(value)
+			return isNaN(numValue) ? null : numValue
+		}
+		return value
+	}
+
+	// Use the custom hook to sync filters with URL
+	useFilterSync({
+		filters,
+		defaultFilters,
+		setFiltersAction: setFilters,
+		searchParams,
+		setSearchParams,
+		parseFilterValue,
+		fromDashboard,
+		dispatch
+	})
 
 	useEffect(() => {
 		registerToolbar({
@@ -300,7 +300,13 @@ export const Notifications = ({fromDashboard}: Props) => {
                             />
                         </div>
                         :
-                        <Link to={NOTIFICATIONS}>See More Notifications</Link>
+                        <div>
+                            <Button onClick={() => {
+                                navigate(NOTIFICATIONS, {replace: true})
+                            }}>
+                                See More Notifications
+                            </Button>
+                        </div>
                     }
 				</>
 			)}
