@@ -19,6 +19,7 @@ import { TicketFilters, setFilters } from "../../slices/ticketFilterSlice"
 import { IconFilter } from "../../components/icons/IconFilter"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { setSecondaryModalProps, setSecondaryModalType, toggleShowSecondaryModal } from "../../slices/secondaryModalSlice"
+import { useFilterSync } from "../../hooks/useFilterSync"
 
 export type FormValues = {
 	searchBy: string
@@ -72,70 +73,35 @@ export const TicketDisplay = () => {
 	const registerOptions = {
 	}
 
-	// /* when filters are changed, add to search params */
-	useEffect(() => {
-		console.log("the filters have changed, we are setting the filters and adding to search params")
-		const newSearchParams = new URLSearchParams(searchParams)
-    
-		// Update or remove filter params based on their values
-		Object.entries(filters).forEach(([key, value]) => {
-			if (value === null) {
-				newSearchParams.delete(key)
-			} else {
-				newSearchParams.set(key, String(value))
-			}
-		})
-		
-		// Reset to page 1 when filters change
-		newSearchParams.set("page", "1")
-		
-		setSearchParams(newSearchParams, { replace: true })
+	// Default filters object for resetting
+	const defaultFilters: TicketFilters = {
+		ticketTypeId: null,
+		statusId: null,
+		priorityId: null,
+		boardId: null,
+		sprintId: null,
+		assignedToUser: null
+	}
 
-	}, [filters])
-
-	// on mount, reset all filters and pre-populate the filters based on URL search params 
-	useEffect(() => {
-			
-		// First, reset all filters
-		const resettedFilters: TicketFilters = {
-			ticketTypeId: null,
-			statusId: null,
-			priorityId: null,
-			boardId: null,
-			sprintId: null,
-			assignedToUser: null
+	// Parse filter value from URL string - all values are numbers
+	const parseFilterValue = (key: string, value: string): any => {
+		if (value === "") {
+			return null
 		}
-		
-		// Apply any filters from the incoming search params
-		const filterKeys = Object.keys(resettedFilters)
-		filterKeys.forEach((key) => {
-			const value = searchParams.get(key)
-			if (value) {
-				const numValue = Number(value)
-				resettedFilters[key as keyof TicketFilters] = value === "" ? null : (isNaN(numValue) ? value : numValue) as number
-			}
-		})
-		
-		// Update Redux with the new filters
-		dispatch(setFilters(resettedFilters))
-		
-		// Clean up the URL to only include the new filters plus search/page params
-		const newSearchParams = new URLSearchParams()
+		const numValue = Number(value)
+		return isNaN(numValue) ? null : numValue
+	}
 
-		// Keep non-filter params (searchBy, query, page)
-		if (searchParams.get("searchBy")) newSearchParams.set("searchBy", searchParams.get("searchBy") ?? "")
-		if (searchParams.get("query")) newSearchParams.set("query", searchParams.get("query") ?? "")
-		if (searchParams.get("page")) newSearchParams.set("page", searchParams.get("page") ?? "")
-		
-		// Add the new filter params
-		Object.entries(resettedFilters).forEach(([key, value]) => {
-			if (value !== null) {
-				newSearchParams.set(key, String(value))
-			}
-		})
-		
-		setSearchParams(newSearchParams, { replace: true })
-	}, [])
+	// Use the custom hook to sync filters with URL
+	useFilterSync({
+		filters,
+		defaultFilters,
+		setFiltersAction: setFilters,
+		searchParams,
+		setSearchParams,
+		parseFilterValue,
+		dispatch
+	})
 	
 	const onSubmit = (values: FormValues) => {
 		// replace any null values with ""

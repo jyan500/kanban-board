@@ -57,6 +57,7 @@ import { isBefore } from "date-fns"
 import { TicketActivityModalProps } from "./secondary-modals/TicketActivityModal"
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "./placeholders/RowPlaceholder"
+import { useTrackRecentlyViewed } from "../hooks/useTrackRecentlyViewed";
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -186,6 +187,13 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
 	const priorityName = priorities.find((priority) => priority.id === watch("priorityId"))?.name
 
+	useTrackRecentlyViewed({
+		type: "ticket",
+		id: currentTicketId,
+		name: ticket?.name,
+		enabled: ticket != null
+	})
+
 	const toggleFieldVisibility = (field: string, flag: boolean) => {
 		toggleHelper(field, flag, editFieldVisibility, setEditFieldVisibility)
 	}
@@ -262,8 +270,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 				// the user is unassigning, delete the assignees from the ticket
 				if (assigneeId === 0 && ticketAssignees?.[0]?.id){
 					await deleteTicketAssignee({ticketId: values.id, userId: ticketAssignees[0].id, isWatcher: false}).unwrap()
-					// notify the user that they are unassigned from the ticket
-					if (unassignedNotificationType && userProfile){
+					// notify the user that they are unassigned from the ticket (unless the logged in user is unassigned themselves)
+					if (unassignedNotificationType && userProfile && userProfile.id !== ticketAssignees[0].id){
 						await addNotification({
 							recipientId: ticketAssignees[0].id,
 							senderId: userProfile.id,

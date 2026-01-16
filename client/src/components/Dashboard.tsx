@@ -31,6 +31,8 @@ import { SwitchOrganizationForm } from "./forms/SwitchOrganizationForm"
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
 import { RowContentLoading } from "./page-elements/RowContentLoading"
 import { RowPlaceholder } from "./placeholders/RowPlaceholder"
+import { RecentlyViewed } from "./page-elements/RecentlyViewed"
+import { Notifications } from "./notifications/Notifications"
 
 type DashboardSectionProps = {
 	title: string
@@ -211,6 +213,14 @@ export const Dashboard = () => {
 							<RowPlaceholder/>	
 						</LoadingSkeleton>
 					}
+				</div>
+			</div>
+			<div className = "tw-flex lg:tw-flex-row tw-flex-col tw-gap-y-4 tw-w-full lg:tw-gap-x-4">
+				<div className = "tw-w-full lg:tw-w-1/2">
+					<RecentlyViewed minHeight={"tw-h-96"}/>
+				</div>
+				<div className = "tw-w-full lg:tw-w-1/2 tw-shadow-sm tw-rounded-md tw-border-gray-200 tw-border tw-p-2 lg:tw-p-4">
+					<Notifications fromDashboard={true}/>
 				</div>
 			</div>
 		</div>

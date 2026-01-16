@@ -35,6 +35,7 @@ import { IconTable } from "../../components/icons/IconTable"
 import { IconBacklog } from "../../components/icons/IconBacklog"
 import { IconClock } from "../../components/icons/IconClock"
 import { IconBars } from "../../components/icons/IconBars"
+import { useTrackRecentlyViewed } from "../../hooks/useTrackRecentlyViewed"
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
@@ -203,6 +204,13 @@ export const Board = () => {
 		])
 	]
 
+	
+	useTrackRecentlyViewed({
+		type: "board",
+		id: boardId,
+		name: boardData?.[0]?.name,
+		enabled: !isGetBoardLoading && boardData != null
+	})
 
 	return (
 		<div className = "tw-space-y-2">
