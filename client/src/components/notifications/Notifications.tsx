@@ -302,7 +302,7 @@ export const Notifications = ({fromDashboard}: Props) => {
                         :
                         <div>
                             <Button onClick={() => {
-                                navigate(NOTIFICATIONS, {replace: true})
+                                navigate(NOTIFICATIONS)
                             }}>
                                 See More Notifications
                             </Button>
