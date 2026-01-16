@@ -10,6 +10,7 @@ import { formatDistanceToNow } from "date-fns"
 import { IconArrowLeft } from "../icons/IconArrowLeft"
 import { IconArrowRight } from "../icons/IconArrowRight"
 import { setSourceMapRange } from "typescript"
+import { PaginationButtonRow } from "./PaginationButtonRow"
 
 interface Props {
     minHeight?: string
@@ -122,18 +123,12 @@ export const RecentlyViewed = ({minHeight}: Props) => {
             </div>
             {
                 totalPages > 1 ? 
-                <div className = "tw-flex tw-flex-row tw-gap-x-2">
-                    <button disabled={page === 1} className={`tw-w-5 tw-h-5 ${page === 1 ? "tw-opacity-30" : ""}`} onClick={() => {
-                        if (page >= 1){
-                            setPage(page-1)
-                        }
-                    }}><IconArrowLeft/></button>
-                    <button disabled={page === totalPages} className = {`tw-w-5 tw-h-5 ${page === totalPages ? "tw-opacity-30" : ""}`} onClick={() => {
-                        if (page < totalPages){
-                            setPage(page+1)
-                        }
-                    }}><IconArrowRight/></button>
-                </div>
+                <PaginationButtonRow
+                    isDisabledNext={page === totalPages}
+                    isDisabledPrev={page === 1}
+                    nextHandler={() => setPage(page+1)}
+                    prevHandler={() => setPage(page-1)}
+                />
                 : null
             }
         </div>

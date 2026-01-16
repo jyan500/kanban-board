@@ -8,6 +8,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button = React.forwardRef<HTMLButtonElement, Props>(({theme="secondary", children, className, ...props}, ref) => {
     const themes = {
+        "default": "",
         "secondary": "tw-border-gray-300 tw-text-gray-700 tw-bg-white hover:tw-bg-gray-50",
         "primary": "tw-border-primary tw-text-gray-50 tw-bg-primary hover:tw-bg-blue-700",
         "alert": "tw-border-danger tw-text-gray-50 tw-bg-danger hover:tw-bg-red-700",

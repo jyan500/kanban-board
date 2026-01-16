@@ -43,6 +43,7 @@ import { CalendarSprintContainer } from './CalendarSprintContainer'
 import { v4 as uuidv4 } from "uuid"
 import { LG_BREAKPOINT } from '../../helpers/constants'
 import { addToast } from '../../slices/toastSlice'
+import { PaginationButtonRow } from '../page-elements/PaginationButtonRow'
 
 interface Props {
     currentDate: Date
@@ -323,7 +324,7 @@ export const CalendarContainer = ({
                         <h2 className="tw-text-xl tw-font-semibold">
                             {generateHeader()}
                         </h2>
-                        <div className="tw-flex tw-flex-row tw-items-center tw-gap-2">
+                        {/* <div className="tw-flex tw-flex-row tw-items-center tw-gap-2">
                             <button
                                 onClick={() => changeMonth(-1)}
                                 className="tw-p-2 hover:tw-bg-gray-100 tw-rounded"
@@ -336,7 +337,13 @@ export const CalendarContainer = ({
                             >
                                 <IconArrowRight className="tw-w-5 tw-h-5" />
                             </button>
-                        </div>
+                        </div> */}
+                        <PaginationButtonRow
+                            nextHandler={() => changeMonth(1)}
+                            prevHandler={() => changeMonth(-1)}
+                            isDisabledPrev={false}
+                            isDisabledNext={false}
+                        />
                     </div>
                     <FormProvider {...methods}>
                         <CalendarContainerSearchBar
