@@ -31,11 +31,21 @@ export const trackViewedItem = (type: string, id: number, name: string) => {
 }
 
 // Get recently viewed items
-export const getRecentlyViewed = (limit: number=10): Array<ViewedItem> => {
+export const getRecentlyViewed = (page: number=1, limit: number=10): Array<ViewedItem> => {
     const items: Array<ViewedItem> = JSON.parse(
         localStorage.getItem(STORAGE_KEY) || "[]"
     )    
-    return items.slice(0, limit)
+    const startIndex = (page * limit) - limit
+    const endIndex = (page * limit)
+    return items.slice(startIndex, endIndex)
+}
+
+// get total pages
+export const getTotalPages = (limit: number=10) => {
+    const items: Array<ViewedItem> = JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || "[]"
+    )    
+    return Math.ceil(items.length/limit)
 }
 
 // Clear all recently viewed items

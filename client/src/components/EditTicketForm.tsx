@@ -270,8 +270,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 				// the user is unassigning, delete the assignees from the ticket
 				if (assigneeId === 0 && ticketAssignees?.[0]?.id){
 					await deleteTicketAssignee({ticketId: values.id, userId: ticketAssignees[0].id, isWatcher: false}).unwrap()
-					// notify the user that they are unassigned from the ticket
-					if (unassignedNotificationType && userProfile){
+					// notify the user that they are unassigned from the ticket (unless the logged in user is unassigned themselves)
+					if (unassignedNotificationType && userProfile && userProfile.id !== ticketAssignees[0].id){
 						await addNotification({
 							recipientId: ticketAssignees[0].id,
 							senderId: userProfile.id,

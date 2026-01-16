@@ -107,9 +107,9 @@ export const BulkActionsForm = ({boardId, initStep=1, initSelectedIds=[]}: Props
 			await bulkEditTickets({ticketIds: selectedIds, priorityId, statusId, userIds: assigneeId != null ? [assigneeId] : []}).unwrap()
 			// no need to send the notification if you're assigning the tickets to yourself
 			if (userProfile && assigneeId === 0 && unassignedNotificationType && selectedTickets){
-				// notify the user that they are unassigned from the ticket
+				// notify the user that they are unassigned from the ticket, unless the logged in user is unassigning themselves
 				const notifications = selectedTickets.map((ticket) => {
-					if (ticket.assignees?.[0]?.id){
+					if (ticket.assignees?.[0]?.id && ticket.assignees?.[0]?.id !== userProfile.id){
 						return {
 							recipientId: ticket.assignees[0].id,
 							senderId: userProfile.id,

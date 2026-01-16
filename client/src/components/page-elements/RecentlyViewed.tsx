@@ -1,39 +1,66 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Link } from "react-router-dom"
-import { getRecentlyViewed } from "../../helpers/recentlyViewed" 
+import { getRecentlyViewed, getTotalPages } from "../../helpers/recentlyViewed" 
 import { ViewedItem } from "../../types/common"
 import { BOARDS, SPRINTS, TICKETS } from "../../helpers/routes"
 import { IconTicket } from "../icons/IconTicket"
 import { IconBoard } from "../icons/IconBoard"
 import { IconClock } from "../icons/IconClock"
 import { formatDistanceToNow } from "date-fns"
+import { IconArrowLeft } from "../icons/IconArrowLeft"
+import { IconArrowRight } from "../icons/IconArrowRight"
+import { setSourceMapRange } from "typescript"
 
-export const RecentlyViewed = () => {
+interface Props {
+    minHeight?: string
+}
+
+export const RecentlyViewed = ({minHeight}: Props) => {
     const [recentItems, setRecentItems] = useState<Array<ViewedItem>>([])
+    const [totalPages, setTotalPages] = useState(0)
+    const [page, setPage] = useState(1)
+    const PER_PAGE = 5
+    const [_, setCurrentDate] = useState(new Date())
 
     useEffect(() => {
         // Load items from local storage
-        const items = getRecentlyViewed(5)
+        const items = getRecentlyViewed(page, PER_PAGE)
+        const totalPages = getTotalPages(PER_PAGE)
         setRecentItems(items)
+        setTotalPages(totalPages)
 
         // Listen for storage changes across multiple tabs
         const handleStorageChange = () => {
-            const updatedItems = getRecentlyViewed(5)
+            const updatedItems = getRecentlyViewed(page, PER_PAGE)
+            const updatedPages = getTotalPages(PER_PAGE)
             setRecentItems(updatedItems)
+            setTotalPages(updatedPages)
         }
 
         window.addEventListener("storage", handleStorageChange)
         // listen for custom event when items are tracked
         window.addEventListener("recentlyViewedUpdated", handleStorageChange)
 
+        const timeInterval = setInterval(() => {
+            setCurrentDate(new Date())
+        }, 60000)
+
         return () => {
             window.removeEventListener("storage", handleStorageChange)
             window.removeEventListener("recentlyViewedUpdated", handleStorageChange)
+            clearInterval(timeInterval)
         }
 
     }, [])
 
-    const getItemLink = (item: ViewedItem) => {
+    useEffect(() => {
+        const items = getRecentlyViewed(page, PER_PAGE)
+        const totalPages = getTotalPages(PER_PAGE)
+        setRecentItems(items)
+        setTotalPages(totalPages)
+    }, [page])
+
+    const getItemLink = useCallback((item: ViewedItem) => {
         switch (item.type){
             case "ticket":
                 return `${TICKETS}/${item.id}`
@@ -44,18 +71,18 @@ export const RecentlyViewed = () => {
             default:
                 return "#"
         }
-    }
+    }, [recentItems])
 
-    const getItemIcon = (type: string) => {
+    const getItemIcon = useCallback((type: string) => {
         switch (type){
             case "ticket":
-                return <IconTicket/>
+                return <IconTicket className = "tw-w-5 tw-h-5"/>
             case "board":
-                return <IconBoard/>
+                return <IconBoard className = "tw-w-5 tw-h-5"/>
             case "sprint":
-                return <IconClock/>
+                return <IconClock className = "tw-w-5 tw-h-5"/>
         }
-    }
+    }, [recentItems])
 
     const formatTimeAgo = (date: Date) => {
         // takes the current time and subtracts it with the 
@@ -73,7 +100,8 @@ export const RecentlyViewed = () => {
     return (
         <div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
             <h2>Recently Viewed</h2>
-            <div className = "tw-flex tw-flex-col tw-gap-y-2">
+
+            <div className = {`${recentItems.length >= 1 && minHeight ? minHeight : ""} tw-flex tw-flex-col tw-gap-y-2`}>
                 {
                     recentItems.map((item) => {
                         return (
@@ -83,7 +111,7 @@ export const RecentlyViewed = () => {
                                 className = "tw-flex tw-items-center tw-p-3 tw-rounded-md hover:tw-bg-gray-50 tw-transition-colors tw-duration-200 tw-no-underline tw-text-inherit"
                             >
                                 <span className = "tw-text-xl tw-mr-3">{getItemIcon(item.type)}</span>
-                                <div className = "tw-flex tw-flex-col tw-flex-1">
+                                <div className = "tw-flex tw-flex-col tw-line-clamp-1">
                                     <span className = "tw-font-medium tw-text-gray-900">{item.name}</span>
                                     <span className = "tw-text-xs tw-text-gray-500 tw-mt-0.5">{formatTimeAgo(item.viewedAt)}</span>
                                 </div>
@@ -92,6 +120,22 @@ export const RecentlyViewed = () => {
                     })
                 }
             </div>
+            {
+                totalPages > 1 ? 
+                <div className = "tw-flex tw-flex-row tw-gap-x-2">
+                    <button disabled={page === 1} className={`tw-w-5 tw-h-5 ${page === 1 ? "tw-opacity-30" : ""}`} onClick={() => {
+                        if (page >= 1){
+                            setPage(page-1)
+                        }
+                    }}><IconArrowLeft/></button>
+                    <button disabled={page === totalPages} className = {`tw-w-5 tw-h-5 ${page === totalPages ? "tw-opacity-30" : ""}`} onClick={() => {
+                        if (page < totalPages){
+                            setPage(page+1)
+                        }
+                    }}><IconArrowRight/></button>
+                </div>
+                : null
+            }
         </div>
     )
 
