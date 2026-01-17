@@ -1,7 +1,7 @@
 import React, {useState} from "react"
 import { Ticket } from "../types/common"
 import { priorityIconMap, PriorityIcon, TicketTypeIcon } from "./Ticket" 
-import { PRIORITY_COLOR_MAP } from "../helpers/constants"
+import { LG_BREAKPOINT, PRIORITY_COLOR_MAP } from "../helpers/constants"
 import { CgProfile } from "react-icons/cg"
 import { IconContext } from "react-icons"
 import { useAppSelector } from "../hooks/redux-hooks"
@@ -43,6 +43,11 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 	const dueDateWithinOneWeek = parsedDueDate ? isSameWeek(parsedDueDate, new Date(),{ weekStartsOn: 1 }) && !dueDatePassed : false
 	const showDueDateBadge = () => {
 		if (parsedDueDate && (dueDatePassed || dueDateWithinOneWeek)){
+			if (width <= LG_BREAKPOINT){
+				return (
+					<div className = {`tw-w-1.5 tw-h-1.5 ${dueDatePassed ? "tw-bg-red-500" : "tw-bg-amber-500"} tw-rounded-full`}></div>
+				)
+			}
 			return (
 				<div className = {`tw-p-1 tw-text-nowrap tw-flex tw-flex-row tw-items-center tw-gap-x-2`}>
 					<div className = {`tw-w-1.5 tw-h-1.5 ${dueDatePassed ? "tw-bg-red-500" : "tw-bg-amber-500"} tw-rounded-full`}></div>

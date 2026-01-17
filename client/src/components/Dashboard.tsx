@@ -140,7 +140,7 @@ export const Dashboard = () => {
 		}
 		else {
 			setWatchSearchParams({
-				...assignedSearchParams,
+				...watchSearchParams,
 				sortBy: sortAttribute,
 				order: sortDirection,
 				page: 1,
