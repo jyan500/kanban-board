@@ -12,11 +12,7 @@ import { IconArrowRight } from "../icons/IconArrowRight"
 import { setSourceMapRange } from "typescript"
 import { PaginationButtonRow } from "./PaginationButtonRow"
 
-interface Props {
-    minHeight?: string
-}
-
-export const RecentlyViewed = ({minHeight}: Props) => {
+export const RecentlyViewed = () => {
     const [recentItems, setRecentItems] = useState<Array<ViewedItem>>([])
     const [totalPages, setTotalPages] = useState(0)
     const [page, setPage] = useState(1)
@@ -99,10 +95,10 @@ export const RecentlyViewed = ({minHeight}: Props) => {
     }
 
     return (
-        <div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
+        <div className = "tw-relative tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
             <h2>Recently Viewed</h2>
 
-            <div className = {`${recentItems.length >= 1 && minHeight ? minHeight : ""} tw-flex tw-flex-col tw-gap-y-2`}>
+            <div className = {`tw-flex tw-flex-col tw-gap-y-2 sm:tw-min-h-96 `}>
                 {
                     recentItems.map((item) => {
                         return (
@@ -121,6 +117,7 @@ export const RecentlyViewed = ({minHeight}: Props) => {
                     })
                 }
             </div>
+            <div className = {`lg:tw-absolute lg:tw-bottom-0 lg:tw-left-0 lg:tw-ml-2 lg:tw-mb-2`}>
             {
                 totalPages > 1 ? 
                 <PaginationButtonRow
@@ -131,6 +128,7 @@ export const RecentlyViewed = ({minHeight}: Props) => {
                 />
                 : null
             }
+            </div>
         </div>
     )
 

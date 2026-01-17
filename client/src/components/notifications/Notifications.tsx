@@ -67,10 +67,6 @@ export const Notifications = ({fromDashboard}: Props) => {
 		query: searchParams.get("query") ?? "",
 		page: searchParams.get("page") ?? 1,
 		perPage: fromDashboard ? 10 : 30,
-        ...(fromDashboard ? {
-            dateFrom: new Date().toLocaleDateString("en-CA"),
-            dateTo: new Date().toLocaleDateString("en-CA"),
-        } : {})
 	})
 	const pageParam = (searchParams.get("page") != null && searchParams.get("page") !== "" ? searchParams.get("page") : "") as string
 	const currentPage = pageParam !== "" ? parseInt(pageParam) : 1
