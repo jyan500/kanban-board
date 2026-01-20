@@ -5,6 +5,7 @@ import BoardImage from "../assets/images/landing-page/board.png"
 import { useScreenSize } from '../hooks/useScreenSize';
 import { ImageOverlay } from './page-elements/ImageOverlay';
 import { LG_BREAKPOINT } from '../helpers/constants';
+import { FADE_ANIMATION } from '../helpers/constants';
 
 interface Feature {
 	id: number
@@ -34,36 +35,33 @@ interface FeatureCardProps {
 }
 
 const FeatureCard = ({id, header, description, imageURL, imageOnRight, onClick}: FeatureCardProps) => {
+    const headerCard = (
+        <div>
+            <SubHeader>{header}</SubHeader>
+            <p className="tw-text-lg tw-text-gray-600 tw-leading-relaxed tw-mb-6">
+                {description}
+            </p>
+        </div>
+    )
+    const image = (
+        <div className={`${FADE_ANIMATION} tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg hover:tw-opacity-60`}>
+            <button onClick={() => onClick(id)} className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
+                <img src={imageURL} alt={description} className="tw-relative tw-object-cover tw-w-full tw-rounded-lg" />
+            </button>
+        </div>
+    )
     return (
         <section className="tw-max-w-7xl tw-mx-auto tw-px-6 tw-my-32">
             <div className="tw-grid md:tw-grid-cols-2 tw-gap-16 tw-items-center">
                 {imageOnRight ? (
                     <>                    
-                        <div>
-                            <SubHeader>{header}</SubHeader>
-                            <p className="tw-text-lg tw-text-gray-600 tw-leading-relaxed tw-mb-6">
-                                {description}
-                            </p>
-                        </div>
-                        <div className="tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg tw-shadow-blue-600/10">
-                            <button onClick={() => onClick(id)} className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
-                                <img src={imageURL} alt={description} className="tw-relative tw-object-cover tw-w-full tw-rounded-lg" />
-                            </button>
-                        </div>
+                        {headerCard}
+                        {image}
                     </>
                 ) : (
                     <>                    
-                        <div className="tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg tw-shadow-blue-600/10">
-                            <button onClick={() => onClick(id)}className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
-                                <img src={imageURL} alt={description} className="tw-relative tw-object-cover tw-w-full tw-rounded-lg" />
-                            </button>
-                        </div>
-                        <div>
-                            <SubHeader>{header}</SubHeader>
-                            <p className="tw-text-lg tw-text-gray-600 tw-leading-relaxed tw-mb-6">
-                                {description}
-                            </p>
-                        </div>
+                        {image}
+                        {headerCard}
                     </>
                 )}
 
