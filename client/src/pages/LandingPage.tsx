@@ -21,6 +21,7 @@ import MentionsImage from "../assets/images/landing-page/mentions.png"
 import NotificationsImage from "../assets/images/landing-page/notifications.png"
 import SettingsImage from "../assets/images/landing-page/organization-settings.png"
 import RTEImage from "../assets/images/landing-page/rich-text-editing.png"
+import { UpdatedLandingPage } from "../components/UpdatedLandingPage"
 
 interface Feature {
 	id: number
@@ -163,50 +164,53 @@ export const LandingPage = () => {
 	})
 	const scrollToRef = useRef<HTMLDivElement | null>(null)
 	return (
-        <main className="tw-px-6 tw-py-16">
-            <div ref={scrollToRef} className="tw-max-w-4xl tw-mx-auto tw-text-center">
-                <h2 className="tw-text-4xl tw-font-bold tw-mb-4">Project Management Made Easy</h2>
-                <p className="tw-text-lg tw-text-gray-600 tw-mb-4">
-                    Kanban helps startups and small teams stay agile without the overhead.
-                </p>
-                <button onClick={() => navigate(REGISTER)} className = {`${FADE_ANIMATION} hover:tw-opacity-60 tw-border-gray-300 tw-border tw-inline-block tw-p-2 tw-tw-text-lg tw-text-gray-600 tw-font-bold tw-mb-10`}>Get Started</button>
-            </div>
-            {
-            	width >= LG_BREAKPOINT ? 
-	            <MultiCardCarousel setShowImageOverlay={setShowImageOverlay} index={carouselIndex} items={createImageCarouselElements(features.map((feature: Feature) => {
-					return {
-						id: feature.id,
-						title: feature.title,
-						imageURL: feature.imageURL,
-						description: feature.description
-					}
-				}))} itemsPerPage={1}/>
-				: null
-            }
+        // <main className="tw-px-6 tw-py-16">
+        //     <div ref={scrollToRef} className="tw-max-w-4xl tw-mx-auto tw-text-center">
+        //         <h2 className="tw-text-4xl tw-font-bold tw-mb-4">Project Management Made Easy</h2>
+        //         <p className="tw-text-lg tw-text-gray-600 tw-mb-4">
+        //             Kanban helps startups and small teams stay agile without the overhead.
+        //         </p>
+        //         <button onClick={() => navigate(REGISTER)} className = {`${FADE_ANIMATION} hover:tw-opacity-60 tw-border-gray-300 tw-border tw-inline-block tw-p-2 tw-tw-text-lg tw-text-gray-600 tw-font-bold tw-mb-10`}>Get Started</button>
+        //     </div>
+        //     {
+        //     	width >= LG_BREAKPOINT ? 
+	    //         <MultiCardCarousel setShowImageOverlay={setShowImageOverlay} index={carouselIndex} items={createImageCarouselElements(features.map((feature: Feature) => {
+		// 			return {
+		// 				id: feature.id,
+		// 				title: feature.title,
+		// 				imageURL: feature.imageURL,
+		// 				description: feature.description
+		// 			}
+		// 		}))} itemsPerPage={1}/>
+		// 		: null
+        //     }
 
-            <div className="tw-grid md:tw-grid-cols-2 tw-gap-6 tw-max-w-5xl tw-mx-auto">
-                {features.map((feature) => (
-                    <Card disabled={width < LG_BREAKPOINT} key={`feature_${feature.id}`} className="tw-p-4" onClick={() => {
-                    	setCarouselIndex(feature.id-1)
-                    	scrollToRef?.current?.scrollIntoView({ behavior: 'smooth' })
-                    }}>
-                        <CardContent className="tw-flex tw-flex-col tw-gap-4 tw-items-center tw-justify-center">
-                        	<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-justify-center tw-items-start">
-	                            {feature.icon}
-	                            <h3 className="tw-mt-0 tw-text-xl tw-font-semibold tw-mb-1">{feature.title}</h3>
-                            </div>
-                            <div>
-                                <p className="tw-text-sm tw-text-gray-600">{feature.description}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-            {
-            	width >= LG_BREAKPOINT ? 
-	            <ImageOverlay imageUrl={features.find((feature: Feature) => feature.id === showImageOverlay.index + 1)?.imageURL ?? ""} isOpen={showImageOverlay.show} onClose={() => setShowImageOverlay({index: showImageOverlay.index, show: false})}/>
-	            : null
-            }
-        </main>
+        //     <div className="tw-grid md:tw-grid-cols-2 tw-gap-6 tw-max-w-5xl tw-mx-auto">
+        //         {features.map((feature) => (
+        //             <Card disabled={width < LG_BREAKPOINT} key={`feature_${feature.id}`} className="tw-p-4" onClick={() => {
+        //             	setCarouselIndex(feature.id-1)
+        //             	scrollToRef?.current?.scrollIntoView({ behavior: 'smooth' })
+        //             }}>
+        //                 <CardContent className="tw-flex tw-flex-col tw-gap-4 tw-items-center tw-justify-center">
+        //                 	<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-justify-center tw-items-start">
+	    //                         {feature.icon}
+	    //                         <h3 className="tw-mt-0 tw-text-xl tw-font-semibold tw-mb-1">{feature.title}</h3>
+        //                     </div>
+        //                     <div>
+        //                         <p className="tw-text-sm tw-text-gray-600">{feature.description}</p>
+        //                     </div>
+        //                 </CardContent>
+        //             </Card>
+        //         ))}
+        //     </div>
+        //     {
+        //     	width >= LG_BREAKPOINT ? 
+	    //         <ImageOverlay imageUrl={features.find((feature: Feature) => feature.id === showImageOverlay.index + 1)?.imageURL ?? ""} isOpen={showImageOverlay.show} onClose={() => setShowImageOverlay({index: showImageOverlay.index, show: false})}/>
+	    //         : null
+        //     }
+        // </main>
+		<main className = "tw-w-full">
+			<UpdatedLandingPage/>
+		</main>
 	)
 }
