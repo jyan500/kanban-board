@@ -12,7 +12,7 @@ const DefaultLayout = () => {
 	return (
 		<div className = "tw-min-h-screen tw-text-gray-900">
 			<Header/>
-			<div className = "tw-min-h-[76vh] tw-w-full tw-bg-gray-50 tw-shadow-md">
+			<div className = "tw-min-h-[87vh] tw-w-full tw-bg-gray-50 tw-shadow-md">
 				<Outlet/>
 			</div>
 			<Footer/>

@@ -44,7 +44,7 @@ const FeatureCard = ({id, header, description, imageURL, imageOnRight, onClick}:
         </div>
     )
     const image = (
-        <div className={`${FADE_ANIMATION} tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg hover:tw-opacity-60`}>
+        <div className={`tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg tw-transition-all hover:-tw-translate-y-0.5 tw-shadow-lg hover:tw-shadow-xl hover:tw-shadow-blue-600/40`}>
             <button onClick={() => onClick(id)} className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
                 <img src={imageURL} alt={description} className="tw-relative tw-object-cover tw-w-full tw-rounded-lg" />
             </button>
@@ -104,27 +104,6 @@ export const UpdatedLandingPage = () => {
 
     return (
         <div className="tw-min-h-screen tw-text-gray-900">
-            {/* Navigation */}
-            {/* <nav className="tw-fixed tw-top-0 tw-w-full tw-bg-white/80 tw-backdrop-blur-md tw-border-b tw-border-gray-100 tw-z-50">
-                <div className="tw-max-w-7xl tw-mx-auto tw-px-6 tw-py-4 tw-flex tw-justify-between tw-items-center">
-                    <div className="tw-flex tw-items-center tw-gap-2 tw-text-xl tw-font-semibold tw-text-blue-600">
-                        <svg className="tw-w-6 tw-h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                        </svg>
-                        Kanban
-                    </div>
-                    <div className="tw-flex tw-gap-8 tw-items-center">
-                        <a href="#" className="tw-text-gray-600 hover:tw-text-blue-600 tw-transition-colors tw-text-sm">Login</a>
-                        <a href="#" className="tw-bg-blue-600 tw-text-white tw-px-5 tw-py-2 tw-rounded-lg hover:tw-bg-blue-700 tw-transition-colors tw-text-sm tw-font-medium">
-                            Register
-                        </a>
-                    </div>
-                </div>
-            </nav> */}
-
             {/* Hero Section */}
             <section className="tw-pt-48 tw-pb-16 tw-px-6 tw-text-center tw-bg-gradient-to-b tw-from-blue-100 tw-to-gray-50">
                 <div className="tw-max-w-4xl tw-mx-auto">
@@ -140,7 +119,7 @@ export const UpdatedLandingPage = () => {
                 </div>
             </section>
 
-            {/* Feature Showcase 1 */}
+            {/* Feature Showcase */}
             {features.map((feature: Feature, index: number) => {
                 return (
                     <div key={`feature-section-${feature.id}`}>
