@@ -1,6 +1,109 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import MentionsImage from "../assets/images/landing-page/mentions.png"
+import BacklogImage from "../assets/images/landing-page/backlog.png"
+import BoardImage from "../assets/images/landing-page/board.png"
+import { useScreenSize } from '../hooks/useScreenSize';
+import { ImageOverlay } from './page-elements/ImageOverlay';
+import { LG_BREAKPOINT } from '../helpers/constants';
+
+interface Feature {
+	id: number
+	title: string
+	description: string
+	imageURL: string
+}
+
+interface SubHeaderProps {
+    textColor?: string
+    children?: React.ReactNode
+}
+
+const SubHeader = ({textColor="tw-text-gray-900", children}: SubHeaderProps) => {
+    return ( 
+        <h2 className={`tw-font-mono tw-text-5xl tw-font-bold tw-mb-4 ${textColor}`}>{children}</h2>
+    )
+}
+
+interface FeatureCardProps {
+    id: number
+    header?: string
+    description?: string
+    imageURL?: string
+    imageOnRight?: boolean
+    onClick: (id: number) => void
+}
+
+const FeatureCard = ({id, header, description, imageURL, imageOnRight, onClick}: FeatureCardProps) => {
+    return (
+        <section className="tw-max-w-7xl tw-mx-auto tw-px-6 tw-my-32">
+            <div className="tw-grid md:tw-grid-cols-2 tw-gap-16 tw-items-center">
+                {imageOnRight ? (
+                    <>                    
+                        <div>
+                            <SubHeader>{header}</SubHeader>
+                            <p className="tw-text-lg tw-text-gray-600 tw-leading-relaxed tw-mb-6">
+                                {description}
+                            </p>
+                        </div>
+                        <div className="tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg tw-shadow-blue-600/10">
+                            <button onClick={() => onClick(id)} className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
+                                <img src={imageURL} alt={description} className="tw-relative tw-object-cover tw-w-full tw-rounded-lg" />
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    <>                    
+                        <div className="tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg tw-shadow-blue-600/10">
+                            <button onClick={() => onClick(id)}className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
+                                <img src={imageURL} alt={description} className="tw-relative tw-object-cover tw-w-full tw-rounded-lg" />
+                            </button>
+                        </div>
+                        <div>
+                            <SubHeader>{header}</SubHeader>
+                            <p className="tw-text-lg tw-text-gray-600 tw-leading-relaxed tw-mb-6">
+                                {description}
+                            </p>
+                        </div>
+                    </>
+                )}
+
+            </div>
+        </section>
+    )
+}
 
 export const UpdatedLandingPage = () => {
+    const { width, height } = useScreenSize()
+	const [showImageOverlay, setShowImageOverlay] = useState<{index: number, show: boolean}>({
+		index: 0,
+		show: false
+	})
+
+    const features: Array<Feature> = [
+        {
+            id: 1,
+            title: "Manage projects end-to-end",
+            description: "Edit tickets with a sleek inline modal featuring rich text support. Make quick updates without losing context or breaking your flow.",
+            imageURL: BoardImage,
+        },
+        {
+            id: 2,
+            title: "Easy Issue Tracking",
+            description: "Organize work efficiently with parent-child and linked issues. Connect related tasks to see the full picture and manage dependencies effortlessly.",
+            imageURL: BacklogImage,
+        },
+        {
+            id: 3,
+            title: "Plan, Collaborate, Launch",
+            description: "Flexible board display with grouping and drag-and-drop statuses. Customize your workflow to match how your team actually works.",
+            imageURL: MentionsImage,
+        },
+    ]
+
+    const showFeatureImage = (featureId: number) => {
+        setShowImageOverlay({index: featureId, show: true})
+    }
+
     return (
         <div className="tw-min-h-screen tw-text-gray-900">
             {/* Navigation */}
@@ -40,61 +143,26 @@ export const UpdatedLandingPage = () => {
             </section>
 
             {/* Feature Showcase 1 */}
-            <section className="tw-max-w-7xl tw-mx-auto tw-px-6 tw-my-32">
-                <div className="tw-grid md:tw-grid-cols-2 tw-gap-16 tw-items-center">
-                    <div>
-                        <h2 className="tw-font-mono tw-text-5xl tw-font-bold tw-mb-4 tw-text-gray-900">Manage projects end-to-end</h2>
-                        <p className="tw-text-lg tw-text-gray-600 tw-leading-relaxed tw-mb-6">
-                            Edit tickets with a sleek inline modal featuring rich text support. Make quick updates without losing context or breaking your flow.
-                        </p>
+            {features.map((feature: Feature, index: number) => {
+                return (
+                    <div key={`feature-section-${feature.id}`}>
+                        <FeatureCard
+                            id={feature.id}
+                            header={feature.title}
+                            description={feature.description}
+                            imageURL={feature.imageURL}
+                            onClick={showFeatureImage}
+                            /* every other image is on the left*/
+                            imageOnRight={index % 2 === 0}
+                        />
                     </div>
-                    <div className="tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg tw-shadow-blue-600/10">
-                        <div className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
-                            Inline Editor Preview
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Feature Showcase 2 */}
-            <section className="tw-max-w-7xl tw-mx-auto tw-px-6 tw-my-32">
-                <div className="tw-grid md:tw-grid-cols-2 tw-gap-16 tw-items-center">
-                    <div className="tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg tw-shadow-blue-600/10 md:tw-order-first">
-                        <div className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
-                        </div>
-                    </div>
-                    <div>
-                        <h2 className="tw-font-mono tw-text-5xl tw-font-bold tw-mb-4 tw-text-gray-900">
-                            Easy Issue Tracking
-                        </h2>
-                        <p className="tw-text-lg tw-text-gray-600 tw-leading-relaxed tw-mb-6">
-                            Organize work efficiently with parent-child and linked issues. Connect related tasks to see the full picture and manage dependencies effortlessly.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Feature Showcase 3 */}
-            <section className="tw-max-w-7xl tw-mx-auto tw-px-6 tw-my-32">
-                <div className="tw-grid md:tw-grid-cols-2 tw-gap-16 tw-items-center">
-                    <div>
-                        <h2 className="tw-font-mono tw-text-5xl tw-font-bold tw-mb-4 tw-text-gray-900">Plan, Collaborate, Launch</h2>
-                        <p className="tw-text-lg tw-text-gray-600 tw-leading-relaxed tw-mb-6">
-                            Flexible board display with grouping and drag-and-drop statuses. Customize your workflow to match how your team actually works.
-                        </p>
-                    </div>
-                    <div className="tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg tw-shadow-blue-600/10">
-                        <div className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
-                            Kanban Board Preview
-                        </div>
-                    </div>
-                </div>
-            </section>
+                )
+            })}
 
             {/* Features Grid */}
             <section className="tw-max-w-7xl tw-mx-auto tw-px-6 tw-my-24">
                 <div className="tw-text-center tw-mb-16">
-                    <h2 className="tw-font-mono tw-text-5xl tw-font-bold tw-mb-4">Everything you need to ship</h2>
+                    <SubHeader>Everything you need to ship</SubHeader>
                     <p className="tw-text-xl tw-text-gray-600">Powerful features that scale with your team</p>
                 </div>
                 <div className="tw-grid md:tw-grid-cols-3 tw-gap-8">
@@ -116,12 +184,18 @@ export const UpdatedLandingPage = () => {
 
             {/* CTA Section */}
             <section className="tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-800 tw-text-white tw-py-20 tw-px-6 tw-my-24 tw-text-center">
-                <h2 className="tw-text-5xl tw-font-bold tw-mb-4">Ready to streamline your workflow?</h2>
+                <SubHeader textColor={"tw-white"}>Ready to streamline your workflow?</SubHeader>
                 <p className="tw-text-xl tw-mb-8 tw-opacity-90">Join teams who are shipping faster with Kanban</p>
                 <button className="tw-bg-white tw-text-blue-600 tw-px-10 tw-py-4 tw-rounded-xl tw-text-lg tw-font-semibold hover:-tw-translate-y-0.5 hover:tw-shadow-2xl hover:tw-shadow-white/30 tw-transition-all">
                     Get Started Free
                 </button>
             </section>
+
+            {
+             	width >= LG_BREAKPOINT ? 
+	             <ImageOverlay imageUrl={features.find((feature: Feature) => feature.id === showImageOverlay.index)?.imageURL ?? ""} isOpen={showImageOverlay.show} onClose={() => setShowImageOverlay({index: showImageOverlay.index, show: false})}/>
+	             : null
+            }
         </div>
     );
 }
