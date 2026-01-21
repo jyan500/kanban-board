@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { IconContext } from "react-icons"
 import { GrNext as Next, GrPrevious as Previous } from "react-icons/gr";
 import { IconButton } from "../page-elements/IconButton"
-import { ShowImageOverlay } from "../../pages/LandingPage"
 import { FADE_ANIMATION } from "../../helpers/constants"
 
 interface Props {
@@ -10,7 +9,7 @@ interface Props {
     itemsPerPage: number
     itemContainerClassName?: string
     index?: number
-    setShowImageOverlay?: (showImageOverlay: ShowImageOverlay) => void 
+    setShowImageOverlay?: (index: number) => void 
 }
 
 export const MultiCardCarousel = ({ index, items, itemsPerPage, itemContainerClassName, setShowImageOverlay }: Props) => {
@@ -62,7 +61,7 @@ export const MultiCardCarousel = ({ index, items, itemsPerPage, itemContainerCla
                                 Renders all items, the combination of flex-shrink-0 on each flex item, as well as the width being set to the percent each item takes per page
                                 gives the illusion that only a certain amount of items display on each page based on the itemsPerPage.
                             */
-                            <button onClick={() => setShowImageOverlay ? setShowImageOverlay({index: i, show: true}) : null} key={`carousel_item_${i}`} style = {style} className = {`${itemContainerClassName ?? ""} ${FADE_ANIMATION} tw-relative tw-w-full tw-h-full hover:tw-opacity-80 tw-flex-shrink-0 tw-px-2`}>
+                            <button onClick={() => setShowImageOverlay ? setShowImageOverlay(i) : null} key={`carousel_item_${i}`} style = {style} className = {`${itemContainerClassName ?? ""} ${FADE_ANIMATION} tw-relative tw-w-full tw-h-full hover:tw-opacity-80 tw-flex-shrink-0 tw-px-2`}>
                                 {item}
                             </button>
                         ))}

@@ -88,7 +88,7 @@ export const Dashboard = () => {
 		if (userProfile && statuses?.length){
 			const nonCompletedStatusIds = statuses.filter((status) => !status.isCompleted).map((status) => status.id)
 			const params = {
-				sortBy: "createdAt", 
+				sortBy: "dueDate", 
 				order: "desc", 
 				page: "1", 
 				includeAssignees: true, 
@@ -127,6 +127,25 @@ export const Dashboard = () => {
 			...assignedSearchParams,
 			page: page.toString()
 		})
+	}
+
+	const triggerSort = (sortAttribute: string, sortDirection: string, title: string) => {
+		if (title === "Assigned"){
+			setAssignedSearchParams({
+				...assignedSearchParams,
+				sortBy: sortAttribute,
+				order: sortDirection,
+				page: 1,
+			})
+		}
+		else {
+			setWatchSearchParams({
+				...watchSearchParams,
+				sortBy: sortAttribute,
+				order: sortDirection,
+				page: 1,
+			})
+		}
 	}
 
 	return (
@@ -200,14 +219,14 @@ export const Dashboard = () => {
 				<h2>My Tasks</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
 					{assignedTickets && !isAssignedTicketsLoading ? (
-						<TicketsContainer setPage={setAssignedToPage} setFilterBy={setAssignedFilter} tickets={assignedTickets} title={"Assigned"}/>
+						<TicketsContainer triggerSort={triggerSort} setPage={setAssignedToPage} setFilterBy={setAssignedFilter} tickets={assignedTickets} title={"Assigned"}/>
 					) : 
 						<LoadingSkeleton height="tw-h-[800px]" width="tw-w-full">
 							<RowPlaceholder/>	
 						</LoadingSkeleton>
 					}
 					{watchedTickets && !isWatchedTicketsLoading ? (
-						<TicketsContainer setPage={setWatchingPage} setFilterBy={setWatchFilter} tickets={watchedTickets} title={"Watching"}/>
+						<TicketsContainer triggerSort={triggerSort} setPage={setWatchingPage} setFilterBy={setWatchFilter} tickets={watchedTickets} title={"Watching"}/>
 					) : 
 						<LoadingSkeleton height="tw-h-[800px]" width="tw-w-full">
 							<RowPlaceholder/>	
@@ -216,10 +235,10 @@ export const Dashboard = () => {
 				</div>
 			</div>
 			<div className = "tw-flex lg:tw-flex-row tw-flex-col tw-gap-y-4 tw-w-full lg:tw-gap-x-4">
-				<div className = "tw-w-full lg:tw-w-1/2">
-					<RecentlyViewed minHeight={"tw-h-96"}/>
+				<div className = "tw-flex lg:tw-w-1/2">
+					<RecentlyViewed/>
 				</div>
-				<div className = "tw-w-full lg:tw-w-1/2 tw-shadow-sm tw-rounded-md tw-border-gray-200 tw-border tw-p-2 lg:tw-p-4">
+				<div className = "tw-flex lg:tw-w-1/2 tw-shadow-sm tw-rounded-md tw-border-gray-200 tw-border tw-p-2 lg:tw-p-4">
 					<Notifications fromDashboard={true}/>
 				</div>
 			</div>

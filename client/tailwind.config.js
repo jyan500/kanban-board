@@ -14,6 +14,26 @@ module.exports = {
         warning: "#ffc107", /* yellow */ 
         danger: "#dc3545", /* red */
         "light-purple": "#904ee2", /* purple */
+      },
+      backgroundImage: {
+          'gradient-background': 'linear-gradient(to bottom, rgb(219 234 254), rgb(249 250 251))',
+          'gradient-light': 'linear-gradient(to bottom right, rgb(239 246 255), rgb(219 234 254))',
+          'gradient-dark': 'linear-gradient(to right, rgb(37 99 235), rgb(30 64 175))',
+      },
+      keyframes: {
+          'fade-in-up': {
+              '0%': {
+                  opacity: '0',
+                  transform: 'translateY(30px)'
+              },
+              '100%': {
+                  opacity: '1',
+                  transform: 'translateY(0)'
+              }
+          }
+      },
+      animation: {
+          'fade-in-up': 'fade-in-up 0.8s ease-out forwards'
       }
     },
   },

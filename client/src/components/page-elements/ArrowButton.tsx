@@ -1,26 +1,24 @@
 import React from "react"
-import { IconContext } from "react-icons"
-import { IconButton } from "./IconButton"
-import { GrPrevious as Previous, GrNext as Next } from "react-icons/gr";
+import { IconArrowLeft } from "../icons/IconArrowLeft";
+import { IconArrowRight } from "../icons/IconArrowRight";
 
-interface Props {
-	onClick: (e: React.MouseEvent) => void	
-	text?: string
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    children?: React.ReactNode
 	isForward?: boolean
-	disabled?: boolean
+	text?: string
+    className?: string
 }
 
-export const ArrowButton = ({disabled, onClick, isForward, text}: Props) => {
+export const ArrowButton = ({isForward, text, children, ...props}: Props) => {
 	return (
-		<IconButton disabled={disabled} onClick={onClick}>
-			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
-	            <IconContext.Provider value = {{className: `${text ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4"}`}}>
-	                {isForward ? <Next/> : <Previous/>}
-	            </IconContext.Provider> 
-	            {text ? (
-		            <span className = "tw-font-bold tw-text-lg">{text}</span>
-            	) : null}
-	        </div>	
-		</IconButton>
+		<button className = {`${props.disabled ? "tw-opacity-30" : ""} tw-flex tw-flex-row tw-gap-x-2 tw-items-center tw-p-2 hover:tw-bg-gray-100 tw-rounded`} {...props}>
+			<>
+				{!isForward ? <IconArrowLeft className = "tw-h-5 tw-w-5"/> : <IconArrowRight className="tw-h-5 tw-w-5"/>}
+				{text ? (
+					<span className = "tw-font-bold tw-text-lg">{text}</span>
+				) : null}
+				{children}
+			</>
+		</button>
 	)
 }

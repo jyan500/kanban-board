@@ -34,6 +34,7 @@ import {
 } from "redux-persist"
 import storage from "redux-persist/lib/storage"
 import logger from 'redux-logger'
+import { setupListeners } from '@reduxjs/toolkit/query';
 
 const persistConfig = {
 	key: "root",
@@ -75,6 +76,8 @@ export const store = configureStore({
 	.concat(privateApi.middleware)
 })
 
+// for use in skipPollingIfUnfocused so the app can detect if the tab is not focused
+setupListeners(store.dispatch)
 
 // Infer the 'RootState' and 'AppDispatch' types from the store itself
 export type RootState = ReturnType<typeof store.getState>

@@ -7,7 +7,7 @@ interface Props {
 
 export const GradientContainer = ({className, children}: Props) => {
 	return (
-		<div className = {`${className} tw-bg-gradient-to-r tw-from-cyan-500 tw-to-primary`}>
+		<div className = {`${className} tw-bg-gradient-dark`}>
 			{children}	
 		</div>
 	)

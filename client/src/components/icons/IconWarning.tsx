@@ -9,7 +9,7 @@ type Props = {
 
 export const IconWarning = ({color, className}: Props) => {
 	return (
-		<BaseIcon color = {color ?? "var(--bs-danger)"} className={className}>
+		<BaseIcon className={`${!color ? "tw-text-red-300" : color} ${className}`}>
 			<WarningIcon/>
 		</BaseIcon>
 	)	

@@ -130,6 +130,12 @@ router.get("/", async (req, res, next) => {
 				if (req.query.sortBy === "createdAt"){
 					queryBuilder.orderBy("tickets.created_at", req.query.order)
 				}	
+				if (req.query.sortBy === "dueDate"){
+					queryBuilder.orderBy("tickets.due_date", req.query.order)
+				}
+				if (req.query.sortBy === "name"){
+					queryBuilder.orderBy("tickets.name", req.query.order)
+				}
 			}
 
 		})

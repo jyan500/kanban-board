@@ -1,6 +1,5 @@
 import React from "react";
 import { IconClose } from "../icons/IconClose"
-import { ShowImageOverlay } from "../../pages/LandingPage"
 
 interface ImageOverlayProps {
     imageUrl: string
