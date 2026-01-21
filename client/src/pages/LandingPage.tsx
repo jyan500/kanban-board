@@ -121,7 +121,7 @@ const createImageCarouselElements = (data: Array<CarouselElement>) => {
 	return []	
 }
 
-const iconClass = "tw-mt-1 tw-shrink-0 tw-h-6 tw-w-6"
+const iconClass = "tw-mt-1 tw-shrink-0 tw-h-5 tw-w-5 tw-text-blue-50"
 
 
 export const LandingPage = () => {
@@ -259,9 +259,9 @@ export const LandingPage = () => {
                                     setCarouselIndex(additionalFeatures.indexOf(element))
                                 }
                             }
-                        }} key={`additional-feature-${feature.id}`} className="tw-flex tw-flex-col tw-text-left tw-bg-white tw-p-8 tw-rounded-xl tw-border tw-border-gray-200 hover:tw-shadow-xl hover:tw-shadow-blue-600/40">
-                            <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-                                {feature.icon}
+                        }} key={`additional-feature-${feature.id}`} className="tw-flex tw-flex-col tw-gap-y-2 tw-text-left tw-bg-white tw-p-8 tw-rounded-xl tw-border tw-border-gray-200 hover:tw-shadow-xl hover:tw-shadow-blue-600/40">
+                            <div className="tw-flex tw-flex-row tw-items-center tw-gap-x-4">
+                                <div className="tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10 tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-800">{feature.icon}</div>
                                 <h3 className="tw-text-xl tw-font-semibold">{feature.title}</h3>
                             </div>
                             <p className="tw-text-gray-600 tw-leading-relaxed">{feature.description}</p>
