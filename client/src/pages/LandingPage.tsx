@@ -5,7 +5,6 @@ import BoardImage from "../assets/images/landing-page/board.png"
 import { useScreenSize } from '../hooks/useScreenSize';
 import { ImageOverlay } from '../components/page-elements/ImageOverlay';
 import { LG_BREAKPOINT } from '../helpers/constants';
-import { GRADIENT, FADE_ANIMATION } from '../helpers/constants';
 import { Link } from "react-router-dom"
 import { LOGIN } from '../helpers/routes';
 import { IconBell } from "../components/icons/IconBell"
@@ -62,7 +61,7 @@ const FeatureCard = ({id, header, description, imageURL, imageOnRight, onClick}:
         </div>
     )
     const image = (
-        <button onClick={() => onClick(id)} className={`tw-bg-gradient-to-br tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-p-8 tw-shadow-lg tw-transition-all tw-shadow-lg hover:tw-shadow-xl hover:tw-shadow-blue-600/40`}>
+        <button onClick={() => onClick(id)} className={`tw-bg-gradient-light tw-rounded-2xl tw-p-8 tw-shadow-lg tw-transition-all tw-shadow-lg hover:tw-shadow-xl hover:tw-shadow-blue-600/40`}>
             <div className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
                 <img src={imageURL} alt={description} className="tw-relative tw-object-cover tw-w-full tw-rounded-lg" />
             </div>
@@ -198,10 +197,10 @@ export const LandingPage = () => {
     return (
         <div className="tw-text-gray-900">
             {/* Hero Section */}
-            <section className={`${GRADIENT} tw-pt-48 tw-pb-16 tw-px-6 tw-text-center`}>
+            <section className={`tw-bg-gradient-background tw-pt-48 tw-pb-16 tw-px-6 tw-text-center`}>
                 {/* Applies a staggered animation with animation-delay */}
                 <div className="tw-max-w-4xl tw-mx-auto">
-                    <h1 className="tw-font-mono tw-text-6xl tw-font-bold tw-mb-6 tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-800 tw-bg-clip-text tw-text-transparent tw-leading-tight tw-animate-fade-in-up">
+                    <h1 className="tw-font-mono tw-text-6xl tw-font-bold tw-mb-6 tw-bg-gradient-dark tw-bg-clip-text tw-text-transparent tw-leading-tight tw-animate-fade-in-up">
                         Project Management Made Easy
                     </h1>
                     <p className="tw-text-xl tw-text-gray-600 tw-mb-10 tw-leading-relaxed tw-opacity-0 tw-animate-fade-in-up [animation-delay:200ms]">
@@ -261,8 +260,8 @@ export const LandingPage = () => {
                             }
                         }} key={`additional-feature-${feature.id}`} className="tw-flex tw-flex-col tw-gap-y-2 tw-text-left tw-bg-white tw-p-8 tw-rounded-xl tw-border tw-border-gray-200 hover:tw-shadow-xl hover:tw-shadow-blue-600/40">
                             <div className="tw-flex tw-flex-row tw-items-center tw-gap-x-4">
-                                <div className="tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10 tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-800">{feature.icon}</div>
-                                <h3 className="tw-text-xl tw-font-semibold">{feature.title}</h3>
+                                <div className="tw-flex-shrink-0 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10 tw-bg-gradient-dark">{feature.icon}</div>
+                                <h3 className="tw-text-xl tw-font-mono tw-font-semibold">{feature.title}</h3>
                             </div>
                             <p className="tw-text-gray-600 tw-leading-relaxed">{feature.description}</p>
                         </button>
@@ -271,7 +270,7 @@ export const LandingPage = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-800 tw-text-white tw-py-20 tw-px-6 tw-my-24 tw-text-center">
+            <section className= "tw-bg-gradient-dark tw-text-white tw-py-20 tw-px-6 tw-my-24 tw-text-center">
                 <SubHeader textColor={"tw-white"}>Ready to streamline your workflow?</SubHeader>
                 <p className="tw-text-xl tw-mb-8 tw-opacity-90">Join teams who are shipping faster with Kanban</p>
                 <Link to={LOGIN} className="tw-bg-white tw-text-blue-600 tw-px-10 tw-py-4 tw-rounded-xl tw-text-lg tw-font-semibold hover:tw-shadow-2xl hover:tw-shadow-white/30 tw-transition-all">

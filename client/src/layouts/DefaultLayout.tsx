@@ -8,7 +8,6 @@ import { HOME } from "../helpers/routes"
 import { Header } from "../components/page-elements/Header"
 import { Footer } from "../components/page-elements/Footer"
 import { LandingPage } from "../pages/LandingPage"
-import { GRADIENT } from "../helpers/constants"
 
 const DefaultLayout = () => {
 	const { pathname } = useLocation()
@@ -20,7 +19,7 @@ const DefaultLayout = () => {
 					<LandingPage/>
 				) : (
 					// other pages besides landing page are a single card
-					<div className={`${GRADIENT} tw-pt-44 tw-flex tw-justify-center tw-items-center tw-min-h-full tw-w-full tw-pb-12`}>
+					<div className={`tw-bg-gradient-background tw-pt-44 tw-flex tw-justify-center tw-items-center tw-min-h-full tw-w-full tw-pb-12`}>
 						<div className="tw-bg-white tw-rounded-xl tw-shadow-lg tw-p-8 tw-w-full tw-max-w-md tw-mx-4">
 							<Outlet/>
 						</div>

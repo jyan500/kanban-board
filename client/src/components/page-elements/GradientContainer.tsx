@@ -1,5 +1,4 @@
 import React from "react"
-import { GRADIENT } from "../../helpers/constants"
 
 interface Props {
 	className?: string
@@ -7,9 +6,8 @@ interface Props {
 }
 
 export const GradientContainer = ({className, children}: Props) => {
-	const updatedGradient = "tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-800"
 	return (
-		<div className = {`${className} ${updatedGradient}`}>
+		<div className = {`${className} tw-bg-gradient-dark`}>
 			{children}	
 		</div>
 	)
