@@ -206,9 +206,9 @@ export const LandingPage = () => {
                     <p className="tw-text-xl tw-text-gray-600 tw-mb-10 tw-leading-relaxed tw-opacity-0 tw-animate-fade-in-up [animation-delay:200ms]">
                         Kanban helps startups and small teams stay agile without the overhead. Streamline your workflow and ship faster.
                     </p>
-                    <button className="tw-bg-blue-600 tw-text-white tw-px-10 tw-py-4 tw-rounded-xl tw-text-lg tw-font-semibold hover:tw-bg-blue-700 tw-transition-all hover:-tw-translate-y-0.5 tw-shadow-lg tw-shadow-blue-600/30 hover:tw-shadow-xl hover:tw-shadow-blue-600/40 tw-opacity-0 tw-animate-fade-in-up [animation-delay:400ms]">
+                    <Link to={LOGIN} className="tw-bg-blue-600 tw-text-white tw-px-10 tw-py-4 tw-rounded-xl tw-text-lg tw-font-semibold hover:tw-bg-blue-700 tw-transition-all hover:-tw-translate-y-0.5 tw-shadow-lg tw-shadow-blue-600/30 hover:tw-shadow-xl hover:tw-shadow-blue-600/40 tw-opacity-0 tw-animate-fade-in-up [animation-delay:400ms]">
                         Get Started
-                    </button>
+                    </Link>
                 </div>
             </section>
 

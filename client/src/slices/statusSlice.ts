@@ -1,15 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
-import type { Status } from "../types/common"
+import type { OptionType, Status } from "../types/common"
 import { logout } from "./authSlice"
 
 type StatusState = {
 	statuses: Array<Status>
+    statusesForSelect: Array<OptionType>
 }
 
 const initialState: StatusState = {
 	statuses: [],
+    statusesForSelect: [],
 }
 
 const statusSlice = createSlice({
@@ -18,6 +20,12 @@ const statusSlice = createSlice({
     reducers: {
         setStatuses: (state, { payload: { statuses }}: PayloadAction<{ statuses: Array<Status> }>) => {
         	state.statuses = statuses
+            state.statusesForSelect = statuses.map((status) => (
+                {
+                    label: status.name,
+                    value: status.id.toString()
+                }
+            ))
         },
     },
     extraReducers: (builder) => {
