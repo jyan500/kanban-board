@@ -121,7 +121,7 @@ const createImageCarouselElements = (data: Array<CarouselElement>) => {
 	return []	
 }
 
-const iconClass = "tw-mt-1 tw-shrink-0 tw-h-5 tw-w-5 tw-text-blue-50"
+const iconClass = "tw-shrink-0 tw-h-5 tw-w-5 tw-text-blue-50"
 
 
 export const LandingPage = () => {
