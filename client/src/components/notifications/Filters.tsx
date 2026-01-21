@@ -15,22 +15,23 @@ import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType
 import { LoadingButton } from "../../components/page-elements/LoadingButton"
 import { Button } from "../../components/page-elements/Button"
 import { Switch } from "../page-elements/Switch"
+import { Select } from "../page-elements/Select"
 
 interface FormValues {
-	notificationType: string
+	notificationType: OptionType
 	user: OptionType
 	dateFrom: string
 	dateTo: string
-	isUnread: boolean
+	isUnread: boolean | null
 }
 
 export const Filters = () => {
-	const { notificationTypes } = useAppSelector((state) => state.notificationType)
+	const { notificationTypes, notificationTypesForSelect } = useAppSelector((state) => state.notificationType)
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
 	const { filters } = useAppSelector((state) => state.notificationFilter)
 	const dispatch = useAppDispatch()
 	const defaultForm: FormValues = {
-		notificationType: "",
+		notificationType: {label: "", value: ""},
 		user: {label: "", value: ""},
 		dateFrom: "",
 		dateTo: "",
@@ -52,10 +53,10 @@ export const Filters = () => {
 			const { notificationType, userId, dateFrom, dateTo, isUnread } = filters
 			reset({
 				...defaultForm,
-				notificationType: notificationType ?? "",
+				notificationType: notificationType ? {label: notificationTypes.find((type) => type.id.toString() === notificationType)?.name ?? "", value: notificationType.toString()} : {label: "", value: ""},
 				dateFrom: dateFrom ?? "", 
 				dateTo: dateTo ?? "",
-				isUnread: isUnread === "true" ? true : false,
+				isUnread: isUnread != null ? (isUnread === "true" ? true : false) : null,
 			})
 			if (userId && !isNaN(userId)){
 				trigger(Number(userId))
@@ -72,10 +73,10 @@ export const Filters = () => {
 	const onSubmit = (values: FormValues) => {
 		const newFilterValues = {
 			...filters,
-			notificationType: values.notificationType !== "" ? values.notificationType : null,
+			notificationType: values.notificationType.value !== "" ? values.notificationType.value : null,
 			dateTo: values.dateTo !== "" ? values.dateTo : null,
 			dateFrom: values.dateFrom !== "" ? values.dateFrom : null,
-			isUnread: values.isUnread ? "true": "false",
+			isUnread: values.isUnread ? "true": null,
 			userId: values.user.value !== "" ? Number(values.user.value) : null
 		}
 		dispatch(setFilters(newFilterValues))
@@ -88,12 +89,15 @@ export const Filters = () => {
 		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-noti-type">Notification Type</label>
-				<select className = "tw-w-full" id = "filters-noti-type" {...register("notificationType")}>
-					<option value="" disabled></option>
-					{notificationTypes.map((notificationType: NotificationType) => {
-						return <option key = {notificationType.id} value = {notificationType.id}>{notificationType.name}</option>
-					})}
-				</select>
+				<Controller name={"notificationType"} control={control} render={({field: {onChange}}) => ( <Select 
+						options={notificationTypesForSelect}
+						defaultValue={watch("notificationType") ?? {value: "", label: ""}}
+						onSelect={(selectedOption: {label: string, value: string} | null) => {
+							onChange(selectedOption) 	
+						}}
+					/>
+					)}>
+				</Controller>
 			</div>
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-noti-date-from">Date From</label>
@@ -136,7 +140,7 @@ export const Filters = () => {
 								onChange={(e) => {
 									onChange(e.target.checked)
 								}}
-								checked={value}
+								checked={value ?? false}
 							/>
 						)}	
 					/>
