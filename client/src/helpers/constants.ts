@@ -195,6 +195,7 @@ export const US_STATES = [
 
 /* Common Tailwind CSS Classes */
 export const FADE_ANIMATION = "tw-transition tw-duration-100 tw-ease-in-out"
+export const GRADIENT = "tw-bg-gradient-to-b tw-from-blue-100 tw-to-gray-50"
 
 export const AVATAR_SIZES: {[k: string]: string} = {
     "l": "tw-w-32 tw-h-32",

@@ -31,6 +31,6 @@ export const Typewriter = ({text, speed=50, className}: Props) => {
 	}, [text])
 
 	return (
-		<p className={className}>{displayedText}</p>
+		<span className={className}>{displayedText}</span>
 	)
 }

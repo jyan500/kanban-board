@@ -14,6 +14,21 @@ module.exports = {
         warning: "#ffc107", /* yellow */ 
         danger: "#dc3545", /* red */
         "light-purple": "#904ee2", /* purple */
+      },
+      keyframes: {
+          'fade-in-up': {
+              '0%': {
+                  opacity: '0',
+                  transform: 'translateY(30px)'
+              },
+              '100%': {
+                  opacity: '1',
+                  transform: 'translateY(0)'
+              }
+          }
+      },
+      animation: {
+          'fade-in-up': 'fade-in-up 0.8s ease-out forwards'
       }
     },
   },

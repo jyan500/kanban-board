@@ -89,7 +89,7 @@ export const SideBar = () => {
 						>
 					<IconClose color="white" className = "icon"/></button>	
 					<GradientContainer className = "tw-p-4 tw-flex tw-items-center tw-h-20 tw-rounded-sm">
-						<Logo isAuthLayout={false}/>
+						<Logo isAuthLayout={true}/>
 					</GradientContainer>
 					<div className = "sidebar__container">
 						<div className = "sidebar__links">
