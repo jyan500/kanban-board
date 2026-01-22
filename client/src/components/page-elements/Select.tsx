@@ -8,6 +8,7 @@ interface Props {
 	defaultValue?: OptionType | null 
     className?: string
     clearable?: boolean
+	onBlur?: () => void
 	onSelect: (selectedOption: OptionType | null) => void
 }
 
@@ -17,6 +18,7 @@ export const Select = ({
     clearable,
     className,
     onSelect,
+	onBlur,
 }: Props) => {
     const [searchTerm, setSearchTerm] = useState("")
 	const [val, setVal] = useState<OptionType | null>(defaultValue ?? null)
@@ -38,6 +40,7 @@ export const Select = ({
         <ReactSelect
             options={options}
             value={defaultValue}
+			onBlur={onBlur}
             classNames={{
 			    control: (state) => `${className ?? "tw-w-full"} ${SELECT_Z_INDEX}`
 			}}

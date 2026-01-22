@@ -17,6 +17,7 @@ interface Props {
 
 export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selectedIds, formValues, setFormValues}: Props) => {
 	const { statuses } = useAppSelector((state) => state.status)
+	const { priorities } = useAppSelector((state) => state.priority)
 
 	const renderOperation = () => {
 		switch (operation){
@@ -64,9 +65,9 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 		}} numSelectedIssues={selectedIds.length} onSubmit={moveTicketSubmit} boardId={boardId} title={"Move Issues"} buttonBar={buttonBar()}/>,
 		"edit-issues": <AddTicketForm step={step} formValues={{
 			statusId: formValues.statusId,
-			priorityId: formValues.priorityId,
+			priorityId: {label: priorities.find((priority) => formValues.priorityId === priority.id)?.name ?? "", value: formValues.priorityId.toString()},
 			userIdOption: formValues.userIdOption,
-			ticketTypeId: 0,
+			ticketTypeId: {label: "", value: ""},
 			description: "",
 			name: "",
 		}} title={"Edit Issues"} onSubmit={editTicketSubmit} buttonBar={buttonBar()} boardId={boardId} isBulkAction={true} statusesToDisplay={statuses}/>,

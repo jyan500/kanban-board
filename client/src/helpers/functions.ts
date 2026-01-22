@@ -296,5 +296,5 @@ export const getModalWidth = (width: number, type: string) =>{
 	if (type === "small"){
 		return `${width <= LG_BREAKPOINT ? width - 100 : LG_BREAKPOINT - 100 }px`
 	}
-	return `${width <= LG_BREAKPOINT + 140 ? width-40 : LG_BREAKPOINT + 140 }px`
+	return `${width <= LG_BREAKPOINT + 140 ? width-40 : LG_BREAKPOINT + 200 }px`
 }

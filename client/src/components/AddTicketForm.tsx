@@ -25,15 +25,16 @@ import { IconWarning } from "./icons/IconWarning"
 import { IconContext } from "react-icons"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
+import { Select } from "./page-elements/Select"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
 
 export type FormCommon = {
 	id?: number
 	name: string
 	description: string 
-	priorityId: number
+	priorityId: OptionType 
 	statusId: number
-	ticketTypeId: number
+	ticketTypeId: OptionType
 }
 
 export type FormValues = FormCommon & {
@@ -72,9 +73,9 @@ export const AddTicketForm = ({
 	onSubmit: propsOnSubmit
 }: Props) => {
 	const dispatch = useAppDispatch()
-	const { priorities } = useAppSelector((state) => state.priority)
+	const { priorities, prioritiesForSelect } = useAppSelector((state) => state.priority)
 	const { statuses } = useAppSelector((state) => state.status)
-	const { ticketTypes } = useAppSelector((state) => state.ticketType)
+	const { ticketTypes, ticketTypesForSelect } = useAppSelector((state) => state.ticketType)
 	const { notificationTypes } = useAppSelector((state) => state.notificationType)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
@@ -90,9 +91,9 @@ export const AddTicketForm = ({
 	const defaultForm: AddTicketFormValues = {
 		id: undefined,
 		name: "",
-		ticketTypeId: 0,
+		ticketTypeId: {value: "", label: ""},
 		description: "",
-		priorityId: 0,
+		priorityId: {value: "", label: ""},
 		statusId: statusId ?? 0,
 		userIdOption: {value: "", label: ""}
 	}
@@ -125,6 +126,8 @@ export const AddTicketForm = ({
 			reset({
 				...ticket, 
 				id: undefined,
+				priorityId: {label: priorities.find((priority) => priority.id === ticket.priorityId)?.name, value: ticket.priorityId.toString()},
+				ticketTypeId: {label: ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name, value: ticket.ticketTypeId.toString()},
 				userIdOption: {label: "", value: ""}
 			})
 		}
@@ -143,6 +146,8 @@ export const AddTicketForm = ({
     		const assigneeId = !isNaN(Number(values.userIdOption?.value)) ? Number(values.userIdOption?.value) : 0
 	    	const {id: insertedTicketId, mentions} = await addTicket({
 	    		...values, 
+				priorityId: Number(values.priorityId.value), 
+				ticketTypeId: Number(values.ticketTypeId.value),
 	    		// this value is unused, just for typescript purposes
 	    		userId: assigneeId,
 	    		description: values.description,
@@ -276,11 +281,22 @@ export const AddTicketForm = ({
 						</div>
 						<div>
 							<label className = "label" htmlFor = "ticket-priority">Priority</label>
-							<select className = "tw-w-full" id = "ticket-priority" {...register("priorityId", registerOptions.priorityId)}>
+							{/* <select className = "tw-w-full" id = "ticket-priority" {...register("priorityId", registerOptions.priorityId)}>
 								{priorities.map((priority: Priority) => {
 									return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
 								})}
-							</select>
+							</select> */}
+							<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
+								<Select 
+									clearable={false}
+									options={prioritiesForSelect}
+									defaultValue={watch("priorityId") ?? {value: "", label: ""}}
+									onSelect={(selectedOption: {label: string, value: string} | null) => {
+										onChange(selectedOption) 	
+									}}
+								/>
+							)}>
+							</Controller>
 					        {errors?.priorityId && <small className = "--text-alert">{errors.priorityId.message}</small>}
 						</div>
 						{
@@ -288,15 +304,26 @@ export const AddTicketForm = ({
 								<div className = "tw-space-y-2">
 									<>
 										<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
-										<select className = "tw-w-full" id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
+										{/* <select className = "tw-w-full" id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
 											{ticketTypes.map((ticketType: TicketType) => {
 												return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
 											})}
-										</select>
+										</select> */}
+											<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
+												<Select 
+													clearable={false}
+													options={ticketTypesForSelect}
+													defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
+													onSelect={(selectedOption: {label: string, value: string} | null) => {
+														onChange(selectedOption) 	
+													}}
+												/>
+											)}>
+											</Controller>
 									</>
 							        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
 							        {
-							        	watch("ticketTypeId") == epicTicketType?.id ? (
+							        	Number(watch("ticketTypeId").value) == epicTicketType?.id ? (
 									        <div className = "tw-flex tw-flex tw-items-center tw-gap-x-2">
 												<IconWarning color="var(--bs-warning)" className = "tw-h-6 tw-w-6"/>
 												<span className = "tw-font-semibold">If the ticket type is "Epic", it cannot changed once saved.</span>

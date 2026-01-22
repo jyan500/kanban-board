@@ -44,6 +44,7 @@ import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { AsyncSelect } from "./AsyncSelect"
+import { Select } from "./page-elements/Select"
 import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { ActivityContainer } from "./ActivityContainer"
 import { Avatar } from "./page-elements/Avatar"
@@ -58,6 +59,7 @@ import { TicketActivityModalProps } from "./secondary-modals/TicketActivityModal
 import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "./placeholders/RowPlaceholder"
 import { useTrackRecentlyViewed } from "../hooks/useTrackRecentlyViewed";
+import { ValueSetter } from "date-fns/parse/_lib/Setter";
 
 type EditFieldVisibility = {
 	[key: string]: boolean
@@ -97,9 +99,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const { statuses } = useAppSelector((state) => state.status)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoles } = useAppSelector((state) => state.userRole) 
-	const { priorities } = useAppSelector((state) => state.priority) 
+	const { priorities, prioritiesForSelect } = useAppSelector((state) => state.priority) 
 	const { notificationTypes } = useAppSelector((state) => state.notificationType) 
-	const { ticketTypes } = useAppSelector((state) => state.ticketType) 
+	const { ticketTypes, ticketTypesForSelect } = useAppSelector((state) => state.ticketType) 
 	const [ epicTicketPage, setEpicTicketPage ] = useState(1)
 	const [ linkedTicketPage, setLinkedTicketPage ] = useState(1)
 	const [ commentPage, setCommentPage ] = useState(1)
@@ -152,9 +154,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		id: 0,
 		name: "",
 		description: "",
-		priorityId: 0,
+		priorityId: {label: "", value: ""},
 		statusId: 0,
-		ticketTypeId: 0,
+		ticketTypeId: {label: "", value: ""},
 		userIdOption: {label: "", value: ""},
 		storyPoints: "",
 		dueDate: "" 
@@ -183,9 +185,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 	const ticketTypeIdRegisterMethods = register("ticketTypeId", registerOptions.ticketTypeId)
 	const priorityIdRegisterMethods = register("priorityId", registerOptions.priorityId)
 
-	const ticketTypeName = ticketTypes.find((ticketType) => ticketType.id === watch("ticketTypeId"))?.name
+	const ticketTypeName = ticketTypes.find((ticketType) => ticketType.id === Number(watch("ticketTypeId").value))?.name
 	const epicTicketType = ticketTypes.find((ticketType) => ticketType.name === "Epic")
-	const priorityName = priorities.find((priority) => priority.id === watch("priorityId"))?.name
+	const priorityName = priorities.find((priority) => priority.id === Number(watch("priorityId").value))?.name
 
 	useTrackRecentlyViewed({
 		type: "ticket",
@@ -238,6 +240,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		if (currentTicketId){
 			reset({
 				...ticket, 
+				priorityId: {label: priorities.find((priority) => priority.id === ticket.priorityId)?.name, value: ticket.priorityId.toString()},
+				ticketTypeId: {label: ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name, value: ticket.ticketTypeId.toString()},
 				dueDate: ticket.dueDate != null && ticket.dueDate !== "" ? new Date(ticket.dueDate).toISOString().split("T")[0] : "",
 			})
 		}
@@ -299,6 +303,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
     			const {userIdOption, ...ticketBody} = values
     			const { mentions } = await updateTicket({
     				...ticketBody, 
+					ticketTypeId: !isNaN(Number(values.ticketTypeId.value)) ? Number(values.ticketTypeId.value) : 0,
+					priorityId: !isNaN(Number(values.priorityId.value)) ? Number(values.priorityId.value) : 0,
     				storyPoints: !isNaN(Number(values.storyPoints)) ? Number(values.storyPoints) : 0,
     				dueDate: values.dueDate ? new Date(values.dueDate) : "",  
     				id: values.id
@@ -339,41 +345,79 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 
 
 	const ticketTypeSelect = (
-		<select {...ticketTypeIdRegisterMethods} 
-		className = {`tw-w-full ${editFieldVisibility["ticket-type"] ? "" : "tw-border-transparent"}`}
-		onChange={async (e) => {
-    		toggleSelectFieldLoading("ticket-type", true)
-			setValue("ticketTypeId", parseInt(e.target.value))
-			toggleFieldVisibility("ticket-type", false)
-			await handleSubmit(onSubmit)()
-    		toggleSelectFieldLoading("ticket-type", false)
-		}}
-		onBlur = {(e) => toggleFieldVisibility("ticket-type", false)}>
-			{ticketTypes?.filter((ticketType) => ticketType?.id !== epicTicketType?.id).map((ticketType: TicketType) => {
-				return (
-					<option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
-				)
-			})}
-		</select>
+		// <select {...ticketTypeIdRegisterMethods} 
+		// className = {`tw-w-full ${editFieldVisibility["ticket-type"] ? "" : "tw-border-transparent"}`}
+		// onChange={async (e) => {
+    	// 	toggleSelectFieldLoading("ticket-type", true)
+		// 	setValue("ticketTypeId", parseInt(e.target.value))
+		// 	toggleFieldVisibility("ticket-type", false)
+		// 	await handleSubmit(onSubmit)()
+    	// 	toggleSelectFieldLoading("ticket-type", false)
+		// }}
+		// onBlur = {(e) => toggleFieldVisibility("ticket-type", false)}>
+		// 	{ticketTypes?.filter((ticketType) => ticketType?.id !== epicTicketType?.id).map((ticketType: TicketType) => {
+		// 		return (
+		// 			<option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
+		// 		)
+		// 	})}
+		// </select>
+		<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
+			<Select 
+				options={ticketTypesForSelect}
+				className = {`tw-w-32 ${editFieldVisibility["ticket-type"] ? "" : "!tw-text-left hover:!tw-opacity-60 !tw-border-transparent !tw-cursor-pointer"}`}
+				clearable={false}
+				defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
+				onSelect={async (selectedOption: {label: string, value: string} | null) => {
+					if (selectedOption){
+						toggleSelectFieldLoading("ticket-type", true)
+						setValue("ticketTypeId", selectedOption)
+						toggleFieldVisibility("ticket-type", false)
+						await handleSubmit(onSubmit)()
+						toggleSelectFieldLoading("ticket-type", false)
+					}
+				}}
+				onBlur = {() => toggleFieldVisibility("ticket-type", false)}
+			/>
+		)}>
+		</Controller>
 	)
 
 	const prioritySelect = (
-		<select {...priorityIdRegisterMethods} 
-		className = {`tw-w-full ${editFieldVisibility["priority"] ? "" : "tw-border-transparent"}`}
-		onChange={async (e) => {
-    		toggleSelectFieldLoading("priority", true)
-			setValue("priorityId", parseInt(e.target.value))
-			toggleFieldVisibility("priority", false)
-			await handleSubmit(onSubmit)()
-    		toggleSelectFieldLoading("priority", false)
-		}}
-		onBlur = {(e) => toggleFieldVisibility("priority", false)}>
-			{priorities?.map((priority: Priority) => {
-				return (
-					<option key = {priority.id} value = {priority.id}>{priority.name}</option>
-				)
-			})}
-		</select>
+		// <select {...priorityIdRegisterMethods} 
+		// className = {`tw-w-full ${editFieldVisibility["priority"] ? "" : "tw-border-transparent"}`}
+		// onChange={async (e) => {
+    	// 	toggleSelectFieldLoading("priority", true)
+		// 	setValue("priorityId", parseInt(e.target.value))
+		// 	toggleFieldVisibility("priority", false)
+		// 	await handleSubmit(onSubmit)()
+    	// 	toggleSelectFieldLoading("priority", false)
+		// }}
+		// onBlur = {(e) => toggleFieldVisibility("priority", false)}>
+		// 	{priorities?.map((priority: Priority) => {
+		// 		return (
+		// 			<option key = {priority.id} value = {priority.id}>{priority.name}</option>
+		// 		)
+		// 	})}
+		// </select>
+		<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
+			<Select 
+				options={prioritiesForSelect}
+				className = {`tw-w-32 ${editFieldVisibility["priority"] ? "" : "!tw-text-left hover:!tw-opacity-60 !tw-border-transparent !tw-cursor-pointer"}`}
+				defaultValue={watch("priorityId") ?? {value: "", label: ""}}
+				clearable={false}
+				onSelect={async (selectedOption: {label: string, value: string} | null) => {
+					if (selectedOption){
+						toggleSelectFieldLoading("priority", true)
+						setValue("priorityId", selectedOption)
+						toggleFieldVisibility("priority", false)
+						await handleSubmit(onSubmit)()
+						toggleSelectFieldLoading("priority", false)
+					}
+				}}
+				onBlur = {() => toggleFieldVisibility("priority", false)}
+			/>
+		)}>
+		</Controller>
 	)
 
 	const userProfileSelect = ( 
@@ -383,7 +427,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
             render={({ field: { onChange, value, name, ref } }) => (
             	<AsyncSelect 
                 	endpoint={USER_PROFILE_URL} 
-					className = {`tw-w-32 ${editFieldVisibility["assignees"] ? "" : "!tw-border-transparent"}`}
+					className = {`tw-w-32 ${editFieldVisibility["assignees"] ? "" : "hover:!tw-opacity-60 !tw-border-transparent !tw-cursor-pointer"}`}
                 	clearable={false}
                 	onBlur={(e) => toggleFieldVisibility("assignees", false)}
                 	defaultValue={watch("userIdOption") ?? null}
@@ -448,7 +492,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								<div className = "tw-w-[2em] tw-shrink-0">
 									<Avatar userInitials={getUserInitials(reporter)} imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 								</div>
-								<div className = "tw-ml-2.5 tw-flex tw-flex-1">{displayUser(reporter)}</div>
+								<div className = "tw-ml-3 tw-flex tw-flex-1">{displayUser(reporter)}</div>
 							</div>
 						</RightSectionRow>
 						<RightSectionRow title={"Priority"}>
