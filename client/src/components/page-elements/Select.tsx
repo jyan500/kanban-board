@@ -8,6 +8,9 @@ interface Props {
 	defaultValue?: OptionType | null 
     className?: string
     clearable?: boolean
+	textAlign?: "left" | "center" | "right"
+	textColor?: string
+	searchable?: boolean
 	onBlur?: () => void
 	onSelect: (selectedOption: OptionType | null) => void
 }
@@ -16,6 +19,9 @@ export const Select = ({
     options, 
     defaultValue,
     clearable,
+	searchable=false,
+	textColor="black",
+	textAlign="left",
     className,
     onSelect,
 	onBlur,
@@ -50,10 +56,33 @@ export const Select = ({
 			      height: "43px",
 			      border: "var(--width-input-border) solid var(--bs-light-gray)",
 			      padding: ".1em",
+				  textAlign: textAlign,
 			    }),
+				// styles selected text and placeholder
+				singleValue: (base) => ({
+					...base,
+					color: textColor, 
+				}),
+				placeholder: (base) => ({
+					...base,
+					color: textColor,
+					textAlign: textAlign,
+				}),
+				dropdownIndicator: (provided) => ({
+					...provided,
+					'svg': {
+						fill: textColor,
+					},
+				}),
+				valueContainer: (provided) => ({
+					...provided,
+					textAlign: textAlign, // Ensures the selected value aligns left
+				})
 			}}
+			
 			onChange={handleChange}
             isClearable={clearable ?? true}
+			isSearchable={searchable ?? true}
             getOptionLabel={(option) => option.label}
 			getOptionValue={(option) => option.value}
         />

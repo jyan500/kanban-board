@@ -33,7 +33,7 @@ export type FormCommon = {
 	name: string
 	description: string 
 	priorityId: OptionType 
-	statusId: number
+	statusId: OptionType 
 	ticketTypeId: OptionType
 }
 
@@ -94,7 +94,7 @@ export const AddTicketForm = ({
 		ticketTypeId: {value: "", label: ""},
 		description: "",
 		priorityId: {value: "", label: ""},
-		statusId: statusId ?? 0,
+		statusId: {value: "", label: ""},
 		userIdOption: {value: "", label: ""}
 	}
 	const [preloadedValues, setPreloadedValues] = useState<AddTicketFormValues>(defaultForm)
@@ -126,6 +126,7 @@ export const AddTicketForm = ({
 			reset({
 				...ticket, 
 				id: undefined,
+				statusId: {label: statuses.find((status) => status.id === ticket.statusId)?.name, value: ticket.statusId.toString()},
 				priorityId: {label: priorities.find((priority) => priority.id === ticket.priorityId)?.name, value: ticket.priorityId.toString()},
 				ticketTypeId: {label: ticketTypes.find((ticketType) => ticketType.id === ticket.ticketTypeId)?.name, value: ticket.ticketTypeId.toString()},
 				userIdOption: {label: "", value: ""}
@@ -146,8 +147,9 @@ export const AddTicketForm = ({
     		const assigneeId = !isNaN(Number(values.userIdOption?.value)) ? Number(values.userIdOption?.value) : 0
 	    	const {id: insertedTicketId, mentions} = await addTicket({
 	    		...values, 
-				priorityId: Number(values.priorityId.value), 
-				ticketTypeId: Number(values.ticketTypeId.value),
+				statusId: !isNaN(Number(values.statusId.value)) ? Number(values.statusId.value) : 0,
+				priorityId: !isNaN(Number(values.priorityId.value)) ? Number(values.priorityId.value) : 0,  
+				ticketTypeId: !isNaN(Number(values.ticketTypeId.value)) ? Number(values.ticketTypeId.value) : 0,
 	    		// this value is unused, just for typescript purposes
 	    		userId: assigneeId,
 	    		description: values.description,
@@ -239,11 +241,25 @@ export const AddTicketForm = ({
 						}
 						<div>
 							<label className = "label" htmlFor = "ticket-status">Status</label>
-							<select className = "tw-w-full" id = "ticket-status" {...register("statusId", registerOptions.statusId)}>
+							{/* <select className = "tw-w-full" id = "ticket-status" {...register("statusId", registerOptions.statusId)}>
 								{statusesToDisplay?.map((status: Status) => {
 									return <option key = {status.id} value = {status.id}>{status.name}</option>
 								})}
-							</select>	
+							</select>	 */}
+							<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
+								<Select 
+									clearable={false}
+									options={statusesToDisplay?.map((status) => ({
+										label: status.name,
+										value: status.id.toString()
+									})) ?? []}
+									defaultValue={watch("statusId") ?? {value: "", label: ""}}
+									onSelect={(selectedOption: {label: string, value: string} | null) => {
+										onChange(selectedOption) 	
+									}}
+								/>
+							)}>
+							</Controller>
 					        {errors?.statusId && <small className = "--text-alert">{errors.statusId.message}</small>}
 						</div>
 						{
@@ -304,22 +320,17 @@ export const AddTicketForm = ({
 								<div className = "tw-space-y-2">
 									<>
 										<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
-										{/* <select className = "tw-w-full" id = "ticket-type" {...register("ticketTypeId", registerOptions.ticketTypeId)}>
-											{ticketTypes.map((ticketType: TicketType) => {
-												return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
-											})}
-										</select> */}
-											<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
-												<Select 
-													clearable={false}
-													options={ticketTypesForSelect}
-													defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
-													onSelect={(selectedOption: {label: string, value: string} | null) => {
-														onChange(selectedOption) 	
-													}}
-												/>
-											)}>
-											</Controller>
+										<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
+											<Select 
+												clearable={false}
+												options={ticketTypesForSelect}
+												defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
+												onSelect={(selectedOption: {label: string, value: string} | null) => {
+													onChange(selectedOption) 	
+												}}
+											/>
+										)}>
+										</Controller>
 									</>
 							        {errors?.ticketTypeId && <small className = "--text-alert">{errors.ticketTypeId.message}</small>}
 							        {
