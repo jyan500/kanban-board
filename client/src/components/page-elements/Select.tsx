@@ -10,6 +10,7 @@ interface Props {
     clearable?: boolean
 	textAlign?: "left" | "center" | "right"
 	textColor?: string
+	hideIndicatorSeparator?: boolean
 	searchable?: boolean
 	onBlur?: () => void
 	onSelect: (selectedOption: OptionType | null) => void
@@ -20,6 +21,7 @@ export const Select = ({
     defaultValue,
     clearable,
 	searchable=false,
+	hideIndicatorSeparator=false,
 	textColor="black",
 	textAlign="left",
     className,
@@ -77,7 +79,10 @@ export const Select = ({
 				valueContainer: (provided) => ({
 					...provided,
 					textAlign: textAlign, // Ensures the selected value aligns left
-				})
+				}),
+				indicatorSeparator: () => ({
+					display: hideIndicatorSeparator ? 'none' : 'block',
+				}),
 			}}
 			
 			onChange={handleChange}

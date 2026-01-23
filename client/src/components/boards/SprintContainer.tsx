@@ -9,6 +9,7 @@ import { OptionType, ListResponse, Sprint, Ticket } from "../../types/common"
 import { PaginationRow } from "../page-elements/PaginationRow"
 import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { useNavigate } from "react-router-dom"
+import { SEARCH_OPTIONS } from "../../helpers/constants"
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import { FormValues } from "../../components/boards/BacklogSprintContainer"
 import { Badge } from "../page-elements/Badge"
@@ -167,7 +168,7 @@ export const SprintContainer = ({
                             setPage={setPage} 
                             currentPage={page ?? 1}
                             registerOptions={{}}
-                            searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+                            searchOptions = {SEARCH_OPTIONS}
                             onFormSubmit={async () => {
                                 await handleSubmit(onSubmit)()
                             }}

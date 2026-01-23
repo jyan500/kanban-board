@@ -12,6 +12,7 @@ import { ListResponse, Ticket } from "../../types/common"
 import { useForm, FormProvider, useFormContext } from "react-hook-form"
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import { FormValues } from "../../components/boards/BacklogSprintContainer"
+import { SEARCH_OPTIONS } from "../../helpers/constants"
 import { Button } from "../page-elements/Button"
 import { Badge } from "../page-elements/Badge"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
@@ -117,7 +118,7 @@ export const BacklogContainer = ({
                                 setPage={setPage} 
                                 currentPage={page ?? 1}
                                 registerOptions={registerOptions}
-                                searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+                                searchOptions = {SEARCH_OPTIONS}
                                 onFormSubmit={async () => {
                                     await handleSubmit(onSubmit)()
                                 }}

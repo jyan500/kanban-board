@@ -41,7 +41,7 @@ import { PaginationRow } from '../page-elements/PaginationRow'
 import { TicketRow } from "../TicketRow"
 import { CalendarSprintContainer } from './CalendarSprintContainer'
 import { v4 as uuidv4 } from "uuid"
-import { LG_BREAKPOINT } from '../../helpers/constants'
+import { LG_BREAKPOINT, SEARCH_OPTIONS } from '../../helpers/constants'
 import { addToast } from '../../slices/toastSlice'
 import { PaginationButtonRow } from '../page-elements/PaginationButtonRow'
 
@@ -85,7 +85,7 @@ const CalendarContainerSearchBar = ({
                 <SearchToolBar 
                     hidePagination={true}
                     registerOptions={{}}
-                    searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+                    searchOptions = {SEARCH_OPTIONS}
                     additionalButtons={
                     () => {
                         return (

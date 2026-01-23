@@ -2,12 +2,13 @@ import React, {useState, useEffect} from "react"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { SearchBar } from "../SearchBar" 
 import "../../styles/toolbar.css"
-import { useFormContext, FormProvider, SubmitHandler } from "react-hook-form"
-import { IPagination } from "../../types/common"
+import { useFormContext, FormProvider, SubmitHandler, Controller } from "react-hook-form"
+import { IPagination, OptionType } from "../../types/common"
 import { PaginationRow } from "../page-elements/PaginationRow"
 import { Button } from "../page-elements/Button"
 import { FormValues } from "../../pages/tickets/TicketDisplay"
 import { MdOutlineKeyboardArrowDown as ArrowDown } from "react-icons/md";
+import { Select } from "../page-elements/Select"
 import { Filters } from "./Filters"
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
@@ -20,7 +21,7 @@ type Props = {
 	onFormSubmit: () => void
 	filters?: Array<string>
 	showFilters?: boolean
-	searchOptions?: Record<string, any>
+	searchOptions?: Array<OptionType>
 	additionalButtons?: () => React.ReactNode 
 	renderFilter?: () => React.ReactNode
 	children?: React.ReactNode
@@ -48,7 +49,7 @@ export const SearchToolBar = ({
 	const [showFilter, setShowFilter] = useState(showFilters)
 	const isAdminOrUserRole = userProfile && (userRoleLookup[userProfile.userRoleId] === "ADMIN" || userRoleLookup[userProfile.userRoleId] === "BOARD_ADMIN")
 	const methods = useFormContext()
-	const {register, reset, getValues, control, formState: {errors}} = methods
+	const {register, reset, getValues, control, watch, formState: {errors}} = methods
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
@@ -58,15 +59,30 @@ export const SearchToolBar = ({
 						e.preventDefault()
 						onFormSubmit()
 					}} className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-gap-x-2">
-						{searchOptions && Object.keys(searchOptions).length > 0 ? 
+						{searchOptions && searchOptions.length > 0 ? 
 							(
 								<div>
-									<select {...register("searchBy", registerOptions.searchBy)}>
+									<Controller name={"searchBy"} control={control} render={({field: {onChange}}) => (
+										<Select 
+											options={searchOptions}
+											clearable={false}
+											hideIndicatorSeparator={true}
+											searchable={false}
+											defaultValue={watch("searchBy") ? {value: watch("searchBy"), label: searchOptions.find((option: OptionType) => option.value === watch("searchBy"))?.label ?? ""} : {value: "", label: ""}}
+											onSelect={async (selectedOption: {label: string, value: string} | null) => {
+												if (selectedOption){
+													onChange(selectedOption.value)
+												}
+											}}
+										/>
+									)}>
+									</Controller>
+									{/* <select {...register("searchBy", registerOptions.searchBy)}>
 										{Object.keys(searchOptions).map((option) => {
 											const value = searchOptions[option as keyof typeof searchOptions]
 											return <option key = {option} value = {option}>{value}</option>
 										})}
-									</select>
+									</select> */}
 								</div>
 							) : null
 						}

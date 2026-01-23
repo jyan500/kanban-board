@@ -14,7 +14,7 @@ import { IconArrowLeft } from "../icons/IconArrowLeft"
 import { IconArrowDown } from "../icons/IconArrowDown"
 import { IconArrowUp } from "../icons/IconArrowUp"
 import { IconTicket } from '../icons/IconTicket'
-import { GROUP_BY_OPTIONS } from "../../helpers/constants"
+import { GROUP_BY_OPTIONS, SEARCH_OPTIONS } from "../../helpers/constants"
 import { IconCalendar } from "../icons/IconCalendar"
 import { IconClock } from "../icons/IconClock"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
@@ -466,7 +466,7 @@ const ScheduleContainerSearchBar = ({
                     setPage={setPage} 
                     currentPage={currentPage}
                     registerOptions={{}}
-                    searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+                    searchOptions = {SEARCH_OPTIONS}
                     additionalButtons={
                     () => {
                         return (
