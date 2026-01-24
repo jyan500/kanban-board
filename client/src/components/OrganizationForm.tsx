@@ -6,23 +6,25 @@ import { Link } from "react-router-dom"
 import { 
 	useUpdateOrganizationMutation
 } from "../services/private/organization" 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import { addToast } from "../slices/toastSlice" 
 import { LoadingSpinner } from "./LoadingSpinner"
+import { Select } from "./page-elements/Select"
 import { OptionType, Organization } from "../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { EMAIL_PATTERN, PHONE_PATTERN } from "../helpers/constants"
 import { BackendErrorMessage } from "./page-elements/BackendErrorMessage"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { US_STATES } from "../helpers/constants"
+import { organizationApi } from "../services/public/organization"
 
 export type FormValues = {
 	id?: number
 	name: string
 	address: string
 	city: string
-	state: string
+	state: string | OptionType
 	zipcode: string
 	phoneNumber: string
 	email: string
@@ -45,7 +47,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 		name: "",
 		address: "",
 		city: "",
-		state: "",
+		state: {label: "", value: ""},
 		zipcode: "",
 		phoneNumber: "",
 		email: "",
@@ -53,7 +55,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 	}
 	const [ updateOrganization, {isLoading: isUpdateOrganizationLoading, error} ] = useUpdateOrganizationMutation()
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { register , handleSubmit, reset , setValue, getValues, formState: {errors} } = useForm<FormValues>({
+	const { control, register , handleSubmit, reset , setValue, getValues, watch, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
 	const registerOptions = {
@@ -75,7 +77,9 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
     }
 	useEffect(() => {
 		if (organization && Object.keys(organization).length > 0){
-			reset(organization)
+			reset(
+				organization
+			)
 		}
 		else {
 			reset(defaultForm)
@@ -85,7 +89,10 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
     const onSubmit = async (values: FormValues) => {
     	try {
     		if (values.id != null && organization){
-    			await updateOrganization({id: !isNaN(Number(values.id)) ? Number(values.id) : 0, ...values}).unwrap()
+    			await updateOrganization({
+					id: !isNaN(Number(values.id)) ? Number(values.id) : 0, ...values,
+					state: (values.state as OptionType).value
+				}).unwrap()
     		}	
     		dispatch(addToast({
     			id: uuidv4(),
@@ -104,10 +111,20 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
     	}
     }
 
+	const handlePropsSubmit = async (values: FormValues) => {
+		const modified = {
+			...values,
+			state: (values.state as OptionType).value
+		}
+		if (propsSubmit){
+			await propsSubmit(modified)
+		}
+	}
+
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<BackendErrorMessage error={error}/>
-			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(propsSubmit ?? onSubmit)}>
+			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(propsSubmit ? handlePropsSubmit : onSubmit)}>
 				<div>
 					<label className = "label" htmlFor = "organization-name">Organization Name: <span className = "tw-font-bold tw-text-red-500">*</span></label>
 					<input id = "organization-name" className = "tw-w-full" type = "text"
@@ -131,13 +148,34 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 				</div>
 				<div className = "tw-flex tw-flex-col">
 					<label className = "label" htmlFor = "organization-state">State:</label>
-					<select id = "organization-state" {...register("state")}>
+					<Controller
+						name="state"
+						control={control}
+						render={({field: {onChange, value}}) => {
+							return (
+								<Select
+									searchable={true}
+									clearable={true}
+									hideIndicatorSeparator={false}
+									options={US_STATES}
+									defaultValue={(value as OptionType) ?? ""}
+									onSelect={(selectedOption: OptionType | null) => {
+										onChange(selectedOption)
+									}}
+								>
+								</Select>
+
+							)
+						}}
+					>
+					</Controller>
+					{/* <select id = "organization-state" {...register("state")}>
 						{US_STATES.map((option: OptionType) => {
 							return (
 								<option value={option.value}>{option.label}</option>
 							)
 						})}
-					</select>
+					</select> */}
 			        {errors?.state && <small className = "--text-alert">{errors.state.message}</small>}
 				</div>
 				<div className = "tw-flex tw-flex-col">
@@ -148,14 +186,14 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 			        {errors?.zipcode && <small className = "--text-alert">{errors.zipcode.message}</small>}
 				</div>
 				<div>
-					<label className = "label" htmlFor = "organization-phone">Phone:<span className = "tw-font-bold tw-text-red-500">*</span></label>
+					<label className = "label" htmlFor = "organization-phone">Phone:<span className = "tw-font-bold tw-text-red-500"> *</span></label>
 					<input id = "organization-phone" type = "text"
 					{...register("phoneNumber", registerOptions.phoneNumber)}
 					/>
 			        {errors?.phoneNumber && <small className = "--text-alert">{errors.phoneNumber.message}</small>}
 				</div>
 				<div>
-					<label className = "label" htmlFor = "organization-email">Email:<span className = "tw-font-bold tw-text-red-500">*</span></label>
+					<label className = "label" htmlFor = "organization-email">Email:<span className = "tw-font-bold tw-text-red-500"> *</span></label>
 					<input id = "organization-email" type = "text" className = "tw-w-full"
 					{...register("email", registerOptions.email)}
 					/>

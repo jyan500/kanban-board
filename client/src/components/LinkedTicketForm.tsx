@@ -19,6 +19,7 @@ import { selectCurrentTicketId } from "../slices/boardSlice"
 import { toggleShowModal } from "../slices/modalSlice" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { AsyncSelect, LoadOptionsType } from "../components/AsyncSelect"
+import { Select } from "../components/page-elements/Select"
 import { TICKET_URL } from "../helpers/urls"
 import { GroupBase, SelectInstance } from "react-select"
 import { OptionType, ProgressBarPercentage } from "../types/common"
@@ -30,7 +31,7 @@ import { IconClose } from "./icons/IconClose"
 type LinkedTicketFormValues = {
 	parentTicketId: number | null | undefined
 	childTicketId: string
-	ticketRelationshipTypeId: number | string
+	ticketRelationshipTypeId: OptionType
 }
 
 type Props = {
@@ -58,7 +59,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 	// load in the child/parent ticket information
 	// skip paginate because we're only loading in a set of ids, and it's anticipated that there will be < 100 tickets per epic on general use case.
 	const { data: tickets } = useGetTicketsQuery(ticketIdSet.size ? {skipPaginate: true, includeAssignees: true, ticketIds: Array.from(ticketIdSet)} : skipToken)
-	const { ticketRelationshipTypes } = useAppSelector((state) => state.ticketRelationshipType)
+	const { ticketRelationshipTypes, ticketRelationshipTypesForSelect } = useAppSelector((state) => state.ticketRelationshipType)
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)  
 	const [ addTicketRelationship, { error: addTicketRelationshipError, isLoading: isAddTicketRelationshipLoading }] = useAddTicketRelationshipMutation()
@@ -89,7 +90,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 	const defaultForm = {
 		parentTicketId: currentTicketId,
 		childTicketId: "",
-		ticketRelationshipTypeId: ticket?.ticketTypeId === epicTicketType?.id ? (epicTicketRelationshipType?.id ?? "") : "" 
+		ticketRelationshipTypeId: isEpicParent && epicTicketRelationshipType ? {label: epicTicketRelationshipType?.name, value: epicTicketRelationshipType.id.toString()} : {label: "", value: ""} 
 	}
 	const [preloadedValues, setPreloadedValues] = useState<LinkedTicketFormValues>(defaultForm)
 	const { register, control, handleSubmit, reset, setValue, watch, formState: {errors} } = useForm<LinkedTicketFormValues>({
@@ -147,7 +148,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 		    	await addTicketRelationship({
 		    		parentTicketId: values.parentTicketId ?? 0,
 		    		childTicketId: Number(values.childTicketId) ?? 0,
-		    		ticketRelationshipTypeId: Number(values.ticketRelationshipTypeId) ?? 0
+		    		ticketRelationshipTypeId: Number(values.ticketRelationshipTypeId.value) ?? 0
 			    	}).unwrap()
 			    	dispatch(addToast({
 			    		...defaultToast,
@@ -238,14 +239,29 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 						<form onSubmit={(e) => e.preventDefault()} className = "tw-flex tw-flex-col tw-gap-y-2">
 							<div className = "tw-flex tw-flex-row tw-gap-x-2">
 								<div className = "tw-w-1/3 tw-w-full tw-flex tw-flex-col tw-gap-y-1">
-									<select className = "tw-w-full" {...register("ticketRelationshipTypeId", registerOptions.ticketRelationshipTypeId)}>
-										<option value="" disabled></option>
-										{!isEpicParent ? ticketRelationshipTypes.filter(type => type.id !== epicTicketRelationshipType?.id).map((type) => 
-											<option key = {type.id} value = {type.id}>{type.name}</option>
-										) : 
-										<option value = {epicTicketRelationshipType?.id}>{epicTicketRelationshipType?.name}</option>
-									}
-									</select>
+									<Controller
+										control={control}
+										name={"ticketRelationshipTypeId"}
+										render={({field: {onChange}}) => {
+											return (
+												<Select 
+													options={
+														!isEpicParent ? ticketRelationshipTypesForSelect.filter((type) => type.value !== epicTicketRelationshipType?.id.toString()) :
+														ticketRelationshipTypesForSelect.filter((type) => type.value === epicTicketRelationshipType?.id.toString())
+													}
+													defaultValue={watch("ticketRelationshipTypeId") ?? {label: "", value: ""}}
+													onSelect={(selectedOption: OptionType | null) => {
+														if (selectedOption){
+															onChange(selectedOption)
+														}
+													}}
+												>
+												</Select>
+											)
+										}}
+									>
+
+									</Controller>
 							        {errors?.ticketRelationshipTypeId && <small className = "--text-alert">{errors.ticketRelationshipTypeId.message}</small>}
 								</div>
 								<div className = "tw-w-2/3 tw-w-full tw-flex tw-flex-col tw-gap-y-1">
