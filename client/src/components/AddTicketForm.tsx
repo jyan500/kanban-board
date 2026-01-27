@@ -241,11 +241,6 @@ export const AddTicketForm = ({
 						}
 						<div>
 							<label className = "label" htmlFor = "ticket-status">Status</label>
-							{/* <select className = "tw-w-full" id = "ticket-status" {...register("statusId", registerOptions.statusId)}>
-								{statusesToDisplay?.map((status: Status) => {
-									return <option key = {status.id} value = {status.id}>{status.name}</option>
-								})}
-							</select>	 */}
 							<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
 								<Select 
 									clearable={false}
@@ -297,11 +292,6 @@ export const AddTicketForm = ({
 						</div>
 						<div>
 							<label className = "label" htmlFor = "ticket-priority">Priority</label>
-							{/* <select className = "tw-w-full" id = "ticket-priority" {...register("priorityId", registerOptions.priorityId)}>
-								{priorities.map((priority: Priority) => {
-									return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
-								})}
-							</select> */}
 							<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
 								<Select 
 									clearable={false}

@@ -1,5 +1,5 @@
 import React from "react"
-import { OrganizationForm } from "../../components/OrganizationForm"
+import { FormValues, OrganizationForm } from "../../components/OrganizationForm"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { useGetOrganizationQuery } from "../../services/private/organization"
 import { skipToken } from '@reduxjs/toolkit/query/react'
