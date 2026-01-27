@@ -4,6 +4,7 @@ import { OptionType } from "../../types/common"
 import { SELECT_Z_INDEX } from "../../helpers/constants"
 
 interface Props {
+	id?: string
     options: Array<OptionType>
 	defaultValue?: OptionType | null 
     className?: string
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export const Select = ({
+	id,
     options, 
     defaultValue,
     clearable,
@@ -46,6 +48,7 @@ export const Select = ({
 
     return (
         <ReactSelect
+			inputId={id}
             options={options}
             value={defaultValue}
 			onBlur={onBlur}

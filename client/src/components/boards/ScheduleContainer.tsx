@@ -56,6 +56,7 @@ import { useForm, FormProvider, useFormContext} from "react-hook-form"
 import { FormValues } from "../../pages/boards/BoardSchedule"
 import { IconFilter } from "../icons/IconFilter"
 import { FilterButton } from "../../components/page-elements/FilterButton"
+import { Select } from "../page-elements/Select"
 
 interface TicketDescriptionProps {
     ticket: Ticket
@@ -472,19 +473,26 @@ const ScheduleContainerSearchBar = ({
                         return (
                             <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
                                 <label className = "label tw-whitespace-nowrap" htmlFor="board-group-by">Group By</label>
-                                <select 
-                                    id = "board-group-by" 
-                                    /* TODO: the margin top is coming from label CSS, need to refactor to make separate horizontal label class rather than
-                                    forcing the margin top to 0 here */
-                                    className = "__custom-select tw-bg-primary tw-border-primary tw-w-full !tw-mt-0 lg:tw-w-auto" 
-                                    value={groupBy}
-                                    onChange={(e) => onGroupBy(e.target.value as GroupByOptionsKey)}>
-                                    {
-                                        Object.keys(GROUP_BY_OPTIONS).map((groupByKey) => (
-                                            <option key={`group_by_${groupByKey}`} value = {groupByKey}>{GROUP_BY_OPTIONS[groupByKey as GroupByOptionsKey]}</option>
-                                        ))
-                                    }
-                                </select>
+                                <div className={"!tw-mt-0 !tw-w-40"}>
+                                    <Select
+                                        id="board-group-by"
+                                        options={Object.keys(GROUP_BY_OPTIONS).map((option) => ({
+                                            label: GROUP_BY_OPTIONS[option as keyof typeof GROUP_BY_OPTIONS],
+                                            value: option
+                                        }))}
+                                        className={"!tw-bg-primary lg:!tw-w-auto"}
+                                        textColor={"white"}
+                                        textAlign={"center"}
+                                        clearable={false}
+                                        defaultValue={{value: groupBy, label: GROUP_BY_OPTIONS[groupBy as keyof typeof GROUP_BY_OPTIONS]}}
+                                        onSelect={(selectedOption: {label: string, value: string} | null) => {
+                                            if (selectedOption){
+                                                onGroupBy(selectedOption.value as GroupByOptionsKey)
+                                            }
+                                        }}
+                                    >
+                                    </Select>
+                                </div>
                                 <FilterButton
                                     onClick={() => {
                                         dispatch(setSecondaryModalType("BOARD_FILTER_MODAL"))
