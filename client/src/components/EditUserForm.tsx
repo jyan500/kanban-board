@@ -187,6 +187,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 									render={({field: {onChange}}) => {
 										return (
 											<Select
+												id={"edit-user-role"}
 												options={userRolesForSelect}
 												defaultValue={watch("userRoleId") ?? {label: "", value: ""}}
 												onSelect={(selectedOption: OptionType | null) => {

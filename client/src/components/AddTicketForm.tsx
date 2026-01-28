@@ -243,6 +243,7 @@ export const AddTicketForm = ({
 							<label className = "label" htmlFor = "ticket-status">Status</label>
 							<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
 								<Select 
+									id={"ticket-status"}
 									clearable={false}
 									options={statusesToDisplay?.map((status) => ({
 										label: status.name,
@@ -262,6 +263,7 @@ export const AddTicketForm = ({
 								<div>
 									<label className = "label" htmlFor = "ticket-description">Description</label>
 									<SimpleEditor
+										id={"ticket-description"}
 										registerField={"description"}
 										registerOptions={registerOptions.description}
 										mentionsEnabled={true}
@@ -277,6 +279,7 @@ export const AddTicketForm = ({
 								control={control}
 				                render={({ field: { onChange, value, name, ref } }) => (
 			                	<AsyncSelect 
+									id={"ticket-assignee"}
 			                		defaultValue={watch("userIdOption") ?? {label: "", value: ""}}
 				                	endpoint={USER_PROFILE_URL} 
 									// include the ability to unassign for bulk edit
@@ -294,6 +297,7 @@ export const AddTicketForm = ({
 							<label className = "label" htmlFor = "ticket-priority">Priority</label>
 							<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
 								<Select 
+									id={"ticket-priority"}
 									clearable={false}
 									options={prioritiesForSelect}
 									defaultValue={watch("priorityId") ?? {value: "", label: ""}}
@@ -312,6 +316,7 @@ export const AddTicketForm = ({
 										<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
 										<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
 											<Select 
+												id={"ticket-type"}
 												clearable={false}
 												options={ticketTypesForSelect}
 												defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}

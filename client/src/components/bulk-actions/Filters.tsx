@@ -19,6 +19,7 @@ export const Filters = () => {
 				<label className = "label" htmlFor = "bulk-action-filters-ticket-type">Ticket Type</label>
 				<Controller name={"ticketType"} control={control} render={({field: {onChange}}) => (
 					<Select 
+						id="bulk-action-filters-ticket-type"
 						options={ticketTypes.map((ticketType) => (
 						{
 							label: ticketType.name,
@@ -37,6 +38,7 @@ export const Filters = () => {
 				<label className = "label" htmlFor = "bulk-action-filters-ticket-priority">Priority</label>
 				<Controller name={"priority"} control={control} render={({field: {onChange}}) => (
 					<Select 
+						id={"bulk-action-filters-ticket-priority"}
 						options={priorities.map((priority) => (
 						{
 							label: priority.name,
@@ -55,6 +57,7 @@ export const Filters = () => {
 				<label className = "label" htmlFor = "bulk-action-filters-ticket-status">Status</label>
 				<Controller name={"status"} control={control} render={({field: {onChange}}) => (
 					<Select 
+						id={"bulk-action-filters-ticket-status"}
 						options={statuses.map((status) => (
 						{
 							label: status.name,

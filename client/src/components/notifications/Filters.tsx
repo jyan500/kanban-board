@@ -89,7 +89,9 @@ export const Filters = () => {
 		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-noti-type">Notification Type</label>
-				<Controller name={"notificationType"} control={control} render={({field: {onChange}}) => ( <Select 
+				<Controller name={"notificationType"} control={control} render={({field: {onChange}}) => ( 
+					<Select 
+						id={"filters-noti-type"}
 						options={notificationTypesForSelect}
 						defaultValue={watch("notificationType") ?? {value: "", label: ""}}
 						onSelect={(selectedOption: {label: string, value: string} | null) => {
@@ -116,6 +118,7 @@ export const Filters = () => {
 						control={control}
 		                render={({ field: { onChange, value, name, ref } }) => (
 		                	<AsyncSelect 
+								id={"filters-noti-user"}
 			                	endpoint={USER_PROFILE_URL} 
 			                	defaultValue={watch("user") ?? {value: "", label: ""}}
 			                	urlParams={{forSelect: true}} 

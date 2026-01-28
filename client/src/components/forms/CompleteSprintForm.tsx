@@ -130,6 +130,7 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
                             Debrief
                         </label>
                         <SimpleEditor
+                            id={"sprint-debrief"}
                             registerField={"debrief"}
                             registerOptions={registerOptions.debrief}
                         />

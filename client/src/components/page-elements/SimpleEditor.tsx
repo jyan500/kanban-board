@@ -8,6 +8,7 @@ import { useLazyGenericFetchQuery } from "../../services/private/generic"
 import { USER_PROFILE_URL } from "../../helpers/urls"
 
 type Props = {
+	id?: string
 	registerField: string
 	registerOptions?: Record<string, any> 
 	mentionsEnabled?: boolean
@@ -15,7 +16,14 @@ type Props = {
 	mentionsUrlParams?: Record<string, any>
 }
 
-export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, mentionsUrl, mentionsUrlParams}: Props) => {
+export const SimpleEditor = ({
+	id,
+	registerField, 
+	registerOptions, 
+	mentionsEnabled, 
+	mentionsUrl, 
+	mentionsUrlParams
+}: Props) => {
 	const { control, handleSubmit, register, resetField, getValues, setValue } = useFormContext()
 	const [ genericFetch ] = useLazyGenericFetchQuery()
 	const quillRef = useRef<ReactQuill>(null)
@@ -77,6 +85,7 @@ export const SimpleEditor = ({registerField, registerOptions, mentionsEnabled, m
 				control={control}
 				render={({field}) => (
 					<ReactQuill 
+						id={id}
 						ref={quillRef}
 						modules={modules}
 						/* prevent quill popups from going out of bounds*/

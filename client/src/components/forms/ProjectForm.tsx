@@ -159,7 +159,7 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 					: null
 				}
 				<div className = "tw-flex tw-flex-col">
-					<label className = "label">
+					<label className = "label" htmlFor={"project-owner"}>
 						Owner <span className = "tw-font-bold tw-text-red-500">*</span>
 					</label>
 					<Controller
@@ -168,6 +168,7 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 						rules={registerOptions.userIdOption}
 						render={({ field: { onChange, value, name, ref } }) => (
 							<AsyncSelect 
+								id={"project-owner"}
 								endpoint={USER_PROFILE_URL} 
 								clearable={true}
 								defaultValue={watch("userIdOption") ?? null}
@@ -199,13 +200,14 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 					/>
 				</div>
 				<div className = "tw-flex tw-flex-col">
-					<label className = "label">Boards</label>
+					<label className = "label" htmlFor={"project-boards"}>Boards</label>
 					<Controller
 						name={"boardIdOptions"}
 						control={control}
 						rules={registerOptions.boardIdOptions}
 						render={({ field: { onChange, value, name, ref } }) => (
 							<AsyncMultiSelect 
+								id={"project-boards"}
 								endpoint={BOARD_URL} 
 								clearable={true}
 								defaultValue={watch("boardIdOptions") ?? null}

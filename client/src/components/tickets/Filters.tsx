@@ -131,6 +131,7 @@ export const Filters = () => {
 				<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
 				<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
 					<Select 
+						id={"filters-ticket-type"}
 						options={ticketTypesForSelect}
 						defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
 						onSelect={(selectedOption: {label: string, value: string} | null) => {
@@ -144,6 +145,7 @@ export const Filters = () => {
 				<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
 				<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
 					<Select 
+						id={"filters-ticket-priority"}
 						options={prioritiesForSelect}
 						defaultValue={watch("priorityId") ?? {value: "", label: ""}}
 						onSelect={(selectedOption: {label: string, value: string} | null) => {
@@ -157,6 +159,7 @@ export const Filters = () => {
 				<label className = "label" htmlFor = "filters-ticket-status">Status</label>
 				<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
 					<Select 
+						id={"filters-ticket-status"}
 						options={statusesForSelect}
 						defaultValue={watch("statusId") ?? {value: "", label: ""}}
 						onSelect={(selectedOption: {label: string, value: string} | null) => {
@@ -175,6 +178,7 @@ export const Filters = () => {
 							control={control}
 							render={({ field: { onChange, value, name, ref } }) => (
 								<AsyncSelect 
+									id={"filters-ticket-board"}
 									endpoint={BOARD_URL} 
 									urlParams={{}} 
 									defaultValue={watch("board") ?? {value: "", label: ""}}
@@ -199,6 +203,7 @@ export const Filters = () => {
 							control={control}
 							render={({ field: { onChange, value, name, ref } }) => (
 								<AsyncSelect 
+									id={"filters-ticket-sprint"}
 									endpoint={SPRINT_URL} 
 									urlParams={{"searchBy": "name"}} 
 									defaultValue={watch("sprint") ?? {value: "", label: ""}}
@@ -223,6 +228,7 @@ export const Filters = () => {
 							control={control}
 							render={({ field: { onChange, value, name, ref } }) => (
 								<AsyncSelect 
+									id={"filters-assignee"}
 									endpoint={USER_PROFILE_URL} 
 									urlParams={{forSelect: true, includeUnassigned: true}} 
 									defaultValue={watch("assignedToUser") ?? {value: "", label: ""}}
