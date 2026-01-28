@@ -30,7 +30,7 @@ const { retryTransaction, parseMentions, insertAndGetId } = require("../helpers/
 const db = require("../db/db")
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { GoogleGenAI } = require("@google/genai")
-const { searchTicketByAssignee } = require("../helpers/query-helpers")
+const { searchTicketByAssignee, searchTicketByReporter } = require("../helpers/query-helpers")
 const { rateLimitTicketSummary } = require("../middleware/rateLimitMiddleware")
 const HistoryService = require('../services/history-service')
 
@@ -60,7 +60,7 @@ router.get("/", async (req, res, next) => {
 				searchTicketByAssignee(queryBuilder, req.query.query)
 			}
 			else if (req.query.searchBy === "reporter"){
-				queryBuilder.join("users", "users.id", "=", "tickets.user_id").whereILike("users.first_name", `%${req.query.query}%`)
+				searchTicketByReporter(queryBuilder, req.query.query)
 			}
 			if (req.query.ticketType || req.query.ticketTypeId) {
 				queryBuilder.where("tickets.ticket_type_id", req.query.ticketType ?? req.query.ticketTypeId)

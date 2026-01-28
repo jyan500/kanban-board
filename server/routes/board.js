@@ -27,7 +27,7 @@ const db = require("../db/db")
 const { retryTransaction, insertAndGetId, mapIdToRowAggregateArray, mapIdToRowAggregateObjArray, mapIdToRowObject, getHistoryDisplayString } = require("../helpers/functions") 
 const { DEFAULT_PER_PAGE } = require("../constants")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
-const { getAssigneesFromBoards, getNumTicketsFromBoards, getLastModified, searchTicketByAssignee } = require("../helpers/query-helpers")
+const { getAssigneesFromBoards, getNumTicketsFromBoards, getLastModified, searchTicketByAssignee, searchTicketByReporter } = require("../helpers/query-helpers")
 const HistoryService = require('../services/history-service')
 
 historyService = new HistoryService(db)
@@ -433,7 +433,7 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 				searchTicketByAssignee(queryBuilder, req.query.query)
 			}
 			else if (req.query.searchBy === "reporter"){
-				queryBuilder.join("users", "users.id", "=", "tickets.user_id").whereILike("users.first_name", `%${req.query.query}%`)
+				searchTicketByReporter(queryBuilder, req.query.query)
 			}
 			if (req.query.limit){
 				queryBuilder.limit(board.ticket_limit)

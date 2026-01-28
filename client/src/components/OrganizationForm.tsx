@@ -169,13 +169,6 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 						}}
 					>
 					</Controller>
-					{/* <select id = "organization-state" {...register("state")}>
-						{US_STATES.map((option: OptionType) => {
-							return (
-								<option value={option.value}>{option.label}</option>
-							)
-						})}
-					</select> */}
 			        {errors?.state && <small className = "--text-alert">{errors.state.message}</small>}
 				</div>
 				<div className = "tw-flex tw-flex-col">

@@ -52,7 +52,13 @@ router.get("/registration-request", authenticateToken, authenticateUserRole(["AD
 		.modify((queryBuilder) => {
 			if (req.query.query || req.query.regQuery){
 				const query = req.query.query ?? req.query.regQuery
-				queryBuilder.where((queryBuilder2) => queryBuilder2.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`))
+				const terms = query.trim().split(/\s+/)
+					terms.forEach((term) => {
+						queryBuilder.where((qb) => {
+							qb.whereILike("users.first_name", `%${term}%`)
+							.orWhereILike("users.last_name", `%${term}%`)
+						})
+					})
 			}
 		})
 		.select(

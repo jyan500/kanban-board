@@ -15,7 +15,7 @@ const {
 const { insertAndGetId } = require("../helpers/functions") 
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
-const { searchTicketByAssignee } = require("../helpers/query-helpers")
+const { searchTicketByAssignee, searchTicketByReporter } = require("../helpers/query-helpers")
 const { aggregateCompletedAndOpenSprintTickets } = require("../helpers/functions")
 const HistoryService = require('../services/history-service')
 const db = require("../db/db")
@@ -267,7 +267,7 @@ router.get("/:sprintId/ticket", validateSprintTicketGet, handleValidationResult,
 				searchTicketByAssignee(queryBuilder, req.query.query)
 			}
 			else if (req.query.searchBy === "reporter"){
-				queryBuilder.join("users", "users.id", "=", "tickets.user_id").whereILike("users.first_name", `%${req.query.query}%`)
+				searchTicketByReporter(queryBuilder, req.query.query)
 			}
 		})
 		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});

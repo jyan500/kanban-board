@@ -61,11 +61,12 @@ export const SearchToolBar = ({
 					}} className = "tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-gap-x-2">
 						{searchOptions && searchOptions.length > 0 ? 
 							(
-								<div>
+								<div className = "!tw-w-full lg:!tw-w-36">
 									<Controller name={"searchBy"} control={control} render={({field: {onChange}}) => (
 										<Select 
 											options={searchOptions}
 											clearable={false}
+											className={"!tw-w-full lg:!tw-w-36"}
 											hideIndicatorSeparator={true}
 											searchable={false}
 											defaultValue={watch("searchBy") ? {value: watch("searchBy"), label: searchOptions.find((option: OptionType) => option.value === watch("searchBy"))?.label ?? ""} : {value: "", label: ""}}
@@ -77,12 +78,6 @@ export const SearchToolBar = ({
 										/>
 									)}>
 									</Controller>
-									{/* <select {...register("searchBy", registerOptions.searchBy)}>
-										{Object.keys(searchOptions).map((option) => {
-											const value = searchOptions[option as keyof typeof searchOptions]
-											return <option key = {option} value = {option}>{value}</option>
-										})}
-									</select> */}
 								</div>
 							) : null
 						}

@@ -233,7 +233,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 			                	endpoint={USER_PROFILE_URL} 
 			                	urlParams={{forSelect: true, includeUnassigned: true}} 
 			                	className={"tw-w-full"}
-			                	clearable={false}
+			                	clearable={true}
 			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 			                		onChange(selectedOption) 	
 			                	}}
@@ -252,7 +252,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 			                	endpoint={SPRINT_URL} 
 			                	urlParams={{boardId: boardId, searchBy: "name", forSelect: true}} 
 			                	className={"tw-w-full"}
-			                	clearable={false}
+			                	clearable={true}
 			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 			                		onChange(selectedOption) 	
 			                	}}
