@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { toggleShowModal, setModalProps } from "../slices/modalSlice" 
 import { useGetUserQuery, useEditOwnUserProfileMutation, useEditUserProfileMutation } from "../services/private/userProfile"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import { addToast } from "../slices/toastSlice" 
 import { LoadingSpinner } from "./LoadingSpinner"
-import { UserProfile } from "../types/common"
+import { UserProfile, OptionType } from "../types/common"
 import { parseDelimitedWord } from "../helpers/functions"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { FaEye, FaEyeSlash } from "react-icons/fa"
@@ -17,13 +17,14 @@ import { LoadingSkeleton } from "./page-elements/LoadingSkeleton"
 import { ColumnFormPlaceholder } from "./placeholders/ColumnFormPlaceholder"
 import { BackendErrorMessage } from "./page-elements/BackendErrorMessage"
 import { LoadingButton } from "./page-elements/LoadingButton"
+import { Select } from "./page-elements/Select"
 
 type FormValues = {
 	id?: number 
 	firstName: string
 	lastName: string
 	email: string
-	userRoleId?: number | string
+	userRoleId?: OptionType
 	password?: string
 	changePassword?: boolean
 	confirmPassword?: string
@@ -42,13 +43,13 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 		showModal
 	} = useAppSelector((state) => state.modal)
 	const [showPassword, setShowPassword] = useState(false)
-	const { userRoles } = useAppSelector((state) => state.userRole)
+	const { userRoles, userRolesForSelect } = useAppSelector((state) => state.userRole)
 	const defaultForm: FormValues = {
 		id: undefined,
 		firstName: "",
 		lastName: "",
 		email: "",
-		userRoleId: "",
+		userRoleId: {label: "", value: ""},
 		...isChangePassword ? {
 			changePassword: isChangePassword,
 			password: "",
@@ -60,7 +61,7 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 	const [ editOwnUserProfile, {isLoading: isEditOwnUserLoading, error: ownUserError} ] = useEditOwnUserProfileMutation()
 	const { data: userInfo, isLoading: isUserDataLoading, isFetching: isUserDataFetching  } = useGetUserQuery(userId ? userId : skipToken)
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
-	const { register , handleSubmit, reset, watch, setValue, getValues, formState: {errors} } = useForm<FormValues>({
+	const { register , handleSubmit, reset, watch, control, setValue, getValues, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
 	})
 	const registerOptions = {
@@ -79,7 +80,13 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 		if (userId && userInfo){
 			// everything except organization
 			const {organizationId, ...userWithoutOrganization} = userInfo
-			reset({...userWithoutOrganization, changePassword: isAccountsPage && isChangePassword})
+			reset({
+				...userWithoutOrganization, 
+				userRoleId: {
+					label: userRolesForSelect.find((userRole) => userInfo.userRoleId.toString() === userRole.value)?.label ?? "",
+					value: userInfo.userRoleId.toString()
+				},
+				changePassword: isAccountsPage && isChangePassword})
 		}
 		else {
 			reset(defaultForm)
@@ -90,7 +97,8 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
     	try {
     		if (values.id){
 				if (!isAccountsPage){
-					await editUserProfile({...values, userRoleId: !isNaN(Number(values.userRoleId)) ? Number(values.userRoleId) : 0}).unwrap()
+					await editUserProfile({...values, 
+						userRoleId: !isNaN(Number(values.userRoleId?.value)) ? Number(values.userRoleId?.value) : 0}).unwrap()
 		    		dispatch(toggleShowModal(false))
 		    		dispatch(setModalProps({}))
 				}
@@ -173,20 +181,25 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 							    <label className = "label" htmlFor = "edit-user-role">
 							    	User Role: <span className = "tw-font-bold tw-text-red-500">*</span>
 							    </label>
-								<select 
-								id = "edit-user-role"
-								className = "tw-w-full"
-								{...register("userRoleId", registerOptions.userRoleId)}
+								<Controller
+									name="userRoleId"
+									control={control}
+									render={({field: {onChange}}) => {
+										return (
+											<Select
+												id={"edit-user-role"}
+												options={userRolesForSelect}
+												defaultValue={watch("userRoleId") ?? {label: "", value: ""}}
+												onSelect={(selectedOption: OptionType | null) => {
+													if (selectedOption){
+														onChange(selectedOption)
+													}
+												}}
+											/>
+										)
+									}}
 								>
-									<option value = "" disabled></option>
-									{
-										userRoles.map((userRole) => {
-											return (
-												<option key={`user-role-${userRole.id}`} value = {userRole.id}>{parseDelimitedWord(userRole.name, "_")}</option>
-											)
-										})
-									}
-								</select>
+								</Controller>
 						        {errors?.userRoleId && <small className = "--text-alert">{errors.userRoleId.message}</small>}
 					        </>
 		    			) : null}

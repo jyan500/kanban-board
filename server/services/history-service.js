@@ -48,7 +48,7 @@ class HistoryService {
         for (const [key, newValue] of Object.entries(newRecord)) {
             if (oldRecord[key] instanceof Date){
                 const oldDate = new Date(oldRecord[key]).toISOString().split('T')[0]
-                const newDate = new Date(newValue).toISOString().split("T")[0]
+                const newDate = newValue == null ? null : new Date(newValue).toISOString().split("T")[0]
                 if (oldDate !== newDate){
                     changes[key] = {
                         from: oldDate,

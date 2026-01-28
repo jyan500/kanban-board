@@ -6,6 +6,7 @@ import { LoadingSpinner } from "../LoadingSpinner"
 import { BOARD_URL, SPRINT_URL, USER_PROFILE_URL } from "../../helpers/urls"
 import { displayUser } from "../../helpers/functions"
 import { AsyncSelect, LoadOptionsType } from "../../components/AsyncSelect"
+import { Select } from "../page-elements/Select"
 import { useLazyGetBoardQuery } from "../../services/private/board"
 import { useLazyGetSprintQuery } from "../../services/private/sprint"
 import { useLazyGetUserQuery } from "../../services/private/userProfile"
@@ -19,25 +20,25 @@ import { LoadingButton } from "../page-elements/LoadingButton"
 import { Button } from "../page-elements/Button"
 
 interface FormValues {
-	statusId: number | null
-	ticketTypeId: number | null
-	priorityId: number | null
+	statusId: OptionType
+	ticketTypeId: OptionType
+	priorityId: OptionType
 	sprint: OptionType
 	board: OptionType
 	assignedToUser: OptionType
 }
 
 export const Filters = () => {
-	const { ticketTypes } = useAppSelector((state) => state.ticketType)
-	const { priorities } = useAppSelector((state) => state.priority)
-	const { statuses } = useAppSelector((state) => state.status)
+	const { ticketTypes, ticketTypesForSelect } = useAppSelector((state) => state.ticketType)
+	const { priorities, prioritiesForSelect } = useAppSelector((state) => state.priority)
+	const { statuses, statusesForSelect } = useAppSelector((state) => state.status)
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
 	const { filters } = useAppSelector((state) => state.ticketFilter)
 	const dispatch = useAppDispatch()
 	const defaultForm: FormValues = {
-		ticketTypeId: 0,
-		priorityId: 0,
-		statusId: 0,
+		ticketTypeId: {value: "", label: ""},
+		priorityId: {value: "", label: ""},
+		statusId: {value: "", label: ""},
 		board: {value: "", label: ""},
 		sprint: {value: "", label: ""},
 		assignedToUser: {value: "", label: ""},
@@ -59,9 +60,9 @@ export const Filters = () => {
 			const { ticketTypeId, priorityId, statusId, boardId, sprintId, assignedToUser } = filters
 			reset({
 				...defaultForm,
-				ticketTypeId, 
-				priorityId,
-				statusId,
+				ticketTypeId: ticketTypeId ? {label: ticketTypes.find((ticketType) => ticketType.id === ticketTypeId)?.name ?? "", value: ticketTypeId.toString()} : {label: "", value: ""}, 
+				priorityId: priorityId ? {label: priorities.find((priority) => priority.id === priorityId)?.name ?? "", value: priorityId.toString()} : {label: "", value: ""},
+				statusId: statusId ? {label: statuses.find((status) => status.id === statusId)?.name ?? "", value: statusId?.toString()} : {label: "", value: ""},
 			})
 			if (boardId){
 				triggerGetBoard({id: boardId, urlParams: {}})
@@ -111,9 +112,9 @@ export const Filters = () => {
 		}
 		const newFilterValues = {
             ...filters,
-			ticketTypeId: values.ticketTypeId !== 0 ? values.ticketTypeId : null,
-			priorityId: values.priorityId !== 0 ? values.priorityId : null,
-			statusId: values.statusId !== 0 ? values.statusId : null,
+			ticketTypeId: values.ticketTypeId && values.ticketTypeId.value ? Number(values.ticketTypeId.value) : null,
+			priorityId: values.priorityId && values.priorityId.value ? Number(values.priorityId.value) : null,
+			statusId: values.statusId && values.statusId.value !== "" ? Number(values.statusId.value) : null,
 			boardId: values.board && values.board.value !== "" ? Number(values.board.value) : null,
 			sprintId: values.sprint && values.sprint.value !== "" ? Number(values.sprint.value) : null,
 			assignedToUser: assignedToUser 
@@ -128,30 +129,45 @@ export const Filters = () => {
 		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
-				<select className = "tw-w-full" id = "filters-ticket-type" {...register("ticketTypeId")}>
-					<option value="" disabled></option>
-					{ticketTypes.map((ticketType: TicketType) => {
-						return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
-					})}
-				</select>
+				<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
+					<Select 
+						id={"filters-ticket-type"}
+						options={ticketTypesForSelect}
+						defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
+						onSelect={(selectedOption: {label: string, value: string} | null) => {
+							onChange(selectedOption) 	
+						}}
+					/>
+				)}>
+				</Controller>
 			</div>
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
-				<select className = "tw-w-full" id = "filters-ticket-priority" {...register("priorityId")}>
-					<option value="" disabled></option>
-					{priorities.map((priority: Priority) => {
-						return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
-					})}
-				</select>
+				<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
+					<Select 
+						id={"filters-ticket-priority"}
+						options={prioritiesForSelect}
+						defaultValue={watch("priorityId") ?? {value: "", label: ""}}
+						onSelect={(selectedOption: {label: string, value: string} | null) => {
+							onChange(selectedOption) 	
+						}}
+					/>
+				)}>
+				</Controller>
 			</div>
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-ticket-status">Status</label>
-				<select className = "tw-w-full" id = "filters-ticket-status" {...register("statusId")}>
-					<option value="" disabled></option>
-					{statuses.map((status: Status) => {
-						return <option key = {status.id} value = {status.id}>{status.name}</option>
-					})}
-				</select>
+				<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
+					<Select 
+						id={"filters-ticket-status"}
+						options={statusesForSelect}
+						defaultValue={watch("statusId") ?? {value: "", label: ""}}
+						onSelect={(selectedOption: {label: string, value: string} | null) => {
+							onChange(selectedOption) 	
+						}}
+					/>
+				)}>
+				</Controller>
 			</div>
 			<div className = "tw-flex tw-flex-col">
 				<label className = "label" htmlFor = "filters-ticket-board">Board</label>
@@ -162,6 +178,7 @@ export const Filters = () => {
 							control={control}
 							render={({ field: { onChange, value, name, ref } }) => (
 								<AsyncSelect 
+									id={"filters-ticket-board"}
 									endpoint={BOARD_URL} 
 									urlParams={{}} 
 									defaultValue={watch("board") ?? {value: "", label: ""}}
@@ -186,6 +203,7 @@ export const Filters = () => {
 							control={control}
 							render={({ field: { onChange, value, name, ref } }) => (
 								<AsyncSelect 
+									id={"filters-ticket-sprint"}
 									endpoint={SPRINT_URL} 
 									urlParams={{"searchBy": "name"}} 
 									defaultValue={watch("sprint") ?? {value: "", label: ""}}
@@ -210,6 +228,7 @@ export const Filters = () => {
 							control={control}
 							render={({ field: { onChange, value, name, ref } }) => (
 								<AsyncSelect 
+									id={"filters-assignee"}
 									endpoint={USER_PROFILE_URL} 
 									urlParams={{forSelect: true, includeUnassigned: true}} 
 									defaultValue={watch("assignedToUser") ?? {value: "", label: ""}}

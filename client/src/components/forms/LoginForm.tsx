@@ -110,6 +110,7 @@ export const LoginForm = () => {
                         rules={registerOptions.organizationId}
                         render={({field: {onChange, value, name, ref}}) => (
                             <AsyncSelect 
+                                id={"login-organization"}
                                 urlParams={{}} 
                                 onSelect={(selectedOption: OptionType | null) => {
                                     const val = selectedOption?.value ?? ""

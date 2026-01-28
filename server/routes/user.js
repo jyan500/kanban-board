@@ -208,7 +208,7 @@ router.post("/activate", rateLimitAuth, async (req, res, next) => {
 			{
 				is_active: true,
 				activation_token: undefined,
-				activation_token_expires: undefined 
+				activation_token_expires: undefined,
 			},
 			req.historyContext
 		)

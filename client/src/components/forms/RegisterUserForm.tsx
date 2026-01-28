@@ -142,6 +142,7 @@ export const RegisterUserForm = ({isOrgRegisterLoading, isOrgRegister, onSubmit:
 								rules={registerOptions.organizationId}
 								render={({field: {onChange, value, name, ref}}) => (
 									<AsyncSelect 
+										id={"register-organization"}
 										urlParams={{}} 
 										onSelect={(selectedOption: OptionType | null) => {
 					                		const val = selectedOption?.value ?? ""

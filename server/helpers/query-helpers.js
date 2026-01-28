@@ -39,11 +39,32 @@ const getLastModified = (queryBuilder) => {
 }
 
 const searchTicketByAssignee = (queryBuilder, query) => {
+	const terms = query.trim().split(/\s+/)
 	return queryBuilder.join("tickets_to_users", "tickets_to_users.ticket_id", "=", "tickets.id")
 	.join("users", "tickets_to_users.user_id", "=", "users.id")
 	.where("tickets_to_users.is_mention", false)
 	.where("tickets_to_users.is_watcher", false)
-	.where((queryBuilder2) => queryBuilder2.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`))
+	.modify((queryBuilder2) =>
+		terms.forEach((term) => {
+			queryBuilder2.where((qb) => {
+				qb.whereILike("users.first_name", `%${term}%`)
+				.orWhereILike("users.last_name", `%${term}%`)
+			})
+		})
+	)
+}
+
+const searchTicketByReporter = (queryBuilder, query) => {
+	const terms = query.trim().split(/\s+/)
+	return queryBuilder.join("users", "users.id", "=", "tickets.user_id")
+	.modify((queryBuilder2) => 
+		terms.forEach((term) => {
+			queryBuilder2.where((qb) => {
+				qb.whereILike("users.first_name", `%${term}%`)
+				.orWhereILike("users.last_name", `%${term}%`)
+			})
+		})
+	)
 }
 
 module.exports = {
@@ -51,4 +72,5 @@ module.exports = {
 	getNumTicketsFromBoards,
 	getLastModified,
 	searchTicketByAssignee,
+	searchTicketByReporter,
 }

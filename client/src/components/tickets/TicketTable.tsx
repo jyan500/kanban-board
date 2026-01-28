@@ -19,6 +19,7 @@ import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType
 import { IconFilter } from "../icons/IconFilter"
 import { FilterButton } from "../page-elements/FilterButton"
 import { useBulkEditToolbar } from "../../contexts/BulkEditToolbarContext"
+import { SEARCH_OPTIONS } from "../../helpers/constants"
 
 interface Props {
 	boardId: number | null | undefined
@@ -153,7 +154,7 @@ export const TicketTable = ({
 					setPage={setPage} 
 					currentPage={page ?? 1}
 					registerOptions={registerOptions}
-					searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+					searchOptions = {SEARCH_OPTIONS}
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()
 					}}

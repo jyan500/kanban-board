@@ -180,6 +180,7 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 					<label className = "label" htmlFor = "existing-board">Board</label>
 					<span className = "tw-text-xs">Select this to use an existing board</span>
 					<AsyncSelect 
+						id={"existing-board"}
 						endpoint={BOARD_URL} 
 						clearable={true}
 						defaultValue={boardInfo && currentBoardId ? {label: boardInfo?.[0].name, value: boardInfo?.[0].id.toString()} : null}
@@ -212,13 +213,14 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 		        {errors?.ticketLimit && <small className = "--text-alert">{errors.ticketLimit.message}</small>}
 			</div>
 			<div className = "tw-flex tw-flex-col">
-				<label className = "label">Projects</label>
+				<label htmlFor={"board-projects"} className = "label">Projects</label>
 				<Controller
 					name={"projectIdOptions"}
 					control={control}
 					rules={registerOptions.projectIdOptions}
 					render={({ field: { onChange, value, name, ref } }) => (
 						<AsyncMultiSelect 
+							id={"board-projects"}
 							endpoint={PROJECT_URL} 
 							clearable={true}
 							defaultValue={watch("projectIdOptions") ?? null}

@@ -3,6 +3,7 @@ import { USER_PROFILE_URL, SPRINT_URL } from "../../helpers/urls"
 import { TicketType, Priority, Status, Toast, OptionType, Sprint } from "../../types/common"
 import { Controller, useForm, FormProvider } from "react-hook-form"
 import { AsyncSelect, LoadOptionsType } from "../AsyncSelect"
+import { Select } from "../page-elements/Select"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { setBulkEditFilters, setFilters } from "../../slices/boardFilterSlice"
@@ -18,9 +19,9 @@ import { displayUser } from "../../helpers/functions"
 import { v4 as uuidv4 } from "uuid"
 
 export type FormValues = {
-	priorityId: number | null
-	statusId: number | null
-	ticketTypeId: number | null
+	priorityId: OptionType 
+	statusId: OptionType
+	ticketTypeId: OptionType
 	assignee: OptionType
 	sprint: OptionType
 }
@@ -32,16 +33,16 @@ interface Props {
 
 export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 	const dispatch = useAppDispatch()
-	const { ticketTypes } = useAppSelector((state) => state.ticketType)
-	const { priorities } = useAppSelector((state) => state.priority)
-	const { statuses } = useAppSelector((state) => state.status)
+	const { ticketTypes, ticketTypesForSelect } = useAppSelector((state) => state.ticketType)
+	const { priorities, prioritiesForSelect } = useAppSelector((state) => state.priority)
+	const { statuses, statusesForSelect } = useAppSelector((state) => state.status)
 	const { filters: boardFilters, filterIdMap, bulkEditFilters } = useAppSelector((state) => state.boardFilter)
 	const { showSecondaryModal } = useAppSelector((state) => state.secondaryModal)
 	const filters = isBulkEdit ? bulkEditFilters : boardFilters
 	const defaultForm: FormValues = {
-		ticketTypeId: 0,
-		priorityId: 0,
-		statusId: 0,
+		ticketTypeId: {value: "", label: ""},
+		priorityId: {value: "", label: ""},
+		statusId: {value: "", label: ""},
 		assignee: {value: "", label: ""},
 		sprint: {value: "", label: ""},
 	}
@@ -65,9 +66,9 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 			const { ticketTypeId, priorityId, statusId, assignee, sprintId } = filters
 			reset({
 				...defaultForm,
-				ticketTypeId, 
-				priorityId,
-				statusId,
+				ticketTypeId: ticketTypeId ? {label: ticketTypes.find((ticketType) => ticketType.id === ticketTypeId)?.name ?? "", value: ticketTypeId.toString()} : {label: "", value: ""}, 
+				priorityId: priorityId ? {label: priorities.find((priority) => priority.id === priorityId)?.name ?? "", value: priorityId.toString()} : {label: "", value: ""},
+				statusId: statusId ? {label: statuses.find((status) => status.id === statusId)?.name ?? "", value: statusId?.toString()} : {label: "", value: ""},
 			})
 			if (assignee != null){
 				if (assignee === 0){
@@ -104,7 +105,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 	const postSubmit = (values: FormValues) => {
 		// if there are any filters applied, set filter button state to 1 to show that filters have been applied
 		const { assignee, sprint, ...otherValues} = values
-		const filtersApplied = !(values.ticketTypeId === 0 && values.priorityId === 0 && values.statusId === 0 && values.assignee?.value === "" && values.sprint?.value === "")
+		const filtersApplied = !(values.ticketTypeId?.value === "" && values.priorityId?.value === "" && values.statusId?.value === "" && values.assignee?.value === "" && values.sprint?.value === "")
 		dispatch(toggleShowSecondaryModal(false))
 		dispatch(setSecondaryModalProps({}))
 		dispatch(setSecondaryModalType(undefined))
@@ -113,9 +114,9 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 	const onSubmit = (values: FormValues) => {
 		const newFilterValues = {
             ...filters,
-			ticketTypeId: values.ticketTypeId !== 0 ? values.ticketTypeId : null,
-			priorityId: values.priorityId !== 0 ? values.priorityId : null,
-			statusId: values.statusId !== 0 ? values.statusId : null,
+			ticketTypeId: values.ticketTypeId && values.ticketTypeId.value ? Number(values.ticketTypeId.value) : null,
+			priorityId: values.priorityId && values.priorityId.value ? Number(values.priorityId.value) : null,
+			statusId: values.statusId && values.statusId.value !== "" ? Number(values.statusId.value) : null,
 			assignee: values.assignee && values.assignee.value !== "" ? Number(values.assignee.value) : null,
 			sprintId: values.sprint && values.sprint.value !== "" ? Number(values.sprint.value) : null
 		}
@@ -151,9 +152,9 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 			const userBoardFilters = [
 				...(watch("sprint").value !== "" && "sprintId" in filterIdMap ? [{ board_filter_id: filterIdMap["sprintId"], value: Number(watch("sprint").value)}] : []),
 				...(watch("assignee").value !== "" && "assignee" in filterIdMap ? [{ board_filter_id: filterIdMap["assignee"], value: Number(watch("assignee").value)}] : []),
-				...(watch("statusId") != 0 && "statusId" in filterIdMap ? [{ board_filter_id: filterIdMap["statusId"], value: Number(watch("statusId"))}] : []),
-				...(watch("priorityId") != 0 && "priorityId" in filterIdMap ? [{ board_filter_id: filterIdMap["priorityId"], value: Number(watch("priorityId"))}] : []),
-				...(watch("ticketTypeId") != 0 && "ticketTypeId" in filterIdMap ? [{ board_filter_id: filterIdMap["ticketTypeId"], value: Number(watch("ticketTypeId"))}] : []),
+				...(watch("statusId").value !== "" && "statusId" in filterIdMap ? [{ board_filter_id: filterIdMap["statusId"], value: Number(watch("statusId").value)}] : []),
+				...(watch("priorityId").value !== "" && "priorityId" in filterIdMap ? [{ board_filter_id: filterIdMap["priorityId"], value: Number(watch("priorityId").value)}] : []),
+				...(watch("ticketTypeId").value !== "" && "ticketTypeId" in filterIdMap ? [{ board_filter_id: filterIdMap["ticketTypeId"], value: Number(watch("ticketTypeId").value)}] : []),
 			] 
 			await updateUserBoardFilters(userBoardFilters).unwrap()
 			postSubmit({
@@ -184,30 +185,45 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 				<div className = "tw-flex tw-flex-col tw-gap-y-2">
 					<div className = "tw-flex tw-flex-col">
 						<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
-						<select className = "tw-w-full" id = "filters-ticket-type" {...register("ticketTypeId")}>
-							<option value="" disabled></option>
-							{ticketTypes.map((ticketType: TicketType) => {
-								return <option key = {ticketType.id} value = {ticketType.id}>{ticketType.name}</option>
-							})}
-						</select>
+						<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
+							<Select 
+								id={"filters-ticket-type"}
+								options={ticketTypesForSelect}
+								defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
+								onSelect={(selectedOption: {label: string, value: string} | null) => {
+									onChange(selectedOption) 	
+								}}
+							/>
+						)}>
+						</Controller>
 					</div>
 					<div className = "tw-flex tw-flex-col">
 						<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
-						<select className = "tw-w-full" id = "filters-ticket-priority" {...register("priorityId")}>
-							<option value="" disabled></option>
-							{priorities.map((priority: Priority) => {
-								return <option key = {priority.id} value = {priority.id}>{priority.name}</option>
-							})}
-						</select>
+						<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
+							<Select 
+								id={"filters-ticket-priority"}
+								options={prioritiesForSelect}
+								defaultValue={watch("priorityId") ?? {value: "", label: ""}}
+								onSelect={(selectedOption: {label: string, value: string} | null) => {
+									onChange(selectedOption) 	
+								}}
+							/>
+						)}>
+						</Controller>
 					</div>
 					<div className = "tw-flex tw-flex-col">
 						<label className = "label" htmlFor = "filters-ticket-status">Status</label>
-						<select className = "tw-w-full" id = "filters-ticket-status" {...register("statusId")}>
-							<option value="" disabled></option>
-							{statuses.map((status: Status) => {
-								return <option key = {status.id} value = {status.id}>{status.name}</option>
-							})}
-						</select>
+						<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
+							<Select 
+								id={"filters-ticket-status"}
+								options={statusesForSelect}
+								defaultValue={watch("statusId") ?? {value: "", label: ""}}
+								onSelect={(selectedOption: {label: string, value: string} | null) => {
+									onChange(selectedOption) 	
+								}}
+							/>
+						)}>
+						</Controller>
 					</div>
 					<div className = "tw-flex tw-flex-col">
 						<label className = "label" htmlFor = "filters-ticket-assignee">Assignee</label>
@@ -216,11 +232,12 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 							control={control}
 			                render={({ field: { onChange, value, name, ref } }) => (
 		                	<AsyncSelect 
+								id={"filters-ticket-assignee"}
 		                		defaultValue={watch("assignee") ?? {value: "", label: ""}}
 			                	endpoint={USER_PROFILE_URL} 
 			                	urlParams={{forSelect: true, includeUnassigned: true}} 
 			                	className={"tw-w-full"}
-			                	clearable={false}
+			                	clearable={true}
 			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 			                		onChange(selectedOption) 	
 			                	}}
@@ -235,11 +252,12 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 							control={control}
 			                render={({ field: { onChange, value, name, ref } }) => (
 		                	<AsyncSelect 
+								id={"filters-ticket-sprint"}
 		                		defaultValue={watch("sprint") ?? {value: "", label: ""}}
 			                	endpoint={SPRINT_URL} 
 			                	urlParams={{boardId: boardId, searchBy: "name", forSelect: true}} 
 			                	className={"tw-w-full"}
-			                	clearable={false}
+			                	clearable={true}
 			                	onSelect={(selectedOption: {label: string, value: string} | null) => {
 			                		onChange(selectedOption) 	
 			                	}}

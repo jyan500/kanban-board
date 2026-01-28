@@ -20,6 +20,7 @@ import { IconFilter } from "../../components/icons/IconFilter"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { setSecondaryModalProps, setSecondaryModalType, toggleShowSecondaryModal } from "../../slices/secondaryModalSlice"
 import { useFilterSync } from "../../hooks/useFilterSync"
+import { SEARCH_OPTIONS } from "../../helpers/constants"
 
 export type FormValues = {
 	searchBy: string
@@ -165,7 +166,7 @@ export const TicketDisplay = () => {
 					setPage={setPage} 
 					currentPage={currentPage ?? 1}
 					registerOptions={registerOptions}
-					searchOptions = {{"title": "Title", "reporter": "Reporter", "assignee": "Assignee"}}
+					searchOptions = {SEARCH_OPTIONS}
 					additionalButtons={additionalButtons}
 					onFormSubmit={async () => {
 						await handleSubmit(onSubmit)()

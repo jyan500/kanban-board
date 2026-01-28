@@ -25,7 +25,13 @@ router.get("/", async (req, res, next) => {
 			.modify((queryBuilder) => {
 				if (req.query.query || req.query.userQuery){
 					const query = req.query.query ?? req.query.userQuery
-					queryBuilder.where((queryBuilder2) => queryBuilder2.whereILike("users.first_name", `%${query}%`).orWhereILike("users.last_name", `%${query}%`))
+					const terms = query.trim().split(/\s+/)
+					terms.forEach((term) => {
+						queryBuilder.where((qb) => {
+							qb.whereILike("users.first_name", `%${term}%`)
+							.orWhereILike("users.last_name", `%${term}%`)
+						})
+					})
 				}
 				if ("userIds" in req.query){
 					queryBuilder.whereIn("users.id", req.query.userIds.split(","))
@@ -82,7 +88,8 @@ router.get("/", async (req, res, next) => {
 		}) : userProfiles.data
 
 		// if for select AND we're including the unassigned value, include the unassigned value with id 0
-		if (req.query.forSelect && req.query.includeUnassigned){
+		// however, if there's an existing search parameter typed in, do not include the unassigned
+		if (req.query.forSelect && req.query.includeUnassigned && !req.query.query){
 			userProfilesParsed = [
 				{
 					id: 0,

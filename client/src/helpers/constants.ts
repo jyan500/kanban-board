@@ -193,6 +193,12 @@ export const US_STATES = [
     { label: "Wyoming", value: "WY" }
 ]
 
+export const SEARCH_OPTIONS = [
+    {label: "Title", value: "title"}, 
+    {label: "Reporter", value: "reporter"},
+    {label: "Assignee", value: "assignee"},
+]
+
 /* Common Tailwind CSS Classes */
 export const FADE_ANIMATION = "tw-transition tw-duration-100 tw-ease-in-out"
 

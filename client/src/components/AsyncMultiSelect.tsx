@@ -16,6 +16,7 @@ export interface LoadOptionsType {
 }
 
 interface AsyncMultiSelectProps {
+	id?: string
 	endpoint: string
 	defaultValue?: MultiValue<OptionType>
 	clearable?: boolean
@@ -28,7 +29,17 @@ interface AsyncMultiSelectProps {
 
 
 export const AsyncMultiSelect = React.forwardRef<SelectInstance<OptionType, true, GroupBase<OptionType>>, AsyncMultiSelectProps>((
-	{ cacheKey, clearable, className, defaultValue, endpoint, onSelect, urlParams, onBlur }, ref) => {
+	{ 
+		id, 
+		cacheKey, 
+		clearable, 
+		className, 
+		defaultValue, 
+		endpoint, 
+		onSelect, 
+		urlParams, 
+		onBlur 
+	}, ref) => {
 	const [searchTerm, setSearchTerm] = useState("")
 	const [val, setVal] = useState<MultiValue<OptionType>>(defaultValue ?? [])
 	const [ genericFetch ] = useLazyGenericFetchQuery()
@@ -83,6 +94,7 @@ export const AsyncMultiSelect = React.forwardRef<SelectInstance<OptionType, true
 
 	return (
 		<AsyncPaginate
+			inputId={id}
 			selectRef={ref}
 			loadOptions={loadOptions}
 			value={defaultValue}

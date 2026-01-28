@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react"
 import { Link } from "react-router-dom"
-import { ListResponse, Ticket } from "../../types/common"
+import { ListResponse, OptionType, Ticket } from "../../types/common"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { TicketRow } from "../TicketRow"
 import { TICKETS } from "../../helpers/routes"
@@ -9,6 +9,7 @@ import { TabButton } from "../page-elements/TabButton"
 import { IconArrowDown } from "../icons/IconArrowDown"
 import { IconArrowUp } from "../icons/IconArrowUp"
 import { Button } from "../page-elements/Button"
+import { Select } from "../page-elements/Select"
 
 type Props = {
 	title: string
@@ -55,13 +56,20 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage, triggerS
 				<div className = "tw-flex tw-flex-row tw-justify-between">
 					<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
 						<span className = "tw-text-gray-500">Total:</span> {tickets.pagination.total}
-						<select onChange={(e) => {
-							setSortAttribute(e.target.value)
-						}} value={sortAttribute}>
-							<option value={"dueDate"}>Due Date</option>
-							<option value={"createdAt"}>Created At</option>
-							<option value={"name"}>Name</option>
-						</select>
+						<Select
+							options={[
+								{label: "Due Date", value: "dueDate"},
+								{label: "Created At", value: "createdAt"},
+								{label: "Name", value: "name"}
+							]}
+							onSelect={(selectedOption: OptionType | null) => {
+								if (selectedOption){
+									setSortAttribute(selectedOption.value)
+								}
+							}}
+							clearable={false}
+						>
+						</Select>
 						<Button onClick={(e) => {
 							setSortDirection(sortDirection === "desc" ? "asc": "desc")
 						}}>{sortDirection === "desc" ? <IconArrowDown/> : <IconArrowUp/>}</Button>
