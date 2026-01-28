@@ -38,7 +38,7 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 			if (req.query.filterInProgress){
 				queryBuilder.where("is_completed", false)
 			}
-			if (req.query.searchBy === "name"){
+			if (req.query.query || req.query.searchBy === "name"){
 				queryBuilder.whereILike("name", `%${req.query.query}%`)
 			}
 			if (req.query.checkOverlapping && req.query.startDate && req.query.endDate){

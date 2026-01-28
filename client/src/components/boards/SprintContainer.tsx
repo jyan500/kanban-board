@@ -110,7 +110,6 @@ export const SprintContainer = ({
                             <AsyncSelect
                                 endpoint={SPRINT_URL} 
                                 clearable={true}
-                                defaultValue={{label: sprintData?.name ?? "", value: sprintData?.id.toString() ?? ""}}
                                 urlParams={{forSelect: true, boardId: boardId}} 
                                 onSelect={async (selectedOption: OptionType | null) => {
                                     if (selectedOption){
