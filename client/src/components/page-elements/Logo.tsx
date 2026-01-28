@@ -18,13 +18,13 @@ export const Logo = ({isAuthLayout, textColor}: Props) => {
 		isAuthLayout ? (
 			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center tw-text-center tw-to-primary tw-from-50% tw-rounded-md tw-py-4 tw-pr-4 tw-pl-2">
 				<div className = "tw-flex tw-items-center tw-gap-2 tw-text-xl tw-font-semibold tw-text-white">
-					{logo}
+					<img width={36} height={36} src={LogoIcon}/>
 					<span className = "tw-font-mono">Kanban</span>
 				</div>
 			</div>
 		) : (
 			<div className="tw-flex tw-items-center tw-gap-2 tw-text-xl tw-font-semibold tw-text-blue-600">
-				{logo}
+				<img width={36} height={36} src={LogoIcon}/>
 				<span className = "tw-font-mono">Kanban</span>
 			</div>
 		)

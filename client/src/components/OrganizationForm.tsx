@@ -154,6 +154,7 @@ export const OrganizationForm = ({isOrgRegister, organization, onSubmit: propsSu
 						render={({field: {onChange, value}}) => {
 							return (
 								<Select
+									id={"organization-state"}
 									searchable={true}
 									clearable={true}
 									hideIndicatorSeparator={false}

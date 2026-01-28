@@ -4,7 +4,7 @@ import { toggleShowModal } from "../../slices/modalSlice"
 import { v4 as uuidv4 } from "uuid"
 import { addToast } from "../../slices/toastSlice"
 import { LoadingButton } from "../page-elements/LoadingButton"
-import { Sprint } from "../../types/common"
+import { OptionType, Sprint } from "../../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { Controller, useForm, FormProvider } from "react-hook-form"
 import { 
@@ -16,6 +16,7 @@ import { SimpleEditor } from "../page-elements/SimpleEditor"
 import { MOVE_OPEN_ITEM_OPTIONS } from "../../helpers/constants"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { TicketFormPlaceholder } from "../placeholders/TicketFormPlaceholder"
+import { Select } from "../page-elements/Select"
 
 interface CompleteSprintFormProps {
     sprintId?: number;
@@ -99,13 +100,29 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
                     </div>
                     <div className = "tw-flex tw-flex-col">
                         <label className = "label" htmlFor="move-open-work-items">Move open work items to</label>
-                        <select id={"move-open-work-items"} {...register("moveItemsOption", registerOptions.moveItemsOption)}>
-                            {
-                                MOVE_OPEN_ITEM_OPTIONS.map((obj) => {
-                                    return <option value={obj.value} key={obj.label}>{obj.label}</option>
-                                })
-                            }
-                        </select>
+                        <Controller
+                            name={"moveItemsOption"}
+                            control={control}
+                            render={({field: {onChange}}) => (
+                                <Select
+                                    id={"move-open-work-items"}
+                                    options={
+                                        MOVE_OPEN_ITEM_OPTIONS
+                                    }
+                                    defaultValue={watch("moveItemsOption") ? {value: watch("moveItemsOption"), label: MOVE_OPEN_ITEM_OPTIONS.find((obj) => obj.value === watch("moveItemsOption"))?.label ?? ""} : {label: "", value: ""}}
+                                    clearable={false}
+                                    searchable={false}
+                                    onSelect={(selectedOption: OptionType | null) => {
+                                        if (selectedOption){
+                                            onChange(selectedOption.value)
+                                        }
+                                    }}
+                                />
+                            )}
+                        >
+
+
+                        </Controller>
                         {errors?.moveItemsOption && <small className = "--text-alert">{errors.moveItemsOption.message}</small>}
                     </div>
                     <div className="tw-flex tw-flex-col">

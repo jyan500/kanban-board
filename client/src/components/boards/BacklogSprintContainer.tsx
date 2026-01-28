@@ -110,7 +110,7 @@ export const BacklogSprintContainer = ({sprint, isSprintLoading}: Props) => {
 	}, [sprint, isSprintLoading, sprintPreloadedValues, sprintPage])
 
 	useEffect(() => {
-		if (boardInfo && sprint && !isSprintLoading){
+		if (boardInfo){
 			triggerGetBoardTicketData({id: boardInfo.id, urlParams: {
 				...backlogPreloadedValues,
 				page: backlogPage,
@@ -118,11 +118,11 @@ export const BacklogSprintContainer = ({sprint, isSprintLoading}: Props) => {
 				"includeAssignees": true, 
 				"includeRelationshipInfo": true, 
 				"statusIds": nonCompletedStatuses,
-				"excludeSprintId": sprint.id,
 				"limit": true,
+				...(sprint ? {"excludeSprintId": sprint.id} : {}),
 			}}, true)
 		}
-	}, [isSprintLoading, sprint, boardInfo, backlogPreloadedValues, backlogPage])
+	}, [sprint, boardInfo, backlogPreloadedValues, backlogPage])
 
 	useEffect(() => {
 		registerToolbar({

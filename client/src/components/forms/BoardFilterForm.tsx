@@ -187,6 +187,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 						<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
 						<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
 							<Select 
+								id={"filters-ticket-type"}
 								options={ticketTypesForSelect}
 								defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
 								onSelect={(selectedOption: {label: string, value: string} | null) => {
@@ -200,6 +201,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 						<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
 						<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
 							<Select 
+								id={"filters-ticket-priority"}
 								options={prioritiesForSelect}
 								defaultValue={watch("priorityId") ?? {value: "", label: ""}}
 								onSelect={(selectedOption: {label: string, value: string} | null) => {
@@ -213,6 +215,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 						<label className = "label" htmlFor = "filters-ticket-status">Status</label>
 						<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
 							<Select 
+								id={"filters-ticket-status"}
 								options={statusesForSelect}
 								defaultValue={watch("statusId") ?? {value: "", label: ""}}
 								onSelect={(selectedOption: {label: string, value: string} | null) => {
@@ -229,6 +232,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 							control={control}
 			                render={({ field: { onChange, value, name, ref } }) => (
 		                	<AsyncSelect 
+								id={"filters-ticket-assignee"}
 		                		defaultValue={watch("assignee") ?? {value: "", label: ""}}
 			                	endpoint={USER_PROFILE_URL} 
 			                	urlParams={{forSelect: true, includeUnassigned: true}} 
@@ -248,6 +252,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 							control={control}
 			                render={({ field: { onChange, value, name, ref } }) => (
 		                	<AsyncSelect 
+								id={"filters-ticket-sprint"}
 		                		defaultValue={watch("sprint") ?? {value: "", label: ""}}
 			                	endpoint={SPRINT_URL} 
 			                	urlParams={{boardId: boardId, searchBy: "name", forSelect: true}} 

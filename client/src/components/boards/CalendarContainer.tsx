@@ -22,7 +22,7 @@ import {
 } from 'date-fns'
 import { SearchToolBar } from "../tickets/SearchToolBar"
 import type { FormValues, CalendarData } from "../../pages/boards/BoardCalendar"
-import { ListResponse, Ticket, Toast, Sprint, Status } from "../../types/common"
+import { ListResponse, OptionType, Ticket, Toast, Sprint, Status } from "../../types/common"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { IconTicket } from "../../components/icons/IconTicket"
 import { IconCycle } from "../../components/icons/IconCycle"
@@ -44,11 +44,13 @@ import { v4 as uuidv4 } from "uuid"
 import { LG_BREAKPOINT, SEARCH_OPTIONS } from '../../helpers/constants'
 import { addToast } from '../../slices/toastSlice'
 import { PaginationButtonRow } from '../page-elements/PaginationButtonRow'
+import { Select } from '../page-elements/Select'
 
 interface Props {
     currentDate: Date
     setCurrentDate: (date: Date) => void
     isWeekView: boolean
+    viewOption: string
     setViewOption: (option: string) => void
     unscheduledTicketsPage: number,
     setUnscheduledTicketsPage: (page: number) => void,
@@ -66,6 +68,7 @@ interface CalendarContainerSearchBarProps {
     numFilters: number
     boardId: number
     isWeekView: boolean
+    viewOption: string
     setViewOption: (weekOption: string) => void
 }
 
@@ -73,6 +76,7 @@ const CalendarContainerSearchBar = ({
     onSubmit,
     numFilters,
     setViewOption,
+    viewOption,
     isWeekView,
     boardId,
 }: CalendarContainerSearchBarProps) => {
@@ -98,12 +102,22 @@ const CalendarContainerSearchBar = ({
                                     }}
                                     numFilters={numFilters}
                                 />
-                                <select value={isWeekView ? "Week": "Month"} onChange={(e) => {
-                                    setViewOption(e.target.value)
-                                }}>
-                                    <option value={"Month"}>Month</option>
-                                    <option value={"Week"}>Week</option>
-                                </select>
+                                <Select
+                                    className="!tw-w-32"
+                                    defaultValue={{label: viewOption, value: viewOption}}
+                                    options={[
+                                        {label: "Month", value: "Month"}, 
+                                        {label: "Week", value: "Week"},
+                                    ]}
+                                    onSelect={(selectedOption: OptionType | null) => {
+                                        if (selectedOption){
+                                            setViewOption(selectedOption.value)
+                                        }
+                                    }}
+                                    clearable={false}
+                                    searchable={false}
+                                >
+                                </Select>
                             </div>
                         )
                     }
@@ -127,6 +141,7 @@ export const CalendarContainer = ({
     unscheduledTicketsPage,
     setUnscheduledTicketsPage,
     setViewOption,
+    viewOption,
     statusesToDisplay,
     unscheduledTickets,
     onSubmit,
@@ -324,20 +339,6 @@ export const CalendarContainer = ({
                         <h2 className="tw-text-xl tw-font-semibold">
                             {generateHeader()}
                         </h2>
-                        {/* <div className="tw-flex tw-flex-row tw-items-center tw-gap-2">
-                            <button
-                                onClick={() => changeMonth(-1)}
-                                className="tw-p-2 hover:tw-bg-gray-100 tw-rounded"
-                            >
-                                <IconArrowLeft className="tw-w-5 tw-h-5" />
-                            </button>
-                            <button
-                                onClick={() => changeMonth(1)}
-                                className="tw-p-2 hover:tw-bg-gray-100 tw-rounded"
-                            >
-                                <IconArrowRight className="tw-w-5 tw-h-5" />
-                            </button>
-                        </div> */}
                         <PaginationButtonRow
                             nextHandler={() => changeMonth(1)}
                             prevHandler={() => changeMonth(-1)}
@@ -351,6 +352,7 @@ export const CalendarContainer = ({
                             numFilters={numFilters}
                             boardId={boardId}
                             isWeekView={isWeekView}
+                            viewOption={viewOption}
                             setViewOption={setViewOption}
                         />
                     </FormProvider>

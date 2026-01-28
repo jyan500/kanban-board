@@ -150,6 +150,7 @@ export const BoardCalendar = () => {
 					boardId={boardInfo?.id ?? 0}
 					numFilters={numActiveFilters}
 					isWeekView={viewOption === "Week"}
+					viewOption={viewOption}
 					setViewOption={setViewOption}
 					unscheduledTicketsPage={unscheduledTicketsPage}
 					setUnscheduledTicketsPage={setUnscheduledTicketsPage}

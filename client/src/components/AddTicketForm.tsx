@@ -326,7 +326,7 @@ export const AddTicketForm = ({
 							        {
 							        	Number(watch("ticketTypeId").value) == epicTicketType?.id ? (
 									        <div className = "tw-flex tw-flex tw-items-center tw-gap-x-2">
-												<IconWarning color="var(--bs-warning)" className = "tw-h-6 tw-w-6"/>
+												<IconWarning className = "tw-h-6 tw-w-6 tw-text-warning"/>
 												<span className = "tw-font-semibold">If the ticket type is "Epic", it cannot changed once saved.</span>
 											</div>
 							        	) : null

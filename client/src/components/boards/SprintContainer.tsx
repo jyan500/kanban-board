@@ -76,6 +76,10 @@ export const SprintContainer = ({
         setItemId(id)
     }
 
+    if (!isLoading && !sprintData){
+        return <></>
+    }
+
     return (
         <BulkEditTicketContainer 
             itemIds={itemIds} 
