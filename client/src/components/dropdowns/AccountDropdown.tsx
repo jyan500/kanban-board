@@ -16,7 +16,10 @@ import { IconBell } from "../icons/IconBell"
 import { IconAccount } from "../icons/IconAccount"
 import { IconBuildingUser } from "../icons/IconBuildingUser"
 import { IconLogout } from "../icons/IconLogout"
+import { IconDarkMode } from "../icons/IconDarkMode"
+import { IconLightMode } from "../icons/IconLightMode"
 import { TextIconRow } from "../page-elements/TextIconRow"
+import { setDarkMode } from "../../slices/darkModeSlice"
 
 type Props = {
 	isTemp: boolean
@@ -29,6 +32,7 @@ type Props = {
 export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp, numNotifications, closeDropdown, onLogout}: Props, ref) => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
+	const { isDarkMode } = useAppSelector((state) => state.darkMode)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null
@@ -42,7 +46,23 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 				navigate(isTemp ? `${TEMP}${ACCOUNT}` : ACCOUNT)
 			}
 		},
-		
+		...(isDarkMode ? {
+			"Light Mode": {
+				text: "Light Mode",
+				icon: <IconLightMode/>,
+				onClick: () => {
+					dispatch(setDarkMode({isDarkMode: false}))
+				}
+			}
+		} : {
+			"Dark Mode": {
+				text: "Dark Mode",
+				icon: <IconDarkMode/>,
+				onClick: () => {
+					dispatch(setDarkMode({isDarkMode: true}))
+				}
+			}
+		}),
 		...(userProfile?.isActive && !isTemp ? {
 			"Notifications": {
 				text: "Notifications",
@@ -89,9 +109,11 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 									return 
 								}
 								option.onClick()
-								closeDropdown()
+								if (option.text !== "Light Mode" && option.text !== "Dark Mode"){
+									closeDropdown()
+								}
 							}}
-							className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+							className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900 tw-cursor-pointer"
 							role="menuitem"
 						>
 						{

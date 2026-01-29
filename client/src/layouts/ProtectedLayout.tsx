@@ -31,6 +31,7 @@ import { BulkEditToolbarProvider } from "../contexts/BulkEditToolbarContext"
 
 const ProtectedLayout = () => {
 	const {token, isTemp} = useAppSelector((state) => state.auth)	
+	const { isDarkMode } = useAppSelector((state) => state.darkMode)
 	const dispatch = useAppDispatch()
     const {data: userProfileData, isFetching: isUserProfileFetching, isError: isUserProfileError } = useGetUserProfileQuery() 
     const {data: statusData, isLoading: isStatusDataLoading} = useGetStatusesQuery({})
@@ -50,6 +51,23 @@ const ProtectedLayout = () => {
     	isUserRoleDataLoading && 
     	isNotificationTypeDataLoading
     )
+
+	useEffect(() => {
+		const root = document.getElementById("protected-main")
+		/* The way this works is that in the background CSS, all the dark: selectors
+			only work if the "dark" classname is added as a parent selector
+			this will add "dark" to the classlist of "protected-main"
+			so only elements inside this div will have dark mode
+		*/
+		if (root){
+			if (isDarkMode){
+				root.classList.add("tw-dark")
+			}
+			else {
+				root.classList.remove("tw-dark")
+			}
+		}
+	}, [isDarkMode])
 
     useEffect(() => {
         // Retrieve user on startup
@@ -92,7 +110,7 @@ const ProtectedLayout = () => {
 	
 	return (
 		<BulkEditToolbarProvider>
-			<div>
+			<div className = "dark:tw-bg-gray-400" id = "protected-main">
 				<SideBar/>
 				<div className = "tw-flex tw-flex-col tw-gap-y-4">
 					<div className = "tw-px-4 md:tw-px-16 tw-w-full tw-min-h-screen">
