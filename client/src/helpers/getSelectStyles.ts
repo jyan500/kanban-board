@@ -24,7 +24,7 @@ export const getSelectStyles = ({
 
     return {
         classNames: {
-            control: (state) => `${className} ${SELECT_Z_INDEX} dark:!tw-bg-gray-800`,
+            control: (state) => `${className} ${SELECT_Z_INDEX} dark:!tw-bg-gray-800 dark:!tw-border-gray-600`,
             menu: (base) => `dark:!tw-bg-gray-800`,
             placeholder: (base) => `dark:!tw-text-gray-200`,
         },
@@ -32,7 +32,6 @@ export const getSelectStyles = ({
             control: (baseStyles, state) => ({
                 ...baseStyles,
                 height: "43px",
-                border: "var(--width-input-border) solid var(--bs-light-gray)",
                 padding: ".1em",
                 textAlign: textAlign as any,
             }),
