@@ -16,6 +16,7 @@ import { getUserInitials } from "../helpers/functions"
 import { LoadingSpinner } from "./LoadingSpinner"
 import { isSameWeek, isAfter, parseISO, format } from "date-fns"
 import { IconWarning } from "./icons/IconWarning"
+import { STANDARD_HOVER } from "../helpers/constants"
 
 type Props = {
 	ticket: Ticket | undefined
@@ -70,7 +71,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 	}
 
 	return (
-		<div className = {`${showBorder()} ${isLoadingState ? "tw-opacity-50" : ""} dark:hover:tw-bg-gray-600 hover:tw-bg-gray-50 tw-p-1 lg:tw-p-1.5 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-rounded-md`}>
+		<div className = {`${showBorder()} ${isLoadingState ? "tw-opacity-50" : ""} ${STANDARD_HOVER} tw-p-1 lg:tw-p-1.5 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-rounded-md`}>
 			<div className = {`${(showUnlink && onUnlink && ticketRelationshipId) || showDueBadge ? "tw-w-[60%]" : "tw-w-[70%]"} lg:tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4`}>
 				<div>
 					{ticketType ? (

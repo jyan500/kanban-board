@@ -217,3 +217,6 @@ export const AVATAR_FONT_SIZES: {[k: string]: string} = {
 }
 
 export const STANDARD_BORDER = "dark:tw-border-gray-500 tw-border-gray-200 tw-border"
+export const STANDARD_HOVER = "dark:hover:tw-bg-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+export const NAVLINK_HOVER = "dark:hover:tw-bg-gray-700 dark:hover:tw-text-white hover:tw-bg-light-primary hover:tw-text-primary"
+export const NAVLINK_TEXT = "dark:tw-text-white dark:tw-bg-gray-700 tw-text-primary tw-bg-light-primary"

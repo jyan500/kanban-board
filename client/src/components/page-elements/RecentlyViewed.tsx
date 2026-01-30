@@ -12,6 +12,7 @@ import { IconArrowRight } from "../icons/IconArrowRight"
 import { setSourceMapRange } from "typescript"
 import { PaginationButtonRow } from "./PaginationButtonRow"
 import { BorderContainer } from "../page-elements/BorderContainer"
+import { STANDARD_HOVER } from "../../helpers/constants"
 
 export const RecentlyViewed = () => {
     const [recentItems, setRecentItems] = useState<Array<ViewedItem>>([])
@@ -105,7 +106,7 @@ export const RecentlyViewed = () => {
                             <Link 
                                 key={`${item.type}-${item.id}`}
                                 to={getItemLink(item)}
-                                className = "tw-flex tw-items-center tw-p-3 tw-rounded-md dark:hover:tw-bg-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200 tw-no-underline tw-text-inherit"
+                                className = {`${STANDARD_HOVER} tw-flex tw-items-center tw-p-3 tw-rounded-md tw-no-underline tw-text-inherit`}
                             >
                                 <span className = "tw-text-xl tw-mr-3">{getItemIcon(item.type)}</span>
                                 <div className = "tw-flex tw-flex-col tw-line-clamp-1">

@@ -79,8 +79,19 @@ export const SideBar = () => {
 		}
 	}, [isUserProfileFetching, isUserRolesFetching])
 
+	const bottomContent = 
+	<div className = "sidebar__bottom-bar__content">
+		<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
+			<Avatar userInitials={getUserInitials(userProfile)} imageUrl={userProfile?.imageUrl} className = "tw-rounded-full"/>
+			<div>
+				<span>{displayUser(userProfile)}</span>
+				<small>{userProfile?.organizationName}</small>
+			</div>
+		</div>
+	</div>
+
 	return (
-		<div id={"main-sidebar"} className = {`dark:!tw-bg-dark-mode-gradient sidebar --card-shadow --transition-transform ${sideBar.showSidebar ? "--translate-x-0" : "--translate-x-full-negative"}`}>
+		<div id={"main-sidebar"} className = {`dark:tw-bg-dark-mode-gradient sidebar --card-shadow --transition-transform ${sideBar.showSidebar ? "--translate-x-0" : "--translate-x-full-negative"}`}>
 			{isLoading ? (<LoadingSpinner/>) : (
 				<>
 					<button 
@@ -92,9 +103,15 @@ export const SideBar = () => {
 						}
 						>
 					<IconClose color="white" className = "icon"/></button>	
-					<GradientContainer className = "tw-p-4 tw-flex tw-items-center tw-h-20 tw-rounded-sm">
-						<Logo isAuthLayout={true}/>
-					</GradientContainer>
+					{
+						!isDarkMode ? 
+						<GradientContainer className = "tw-p-4 tw-flex tw-items-center tw-h-20 tw-rounded-sm">
+							<Logo isAuthLayout={true}/>
+						</GradientContainer> :
+						<div className = "tw-border-b tw-border-gray-600 tw-p-4 tw-flex tw-items-center tw-h-20 tw-rounded-sm">
+							<Logo isAuthLayout={true}/>
+						</div>
+					}
 					<div className = "sidebar__container">
 						<div className = "sidebar__links">
 							{ 
@@ -103,17 +120,15 @@ export const SideBar = () => {
 								)
 							}
 						</div>
-						<GradientContainer className = "tw-h-20 sidebar__bottom-bar">
-							<div className = "sidebar__bottom-bar__content">
-								<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-									<Avatar userInitials={getUserInitials(userProfile)} imageUrl={userProfile?.imageUrl} className = "tw-rounded-full"/>
-									<div>
-										<span>{displayUser(userProfile)}</span>
-										<small>{userProfile?.organizationName}</small>
-									</div>
-								</div>
+						{
+							!isDarkMode ? 
+							<GradientContainer className = "tw-h-20 sidebar__bottom-bar">
+								{bottomContent}	
+							</GradientContainer> :
+							<div className = "tw-border-t tw-border-gray-600 tw-h-20 sidebar__bottom-bar">
+								{bottomContent}
 							</div>
-						</GradientContainer>
+						}
 					</div>
 				</>
 			)}

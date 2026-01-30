@@ -21,6 +21,7 @@ import { IconLightMode } from "../icons/IconLightMode"
 import { TextIconRow } from "../page-elements/TextIconRow"
 import { setDarkMode } from "../../slices/darkModeSlice"
 import { useDarkMode } from "../../hooks/useDarkMode"
+import { STANDARD_HOVER } from "../../helpers/constants"
 
 type Props = {
 	isTemp: boolean
@@ -94,7 +95,7 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 
 
 	return (
-		<Dropdown id={"account-dropdown"} closeDropdown={closeDropdown} ref = {ref} className = "dark:tw-bg-dark-mode-modal-gradient dark:tw-text-white lg:!tw-w-96 !tw-w-92">
+		<Dropdown id={"account-dropdown"} closeDropdown={closeDropdown} ref = {ref} className = "lg:!tw-w-96 !tw-w-92">
 			<ul>
 				<li className = "tw-border-b tw-border-gray-200 tw-flex tw-flex-row tw-items-center tw-gap-x-4 tw-px-4 tw-py-2">
 					<Avatar userInitials={getUserInitials(userProfile)} imageUrl = {userProfile?.imageUrl} size = "m" className = "tw-rounded-full"/>
@@ -116,7 +117,7 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 									closeDropdown()
 								}
 							}}
-							className="dark:tw-text-white dark:hover:tw-text-gray-700 tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 hover:tw-bg-gray-100 hover:tw-text-gray-900 tw-cursor-pointer"
+							className={`${STANDARD_HOVER} dark:tw-text-white tw-block tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-cursor-pointer`}
 							role="menuitem"
 						>
 						{
