@@ -80,7 +80,7 @@ export const SideBar = () => {
 	}, [isUserProfileFetching, isUserRolesFetching])
 
 	return (
-		<div id={"main-sidebar"} className = {`sidebar --card-shadow --transition-transform ${sideBar.showSidebar ? "--translate-x-0" : "--translate-x-full-negative"}`}>
+		<div id={"main-sidebar"} className = {`dark:!tw-bg-dark-mode-gradient sidebar --card-shadow --transition-transform ${sideBar.showSidebar ? "--translate-x-0" : "--translate-x-full-negative"}`}>
 			{isLoading ? (<LoadingSpinner/>) : (
 				<>
 					<button 

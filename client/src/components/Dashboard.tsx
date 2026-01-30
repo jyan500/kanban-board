@@ -33,6 +33,7 @@ import { RowContentLoading } from "./page-elements/RowContentLoading"
 import { RowPlaceholder } from "./placeholders/RowPlaceholder"
 import { RecentlyViewed } from "./page-elements/RecentlyViewed"
 import { Notifications } from "./notifications/Notifications"
+import { BorderContainer } from "./page-elements/BorderContainer"
 
 type DashboardSectionProps = {
 	title: string
@@ -151,7 +152,7 @@ export const Dashboard = () => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
-			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border dark:tw-border-gray-500 tw-border-gray-200 tw-shadow-sm tw-rounded-md">
+			<BorderContainer>
 				<h2 className = "dark:tw-text-white">Dashboard</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
 					{
@@ -214,8 +215,8 @@ export const Dashboard = () => {
 						}
 					</DashboardSection>
 				</div>
-			</div>
-			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border dark:tw-border-gray-500 tw-border-gray-200 tw-shadow-sm tw-rounded-md">
+			</BorderContainer>
+			<BorderContainer>
 				<h2 className = "dark:tw-text-white">My Tasks</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
 					{assignedTickets && !isAssignedTicketsLoading ? (
@@ -233,14 +234,14 @@ export const Dashboard = () => {
 						</LoadingSkeleton>
 					}
 				</div>
-			</div>
+			</BorderContainer>
 			<div className = "tw-flex lg:tw-flex-row tw-flex-col tw-gap-y-4 tw-w-full lg:tw-gap-x-4">
 				<div className = "tw-flex lg:tw-w-1/2">
 					<RecentlyViewed/>
 				</div>
-				<div className = "tw-flex lg:tw-w-1/2 tw-shadow-sm tw-rounded-md dark:tw-border-gray-500 tw-border-gray-200 tw-border tw-p-2 lg:tw-p-4">
+				<BorderContainer width={`lg:tw-w-1/2`} className = {`tw-flex`}>
 					<Notifications fromDashboard={true}/>
-				</div>
+				</BorderContainer>
 			</div>
 		</div>
 	)	

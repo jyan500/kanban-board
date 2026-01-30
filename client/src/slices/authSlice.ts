@@ -20,6 +20,7 @@ const authSlice = createSlice({
             localStorage.removeItem("token")
             localStorage.removeItem("isTemp")
             localStorage.removeItem("tooltipVisibility")
+            localStorage.removeItem("isDarkMode")
             state.token = null
             state.isTemp = false
         },

@@ -11,6 +11,7 @@ import { IconArrowLeft } from "../icons/IconArrowLeft"
 import { IconArrowRight } from "../icons/IconArrowRight"
 import { setSourceMapRange } from "typescript"
 import { PaginationButtonRow } from "./PaginationButtonRow"
+import { BorderContainer } from "../page-elements/BorderContainer"
 
 export const RecentlyViewed = () => {
     const [recentItems, setRecentItems] = useState<Array<ViewedItem>>([])
@@ -95,9 +96,8 @@ export const RecentlyViewed = () => {
     }
 
     return (
-        <div className = " tw-relative tw-p-2 lg:tw-p-4 tw-w-full tw-border dark:tw-border-gray-500 tw-border-gray-200 tw-shadow-sm tw-rounded-md">
+        <BorderContainer className = {`tw-relative`}>
             <h2 className = "dark:tw-text-white">Recently Viewed</h2>
-
             <div className = {`tw-flex tw-flex-col tw-gap-y-2 sm:tw-min-h-96 `}>
                 {
                     recentItems.map((item) => {
@@ -129,7 +129,7 @@ export const RecentlyViewed = () => {
                 : null
             }
             </div>
-        </div>
+        </BorderContainer>
     )
 
 }

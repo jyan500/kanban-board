@@ -66,7 +66,6 @@ export const SearchToolBar = ({
 										<Select 
 											options={searchOptions}
 											clearable={false}
-											className={"!tw-w-full lg:!tw-w-36"}
 											hideIndicatorSeparator={true}
 											searchable={false}
 											defaultValue={watch("searchBy") ? {value: watch("searchBy"), label: searchOptions.find((option: OptionType) => option.value === watch("searchBy"))?.label ?? ""} : {value: "", label: ""}}

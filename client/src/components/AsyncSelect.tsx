@@ -7,6 +7,7 @@ import { OptionsOrGroups, GroupBase, SelectInstance } from "react-select"
 import { v4 as uuidv4 } from "uuid"
 import { SELECT_Z_INDEX } from "../helpers/constants"
 import { useAppSelector } from "../hooks/redux-hooks"
+import { getSelectStyles } from "../helpers/getSelectStyles";
 
 export interface LoadOptionsType {
 	options: ListResponse<any>
@@ -93,6 +94,12 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 		}, [onSelect]
 	)
 
+	const { classNames, styles } = getSelectStyles({
+        isDarkMode,
+        className: className,
+        hideIndicatorSeparator: false,
+    })
+
 	return (
 		<AsyncPaginate
 			inputId={id}
@@ -102,45 +109,8 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 			onInputChange={handleInputChange}
 			onBlur={onBlur}
 			additional={{page: 1}}
-			classNames={{
-			    control: (state) => `${className ?? `tw-w-full `} ${SELECT_Z_INDEX} dark:!tw-bg-gray-800`,
-				menu: (base) => `dark:!tw-bg-gray-800`,
-				placeholder: (base) => `dark:!tw-text-gray-200`
-			}}
-			styles={{
-			    control: (baseStyles, state) => ({
-			      ...baseStyles,
-			      height: "43px",
-			      border: "var(--width-input-border) solid var(--bs-light-gray)",
-			      padding: ".1em",
-			    }),
-				// styles selected text and placeholder
-				option: (provided, state) => ({
-					...provided,
-					color: isDarkMode
-					  ? (state.isFocused ? '#f9fafb' : '#e5e7eb') // gray-50 : gray-200
-					  : (state.isFocused ? '#111827' : '#374151'), // gray-900 : gray-700
-					backgroundColor: isDarkMode
-					  ? (state.isFocused ? '#374151' : '#1f2937') // gray-700 : gray-800
-					  : (state.isFocused ? '#f3f4f6' : 'white'), // gray-100 : white
-					cursor: 'pointer',
-				}),
-				singleValue: (base) => ({
-					...base,
-				}),
-				placeholder: (base) => ({
-					...base,
-				}),
-				dropdownIndicator: (provided) => ({
-					...provided,
-					'svg': {
-						fill: (isDarkMode ? "white" : "black"),
-					},
-				}),
-				valueContainer: (provided) => ({
-					...provided,
-				}),
-			}}
+			classNames={classNames}
+			styles={styles}
 			onChange={handleChange}
 			getOptionLabel={(option) => option.label}
 			getOptionValue={(option) => option.value}

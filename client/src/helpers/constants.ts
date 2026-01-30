@@ -215,3 +215,5 @@ export const AVATAR_FONT_SIZES: {[k: string]: string} = {
     "ml": "tw-text-l",
     "l": "tw-text-xl",
 }
+
+export const STANDARD_BORDER = "dark:tw-border-gray-500 tw-border-gray-200 tw-border"
