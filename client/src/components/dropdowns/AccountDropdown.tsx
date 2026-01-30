@@ -20,6 +20,7 @@ import { IconDarkMode } from "../icons/IconDarkMode"
 import { IconLightMode } from "../icons/IconLightMode"
 import { TextIconRow } from "../page-elements/TextIconRow"
 import { setDarkMode } from "../../slices/darkModeSlice"
+import { useDarkMode } from "../../hooks/useDarkMode"
 
 type Props = {
 	isTemp: boolean
@@ -37,6 +38,8 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null
 	const isAdminOrBoardAdmin = userRole && (userRole === "ADMIN" || userRole === "BOARD_ADMIN")
+
+	useDarkMode("account-dropdown", isDarkMode)
 
 	const options = {
 		"Account": {
@@ -91,13 +94,13 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 
 
 	return (
-		<Dropdown closeDropdown={closeDropdown} ref = {ref} className = "lg:!tw-w-96 !tw-w-92">
+		<Dropdown id={"account-dropdown"} closeDropdown={closeDropdown} ref = {ref} className = "dark:tw-bg-gray-600 dark:tw-text-white lg:!tw-w-96 !tw-w-92">
 			<ul>
 				<li className = "tw-border-b tw-border-gray-200 tw-flex tw-flex-row tw-items-center tw-gap-x-4 tw-px-4 tw-py-2">
 					<Avatar userInitials={getUserInitials(userProfile)} imageUrl = {userProfile?.imageUrl} size = "m" className = "tw-rounded-full"/>
 					<div className = "tw-flex tw-flex-col">
 						<h3 className = "tw-m-0 tw-font-semibold">{displayUser(userProfile)}</h3>
-						<p className = "tw-text-gray-700">{userProfile?.email}</p>
+						<p className = "dark:tw-text-white tw-text-gray-700">{userProfile?.email}</p>
 					</div>
 				</li>
 				{Object.values(options).map((option) => {
@@ -113,7 +116,7 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 									closeDropdown()
 								}
 							}}
-							className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900 tw-cursor-pointer"
+							className="dark:tw-text-white dark:hover:tw-text-gray-700 tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900 tw-cursor-pointer"
 							role="menuitem"
 						>
 						{

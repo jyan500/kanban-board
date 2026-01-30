@@ -101,7 +101,7 @@ export const TopNav = () => {
 						{
 							width >= SM_BREAKPOINT ? (
 								<div>
-									<span>{displayUser(userProfile)}</span>
+									<span className = "dark:tw-text-white">{displayUser(userProfile)}</span>
 								</div>
 							) : null
 						}

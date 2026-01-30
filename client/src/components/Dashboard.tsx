@@ -44,7 +44,7 @@ type DashboardSectionProps = {
 
 const DashboardSection = ({title, iconColor, iconClassname, icon, children}: DashboardSectionProps) => {
 	return (
-		<div className = "tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
+		<div className = "dark:tw-text-white tw-flex-1 tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
 				{icon}
 				<h3>{title}</h3>
@@ -151,12 +151,12 @@ export const Dashboard = () => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			{location?.state?.alert ? <Banner message = {location.state.alert} type = {location.state.type}/> : null}
-			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
-				<h2>Dashboard</h2>
+			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border dark:tw-border-gray-500 tw-border-gray-200 tw-shadow-sm tw-rounded-md">
+				<h2 className = "dark:tw-text-white">Dashboard</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-space-between lg:tw-gap-x-4">
 					{
 						userProfile?.isActive ? (
-							<DashboardSection title={"Organization"} icon={<IconBuilding/>}>
+							<DashboardSection title={"Organization"} icon={<IconBuilding className={"dark:tw-text-white"}/>}>
 								<SwitchOrganizationForm/>	
 							</DashboardSection>
 						) : 
@@ -168,11 +168,11 @@ export const Dashboard = () => {
 								<div className = "tw-flex tw-flex-col tw-gap-y-2">
 									{boards?.data?.map((board) => (
 										<div key={`active-boards-${board.id}`}>
-											<Link to={`${BOARDS}/${board.id}`}><span className = "tw-font-medium">{board.name}</span></Link>
+											<Link className = "dark:tw-text-white" to={`${BOARDS}/${board.id}`}><span className = "tw-font-medium">{board.name}</span></Link>
 										</div>
 									))}	
 									<div>
-										<Link to={`${BOARDS}`}>See More</Link>
+										<Link className = "dark:tw-text-slate-400" to={`${BOARDS}`}>See More</Link>
 									</div>
 								</div>	
 							) : (
@@ -204,7 +204,7 @@ export const Dashboard = () => {
 								<div className = "tw-flex tw-flex-col tw-gap-y-2">
 									{
 										timeSpentPerBoard?.map((board) => (
-											<div key={`time-spent-per-board-${board.id}`}><span className = "tw-font-medium">{board.minutesSpent}</span></div>
+											<div key={`time-spent-per-board-${board.id}`}><span className = "dark:tw-text-white tw-font-medium">{board.minutesSpent}</span></div>
 										))
 									}
 								</div>
@@ -215,8 +215,8 @@ export const Dashboard = () => {
 					</DashboardSection>
 				</div>
 			</div>
-			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
-				<h2>My Tasks</h2>
+			<div className = "tw-p-2 lg:tw-p-4 tw-w-full tw-border dark:tw-border-gray-500 tw-border-gray-200 tw-shadow-sm tw-rounded-md">
+				<h2 className = "dark:tw-text-white">My Tasks</h2>
 				<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
 					{assignedTickets && !isAssignedTicketsLoading ? (
 						<TicketsContainer triggerSort={triggerSort} setPage={setAssignedToPage} setFilterBy={setAssignedFilter} tickets={assignedTickets} title={"Assigned"}/>
@@ -238,7 +238,7 @@ export const Dashboard = () => {
 				<div className = "tw-flex lg:tw-w-1/2">
 					<RecentlyViewed/>
 				</div>
-				<div className = "tw-flex lg:tw-w-1/2 tw-shadow-sm tw-rounded-md tw-border-gray-200 tw-border tw-p-2 lg:tw-p-4">
+				<div className = "tw-flex lg:tw-w-1/2 tw-shadow-sm tw-rounded-md dark:tw-border-gray-500 tw-border-gray-200 tw-border tw-p-2 lg:tw-p-4">
 					<Notifications fromDashboard={true}/>
 				</div>
 			</div>

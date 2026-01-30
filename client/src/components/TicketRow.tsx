@@ -70,14 +70,14 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 	}
 
 	return (
-		<div className = {`${showBorder()} ${isLoadingState ? "tw-opacity-50" : ""} hover:tw-bg-gray-50 tw-p-1 lg:tw-p-1.5 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-rounded-md`}>
+		<div className = {`${showBorder()} ${isLoadingState ? "tw-opacity-50" : ""} dark:hover:tw-bg-gray-600 hover:tw-bg-gray-50 tw-p-1 lg:tw-p-1.5 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-rounded-md`}>
 			<div className = {`${(showUnlink && onUnlink && ticketRelationshipId) || showDueBadge ? "tw-w-[60%]" : "tw-w-[70%]"} lg:tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4`}>
 				<div>
 					{ticketType ? (
 							<TicketTypeIcon type={ticketType} />	
 						) : <></>}
 				</div>
-				<div className = "tw-line-clamp-2 tw-w-3/4 tw-text-left tw-break-words"><p className = "tw-font-medium tw-truncate tw-line-clamp-1">{ticket?.name}</p></div>
+				<div className = "tw-line-clamp-2 tw-w-3/4 tw-text-left tw-break-words"><p className = "dark:tw-text-white tw-font-medium tw-truncate tw-line-clamp-1">{ticket?.name}</p></div>
 			</div>
 			<div className = "lg:tw-p-1 tw-flex tw-flex-1 tw-flex-row tw-justify-start tw-items-center tw-gap-x-2">
 				<div>
@@ -90,7 +90,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 				{width >= SM_BREAKPOINT && !hideProfilePicture ? 
 					(isLoading ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>) 
 				: null}
-				<div className = "tw-line-clamp-1 tw-text-left tw-break-words">{status?.name}</div>
+				<div className = "dark:tw-text-white tw-line-clamp-1 tw-text-left tw-break-words">{status?.name}</div>
 			</div>
 			{
 				showDueBadge ? showDueDateBadge() : null 

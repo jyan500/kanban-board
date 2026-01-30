@@ -6,7 +6,7 @@ import "../styles/hamburger.css"
 export const HamburgerButton = () => {
 	const dispatch = useAppDispatch() 
 	return (
-		<button onClick={() => dispatch(toggleSideBar(true))} className="hamburger --transparent">
+		<button onClick={() => dispatch(toggleSideBar(true))} className="dark:tw-text-white hamburger --transparent">
 		<svg className = "--l-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
 		<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
 			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>

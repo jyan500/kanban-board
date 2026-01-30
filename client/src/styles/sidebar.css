@@ -14,6 +14,10 @@
 	}
 }
 
+.tw-dark .sidebar {
+	background-color: var(--bs-dark-gray);
+}
+
 .sidebar__container {
 	position: relative;
 	margin-left: var(--m-spacing);

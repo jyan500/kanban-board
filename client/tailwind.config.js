@@ -20,6 +20,8 @@ module.exports = {
           'gradient-background': 'linear-gradient(to bottom, rgb(219 234 254), rgb(249 250 251))',
           'gradient-light': 'linear-gradient(to bottom right, rgb(239 246 255), rgb(219 234 254))',
           'gradient-dark': 'linear-gradient(to right, rgb(37 99 235), rgb(30 64 175))',
+          /*'dark-mode-gradient': 'linear-gradient(to bottom right, rgb(17 24 39), rgb(55 65 81))'*/
+          'dark-mode-gradient': 'linear-gradient(to bottom right, rgb(30 41 59), rgb(51 65 85))'
       },
       keyframes: {
           'fade-in-up': {

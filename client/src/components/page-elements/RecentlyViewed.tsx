@@ -73,11 +73,11 @@ export const RecentlyViewed = () => {
     const getItemIcon = useCallback((type: string) => {
         switch (type){
             case "ticket":
-                return <IconTicket className = "tw-w-5 tw-h-5"/>
+                return <IconTicket className = "dark:tw-text-white tw-w-5 tw-h-5"/>
             case "board":
-                return <IconBoard className = "tw-w-5 tw-h-5"/>
+                return <IconBoard className = "dark:tw-text-white tw-w-5 tw-h-5"/>
             case "sprint":
-                return <IconClock className = "tw-w-5 tw-h-5"/>
+                return <IconClock className = "dark:tw-text-white tw-w-5 tw-h-5"/>
         }
     }, [recentItems])
 
@@ -95,8 +95,8 @@ export const RecentlyViewed = () => {
     }
 
     return (
-        <div className = "tw-relative tw-p-2 lg:tw-p-4 tw-w-full tw-border tw-border-gray-200 tw-shadow-sm tw-rounded-md">
-            <h2>Recently Viewed</h2>
+        <div className = " tw-relative tw-p-2 lg:tw-p-4 tw-w-full tw-border dark:tw-border-gray-500 tw-border-gray-200 tw-shadow-sm tw-rounded-md">
+            <h2 className = "dark:tw-text-white">Recently Viewed</h2>
 
             <div className = {`tw-flex tw-flex-col tw-gap-y-2 sm:tw-min-h-96 `}>
                 {
@@ -105,12 +105,12 @@ export const RecentlyViewed = () => {
                             <Link 
                                 key={`${item.type}-${item.id}`}
                                 to={getItemLink(item)}
-                                className = "tw-flex tw-items-center tw-p-3 tw-rounded-md hover:tw-bg-gray-50 tw-transition-colors tw-duration-200 tw-no-underline tw-text-inherit"
+                                className = "tw-flex tw-items-center tw-p-3 tw-rounded-md dark:hover:tw-bg-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200 tw-no-underline tw-text-inherit"
                             >
                                 <span className = "tw-text-xl tw-mr-3">{getItemIcon(item.type)}</span>
                                 <div className = "tw-flex tw-flex-col tw-line-clamp-1">
-                                    <span className = "tw-font-medium tw-text-gray-900">{item.name}</span>
-                                    <span className = "tw-text-xs tw-text-gray-500 tw-mt-0.5">{formatTimeAgo(item.viewedAt)}</span>
+                                    <span className = "tw-font-medium dark:tw-text-gray-50 tw-text-gray-900">{item.name}</span>
+                                    <span className = "tw-text-xs dark:tw-text-slate-400 tw-text-gray-500 tw-mt-0.5">{formatTimeAgo(item.viewedAt)}</span>
                                 </div>
                             </Link>
                         )

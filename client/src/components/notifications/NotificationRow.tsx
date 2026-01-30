@@ -19,7 +19,7 @@ export const NotificationRow = ({notification}: Props) => {
 	const [showConfirmUnlink, setShowConfirmUnlink] = useState(false)
 	const { data, isFetching } = useGetUserQuery(notification && notification.senderId !== 0 ? notification.senderId : skipToken)
 	return (
-		<div className = {`${!notification?.isRead ? "tw-bg-gray-50" : ""} tw-relative hover:tw-bg-gray-50 tw-p-2 tw-flex tw-flex-row tw-gap-x-2 tw-w-full tw-items-center tw-border tw-border-gray-200 tw-rounded-md tw-group`}>
+		<div className = {`${!notification?.isRead ? "dark:tw-bg-gray-700 tw-bg-gray-50" : ""} tw-relative dark:hover:tw-bg-gray-700 dark:tw-text-white hover:tw-bg-gray-50 tw-p-2 tw-flex tw-flex-row tw-gap-x-2 tw-w-full tw-items-center tw-border dark:tw-border-gray-500 tw-border-gray-200 tw-rounded-md tw-group`}>
 			<Indicator className = {"tw-top-0 tw-left-0 tw-ml-1 tw-mt-1 tw-bg-red-500 tw-w-2 tw-h-2"} showIndicator={!notification?.isRead}/>
 			{isFetching ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>}
 			<div>

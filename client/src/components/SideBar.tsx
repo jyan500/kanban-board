@@ -21,11 +21,13 @@ import { IconUser } from "./icons/IconUser";
 import { IconBuildingUser } from "./icons/IconBuildingUser";
 import { IconBuilding } from "./icons/IconBuilding";
 import { IconProject } from "./icons/IconProject";
+import { useDarkMode } from "../hooks/useDarkMode";
 
 export const SideBar = () => {
 	const sideBar = useAppSelector((state) => state.nav)
 	const { data: userRoles, isFetching: isUserRolesFetching } = useGetUserRolesQuery()
 	const { data: userProfile, isFetching: isUserProfileFetching } = useGetUserProfileQuery()
+	const { isDarkMode } = useAppSelector((state) => state.darkMode)
 	const [isLoading, setIsLoading] = useState(true)
 	const [isAdmin, setIsAdmin] = useState(false)
 	
@@ -54,6 +56,8 @@ export const SideBar = () => {
 	const dispatch = useAppDispatch()
 	const { pathname } = useLocation()
 
+	useDarkMode("main-sidebar", isDarkMode)
+
 	useEffect(() => {
 		if (!isUserProfileFetching && !isUserRolesFetching){
 			const admin = userRoles?.find((role) => role.name === "ADMIN")
@@ -76,7 +80,7 @@ export const SideBar = () => {
 	}, [isUserProfileFetching, isUserRolesFetching])
 
 	return (
-		<div className = {`sidebar --card-shadow --transition-transform ${sideBar.showSidebar ? "--translate-x-0" : "--translate-x-full-negative"}`}>
+		<div id={"main-sidebar"} className = {`sidebar --card-shadow --transition-transform ${sideBar.showSidebar ? "--translate-x-0" : "--translate-x-full-negative"}`}>
 			{isLoading ? (<LoadingSpinner/>) : (
 				<>
 					<button 
