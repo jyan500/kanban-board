@@ -1,4 +1,5 @@
 import React from "react"
+import { PLACEHOLDER_COLOR } from "../../helpers/constants"
 
 interface Props {
 	hasImage?: boolean
@@ -10,12 +11,12 @@ export const CardPlaceholder = ({hasImage}: Props) => {
 			{
 				hasImage ? 	
 					<div className = "tw-flex tw-flex-row tw-justify-center">
-						<div className = "tw-bg-gray-200 tw-w-32 tw-h-32 tw-rounded-full"></div>				
+						<div className = {`${PLACEHOLDER_COLOR} tw-w-32 tw-h-32 tw-rounded-full`}></div>				
 					</div>
 				: null
 			}
 			<div className = "tw-p-2">
-				<div className = "tw-w-64 tw-h-32 tw-bg-gray-200"></div>
+				<div className = {`tw-w-64 tw-h-32 ${PLACEHOLDER_COLOR}`}></div>
 			</div>
 		</div>	
 	)

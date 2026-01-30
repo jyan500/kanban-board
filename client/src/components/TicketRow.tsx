@@ -46,13 +46,13 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 		if (parsedDueDate && (dueDatePassed || dueDateWithinOneWeek)){
 			if (width <= LG_BREAKPOINT){
 				return (
-					<div className = {`tw-w-1.5 tw-h-1.5 ${dueDatePassed ? "tw-bg-red-500" : "tw-bg-amber-500"} tw-rounded-full`}></div>
+					<div className = {`tw-w-1.5 tw-h-1.5 ${dueDatePassed ? "dark:tw-bg-red-400 tw-bg-red-500" : "tw-bg-amber-500"} tw-rounded-full`}></div>
 				)
 			}
 			return (
 				<div className = {`tw-p-1 tw-text-nowrap tw-flex tw-flex-row tw-items-center tw-gap-x-2`}>
-					<div className = {`tw-w-1.5 tw-h-1.5 ${dueDatePassed ? "tw-bg-red-500" : "tw-bg-amber-500"} tw-rounded-full`}></div>
-					<span className = {`${dueDatePassed ? "tw-text-red-600" : "tw-text-amber-700"}`}>Due {typeof ticket?.dueDate === 'string' ?  format(parsedDueDate, "M/dd/yyyy") : ""}</span>
+					<div className = {`tw-w-1.5 tw-h-1.5 ${dueDatePassed ? "dark:tw-bg-red-400 tw-bg-red-500" : "tw-bg-amber-500"} tw-rounded-full`}></div>
+					<span className = {`${dueDatePassed ? "dark:tw-text-red-400 tw-text-red-600" : "tw-text-amber-700"}`}>Due {typeof ticket?.dueDate === 'string' ?  format(parsedDueDate, "M/dd/yyyy") : ""}</span>
 				</div>
 			)
 		}
@@ -63,7 +63,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 		if (showDueBadge){
 			if (parsedDueDate && (dueDatePassed || dueDateWithinOneWeek)){
 				return (
-					`tw-border-l-4 ${dueDatePassed ? "tw-border-red-500" : "tw-border-amber-500"}`
+					`tw-border-l-4 ${dueDatePassed ? "dark:tw-border-red-400 tw-border-red-500" : "tw-border-amber-500"}`
 				)
 			}
 		}
