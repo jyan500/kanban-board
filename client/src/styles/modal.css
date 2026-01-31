@@ -13,8 +13,6 @@
     transform: translate(-50%, -50%);
     width: 50%;
 	padding: 20px;
-	border: 1px solid #888;
-	background-color: white;
 
 	& .__modal-container-close {
 		position: absolute;

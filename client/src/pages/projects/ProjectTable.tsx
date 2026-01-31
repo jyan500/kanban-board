@@ -15,6 +15,7 @@ import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { useProjectConfig } from "../../helpers/table-config/useProjectConfig"
 import { useGetProjectsQuery } from "../../services/private/project"
 import { Button } from "../../components/page-elements/Button"
+import { PRIMARY_TEXT, STANDARD_BORDER } from '../../helpers/constants';
 
 type FormValues = {
     query?: string
@@ -59,7 +60,7 @@ export const ProjectTable = () => {
     return (
     <div className = "tw-space-y-4">
         <div>
-            <h1>Projects</h1>
+            <h1 className={PRIMARY_TEXT}>Projects</h1>
         </div>
         {isLoading ? 
         <LoadingSkeleton width="tw-w-full" height="tw-h-84">
@@ -84,7 +85,7 @@ export const ProjectTable = () => {
                 </div>
                 {errors?.query ? <small className = "--text-alert">{errors?.query?.message}</small> : null}
                 <Table config={config} data={data?.data ?? []} tableKey={"projects"}/>
-                <div className = "tw-w-fit tw-p-4 tw-border tw-border-gray-300">
+                <div className = {`tw-w-fit tw-p-4 ${STANDARD_BORDER}`}>
                     <PaginationRow
                         showNumResults={true}
                         showPageNums={true}

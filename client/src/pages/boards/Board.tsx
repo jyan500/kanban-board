@@ -24,7 +24,7 @@ import { TabButton } from "../../components/page-elements/TabButton"
 import { setFilters, setFilterIdMap, BoardFilters } from "../../slices/boardFilterSlice"
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { useClickOutside } from "../../hooks/useClickOutside"
-import { SM_BREAKPOINT, LG_BREAKPOINT } from "../../helpers/constants"
+import { SM_BREAKPOINT, LG_BREAKPOINT, PLACEHOLDER_COLOR } from "../../helpers/constants"
 import { BoardNavDropdown } from "../../components/dropdowns/BoardNavDropdown"
 import { IconArrowDown } from "../../components/icons/IconArrowDown"
 import { IconArrowRight } from "../../components/icons/IconArrowRight"
@@ -36,6 +36,7 @@ import { IconBacklog } from "../../components/icons/IconBacklog"
 import { IconClock } from "../../components/icons/IconClock"
 import { IconBars } from "../../components/icons/IconBars"
 import { useTrackRecentlyViewed } from "../../hooks/useTrackRecentlyViewed"
+import { STANDARD_BORDER_COLOR, PRIMARY_TEXT } from "../../helpers/constants" 
 
 export const Board = () => {
 	const params = useParams<{boardId: string}>()
@@ -222,8 +223,8 @@ export const Board = () => {
 			}
 			{ !isBoardFilterDataLoading && !isUserBoardFilterDataLoading && !isGetBoardLoading && !isGetBoardTicketsLoading && !isGetBoardStatusesLoading && boardData && boardTicketData ? 
 				<>
-					<h1>{boardData?.find((data) => data.id === boardId)?.name}</h1>
-					<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
+					<h1 className={PRIMARY_TEXT}>{boardData?.find((data) => data.id === boardId)?.name}</h1>
+					<div className = {`tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 ${STANDARD_BORDER_COLOR} tw-border-b`}>
 						{
 							defaultLinks.map((link: {pathname: string, text: string, icon?: React.ReactElement}) => {
 								if (link.text === "More"){
@@ -271,7 +272,7 @@ export const Board = () => {
 				</>
 				: 
 				<LoadingSkeleton width = "tw-flex tw-flex-col tw-gap-y-4 tw-w-full" height={"tw-h-[1000px]"}>
-					<div className = "tw-w-32 tw-h-6 tw-bg-gray-200"></div>
+					<div className = {`tw-w-32 tw-h-6 ${PLACEHOLDER_COLOR}`}></div>
 					<SearchBarPlaceholder/>	
 					<BoardPlaceholder/>
 				</LoadingSkeleton>

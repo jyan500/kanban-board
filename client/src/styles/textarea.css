@@ -16,75 +16,12 @@
 /* Remove the left padding when HTML is displayed outside of the editor itself */
 .quill-display .ql-editor,
 .quill-display {
-  padding-left: 0 !important;
+  padding-left: 0;
 }
 
-/* EDIT: The following is currently unused */
-.DraftEditor-root {
-    @apply tw-text-gray-800 tw-leading-relaxed;
-}
-
-.public-DraftEditor-content {
-    @apply tw-min-h-64 tw-px-4 tw-py-2 tw-text-base tw-bg-white tw-border tw-border-gray-300 tw-rounded-md focus:tw-outline-none;
-}
-
-.public-DraftEditorPlaceholder-root {
-    @apply tw-text-gray-400 tw-italic;
-}
-
-.public-DraftStyleDefault-block {
-    @apply tw-mb-2;
-}
-
-.__editor {
-    /* make sure the SVG for plugins are baseline */
-    svg {
-        @apply tw-align-baseline tw-inline
-    }
-}
-
-.__editor-block {
-
-    /* remove normalized styling for the following entities */
-    blockquote {
-        display: block;
-        margin-block-start: 1em;
-        margin-block-end: 1em;
-        margin-inline-start: 40px;
-        margin-inline-end: 40px;
-        unicode-bidi: isolate;
-    }
-    ul { 
-        list-style-type: disc; 
-        list-style-position: inside; 
-        margin-left: 15px; 
-    }
-    ol { 
-       list-style-type: decimal; 
-       list-style-position: inside; 
-       margin-left: 15px; 
-    }
-    ul ul, ol ul { 
-       list-style-type: circle; 
-       list-style-position: inside; 
-       margin-left: 15px; 
-    }
-    ol ol, ul ol { 
-       list-style-type: lower-latin; 
-       list-style-position: inside; 
-       margin-left: 15px; 
-    }
-    a {
-        text-decoration: underline;
-        color: blue;
-    }
-    code {
-        font-family: monospace; 
-        font-size: 14px; 
-        overflow-wrap: break-word; 
-        background: rgb(241, 241, 241); 
-        border-radius: 3px; 
-        padding: 1px 3px;
-    }
+/* Dark mode - restore padding */
+.tw-dark .quill-display .ql-editor,
+.tw-dark .quill-display {
+  padding-left: inherit;
 }
 

@@ -78,7 +78,7 @@ export const SimpleEditor = ({
     }, [mentionsEnabled, source])
 
 	return (
-		<div id="quillContainer">
+		<div id="quillContainer" className="tw-bg-white tw-rounded-lg dark:tw-ring-1 dark:tw-ring-gray-600 dark:tw-shadow-lg">
 			<Controller
 				name={registerField}
 				rules={registerOptions}

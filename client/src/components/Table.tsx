@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import "../styles/table.css"
 import { v4 as uuidv4 } from "uuid"
 import { useAppSelector, useAppDispatch } from "../hooks/redux-hooks"
-import { LG_BREAKPOINT } from "../helpers/constants"
+import { LG_BREAKPOINT, PRIMARY_TEXT, NESTED_TABLE_BACKGROUND, SECONDARY_TEXT, STANDARD_BORDER_COLOR, STANDARD_HOVER, TABLE_BACKGROUND, LINK_TEXT, TABLE_DIVIDE } from "../helpers/constants"
 import { IconButton } from "./page-elements/IconButton"
 import { IconArrowRight } from "./icons/IconArrowRight"
 import { IconArrowDown } from "./icons/IconArrowDown"
@@ -27,7 +27,7 @@ type TableWrapperProps = {
 const TableWrapper = ({children}: TableWrapperProps) => {
 	return (
 		<div className = "tw-max-w-8xl tw-overflow-x-auto tw-shadow-md tw-rounded-md">
-			<table className = "tw-min-w-full tw-w-max tw-bg-white">
+			<table className = "tw-min-w-full tw-w-max">
 				{children}
 			</table>
 		</div>
@@ -38,12 +38,12 @@ const InnerTable = (props: Props) => {
 	const { tableKey: tKey, fullWidth } = props
 	const [tableKey, setTableKey] = useState(tKey ?? uuidv4())
 	return (
-		<div className={fullWidth ? "tw-w-full" : ""}>
-			<table className={`tw-bg-white ${fullWidth ? "tw-w-full tw-min-w-full" : "tw-min-w-full tw-w-max"}`}>
-				<thead className="tw-bg-gray-100 tw-border-b tw-border-gray-200">
+		<div className={`${NESTED_TABLE_BACKGROUND} ${fullWidth ? "tw-w-full" : ""}`}>
+			<table className={`${fullWidth ? "tw-w-full tw-min-w-full" : "tw-min-w-full tw-w-max"}`}>
+				<thead className={`${NESTED_TABLE_BACKGROUND} ${STANDARD_BORDER_COLOR} tw-border-b`}>
 					<TableHeader config={props.config} tableKey={tableKey}/>
 				</thead>
-				<tbody className="tw-bg-white tw-divide-y tw-divide-gray-200">
+				<tbody className={`${NESTED_TABLE_BACKGROUND} ${TABLE_DIVIDE}`}>
 					<TableContent {...props} showCheckboxes={false} tableKey={tableKey}/>
 				</tbody>
 			</table>
@@ -68,7 +68,7 @@ const TableHeader = ({showCheckboxes, config, tableKey}: Omit<Props, "data" | "i
 							minWidth: columnWidth,
 							maxWidth: columnWidth
 						}}
-						className = "tw-text-xs tw-font-medium tw-text-gray-600 tw-uppercase tw-tracking-wider" key = {`${tableKey}-${header !== "" ? header : uuidv4()}`}>{header}</th>	
+						className = {`tw-text-xs tw-font-medium ${SECONDARY_TEXT} tw-uppercase tw-tracking-wider`} key = {`${tableKey}-${header !== "" ? header : uuidv4()}`}>{header}</th>	
 				))
 			}
 		</tr>
@@ -107,7 +107,7 @@ const TableContent = ({
 			}
 			return (
 				<React.Fragment key={`${tableKey}-${row.id}-fragment`}>
-				<tr className = {`${isNestedTable ? "tw-bg-gray-50 hover:tw-bg-gray-100 tw-transition-colors tw-duration-200" : ""}`} key = {`${tableKey}-${row.id}`}>
+				<tr className = {`${SECONDARY_TEXT} ${isNestedTable ? `${NESTED_TABLE_BACKGROUND} ${STANDARD_HOVER}` : ""}`} key = {`${tableKey}-${row.id}`}>
 					{showCheckboxes ? 
 						(<td>
 							{config.bulkEdit?.canSelect(row) ? 
@@ -120,7 +120,7 @@ const TableContent = ({
 						Object.keys(config.headers).map((headerKey) => {
 							if (headerKey === config.linkCol){
 								return (
-									<td key = {`${tableKey}-${row.id}-${headerKey}`}><Link to = {config.link(row.id)}>{row[headerKey]}</Link></td>
+									<td key = {`${tableKey}-${row.id}-${headerKey}`}><Link className={LINK_TEXT} to = {config.link(row.id)}>{row[headerKey]}</Link></td>
 								)
 							}
 							else if (headerKey === config.nestedTableControl?.col){
@@ -154,7 +154,7 @@ const TableContent = ({
 										{
 											!config.editCol.shouldShow || (config.editCol.shouldShow && config.editCol.shouldShow(row)) ? (
 												<IconButton onClick={() => config.editCol?.onClick(row.id)}>
-													<IconPencil className = "tw-w-6 tw-h-6"/>
+													<IconPencil className = {`tw-w-6 tw-h-6 ${SECONDARY_TEXT}`}/>
 												</IconButton>
 											) : null	
 										}
@@ -216,8 +216,8 @@ const TableContent = ({
 					Component && nestedTableSet && nestedTableSet.has(row.id) ? 
 					(
 					<tr key={`${tableKey}-${row.id}-nested`}>
-						<td colSpan={getColSpan()} className="tw-p-0 tw-bg-gray-50">
-							<div className="tw-p-4 tw-border-l-4 tw-border-blue-200 tw-min-w-full">
+						<td colSpan={getColSpan()} className={`${NESTED_TABLE_BACKGROUND} tw-p-0 tw-bg-gray-50`}>
+							<div className={`${NESTED_TABLE_BACKGROUND} tw-p-4 tw-border-l-4 tw-border-blue-200 tw-min-w-full`}>
 								<Component {...props}/>
 							</div>
 						</td>
@@ -243,10 +243,10 @@ const MainTable = (props: Props) => {
 
 	return (
 		<>
-			<thead className={`${isNestedTable ? "tw-bg-gray-100" : "tw-bg-gray-50"} tw-border-b tw-border-gray-200`}>
+			<thead className={`${isNestedTable ? NESTED_TABLE_BACKGROUND : TABLE_BACKGROUND} tw-border-b ${STANDARD_BORDER_COLOR}`}>
 				<TableHeader showCheckboxes={showCheckboxes} config={config} tableKey={tableKey}/>
 			</thead>
-			<tbody className={"tw-bg-white tw-divide-y tw-divide-gray-200"}>
+			<tbody className={`${TABLE_BACKGROUND} ${TABLE_DIVIDE}`}>
 				<TableContent 
 					nestedTableSet={nestedTableSet} 
 					setNestedTableSet={setNestedTableSet} 

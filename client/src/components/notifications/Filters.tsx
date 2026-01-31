@@ -16,6 +16,7 @@ import { LoadingButton } from "../../components/page-elements/LoadingButton"
 import { Button } from "../../components/page-elements/Button"
 import { Switch } from "../page-elements/Switch"
 import { Select } from "../page-elements/Select"
+import { PLACEHOLDER_COLOR } from "../../helpers/constants"
 
 interface FormValues {
 	notificationType: OptionType
@@ -129,7 +130,7 @@ export const Filters = () => {
 			                />
 		                )}
 					/> : 
-					<LoadingSkeleton className= "tw-bg-gray-200" width = "tw-w-64" height="tw-h-10"/>	
+					<LoadingSkeleton className= {PLACEHOLDER_COLOR} width = "tw-w-64" height="tw-h-10"/>	
 				}
 			</div>
 			<div className = "tw-flex tw-flex-col">

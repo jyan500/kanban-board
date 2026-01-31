@@ -12,6 +12,7 @@ import { IconPlus } from "../icons/IconPlus"
 import { IconEdit } from "../icons/IconEdit"
 import { IconEyeSlash } from "../icons/IconEyeSlash"
 import { TextIconRow } from "../page-elements/TextIconRow"
+import { PRIMARY_TEXT, STANDARD_HOVER } from "../../helpers/constants"
 
 type Props = {
 	closeDropdown: () => void
@@ -73,7 +74,7 @@ export const StatusHeaderDropdown = React.forwardRef<HTMLDivElement, Props>(({cl
 							option.onClick()
 							closeDropdown()
 						}}
-						className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+						className={`tw-block tw-px-4 tw-py-2 tw-text-sm ${PRIMARY_TEXT} ${STANDARD_HOVER}`}
 						role="menuitem"
 					>
 						<TextIconRow text={option.text} icon={option.icon}/>

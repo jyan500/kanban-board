@@ -15,6 +15,7 @@ module.exports = {
         warning: "#ffc107", /* yellow */ 
         danger: "#dc3545", /* red */
         "light-purple": "#904ee2", /* purple */
+        "lavender": "#CCCCFF" /* lavender (more precisely, periwinkle) */
       },
       backgroundImage: {
           'gradient-background': 'linear-gradient(to bottom, rgb(219 234 254), rgb(249 250 251))',

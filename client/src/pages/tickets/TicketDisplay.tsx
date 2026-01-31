@@ -20,7 +20,7 @@ import { IconFilter } from "../../components/icons/IconFilter"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { setSecondaryModalProps, setSecondaryModalType, toggleShowSecondaryModal } from "../../slices/secondaryModalSlice"
 import { useFilterSync } from "../../hooks/useFilterSync"
-import { SEARCH_OPTIONS } from "../../helpers/constants"
+import { PRIMARY_TEXT, SEARCH_OPTIONS } from "../../helpers/constants"
 
 export type FormValues = {
 	searchBy: string
@@ -159,7 +159,7 @@ export const TicketDisplay = () => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
-			<h1>Tickets</h1>
+			<h1 className={PRIMARY_TEXT}>Tickets</h1>
 			<FormProvider {...methods}>
 				<SearchToolBar 
 					paginationData={data?.pagination} 

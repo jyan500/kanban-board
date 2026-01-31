@@ -15,7 +15,7 @@ import { BoardStatusModal } from "./primary-modals/BoardStatusModal"
 import { OrganizationStatusModal } from "./primary-modals/OrganizationStatusModal"
 import { BulkActionsModal } from "./primary-modals/BulkActionsModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
-import { PRIMARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
+import { PRIMARY_MODAL_Z_INDEX, LG_BREAKPOINT, STANDARD_BORDER, PRIMARY_TEXT } from "../helpers/constants"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { avoidAsyncSelectMenuOverflow } from "./SecondaryModal"
 import { getModalWidth } from "../helpers/functions"
@@ -95,7 +95,7 @@ export const Modal = () => {
 
 	return (
 		<div className = {`${PRIMARY_MODAL_Z_INDEX} overlay ${showModal ? "--visible": "--hidden"}`}>
-			<div style={style} className = {`${modalContainerClassName !== "" ? modalContainerClassName : "tw-top-[30%]"} modal-container`}>
+			<div style={style} className = {`${STANDARD_BORDER} dark:tw-bg-dark-mode-modal-gradient tw-bg-white ${modalContainerClassName !== "" ? modalContainerClassName : "tw-top-[30%]"} modal-container`}>
 				<button 
 				className = "__modal-container-close --transparent"
 				onClick={
@@ -111,7 +111,7 @@ export const Modal = () => {
 					}
 				}
 				>
-					<IoMdClose className = "icon"/>
+					<IoMdClose className = {`${PRIMARY_TEXT} icon`}/>
 				</button>
 				<div className = {`${modalClassName} modal`}>
 					<div className = "modal-content">

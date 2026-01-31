@@ -18,7 +18,7 @@ import { TicketFilterModal } from "./secondary-modals/TicketFilterModal"
 import { NotificationFilterModal } from "./secondary-modals/NotificationFilterModal"
 import { BoardFilterModal } from "./secondary-modals/BoardFilterModal"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks" 
-import { SECONDARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
+import { STANDARD_BORDER, SECONDARY_MODAL_Z_INDEX, LG_BREAKPOINT } from "../helpers/constants"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { getModalWidth } from "../helpers/functions"
 
@@ -66,7 +66,7 @@ export const SecondaryModal = () => {
 
 	return (
 		<div className = {`${SECONDARY_MODAL_Z_INDEX} !tw-bg-black/50 overlay ${showSecondaryModal ? "--visible" : "--hidden"}`}>
-			<div style={style} className = {`${modalContainerClassName !== "" ? modalContainerClassName : "tw-top-[30%]"} modal-container`}>
+			<div style={style} className = {`${STANDARD_BORDER} dark:tw-bg-dark-mode-modal-gradient tw-bg-white ${modalContainerClassName !== "" ? modalContainerClassName : "tw-top-[30%]"} modal-container`}>
 				<button 
 				className = "__modal-container-close --transparent"
 				onClick={

@@ -30,7 +30,15 @@ import { TicketCommentForm } from "./TicketCommentForm"
 import { LinkedTicketForm } from "./LinkedTicketForm"
 import { EditTicketFormToolbar } from "./EditTicketFormToolbar" 
 import { priorityIconMap, PriorityIcon, TicketTypeIcon } from "./Ticket"
-import { PRIORITY_COLOR_MAP } from "../helpers/constants";
+import { 
+	PRIMARY_TEXT, 
+	STANDARD_BORDER, 
+	STANDARD_HOVER, 
+	PLACEHOLDER_COLOR, 
+	PRIORITY_COLOR_MAP,
+	SECONDARY_TEXT,
+	FADE_ANIMATION
+} from "../helpers/constants";
 import { EditTicketFormMenuDropdown } from "./dropdowns/EditTicketFormMenuDropdown" 
 import { ImTree as AddToEpicIcon } from "react-icons/im";
 import { IconWarning } from "./icons/IconWarning";
@@ -85,7 +93,7 @@ type RightSectionRowProps = {
 const RightSectionRow = ({children, title}: RightSectionRowProps) => {
 	return (
 		<div className = "tw-flex tw-flex-row tw-w-full tw-items-center tw-min-h-9">	
-			<span className = "tw-font-semibold tw-w-1/2">{title}</span>
+			<span className = {`${SECONDARY_TEXT} tw-font-semibold tw-w-1/2`}>{title}</span>
 			<div className = "tw-w-1/2">
 				{children}
 			</div>
@@ -445,7 +453,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						</div>
 					</div>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-						<span className = "tw-font-bold tw-text-xl">Details</span>
+						<span className = {`${PRIMARY_TEXT} tw-font-bold tw-text-xl`}>Details</span>
 						<RightSectionRow title={"Assignee"}>
 							{
 								!isTicketAssigneesLoading && ticketAssignees ? (
@@ -457,7 +465,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 											{userProfileSelect}
 										</div>
 									</button>
-								) : <LoadingSkeleton className="tw-bg-gray-200" width="tw-w-32" height="tw-h-6"/>
+								) : <LoadingSkeleton className={PLACEHOLDER_COLOR} width="tw-w-32" height="tw-h-6"/>
 							}	
 						</RightSectionRow>
 						<RightSectionRow title={"Reporter"}>
@@ -465,7 +473,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								<div className = "tw-w-[2em] tw-shrink-0">
 									<Avatar userInitials={getUserInitials(reporter)} imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 								</div>
-								<div className = "tw-ml-3 tw-flex tw-flex-1">{displayUser(reporter)}</div>
+								<div className = {`${PRIMARY_TEXT} tw-ml-3 tw-flex tw-flex-1`}>{displayUser(reporter)}</div>
 							</div>
 						</RightSectionRow>
 						<RightSectionRow title={"Priority"}>
@@ -504,7 +512,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							{
 								!editFieldVisibility["story-points"] ? (
 									<button onClick = {(e) => toggleFieldVisibility("story-points", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
-										{watch("storyPoints") !== "" && watch("storyPoints") ? watch("storyPoints") : "None"}
+										<span className={PRIMARY_TEXT}>{watch("storyPoints") !== "" && watch("storyPoints") ? watch("storyPoints") : "None"}</span>
 									</button>
 								) : (
 									<div className = "tw-w-1/2">
@@ -573,7 +581,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 									ticketId: ticket?.id ?? 0
 								}))
 								dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
-							}}>{!isTicketActivitiesLoading ? (ticketActivities?.additional?.totalTime ? convertMinutesToTimeDisplay(ticketActivities?.additional?.totalTime) : <span>None</span>) : <LoadingSkeleton className="tw-bg-gray-200" width="tw-w-32" height="tw-h-6"/>}</button>
+							}}>{!isTicketActivitiesLoading ? (ticketActivities?.additional?.totalTime ? convertMinutesToTimeDisplay(ticketActivities?.additional?.totalTime) : <span>None</span>) : <LoadingSkeleton className={PLACEHOLDER_COLOR} width="tw-w-32" height="tw-h-6"/>}</button>
 						</RightSectionRow>
 					</div>
 				</div>
@@ -611,7 +619,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							{
 								!editFieldVisibility.name ? (
 									<div onClick = {(e) => toggleFieldVisibility("name", true)} className = "hover:tw-opacity-60 tw-cursor-pointer tw-font-bold tw-text-3xl">
-										{watch("name")}
+										<span className={PRIMARY_TEXT}>{watch("name")}</span>
 									</div>
 								) : (
 									<>
@@ -664,11 +672,11 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								}
 							</div>
 							<div className = "tw-flex tw-flex-col tw-gap-y-2">
-								<strong>Description</strong>
+								<p className={`tw-font-semibold ${PRIMARY_TEXT}`}>Description</p>
 								<>
 									{
 										!editFieldVisibility.description ? (
-											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = "hover:tw-opacity-60 tw-cursor-pointer">
+											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = {`${FADE_ANIMATION} hover:tw-bg-gray-100 tw-cursor-pointer`}>
 												<TextAreaDisplay rawHTMLString={watch("description")}/>
 											</div>
 										) : (
@@ -717,7 +725,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							{ticket?.ticketTypeId === epicTicketType?.id ? (
 								<>
 									<div className = "tw-flex tw-flex-row tw-justify-between">
-										<strong>Epic Tickets</strong>
+										<p className={PRIMARY_TEXT}>Epic Tickets</p>
 										{
 											epicTicketRelationships?.pagination.nextPage || epicTicketRelationships?.pagination.prevPage ? (
 												<PaginationRow
@@ -734,7 +742,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								</>
 							) : null
 							}
-							<p className = "tw-font-medium">Linked Issues</p>	
+							<p className = {`tw-font-medium ${PRIMARY_TEXT}`}>Linked Issues</p>	
 							{
 								ticketRelationships?.pagination.nextPage || ticketRelationships?.pagination.prevPage ? (
 									<PaginationRow

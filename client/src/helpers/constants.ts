@@ -216,8 +216,18 @@ export const AVATAR_FONT_SIZES: {[k: string]: string} = {
     "l": "tw-text-xl",
 }
 
-export const STANDARD_BORDER = "dark:tw-border-gray-500 tw-border-gray-200 tw-border"
+export const STANDARD_BORDER_COLOR = "dark:tw-border-gray-500 tw-border-gray-200"
+export const STANDARD_BORDER = `${STANDARD_BORDER_COLOR} tw-border`
 export const STANDARD_HOVER = "dark:hover:tw-bg-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
 export const NAVLINK_HOVER = "dark:hover:tw-bg-gray-700 dark:hover:tw-text-white hover:tw-bg-light-primary hover:tw-text-primary"
 export const NAVLINK_TEXT = "dark:tw-text-white dark:tw-bg-gray-700 tw-text-primary tw-bg-light-primary"
 export const PLACEHOLDER_COLOR = "dark:tw-bg-gray-600 tw-bg-gray-200"
+export const CARD_BACKGROUND_COLOR = "dark:tw-bg-slate-700 tw-bg-gray-50"
+export const TICKET_BACKGROUND_COLOR = "dark:tw-bg-slate-600"
+export const PRIMARY_TEXT = "dark:!tw-text-white !tw-text-gray-900"
+export const SECONDARY_TEXT = "dark:tw-text-slate-300 dark:tw-text-gray-500"
+export const TABLE_BACKGROUND = "dark:tw-bg-slate-800 tw-bg-gray-50"
+export const NESTED_TABLE_BACKGROUND = "dark:tw-bg-slate-700 tw-bg-gray-100"
+export const LINK_TEXT = "dark:tw-text-white tw-text-primary"
+export const TERTIARY_TEXT = "dark:tw-text-ilght-primary tw-text-primary"
+export const TABLE_DIVIDE = "tw-divide-y dark:tw-divide-gray-500 tw-divide-gray-200"

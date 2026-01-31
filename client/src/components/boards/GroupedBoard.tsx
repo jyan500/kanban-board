@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { KanbanBoard, GroupedTickets, GroupByOptionsKey, Status, GroupByElement, Ticket as TicketType, LoadingStatus } from "../../types/common"
 import { useGetGroupByElementsQuery } from "../../services/private/groupBy"
 import { useUpdateTicketStatusMutation } from "../../services/private/ticket"
-import { MAX_COLUMN_LIMIT } from "../../helpers/constants"
+import { MAX_COLUMN_LIMIT, PLACEHOLDER_COLOR } from "../../helpers/constants"
 import { 
 	selectCurrentTicketId,
 } from "../../slices/boardSlice"
@@ -218,7 +218,7 @@ export const GroupedBoard = ({
 						)
 					})) : (
 						<LoadingSkeleton width = "tw-flex tw-flex-col tw-gap-y-4 tw-w-full" height={"tw-h-[1000px]"}>
-							<div className = "tw-w-32 tw-h-6 tw-bg-gray-200"></div>
+							<div className = {`tw-w-32 tw-h-6 ${PLACEHOLDER_COLOR}`}></div>
 							<BoardPlaceholder/>
 						</LoadingSkeleton>
 					)

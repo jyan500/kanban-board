@@ -26,7 +26,7 @@ export const Select = ({
     clearable,
 	searchable=false,
 	hideIndicatorSeparator=false,
-	textColor="black",
+	textColor="inherit",
 	textAlign="left",
     className,
     onSelect,
@@ -51,9 +51,9 @@ export const Select = ({
 
 	const { classNames, styles } = getSelectStyles({
         isDarkMode,
-        textColor: textColor,
-        textAlign: textAlign,
-        className: className,
+        textColor,
+        textAlign,
+        className,
         hideIndicatorSeparator: true,
     })
 

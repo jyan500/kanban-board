@@ -22,11 +22,13 @@ export const getSelectStyles = ({
     styles: StylesConfig<OptionType, false, GroupBase<OptionType>>
 } => {
 
+    /* TODO: Dark Mode Styling is commented out right now, but if other form inputs get dark styling, this can be uncommented*/
     return {
         classNames: {
-            control: (state) => `${className} ${SELECT_Z_INDEX} dark:!tw-bg-gray-800 dark:!tw-border-gray-600`,
-            menu: (base) => `dark:!tw-bg-gray-800`,
-            placeholder: (base) => `dark:!tw-text-gray-200`,
+            control: (state) => `${className} ${SELECT_Z_INDEX}`,
+            // control: (state) => `${className} ${SELECT_Z_INDEX} dark:!tw-bg-gray-800 dark:!tw-border-gray-600`,
+            // menu: (base) => `dark:!tw-bg-gray-800`,
+            // placeholder: (base) => `dark:!tw-text-gray-200`,
         },
         styles: {
             control: (baseStyles, state) => ({
@@ -35,30 +37,35 @@ export const getSelectStyles = ({
                 padding: ".1em",
                 textAlign: textAlign as any,
             }),
-            option: (provided, state) => ({
-                ...provided,
-                color: isDarkMode
-                    ? (state.isFocused ? '#f9fafb' : '#e5e7eb')
-                    : (state.isFocused ? '#111827' : '#374151'),
-                backgroundColor: isDarkMode
-                    ? (state.isFocused ? '#374151' : '#1f2937')
-                    : (state.isFocused ? '#f3f4f6' : 'white'),
-                cursor: 'pointer',
-            }),
+            // option: (provided, state) => ({
+            //     ...provided,
+            //     color: isDarkMode
+            //         ? (state.isFocused ? '#f9fafb' : '#e5e7eb')
+            //         : (state.isFocused ? '#111827' : '#374151'),
+            //     backgroundColor: isDarkMode
+            //         ? (state.isFocused ? '#374151' : '#1f2937')
+            //         : (state.isFocused ? '#f3f4f6' : 'white'),
+            //     cursor: 'pointer',
+            // }),
             singleValue: (base) => ({
                 ...base,
-                color: isDarkMode ? "white" : "black",
+                color: textColor,
+                // color: textColor === "inherit" ? isDarkMode ? "white" : "black" : textColor,
             }),
             placeholder: (base) => ({
                 ...base,
-                color: isDarkMode ? "white": "black",
+                // color: textColor === "inherit" ? (isDarkMode ? "white": "black") : textColor,
+                color: textColor,
                 textAlign: textAlign as any,
             }),
             dropdownIndicator: (provided) => ({
                 ...provided,
+                // 'svg': {
+                //     fill: textColor === "inherit" ? (isDarkMode ? "white" : "black") : textColor,
+                // },
                 'svg': {
-                    fill: isDarkMode ? "white" : "black",
-                },
+                    fill: textColor
+                }
             }),
             valueContainer: (provided) => ({
                 ...provided,
@@ -66,8 +73,11 @@ export const getSelectStyles = ({
             }),
             indicatorSeparator: () => ({
                 display: hideIndicatorSeparator ? 'none' : 'block',
+                // 'svg': {
+                //     fill: textColor === "inherit" ? (isDarkMode ? "white": "black") : textColor
+                // }
                 'svg': {
-                    fill: isDarkMode ? "white": "black"
+                    fill: textColor 
                 }
             }),
         },
