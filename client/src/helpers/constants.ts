@@ -109,10 +109,16 @@ export const TICKET_TYPE_COLOR_MAP: {[key: string]: string} = {
     "Feature": "var(--bs-success)",
 }
 
-export const PRIORITY_COLOR_MAP: {[key: string]: string} = {
+export const PIE_CHART_COLOR_MAP: {[key: string]: string} = {
 	"Low": "var(--bs-primary)",
 	"Medium": "var(--bs-warning)",
 	"High": "var(--bs-danger)"	
+}
+
+export const PRIORITY_COLOR_MAP: {[key: string]: string} = {
+    "Low": "dark:tw-text-sky-500 tw-text-primary",
+    "Medium": "dark:tw-text-amber-400 tw-text-amber-500",
+    "High": "dark:tw-text-red-400 tw-text-red-500"
 }
 
 export const MOVE_OPEN_ITEM_OPTIONS = [
@@ -219,6 +225,7 @@ export const AVATAR_FONT_SIZES: {[k: string]: string} = {
 export const STANDARD_BORDER_COLOR = "dark:tw-border-gray-500 tw-border-gray-200"
 export const STANDARD_BORDER = `${STANDARD_BORDER_COLOR} tw-border`
 export const STANDARD_HOVER = "dark:hover:tw-bg-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+export const STANDARD_DROPDOWN_ITEM =`${STANDARD_HOVER} dark:tw-text-white tw-block tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-cursor-pointer`
 export const NAVLINK_HOVER = "dark:hover:tw-bg-gray-700 dark:hover:tw-text-white hover:tw-bg-light-primary hover:tw-text-primary"
 export const NAVLINK_TEXT = "dark:tw-text-white dark:tw-bg-gray-700 tw-text-primary tw-bg-light-primary"
 export const PLACEHOLDER_COLOR = "dark:tw-bg-gray-600 tw-bg-gray-200"
@@ -228,6 +235,6 @@ export const PRIMARY_TEXT = "dark:!tw-text-white !tw-text-gray-900"
 export const SECONDARY_TEXT = "dark:tw-text-slate-300 dark:tw-text-gray-500"
 export const TABLE_BACKGROUND = "dark:tw-bg-slate-800 tw-bg-gray-50"
 export const NESTED_TABLE_BACKGROUND = "dark:tw-bg-slate-700 tw-bg-gray-100"
-export const LINK_TEXT = "dark:tw-text-white tw-text-primary"
+export const LINK_TEXT = "tw-font-medium dark:tw-text-light-primary tw-text-primary"
 export const TERTIARY_TEXT = "dark:tw-text-ilght-primary tw-text-primary"
 export const TABLE_DIVIDE = "tw-divide-y dark:tw-divide-gray-500 tw-divide-gray-200"

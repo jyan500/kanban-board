@@ -479,7 +479,9 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Priority"}>
 							<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
 								<div className = "tw-w-[2em] tw-shrink-0">
-									{selectFieldLoading["priority"] ? <LoadingSpinner/> : priorityName ? <PriorityIcon type = {priorityName} color = {priorityName in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priorityName] : ""} className = "tw-shrink-0 tw-w-6 tw-h-6"/> : <></>}
+									{selectFieldLoading["priority"] ? <LoadingSpinner/> : priorityName ? 
+									<PriorityIcon type={priorityName} className={`${priorityName in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priorityName] : ""} tw-shrink-0 tw-w-5 tw-h-5`}/>
+									: <></>}
 								</div>
 								<div className = "tw-min-w-32 tw-flex tw-flex-1">
 									{prioritySelect}
@@ -574,7 +576,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							}
 						</RightSectionRow>
 						<RightSectionRow title={"Time Spent"}>
-							<button className = "hover:tw-opacity-60" onClick={(e) => {
+							<button className = {`${PRIMARY_TEXT} hover:tw-opacity-60`} onClick={(e) => {
 								dispatch(toggleShowSecondaryModal(true))
 								dispatch(setSecondaryModalProps<TicketActivityModalProps>({
 									...(!isTicketActivitiesLoading && ticketActivities?.additional?.totalTime ? {totalTime: ticketActivities?.additional?.totalTime} : {}), 
@@ -603,7 +605,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 				} 
 				</div> 
 				<div className = "tw-pt-2 tw-pb-2">
-					<p className = "tw-font-medium">Created {createdAt}</p>
+					<p className = {`${SECONDARY_TEXT} tw-font-medium`}>Created {createdAt}</p>
 				</div>
 			</>
 		)

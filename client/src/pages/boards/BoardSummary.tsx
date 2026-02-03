@@ -4,7 +4,7 @@ import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useNavigate, Link } from "react-router-dom"
 import { BoardSummary as BoardSummaryType, TicketEntityHistory, ProgressBarItem, PieChartItem, UserProfile, Ticket } from "../../types/common"
-import { PRIORITY_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
+import { PIE_CHART_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { HorizontalProgressBarRow } from "../../components/page-elements/HorizontalProgressBarRow"
@@ -95,7 +95,7 @@ export const BoardSummary = () => {
             id: item.priorityId,
             name: priority ? priority.name : `Priority ${item.priorityId}`,
             value: item.totalTickets,
-            color: priority ? PRIORITY_COLOR_MAP[priority.name] : '#999'
+            color: priority ? PIE_CHART_COLOR_MAP[priority.name] : '#999'
         }
     }) ?? []
 

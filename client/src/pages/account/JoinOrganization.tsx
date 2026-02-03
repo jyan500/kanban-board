@@ -9,6 +9,8 @@ import { USER_PROFILE_URL, USER_PROFILE_ORG_URL } from "../../helpers/urls"
 import { OptionType, Toast } from "../../types/common"
 import { useNavigate, Navigate } from "react-router-dom" 
 import { LoadingButton } from "../../components/page-elements/LoadingButton"
+import { Label } from "../../components/page-elements/Label"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 type FormValues = {
 	organizationId: string | number 
@@ -50,12 +52,12 @@ export const JoinOrganization = () => {
 	}
 	return (
 		<div className = "tw-w-1/2">
-			<h1>Join Organization</h1>	
-			<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
-				 <div>
-				    <label className = "label" htmlFor = "join-organization">
+			<h1 className={PRIMARY_TEXT}>Join Organization</h1>	
+			<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-4">
+				<div className={"tw-flex tw-flex-col tw-gap-y-2"}>
+				    <Label htmlFor = "join-organization">
 				    	Organization:
-				    </label>
+				    </Label>
 					<Controller
 						name={"organizationId"}
 						control={control}

@@ -9,6 +9,8 @@ import { useGetUserNotificationTypesQuery, useUpdateUserNotificationTypesMutatio
 import { Switch } from "../page-elements/Switch"
 import { RowContentLoading } from "../page-elements/RowContentLoading"
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { PRIMARY_TEXT } from "../../helpers/constants"
+import { Label } from "../page-elements/Label"
 
 export const UserNotificationTypeForm = () => {
 	const dispatch = useAppDispatch()
@@ -58,7 +60,7 @@ export const UserNotificationTypeForm = () => {
 
 	return (
 		<div>
-			<h1>Notification Settings</h1>
+			<h1 className={PRIMARY_TEXT}>Notification Settings</h1>
 			<form className = "tw-space-y-2" onSubmit={(e) => {
 				e.preventDefault()
 				onSubmit()
@@ -67,7 +69,7 @@ export const UserNotificationTypeForm = () => {
 				{ !isUserNotificationTypesLoading ? (notificationTypes.map((notificationType) => (
 					<div key = {`user_notification_type_${notificationType.id}`} className="tw-flex tw-flex-row tw-items-center tw-gap-x-2 tw-py-2">
 						<Switch id = {`user-notification-type-${notificationType.id}`} checked={notificationTypeIds.find((id) => id === notificationType.id) != null} onChange={(e) => onCheck(notificationType.id)}/>
-						<label htmlFor = {`user-notification-type-${notificationType.id}`}>{notificationType.name}</label>
+						<Label htmlFor = {`user-notification-type-${notificationType.id}`}>{notificationType.name}</Label>
 					</div>
 				))) : 
 				<RowContentLoading/>}

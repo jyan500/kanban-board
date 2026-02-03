@@ -12,6 +12,7 @@ import { SearchBar } from "../../components/SearchBar"
 import { withUrlParams } from "../../helpers/functions"
 import { RowContentLoading } from "../../components/page-elements/RowContentLoading"
 import { Button } from "../../components/page-elements/Button"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 type FormValues = {
 	query: string
@@ -49,7 +50,7 @@ export const RegistrationRequests = () => {
 		<div>
 			<div className = "tw-flex tw-flex-col tw-gap-y-4">
 				<div>
-					<h1>Registration Requests</h1>
+					<h1 className={PRIMARY_TEXT}>Registration Requests</h1>
 				</div>
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
 					<FormProvider {...methods}>

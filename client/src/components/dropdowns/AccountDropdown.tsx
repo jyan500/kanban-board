@@ -21,7 +21,7 @@ import { IconLightMode } from "../icons/IconLightMode"
 import { TextIconRow } from "../page-elements/TextIconRow"
 import { setDarkMode } from "../../slices/darkModeSlice"
 import { useDarkMode } from "../../hooks/useDarkMode"
-import { STANDARD_HOVER } from "../../helpers/constants"
+import { STANDARD_DROPDOWN_ITEM, STANDARD_HOVER } from "../../helpers/constants"
 
 type Props = {
 	isTemp: boolean
@@ -117,7 +117,7 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 									closeDropdown()
 								}
 							}}
-							className={`${STANDARD_HOVER} dark:tw-text-white tw-block tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-cursor-pointer`}
+							className={STANDARD_DROPDOWN_ITEM}
 							role="menuitem"
 						>
 						{

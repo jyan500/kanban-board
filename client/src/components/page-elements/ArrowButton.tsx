@@ -1,6 +1,7 @@
 import React from "react"
 import { IconArrowLeft } from "../icons/IconArrowLeft";
 import { IconArrowRight } from "../icons/IconArrowRight";
+import { FADE_ANIMATION } from "../../helpers/constants";
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children?: React.ReactNode
@@ -15,7 +16,7 @@ export const ArrowButton = ({isForward, text, children, ...props}: Props) => {
 			<>
 				{!isForward ? <IconArrowLeft className = "dark:tw-text-white dark:group-hover:tw-text-black tw-h-5 tw-w-5"/> : <IconArrowRight className="dark:tw-text-white dark:group-hover:tw-text-black tw-h-5 tw-w-5"/>}
 				{text ? (
-					<span className = "tw-font-bold dark:tw-text-white dark:group-hover:tw-text-slate-400 tw-text-lg">{text}</span>
+					<span className = {`${FADE_ANIMATION} tw-font-bold dark:tw-text-white dark:group-hover:tw-text-gray-700 tw-text-lg`}>{text}</span>
 				) : null}
 				{children}
 			</>

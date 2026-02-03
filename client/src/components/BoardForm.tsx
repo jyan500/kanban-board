@@ -233,7 +233,7 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 					)}
 				/>
 			</div>
-			<div className = "tw-flex tw-flex-col">
+			<div className = "tw-flex tw-flex-col tw-min-h-56">
 			{ !isStatusDataLoading ? (statuses.filter((status) => status.isActive).map((status) => (
 				<div key = {status.id} className="tw-flex tw-flex-row tw-items-center tw-gap-x-2 tw-py-2">
 					<Switch id = {`board-status-${status.id}`} checked={formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)}/>

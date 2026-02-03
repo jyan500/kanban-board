@@ -84,7 +84,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 				<div>
 					{priority && priority in priorityIconMap ? 
 					(
-						<PriorityIcon type={priority} color={priority in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priority] : ""} className = "--l-icon --icon-thumb"/>
+						<PriorityIcon type={priority} className={`${priority in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priority] : ""} tw-shrink-0 tw-w-5 tw-h-5`}/>
 					)
 					: <></>}	
 				</div>

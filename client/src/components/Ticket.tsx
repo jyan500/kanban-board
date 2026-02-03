@@ -135,7 +135,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 						<TicketTypeIcon type = {ticketType} className = {"tw-shrink-0 tw-w-5 tw-h-5"}/>
 					) : <></>}
 					{
-						priority ? (<PriorityIcon type={priority} color={priority in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priority] : ""} className={"tw-shrink-0 tw-w-5 tw-h-5"}/>) : <></>
+						priority ? (<PriorityIcon type={priority} className={`${priority in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priority] : ""} tw-shrink-0 tw-w-5 tw-h-5`}/>) : <></>
 					}
 					{
 						ticket.hasNonEpicRelationship ? 
