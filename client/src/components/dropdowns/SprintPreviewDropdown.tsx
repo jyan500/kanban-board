@@ -6,6 +6,7 @@ import { IconCycle } from "../icons/IconCycle"
 import { IconPencil } from "../icons/IconPencil"
 import { toggleShowModal, setModalProps, setModalType } from "../../slices/modalSlice"
 import { format } from "date-fns"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
 
 type Props = {
 	closeDropdown: () => void
@@ -22,7 +23,7 @@ export const SprintPreviewDropdown = React.forwardRef<HTMLDivElement, Props>(({i
 				<div className = "tw-flex tw-flex-row tw-justify-between tw-items-center">
 					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 						<IconCycle className = "tw-w-4 tw-h-4"/>
-						<p>{sprint.name}</p>
+						<p className={SECONDARY_TEXT}>{sprint.name}</p>
 					</div>
 					<button onClick={() => {
 						
@@ -37,12 +38,12 @@ export const SprintPreviewDropdown = React.forwardRef<HTMLDivElement, Props>(({i
 				</div>
 				<div className = "tw-flex tw-flex-row tw-items-center tw-justify-between">
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-						<p className = "tw-text-sm tw-text-gray-700">Start</p>
-						<p>{format(sprint.startDate, "MMM dd, yyyy")}</p>
+						<p className = {`tw-text-sm ${PRIMARY_TEXT}`}>Start</p>
+						<p className={SECONDARY_TEXT}>{format(sprint.startDate, "MMM dd, yyyy")}</p>
 					</div>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-						<p className = "tw-text-sm tw-text-gray-700">End</p>
-						<p>{format(sprint.endDate, "MMM dd, yyyy")}</p>
+						<p className = {`tw-text-sm ${PRIMARY_TEXT}`}>End</p>
+						<p className={SECONDARY_TEXT}>{format(sprint.endDate, "MMM dd, yyyy")}</p>
 					</div>
 				</div>
 			</div>
