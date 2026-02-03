@@ -18,6 +18,7 @@ import { ColumnFormPlaceholder } from "./placeholders/ColumnFormPlaceholder"
 import { BackendErrorMessage } from "./page-elements/BackendErrorMessage"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { Select } from "./page-elements/Select"
+import { Label } from "./page-elements/Label"
 
 type FormValues = {
 	id?: number 
@@ -139,10 +140,10 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 				{!isChangePassword ? 
 				(
 				<>
-					<div>
-					    <label className = "label" htmlFor = "edit-user-firstname">
+					<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					    <Label htmlFor = "edit-user-firstname">
 					    	First Name: <span className = "tw-font-bold tw-text-red-500">*</span>
-					    </label>
+					    </Label>
 						<input 
 						id = "edit-user-firstname"
 						type="text"
@@ -151,10 +152,10 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 						/>
 				        {errors?.firstName && <small className = "--text-alert">{errors.firstName.message}</small>}
 			        </div>
-			    	<div>
-					    <label className = "label" htmlFor = "edit-user-lastname">
+			    	<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					    <Label htmlFor = "edit-user-lastname">
 					    	Last Name: <span className = "tw-font-bold tw-text-red-500">*</span>
-					    </label>
+					    </Label>
 						<input 
 						id = "edit-user-lastname"
 						type="text"
@@ -163,10 +164,10 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 						/>
 				        {errors?.lastName && <small className = "--text-alert">{errors.lastName.message}</small>}
 			        </div>
-			    	<div>
-					    <label className = "label" htmlFor = "edit-user-email">
+			    	<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					    <Label htmlFor = "edit-user-email">
 					    	Email: <span className = "tw-font-bold tw-text-red-500">*</span>
-					    </label>
+					    </Label>
 						<input 
 						id = "edit-user-email"
 						type="text"
@@ -175,12 +176,12 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 						/>
 				        {errors?.email && <small className = "--text-alert">{errors.email.message}</small>}
 				 	</div>
-			    	<div>
+			    	<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			    		{!isAccountsPage ? (
 			    			<>
-							    <label className = "label" htmlFor = "edit-user-role">
+							    <Label htmlFor = "edit-user-role">
 							    	User Role: <span className = "tw-font-bold tw-text-red-500">*</span>
-							    </label>
+							    </Label>
 								<Controller
 									name="userRoleId"
 									control={control}
@@ -210,10 +211,10 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 			        isAccountsPage && isChangePassword ? (
 			        <>
 			        	<div>
-					    	<div>
-							    <label className = "label" htmlFor = "register-password">
+					    	<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							    <Label htmlFor = "register-password">
 							    	Existing Password: <span className = "tw-font-bold tw-text-red-500">*</span>
-							    </label>
+							    </Label>
 								<input 
 								id = "register-password"
 								type="password"
@@ -224,10 +225,10 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 					        </div>
 					    </div>
 				        <div>
-					    	<div>
-							    <label className = "label" htmlFor = "register-password">
+					    	<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							    <Label htmlFor = "register-password">
 							    	Password: <span className = "tw-font-bold tw-text-red-500">*</span>
-							    </label>
+							    </Label>
 								<input 
 								id = "register-password"
 								type={!showPassword ? "password" : "text"}
@@ -239,10 +240,10 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 					        </div>
 					    </div>
 					    <div>
-					    	<div>
-							    <label className = "label" htmlFor = "register-confirm-password">
+					    	<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							    <Label htmlFor = "register-confirm-password">
 							    	Confirm Password: <span className = "tw-font-bold tw-text-red-500">*</span>
-							    </label>
+							    </Label>
 							    <div className = "tw-mt-2 tw-relative">
 									<input 
 									id = "register-confirm-password"

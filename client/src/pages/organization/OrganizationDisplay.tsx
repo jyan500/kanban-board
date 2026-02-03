@@ -25,6 +25,7 @@ import { EditImageIndicator } from "../../components/page-elements/EditImageIndi
 import { ProfileCard } from "../../components/page-elements/ProfileCard" 
 import { SettingsCard } from "../../components/page-elements/SettingsCard" 
 import { TwoColumnLoading } from "../../components/page-elements/TwoColumnLoading"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 export const OrganizationDisplay = () => {
 	const dispatch = useAppDispatch()
@@ -54,7 +55,7 @@ export const OrganizationDisplay = () => {
 							<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
 								<>
 									<ProfileCard isOrg={true} entityId={organization.id} imageUploadUrl={`${ORGANIZATION_URL}/image`} imageUrl={organization.imageUrl} invalidatesTags={["Organizations"]}>
-									<>
+									<div className={`tw-flex tw-flex-col tw-gap-y-2 ${PRIMARY_TEXT}`}>
 										<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 											<FaBuilding className = "--icon tw-mt-1"/>
 											<div>{organization?.name}</div>	
@@ -75,7 +76,7 @@ export const OrganizationDisplay = () => {
 											<MdFactory className = "--icon tw-mt-1"/>
 											<div>{organization?.industry}</div>	
 										</div>	
-									</>
+									</div>
 									</ProfileCard>
 									<SettingsCard title={"Organization Settings"} links={links}/>					
 								</>
