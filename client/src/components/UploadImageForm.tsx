@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid"
 import { Avatar } from "./page-elements/Avatar"
 import { BackendErrorMessage } from "./page-elements/BackendErrorMessage"
 import { LoadingButton } from "./page-elements/LoadingButton"
+import { Label } from "./page-elements/Label"
 
 interface Props {
 	id: number
@@ -57,9 +58,9 @@ export const UploadImageForm = ({id, imageUrl, endpoint, invalidatesTags, onUplo
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
-			<div>
-				<label className = "label">Image Url: </label>
-				<input {...register("imageUrl")} placeholder={"URL"} type="text" className = "tw-w-full"/>
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<Label htmlFor="image-upload">Image Url: </Label>
+				<input id="image-upload" {...register("imageUrl")} placeholder={"URL"} type="text" className = "tw-w-full"/>
 			</div>
 			<div>
 				<LoadingButton isLoading={isLoading} type = "submit" className = "button" text = "Upload"/>

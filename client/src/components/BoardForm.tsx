@@ -19,12 +19,13 @@ import { addToast } from "../slices/toastSlice"
 import { LoadingSpinner } from "./LoadingSpinner"
 import { Board, OptionType, Project, Status } from "../types/common"
 import { skipToken } from '@reduxjs/toolkit/query/react'
-import { MIN_BOARD_TICKET_LIMIT, MAX_BOARD_TICKET_LIMIT } from "../helpers/constants"
+import { MIN_BOARD_TICKET_LIMIT, MAX_BOARD_TICKET_LIMIT, SECONDARY_TEXT } from "../helpers/constants"
 import { Switch } from "./page-elements/Switch"
 import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
 import { AsyncMultiSelect } from "./AsyncMultiSelect"
 import { BOARD_URL, PROJECT_URL } from "../helpers/urls"
+import { Label } from "./page-elements/Label"
 
 interface Props {
 	projectId?: number
@@ -177,7 +178,7 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 			{
 				!boardId ? 
 				<div className = "tw-flex tw-flex-col tw-gap-y-2">
-					<label className = "label" htmlFor = "existing-board">Board</label>
+					<Label className = "label" htmlFor = "existing-board">Board</Label>
 					<span className = "tw-text-xs">Select this to use an existing board</span>
 					<AsyncSelect 
 						id={"existing-board"}
@@ -195,25 +196,25 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 					/>
 				</div> : null
 			}
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "board-name">Name</label>
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<Label htmlFor = "board-name">Name</Label>
 				<input id = "board-name" type = "text"
 				{...register("name", registerOptions.name)}
 				/>
 		        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 			</div>
 			<div className = "tw-flex tw-flex-col tw-gap-y-2">
-				<div>
-					<label className = "label" htmlFor = "board-ticket-limit">Ticket Limit</label>
-					<span className = "tw-text-xs">Limits the amount of tickets are shown on the board</span>
+				<div className = "tw-flex tw-flex-col tw-gap-y-1">
+					<Label htmlFor = "board-ticket-limit">Ticket Limit</Label>
+					<span className = {`tw-text-xs ${SECONDARY_TEXT}`}>Limits the amount of tickets are shown on the board</span>
 				</div>
 				<input id = "board-ticket-limit" type = "number"
 				{...register("ticketLimit", registerOptions.ticketLimit)}
 				/>
 		        {errors?.ticketLimit && <small className = "--text-alert">{errors.ticketLimit.message}</small>}
 			</div>
-			<div className = "tw-flex tw-flex-col">
-				<label htmlFor={"board-projects"} className = "label">Projects</label>
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<Label htmlFor={"board-projects"}>Projects</Label>
 				<Controller
 					name={"projectIdOptions"}
 					control={control}
@@ -236,7 +237,7 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 			{ !isStatusDataLoading ? (statuses.filter((status) => status.isActive).map((status) => (
 				<div key = {status.id} className="tw-flex tw-flex-row tw-items-center tw-gap-x-2 tw-py-2">
 					<Switch id = {`board-status-${status.id}`} checked={formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)}/>
-					<label htmlFor = {`board-status-${status.id}`}>{status.name}</label>
+					<Label htmlFor = {`board-status-${status.id}`}>{status.name}</Label>
 				</div>
 			))) : <LoadingSpinner/>}
 			</div>
