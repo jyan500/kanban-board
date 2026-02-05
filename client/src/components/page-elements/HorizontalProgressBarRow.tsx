@@ -2,7 +2,7 @@ import React from "react"
 import { ProgressBarItem } from "../../types/common"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
 import { Link } from "react-router-dom"
-import { LG_BREAKPOINT, PLACEHOLDER_COLOR } from "../../helpers/constants"
+import { LG_BREAKPOINT, PRIMARY_TEXT, SECONDARY_TEXT, PLACEHOLDER_COLOR } from "../../helpers/constants"
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { TICKETS } from "../../helpers/routes"
 
@@ -20,7 +20,7 @@ export const HorizontalProgressBarRow = ({icon, item, link, showTooltip=true, sh
         <Link to={link} className = "tw-group">
             <div className="tw-flex tw-items-center tw-gap-2">
                 {icon ? <span className="tw-text-sm group-hover:tw-opacity-80">{icon}</span> : null}
-                <span className="group-hover:tw-opacity-80 tw-text-sm">{item.name}</span>
+                <span className={`${SECONDARY_TEXT} group-hover:tw-opacity-80 tw-text-sm`}>{item.name}</span>
             </div>
             <div className = {`${icon ? "tw-ml-8" : ""}`}>
                 <div className={`tw-w-full ${PLACEHOLDER_COLOR} tw-rounded tw-h-6`}>

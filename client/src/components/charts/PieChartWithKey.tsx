@@ -15,6 +15,7 @@ import { ColorKey } from "../charts/ColorKey"
 import { ChartTooltip } from "../charts/ChartTooltip"
 import { useNavigate } from "react-router-dom"
 import { TICKETS } from "../../helpers/routes"
+import { useAppSelector } from "../../hooks/redux-hooks"
 
 interface Props {
     data: Array<PieChartItem>
@@ -37,7 +38,7 @@ const renderCenterLabel = (props: any) => {
                 y={cy - 10} 
                 textAnchor="middle" 
                 dominantBaseline="middle"
-                style={{ fontSize: '32px', fontWeight: 'bold', fill: '#000' }}
+                style={{ fontSize: '32px', fontWeight: 'bold', fill: '#000'}}
             >
                 {value}
             </text>
@@ -105,7 +106,7 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
                             position="center" 
                             content={renderCenterLabel}
                         />
-                        <Tooltip  content={<ChartTooltip/>}/>
+                        <Tooltip content={<ChartTooltip/>}/>
                     </PieChart>
                 </ResponsiveContainer>
             </div>

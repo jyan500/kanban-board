@@ -5,7 +5,7 @@ import { PieChartItem } from "../../types/common"
 import { useNavigate } from "react-router-dom"
 import { TICKETS } from "../../helpers/routes"
 import { useScreenSize } from "../../hooks/useScreenSize"
-import { LG_BREAKPOINT } from "../../helpers/constants"
+import { LG_BREAKPOINT, PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
 
 interface Props {
     data: Array<PieChartItem>
@@ -32,10 +32,10 @@ export const BarChart = ({data, searchKey, boardId}: Props) => {
                     onMouseEnter={() => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
                 >
-                    <span className="tw-flex-1 tw-truncate" title={item.name}>
+                    <span className={`tw-flex-1 tw-truncate ${SECONDARY_TEXT}`} title={item.name}>
                         {item.name}
                     </span>
-                    <span className="tw-font-semibold tw-text-gray-700">
+                    <span className={`tw-font-semibold ${PRIMARY_TEXT}`}>
                         {item.value}
                     </span>
                 </div>
