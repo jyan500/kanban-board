@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom"
 import { TICKETS } from "../../helpers/routes"
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT, PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
+import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
 
 interface Props {
     data: Array<PieChartItem>
@@ -16,6 +17,7 @@ interface Props {
 export const BarChart = ({data, searchKey, boardId}: Props) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     const { width, height } = useScreenSize()
+    const { isDarkMode } = useAppSelector((state) => state.darkMode)
     const navigate = useNavigate()
 
     const handleBarClick = (data: any) => {
@@ -58,7 +60,7 @@ export const BarChart = ({data, searchKey, boardId}: Props) => {
                         axisLine={false}
                         tickLine={false}
                         allowDecimals={false}
-                        width={10}
+                        width={15}
                     />
                     <Tooltip cursor={false} content={<ChartTooltip/>} />
                     <Bar 

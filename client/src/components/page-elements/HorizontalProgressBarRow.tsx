@@ -20,7 +20,7 @@ export const HorizontalProgressBarRow = ({icon, item, link, showTooltip=true, sh
         <Link to={link} className = "tw-group">
             <div className="tw-flex tw-items-center tw-gap-2">
                 {icon ? <span className="tw-text-sm group-hover:tw-opacity-80">{icon}</span> : null}
-                <span className={`${SECONDARY_TEXT} group-hover:tw-opacity-80 tw-text-sm`}>{item.name}</span>
+                <span className={`${SECONDARY_TEXT} tw-font-medium group-hover:tw-opacity-80 tw-text-sm`}>{item.name}</span>
             </div>
             <div className = {`${icon ? "tw-ml-8" : ""}`}>
                 <div className={`tw-w-full ${PLACEHOLDER_COLOR} tw-rounded tw-h-6`}>

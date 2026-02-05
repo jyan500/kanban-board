@@ -107,11 +107,11 @@ textarea {
 
 /* Hack: Fixes an issue where diagonal lines were appearing across the page, avoids visual artifacts
 caused by SVG rendering, likely due to the use of react-icons */
-svg {
+/* svg {
 	shape-rendering: geometricPrecision;
 	transform: translateZ(0);
 	-webkit-font-smoothing: antialiased;
-}
+} */
 
 select,
 textarea,

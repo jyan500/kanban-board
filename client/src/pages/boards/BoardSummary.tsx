@@ -13,7 +13,8 @@ import {
     TABLE_BACKGROUND, 
     TICKET_TYPE_COLOR_MAP, 
     STANDARD_HOVER,
-    STANDARD_DROPDOWN_ITEM
+    STANDARD_DROPDOWN_ITEM,
+    TERTIARY_TEXT
 } from "../../helpers/constants"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
@@ -192,7 +193,7 @@ export const BoardSummary = () => {
                         <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Status overview</h2>
                         <p className={`tw-text-sm ${SECONDARY_TEXT} tw-mb-6`}>
                             Get a snapshot of the status of your tickets.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className="tw-text-blue-600 hover:tw-underline">View all tickets</Link>
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>View all tickets</Link>
                         </p>
                         <div className = "tw-space-y-1">
                             <BarChart data={statusData} searchKey={"statusId"} boardId={boardInfo?.id ?? 0}/>
@@ -204,7 +205,7 @@ export const BoardSummary = () => {
                         <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Priority breakdown</h2>
                         <p className={`tw-text-sm ${SECONDARY_TEXT} tw-mb-6`}>
                             Get a holistic view of how tickets are being prioritized.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className="tw-text-blue-600 hover:tw-underline">Manage priorities</Link>
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>Manage priorities</Link>
                         </p>
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
                             <PieChartWithKey boardId={boardInfo?.id ?? 0} searchKey={"priorityId"} data={priorityData} total={totalTickets}/>
@@ -216,7 +217,7 @@ export const BoardSummary = () => {
                         <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Team workload</h2>
                         <p className={`tw-text-sm ${SECONDARY_TEXT} tw-mb-6`}>
                             Monitor the capacity of your team.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className="tw-text-blue-600 hover:tw-underline">Reassign tickets</Link>
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>Reassign tickets</Link>
                         </p>
 
                         <div className="tw-space-y-3">
@@ -240,7 +241,7 @@ export const BoardSummary = () => {
                         <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Types of tickets</h2>
                         <p className={`tw-text-sm ${SECONDARY_TEXT} tw-mb-6`}>
                             Get a breakdown of tickets by their types.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className="tw-text-blue-600 hover:tw-underline">View all tickets</Link>
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>View all tickets</Link>
                         </p>
 
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">

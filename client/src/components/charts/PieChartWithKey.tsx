@@ -14,8 +14,8 @@ import { PieChartItem } from "../../types/common"
 import { ColorKey } from "../charts/ColorKey"
 import { ChartTooltip } from "../charts/ChartTooltip"
 import { useNavigate } from "react-router-dom"
-import { TICKETS } from "../../helpers/routes"
 import { useAppSelector } from "../../hooks/redux-hooks"
+import { TICKETS } from "../../helpers/routes"
 
 interface Props {
     data: Array<PieChartItem>
@@ -30,6 +30,7 @@ const renderCenterLabel = (props: any) => {
     const cx = viewBox.x + viewBox.width / 2
     const cy = viewBox.y + viewBox.height / 2
     const value = props.value
+    console.log(props.isDarkMode)
 
     return (
         <g>
@@ -38,7 +39,7 @@ const renderCenterLabel = (props: any) => {
                 y={cy - 10} 
                 textAnchor="middle" 
                 dominantBaseline="middle"
-                style={{ fontSize: '32px', fontWeight: 'bold', fill: '#000'}}
+                style={{ fontSize: '32px', fontWeight: 'bold', fill: props.isDarkMode ? "#FFF" : '#000' }}
             >
                 {value}
             </text>
@@ -47,7 +48,8 @@ const renderCenterLabel = (props: any) => {
                 y={cy + 20} 
                 textAnchor="middle" 
                 dominantBaseline="middle"
-                style={{ fontSize: '14px', fill: '#6B7280' }}
+                /* dark mode is slate-300 equivalent */
+                style={{ fontSize: '14px', fill: props.isDarkMode ? "#d4d4d8" : '#6B7280' }}
             >
                 Total tickets 
             </text>
@@ -57,6 +59,7 @@ const renderCenterLabel = (props: any) => {
 
 export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+    const { isDarkMode } = useAppSelector((state) => state.darkMode)
     const navigate = useNavigate()
 
     const handlePieClick = (data: any, index: number) => {
@@ -104,7 +107,7 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
                         <Label 
                             value={total} 
                             position="center" 
-                            content={renderCenterLabel}
+                            content={(props: any) => renderCenterLabel({...props, isDarkMode})}
                         />
                         <Tooltip content={<ChartTooltip/>}/>
                     </PieChart>
