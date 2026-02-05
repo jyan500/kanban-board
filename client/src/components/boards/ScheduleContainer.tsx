@@ -14,7 +14,7 @@ import { IconArrowLeft } from "../icons/IconArrowLeft"
 import { IconArrowDown } from "../icons/IconArrowDown"
 import { IconArrowUp } from "../icons/IconArrowUp"
 import { IconTicket } from '../icons/IconTicket'
-import { GROUP_BY_OPTIONS, SEARCH_OPTIONS } from "../../helpers/constants"
+import { GROUP_BY_OPTIONS, PRIMARY_TEXT, SEARCH_OPTIONS, SECONDARY_TEXT, STANDARD_BORDER_COLOR, STANDARD_HOVER, TABLE_BACKGROUND, TABLE_DIVIDE } from "../../helpers/constants"
 import { IconCalendar } from "../icons/IconCalendar"
 import { IconClock } from "../icons/IconClock"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
@@ -57,6 +57,8 @@ import { FormValues } from "../../pages/boards/BoardSchedule"
 import { IconFilter } from "../icons/IconFilter"
 import { FilterButton } from "../../components/page-elements/FilterButton"
 import { Select } from "../page-elements/Select"
+import { Label } from '../page-elements/Label'
+import { ArrowButton } from '../page-elements/ArrowButton'
 
 interface TicketDescriptionProps {
     ticket: Ticket
@@ -66,10 +68,10 @@ interface TicketDescriptionProps {
 const TicketDescription = ({ticket, openModal}: TicketDescriptionProps) => {
     return (
         <button onClick={(e) => openModal(ticket.id)} className="hover:tw-opacity-60 tw-w-full tw-h-16 tw-p-3">
-            <div className="tw-font-medium tw-text-gray-800 tw-text-sm tw-truncate">
+            <div className={`${SECONDARY_TEXT} tw-font-medium tw-text-sm tw-truncate`}>
                 {ticket.name}
             </div>
-            <div className="tw-text-xs tw-text-gray-500">
+            <div className={`${SECONDARY_TEXT} tw-text-xs`}>
                 {new Date(ticket.createdAt).toLocaleDateString()} - {new Date(ticket.dueDate).toLocaleDateString()}
             </div>
         </button>
@@ -102,9 +104,9 @@ export const ScheduleContainerLeftColumn = ({
     currentPage,
 }: ScheduleContainerLeftColumnProps) => {
     return (
-        <div className="tw-w-44 lg:tw-w-48 tw-flex-shrink-0 tw-border-r tw-border-gray-200">
-            <div className="tw-p-3 tw-flex tw-flex-row tw-justify-between tw-font-medium tw-text-gray-700 tw-h-12 tw-border-b tw-border-gray-200">
-                <span>{groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}</span>
+        <div className={`tw-w-44 lg:tw-w-48 tw-flex-shrink-0 tw-border-r ${STANDARD_BORDER_COLOR}`}>
+            <div className={`tw-p-3 tw-flex tw-flex-row tw-justify-between tw-font-medium tw-text-gray-700 tw-h-12 tw-border-b ${STANDARD_BORDER_COLOR}`}>
+                <span className={SECONDARY_TEXT}>{groupBy === "NONE" ? "Tasks" : GROUP_BY_OPTIONS[groupBy as GroupByOptionsKey]}</span>
                 {
                     pagination.nextPage || pagination.prevPage ? 
                         <PaginationRow
@@ -116,7 +118,7 @@ export const ScheduleContainerLeftColumn = ({
                     : null
                 }
             </div>
-            <div className="tw-divide-y tw-divide-gray-100">
+            <div className={TABLE_DIVIDE}>
                 {groupBy === "NONE" ? (
                     tickets.map((ticket) => (
                         <div key={`ticket-description-${ticket.id}`}>
@@ -175,11 +177,11 @@ const ScheduleContainerTimeColumns = ({viewMode, timeColumns}: ScheduleContainer
         }
     }
     return (
-        <div className="tw-flex tw-flex-row tw-border-b tw-border-gray-200">
+        <div className={`tw-flex tw-flex-row tw-border-b ${STANDARD_BORDER_COLOR}`}>
             {timeColumns.map((date, index) => (
                 <div
                     key={index}
-                    className="tw-flex-1 tw-h-12 tw-p-2 tw-text-center tw-text-sm tw-font-medium tw-text-gray-600 tw-border-r tw-border-gray-200 tw-min-w-[60px]"
+                    className={`tw-flex-1 tw-h-12 tw-p-2 tw-text-center tw-text-sm tw-font-medium ${SECONDARY_TEXT} tw-border-r last:tw-border-r-0 ${STANDARD_BORDER_COLOR} tw-min-w-[60px]`}
                 >
                     {formatDate(date)}
                 </div>
@@ -199,7 +201,7 @@ const ScheduleContainerRowTicket = ({openModal, ticket, position, ticketType}: S
     const dispatch = useAppDispatch()
 
     return (
-        <div key={`bar-${ticket.id}`} className="tw-relative tw-h-16 tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
+        <div key={`bar-${ticket.id}`} className={`tw-relative tw-h-16 tw-flex tw-items-center ${STANDARD_HOVER}`}>
             {/* Invisible column structure to maintain width. (Not sure if this is actually necessary so keeping as a comment) */}
             {/* <div className="tw-flex tw-flex-row tw-w-full">
                 {timeColumns.map((date, index) => (
@@ -212,7 +214,7 @@ const ScheduleContainerRowTicket = ({openModal, ticket, position, ticketType}: S
             {/* Absolutely positioned task bar */}
             <button
                 onClick={(e) => openModal(ticket.id)}
-                className={`${isBefore(ticket.dueDate, new Date()) ? "tw-bg-red-300" : "tw-bg-blue-300"} hover:tw-opacity-70 tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-medium tw-shadow-sm`}
+                className={`${isBefore(ticket.dueDate, new Date()) ? "tw-bg-red-300" : "tw-bg-blue-300"} hover:tw-opacity-80 tw-absolute tw-h-6 tw-rounded-md tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-medium tw-shadow-sm`}
                 style={{
                     left: position.left,
                     width: position.width,
@@ -291,7 +293,7 @@ const ScheduleContainerScrollableSection = ({
             <div className="tw-min-w-max">
                 <ScheduleContainerTimeColumns viewMode={viewMode} timeColumns={timeColumns}/>
                 {/* Task bar rows */}
-                <div className="tw-divide-y tw-divide-gray-100">
+                <div className={TABLE_DIVIDE}>
                     {groupBy === "NONE" ? 
                         (
                             tickets.map((ticket) => {
@@ -365,21 +367,15 @@ const ScheduleContainerControls = ({
 
     const navigationButtons = (
         <div className="tw-flex tw-items-center tw-gap-x-2">
-            <button
-                onClick={navigatePrev}
-                className="tw-p-1 tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors"
-            >
-                <IconArrowLeft className = "tw-w-6 tw-h-6"/>
-            </button>
-            <span className="tw-text-lg tw-font-medium tw-min-w-[200px] tw-text-center">
+            <ArrowButton onClick={navigatePrev}></ArrowButton>
+            <span className={`${SECONDARY_TEXT} tw-text-lg tw-font-medium tw-min-w-[200px] tw-text-center`}>
                 {getCurrentPeriodLabel()}
             </span>
-            <button
+            <ArrowButton
                 onClick={navigateNext}
-                className="tw-p-1 tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors"
+                isForward={true}
             >
-                <IconArrowRight className = "tw-w-6 tw-h-6"/>
-            </button>
+            </ArrowButton>
         </div>
     )
 
@@ -472,7 +468,7 @@ const ScheduleContainerSearchBar = ({
                     () => {
                         return (
                             <div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-                                <label className = "label tw-whitespace-nowrap" htmlFor="board-group-by">Group By</label>
+                                <Label className = "tw-whitespace-nowrap" htmlFor="board-group-by">Group By</Label>
                                 <div className={"!tw-mt-0 !tw-w-40"}>
                                     <Select
                                         id="board-group-by"
@@ -609,9 +605,9 @@ export const ScheduleContainer = ({
 
 
     return (
-        <div className="tw-w-full tw-bg-white tw-rounded-lg tw-shadow-lg">
+        <div className={`tw-w-full ${TABLE_BACKGROUND} tw-rounded-lg tw-shadow-lg`}>
             {/* Header */}
-            <div className="tw-p-4 tw-border-b tw-border-gray-200">
+            <div className={`tw-p-4 tw-border-b ${STANDARD_BORDER_COLOR}`}>
                 <div className="tw-flex tw-flex-col lg:tw-flex-row tw-gap-y-2 lg:tw-items-center lg:tw-justify-between tw-mb-4">
                     <FormProvider {...methods}>
                         <ScheduleContainerSearchBar
@@ -625,9 +621,9 @@ export const ScheduleContainer = ({
                             onGroupBy={onGroupBy}
                         />
                     </FormProvider>
-                    <div className="tw-text-sm tw-text-gray-600 tw-flex tw-gap-x-2 tw-items-center">
-                        <IconClock className="tw-flex-shrink-0 tw-w-6 tw-h-6"/>
-                        <span className="tw-whitespace-nowrap">{tickets.length} tasks visible ({ticketsData?.pagination?.total} total)</span>
+                    <div className="tw-text-sm  tw-flex tw-gap-x-2 tw-items-center">
+                        <IconClock className={`${PRIMARY_TEXT} tw-flex-shrink-0 tw-w-6 tw-h-6`}/>
+                        <span className={`${SECONDARY_TEXT} tw-whitespace-nowrap`}>{tickets.length} tasks visible ({ticketsData?.pagination?.total} total)</span>
                     </div>
                 </div>
                 

@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux-hooks"
 import { IoMdClose } from "react-icons/io";
 import { Button } from "./Button"
+import { SECONDARY_TEXT } from "../../helpers/constants";
 
 type Props = {
 	applyActionToAll?: (ids: Array<number>) => void
@@ -23,7 +24,7 @@ export const BulkEditToolbar = ({itemIds, applyActionToAll, applyRemoveToAll, ac
 			}>
 				<IoMdClose className = "icon"/>
 			</button>
-			<div className="tw-whitespace-nowrap"><p className = "tw-font-bold tw-text-lg">{itemIds.length} Selected</p></div>
+			<div className="tw-whitespace-nowrap"><p className = {`tw-font-bold tw-text-lg`}>{itemIds.length} Selected</p></div>
 			<div className = "tw-flex tw-flex-row tw-flex-nowrap tw-gap-x-2">
 				{children}
 				<Button theme="secondary" onClick={(e) => updateIds([])}>Unselect All</Button>

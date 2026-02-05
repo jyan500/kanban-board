@@ -8,7 +8,7 @@ interface Props extends React.LabelHTMLAttributes<HTMLLabelElement> {
 export const Label = ({ children, className, ...props }: Props) => {
     return (
         <label 
-            className={`${className ?? `tw-font-semibold ${SECONDARY_TEXT}`}`}
+            className={`${className} tw-font-semibold ${SECONDARY_TEXT}`}
             {...props}
         >
             {children}
