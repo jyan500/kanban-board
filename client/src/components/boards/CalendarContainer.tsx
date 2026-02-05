@@ -41,7 +41,7 @@ import { PaginationRow } from '../page-elements/PaginationRow'
 import { TicketRow } from "../TicketRow"
 import { CalendarSprintContainer } from './CalendarSprintContainer'
 import { v4 as uuidv4 } from "uuid"
-import { CELL_BACKGROUND, LG_BREAKPOINT, PRIMARY_TEXT, SEARCH_OPTIONS, SECONDARY_TEXT, TABLE_BACKGROUND, CELL_HOVER } from '../../helpers/constants'
+import { CELL_BACKGROUND, LG_BREAKPOINT, PRIMARY_TEXT, SEARCH_OPTIONS, SECONDARY_TEXT, TABLE_BACKGROUND, CELL_HOVER, STANDARD_BORDER, STANDARD_BORDER_COLOR, TABLE_DIVIDE } from '../../helpers/constants'
 import { addToast } from '../../slices/toastSlice'
 import { PaginationButtonRow } from '../page-elements/PaginationButtonRow'
 import { Select } from '../page-elements/Select'
@@ -332,7 +332,7 @@ export const CalendarContainer = ({
 
     return (
         <div className="tw-flex tw-flex-col tw-gap-y-4 lg:tw-flex-row lg:tw-gap-x-6 tw-py-4">
-            <div className={`${TABLE_BACKGROUND} tw-flex-1 tw-rounded-lg tw-border tw-flex tw-flex-col tw-gap-y-4`}>
+            <div className={`${TABLE_BACKGROUND} tw-flex-1 tw-rounded-lg ${STANDARD_BORDER} tw-flex tw-flex-col tw-gap-y-4`}>
                 {/* Header */}
                 <div className = "tw-flex tw-flex-col tw-gap-y-2 tw-p-4">
                     <div className="tw-flex tw-items-center tw-justify-between">
@@ -359,17 +359,17 @@ export const CalendarContainer = ({
                 </div>
 
                 {/* Days of week header */}
-                <div className = "tw-border-t">
-                    <div className="tw-grid tw-grid-cols-7 tw-border-b">
+                <div className = {`tw-border-t ${STANDARD_BORDER_COLOR}`}>
+                    <div className={`tw-grid tw-grid-cols-7 tw-border-b ${STANDARD_BORDER_COLOR}`}>
                         { daysOfWeek.map(day => (
-                            <div key={day} className={`tw-p-3 tw-text-center tw-text-sm tw-font-medium ${SECONDARY_TEXT} tw-border-r last:tw-border-r-0`}>
+                            <div key={day} className={`tw-p-3 tw-text-center tw-text-sm tw-font-medium ${SECONDARY_TEXT} ${STANDARD_BORDER_COLOR} tw-border-r last:tw-border-r-0`}>
                                 {day}
                             </div>
                         ))}
                     </div>
 
                     {/* Calendar grid */}
-                    <div className="tw-divide-y">
+                    <div className={TABLE_DIVIDE}>
                         {weeks.map((week, weekIndex) => {
                             const weekStartDate = week[0]
                             const weekEndDate = week[6]
@@ -405,7 +405,7 @@ export const CalendarContainer = ({
                                                     id = {`date_${weekIndex}_${dayIndex}`} 
                                                     onDrop={handleDrop} 
                                                     onDragOver={enableDropping} 
-                                                    className={`${CELL_HOVER} tw-cursor-pointer tw-flex tw-flex-col tw-relative tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
+                                                    className={`${CELL_HOVER} tw-cursor-pointer tw-flex tw-flex-col tw-relative ${STANDARD_BORDER_COLOR} tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
                                                         !isCurrentMonth(date) ? CELL_BACKGROUND : ''
                                                     }`}
                                                     onClick={(e) => {
@@ -497,7 +497,7 @@ export const CalendarContainer = ({
                     </div>
                 </div>
             </div>
-            <div className = {`${TABLE_BACKGROUND} tw-flex lg:tw-w-1/3 tw-flex-col tw-gap-y-4 tw-border tw-rounded-lg tw-bg-white tw-p-4`}>
+            <div className = {`${TABLE_BACKGROUND} tw-flex lg:tw-w-1/3 tw-flex-col tw-gap-y-4 ${STANDARD_BORDER} tw-rounded-lg tw-p-4`}>
                 <p className = {`${PRIMARY_TEXT} tw-font-semibold tw-text-lg`}>Unscheduled Tickets</p>
                 <p className = {SECONDARY_TEXT}>
                     {width >= LG_BREAKPOINT ? "Drag the ticket onto the calendar to set a due date for the ticket." : "Click on a ticket to assign a due date." }

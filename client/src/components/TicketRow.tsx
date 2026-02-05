@@ -1,7 +1,7 @@
 import React, {useState} from "react"
 import { Ticket } from "../types/common"
 import { priorityIconMap, PriorityIcon, TicketTypeIcon } from "./Ticket" 
-import { LG_BREAKPOINT, PRIORITY_COLOR_MAP } from "../helpers/constants"
+import { LG_BREAKPOINT, PRIORITY_COLOR_MAP, STANDARD_BORDER } from "../helpers/constants"
 import { CgProfile } from "react-icons/cg"
 import { IconContext } from "react-icons"
 import { useAppSelector } from "../hooks/redux-hooks"
@@ -67,7 +67,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 				)
 			}
 		}
-		return borderless ? "" : "tw-border tw-border-gray-200"
+		return borderless ? "" : STANDARD_BORDER
 	}
 
 	return (

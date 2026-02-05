@@ -4,7 +4,7 @@ import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useNavigate, Link } from "react-router-dom"
 import { BoardSummary as BoardSummaryType, TicketEntityHistory, ProgressBarItem, PieChartItem, UserProfile, Ticket } from "../../types/common"
-import { PIE_CHART_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
+import { STANDARD_BORDER, NESTED_TABLE_BACKGROUND, PIE_CHART_COLOR_MAP, TABLE_BACKGROUND, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { HorizontalProgressBarRow } from "../../components/page-elements/HorizontalProgressBarRow"
@@ -143,7 +143,7 @@ export const BoardSummary = () => {
         <LoadingSkeleton>
             <RowPlaceholder/>
         </LoadingSkeleton> :
-        <div className="tw-min-h-screen tw-bg-gray-50 tw-flex-col tw-flex xl:tw-flex-row xl:tw-gap-x-4 tw-gap-y-4 tw-p-6">
+        <div className={`${TABLE_BACKGROUND} tw-min-h-screen tw-flex-col tw-flex xl:tw-flex-row xl:tw-gap-x-4 tw-gap-y-4 tw-p-6`}>
             <div className="tw-flex tw-flex-col tw-gap-y-6">
                 {/* Top Stats Cards */}
                 <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 xl:tw-grid-cols-4 tw-gap-4">
@@ -178,7 +178,7 @@ export const BoardSummary = () => {
                 {/* Main Content Grid */}
                 <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-4">
                     {/* Status Overview */}
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
+                    <div className={`${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Status overview</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
                             Get a snapshot of the status of your tickets.{' '}
@@ -190,7 +190,7 @@ export const BoardSummary = () => {
                     </div>
 
                     {/* Priority Breakdown */}
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
+                    <div className={`${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Priority breakdown</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
                             Get a holistic view of how tickets are being prioritized.{' '}
@@ -202,7 +202,7 @@ export const BoardSummary = () => {
                     </div>
 
                     {/* Team Workload */}
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
+                    <div className={`${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Team workload</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
                             Monitor the capacity of your team.{' '}
@@ -226,7 +226,7 @@ export const BoardSummary = () => {
                     </div>
 
                     {/* Ticket Types */}
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
+                    <div className={`${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
                         <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Types of tickets</h2>
                         <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
                             Get a breakdown of tickets by their types.{' '}
@@ -244,7 +244,7 @@ export const BoardSummary = () => {
                     </div>
                 </div>
             </div>
-            <div className = "tw-flex tw-flex-col tw-gap-y-4 tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6 tw-flex-1">
+            <div className = {`tw-flex tw-flex-col tw-gap-y-4 ${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6 tw-flex-1`}>
                 <div>
                     <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Recent Activity</h2>
                     <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
@@ -259,7 +259,7 @@ export const BoardSummary = () => {
                     : 
                     Object.keys(groupedRecentActivity).map((date, index) => {
                         return (
-                            <div key={`recent-activity-group-${index}`} className = "tw-flex tw-flex-col tw-gap-y-4">
+                            <div key={`recent-activity-group-${index}`} className = {`${NESTED_TABLE_BACKGROUND} tw-flex tw-flex-col tw-gap-y-4`}>
                                 <p className = "tw-text-sm tw-text-gray-600">{date}</p>
                                 {
                                     groupedRecentActivity[date].map((history) => {

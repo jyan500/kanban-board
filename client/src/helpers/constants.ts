@@ -1,5 +1,5 @@
 
-export const STANDARD_BORDER_COLOR = "dark:tw-border-gray-500 tw-border-gray-200"
+export const STANDARD_BORDER_COLOR = "dark:tw-border-gray-500 tw-border-gray-300"
 export const STANDARD_BORDER = `${STANDARD_BORDER_COLOR} tw-border`
 export const STANDARD_HOVER = "dark:hover:tw-bg-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
 export const STANDARD_DROPDOWN_ITEM_NO_HOVER = `dark:tw-text-white tw-block tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-cursor-pointer`
