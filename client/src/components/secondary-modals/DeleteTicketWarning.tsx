@@ -10,6 +10,7 @@ import { Warning } from "./Warning"
 import { IconContext } from "react-icons"
 import { Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
 
 interface Props {
 	currentTicketId: number | null | undefined
@@ -65,8 +66,8 @@ export const DeleteTicketWarning = ({currentTicketId}: Props) => {
 		<div>
 			<Warning onSubmit={onDelete} onCancel={onCancel} title={"Delete Ticket"} submitText={"Delete"} cancelText={"Cancel"}>
 				<div className = "tw-py-4">
-					<strong>You're about to permanently delete this issue, its comments, and all of its data.</strong>
-					<p>If you're not sure, you can change the status of the issue instead.</p>
+					<p className = {`${PRIMARY_TEXT} tw-font-bold`}>You're about to permanently delete this issue, its comments, and all of its data.</p>
+					<p className = {`${SECONDARY_TEXT} tw-font-xs`}>If you're not sure, you can change the status of the issue instead.</p>
 				</div>
 			</Warning>
 		</div>

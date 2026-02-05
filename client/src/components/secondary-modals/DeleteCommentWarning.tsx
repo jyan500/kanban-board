@@ -6,6 +6,7 @@ import { Toast } from "../../types/common"
 import { Warning } from "./Warning"
 import { v4 as uuidv4 } from "uuid"
 import { addToast } from "../../slices/toastSlice"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 export interface DeleteCommentWarningProps {
 	ticketId: number | undefined
@@ -62,8 +63,8 @@ export const DeleteCommentWarning = ({ticketId, commentId}: DeleteCommentWarning
 				submitText={"Delete"}
 				cancelText={"Cancel"}
 			>
-				<div className = "tw-py-4">
-					<strong>Are you sure you want to delete this comment?</strong>
+				<div className = {`${PRIMARY_TEXT} tw-font-semibold tw-py-4`}>
+					<p>Are you sure you want to delete this comment?</p>
 				</div>
 			</Warning>
 		</div>

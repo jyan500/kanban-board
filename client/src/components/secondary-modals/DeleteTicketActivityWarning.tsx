@@ -6,6 +6,7 @@ import { Toast } from "../../types/common"
 import { Warning } from "./Warning"
 import { v4 as uuidv4 } from "uuid"
 import { addToast } from "../../slices/toastSlice"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 export interface DeleteTicketActivityWarningProps {
 	ticketId: number | undefined
@@ -62,8 +63,8 @@ export const DeleteTicketActivityWarning = ({ticketId, activityId}: DeleteTicket
 				submitText={"Delete"}
 				cancelText={"Cancel"}
 			>
-				<div className = "tw-py-4">
-					<strong>Are you sure you want to delete this ticket activity?</strong>
+				<div className = "tw-font-semibold tw-py-4">
+					<p className={PRIMARY_TEXT}>Are you sure you want to delete this ticket activity?</p>
 				</div>
 			</Warning>
 		</div>

@@ -36,6 +36,7 @@ import {
 	PRIMARY_TEXT, 
 	PRIORITY_COLOR_MAP, 
 	STANDARD_HOVER,
+	TERTIARY_TEXT,
 	TICKET_BACKGROUND_COLOR
 } from "../helpers/constants"
 
@@ -148,7 +149,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 					{
 						ticket.isWatching ? 
 						<div className = "tw-group tw-relative">
-							<IconEye className = "tw-text-primary icon"/>	
+							<IconEye className = {`${TERTIARY_TEXT} icon`}/>	
 							<HoverTooltip text={"You are watching this ticket"} direction={"top"}/>
 						</div> : 
 						null

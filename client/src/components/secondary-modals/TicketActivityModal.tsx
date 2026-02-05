@@ -9,7 +9,7 @@ import { useGetTicketActivityQuery, useAddTicketActivityMutation, useUpdateTicke
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
-import { TIME_DISPLAY_FORMAT, TIME_DISPLAY_INPUT_MASK, TIME_DISPLAY_PLACEHOLDER } from "../../helpers/constants"
+import { PRIMARY_TEXT, SECONDARY_TEXT, TIME_DISPLAY_FORMAT, TIME_DISPLAY_INPUT_MASK, TIME_DISPLAY_PLACEHOLDER } from "../../helpers/constants"
 import { 
 	validateTimeFormat, 
 	convertMinutesToTimeDisplay, 
@@ -18,6 +18,7 @@ import {
 import { IconContext } from "react-icons"
 import { IconClock } from "../icons/IconClock";
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { Label } from "../page-elements/Label"
 
 type FormValues = {
 	id?: number
@@ -142,30 +143,30 @@ export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: Tic
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-justify-center">
-			<h2>Time Tracking</h2>
+			<h2 className={PRIMARY_TEXT}>Time Tracking</h2>
 			{
 				totalTime ? ( 
-					<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-border tw-p-1">
+					<div className = {`${PRIMARY_TEXT} tw-flex tw-flex-col tw-gap-y-2 tw-border tw-p-1`}>
 						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-							<IconClock color="var(--bs-primary" className="tw-w-4 tw-h-4"/>
+							<IconClock className="tw-w-4 tw-h-4"/>
 							<p className = "tw-font-bold">Total Time Spent</p>
 						</div>
-						<p>{convertMinutesToTimeDisplay(totalTime)}</p>
+						<p className={SECONDARY_TEXT}>{convertMinutesToTimeDisplay(totalTime)}</p>
 					</div>
 				) : null 
 			}
-			<p>Please use the following format: </p>	
-			<ul>
+			<p className={PRIMARY_TEXT}>Please use the following format: </p>	
+			<ul className={PRIMARY_TEXT}>
 				<li>w = weeks</li>
 				<li>d = days</li>
 				<li>h = hours</li>
 				<li>m = minutes</li>
 			</ul>
-			<small>Note that values cannot exceed the following: <span className = "tw-font-bold">99w 6d 23h 59m</span></small>
+			<small className={SECONDARY_TEXT}>Note that values cannot exceed the following: <span className = "tw-font-bold">99w 6d 23h 59m</span></small>
 		
 			<form className="tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
-				<div>
-					<label className = "label" htmlFor = "time-spent">Time Spent</label>
+				<div className="tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "time-spent">Time Spent</Label>
 					<Controller
 						name={"minutesSpent"}
 						control={control}
@@ -192,10 +193,11 @@ export const TicketActivityModal = ({ticketId, ticketActivityId, totalTime}: Tic
 					*/}
 			        {errors?.minutesSpent && <small className = "--text-alert" dangerouslySetInnerHTML={{ __html: errors.minutesSpent.message ?? ""}}></small>}
 				</div>
-				<div>
-					<label className = "label">Description</label>
+				<div className="tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor={"ticket-activity-description"}>Description</Label>
 					<FormProvider {...methods}>
 						<SimpleEditor
+							id={"ticket-activity-description"}
 							registerField={"description"}
 							registerOptions={registerOptions.description}
 							mentionsEnabled={false}
