@@ -19,7 +19,7 @@ import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType
 import { IconFilter } from "../icons/IconFilter"
 import { FilterButton } from "../page-elements/FilterButton"
 import { useBulkEditToolbar } from "../../contexts/BulkEditToolbarContext"
-import { SEARCH_OPTIONS } from "../../helpers/constants"
+import { PRIMARY_TEXT, SEARCH_OPTIONS } from "../../helpers/constants"
 
 interface Props {
 	boardId: number | null | undefined
@@ -147,7 +147,7 @@ export const TicketTable = ({
 	const config = useBoardTicketConfig(true, selectedIds, setSelectedIds, bulkEditAction != undefined)
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
-			<h3 className = "tw-m-0">{header}</h3>	
+			<h3 className = {`${PRIMARY_TEXT} tw-m-0`}>{header}</h3>	
 			<FormProvider {...methods}>
 				<SearchToolBar 
 					paginationData={data?.pagination} 

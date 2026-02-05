@@ -30,7 +30,6 @@ const renderCenterLabel = (props: any) => {
     const cx = viewBox.x + viewBox.width / 2
     const cy = viewBox.y + viewBox.height / 2
     const value = props.value
-    console.log(props.isDarkMode)
 
     return (
         <g>

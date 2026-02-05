@@ -10,6 +10,8 @@ import { OptionType, Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { useAddBoardTicketsMutation, useDeleteBoardTicketMutation } from "../../services/private/board"
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { Label } from "../page-elements/Label"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
 
 type Props = {
 	ticketId?: number | string | undefined
@@ -98,8 +100,8 @@ export const MoveTicketForm = ({step, title, boardId: currentBoardId, ticketId, 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div className = "tw-flex tw-flex-col tw-gap-y-0.5">
-				<p className = "tw-font-bold">{title}</p>		
-				<span className = "tw-text-xs"><span className = "tw-font-semibold">{numSelectedIssues ? numSelectedIssues : ""}</span> Issue(s) will be copied to the selected board below.</span>
+				<p className = {`${PRIMARY_TEXT} tw-font-bold`}>{title}</p>		
+				<span className = {`${SECONDARY_TEXT} tw-text-xs`}><span className = "tw-font-semibold">{numSelectedIssues ? numSelectedIssues : ""}</span> Issue(s) will be copied to the selected board below.</span>
 			</div>
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(propsOnSubmit ? propsOnSubmit : onSubmit)}>
 				<Controller
@@ -122,10 +124,10 @@ export const MoveTicketForm = ({step, title, boardId: currentBoardId, ticketId, 
 		        {errors?.boardIdOption && <small className = "--text-alert">{errors.boardIdOption.message}</small>}
 				{currentBoardId ? (
 					<>
-						<span className = "tw-text-xs">Select this to remove the issue(s) from the current board after copying</span>
+						<span className = {`${SECONDARY_TEXT} tw-text-xs`}>Select this to remove the issue(s) from the current board after copying</span>
 						<div className = "tw-flex tw-flex-row tw-gap-x-2">
 							<input id = "should-unlink" type = "checkbox" {...register("shouldUnlink")}/>
-							<label className = "label" htmlFor="should-unlink">Unlink from current board</label>	
+							<Label htmlFor="should-unlink">Unlink from current board</Label>	
 						</div>
 					</>
 				) : null}

@@ -9,6 +9,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import { v4 as uuidv4 } from "uuid"
 import { Switch } from "../page-elements/Switch"
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { Label } from "../page-elements/Label"
 
 export const BoardStatusModal = () => {
 	const dispatch = useAppDispatch()
@@ -68,7 +69,7 @@ export const BoardStatusModal = () => {
 				return (
 					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2" key = {status.id}>
 						<Switch id ={`status-${status.id}`} checked={formStatuses.find((s)=>s.id === status.id) != null} onChange={(e) => onCheck(status.id)}/>
-						<label className = "label" htmlFor = {`status-${status.id}`}>{status.name}</label>
+						<Label htmlFor = {`status-${status.id}`}>{status.name}</Label>
 					</div>
 				)
 			})}

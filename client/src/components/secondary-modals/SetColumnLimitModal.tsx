@@ -7,9 +7,10 @@ import { addToast } from "../../slices/toastSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
 import { Toast } from "../../types/common"
 import { BackendErrorMessage } from "../page-elements/BackendErrorMessage"
-import { MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT } from "../../helpers/constants"
+import { MIN_COLUMN_LIMIT, MAX_COLUMN_LIMIT, PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { Button } from "../page-elements/Button"
+import { Label } from "../page-elements/Label"
 
 export type SetColumnLimitModalProps = {
 	boardId: number
@@ -79,12 +80,12 @@ export const SetColumnLimitModal = ({boardId, statusId}: SetColumnLimitModalProp
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
 			<div>
-				<h2>Set Column Limit</h2>	
-				<p>We'll highlight this column if the number of issues in it passes this limit.</p>
+				<h2 className={PRIMARY_TEXT}>Set Column Limit</h2>	
+				<p className={SECONDARY_TEXT}>We'll highlight this column if the number of issues in it passes this limit.</p>
 				<BackendErrorMessage error={error}/>
 			</div>
-			<div>
-				<label className = "label">Maximum Tickets</label>
+			<div className="tw-flex tw-flex-col tw-gap-y-2">
+				<Label>Maximum Tickets</Label>
 				<input type = "number" {...register("limit", registerOptions.limit)} />	
 		        {errors?.limit && <small className = "--text-alert">{errors.limit.message}</small>}
 			</div>

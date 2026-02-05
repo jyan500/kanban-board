@@ -28,6 +28,7 @@ import { AsyncSelect } from "./AsyncSelect"
 import { Select } from "./page-elements/Select"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
 import { Label } from "./page-elements/Label"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../helpers/constants"
 
 export type FormCommon = {
 	id?: number
@@ -225,9 +226,9 @@ export const AddTicketForm = ({
 			<FormProvider {...methods}>
 				<form className="tw-flex tw-flex-col tw-gap-y-4" onSubmit={handleSubmit(propsOnSubmit ?? onSubmit)}>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-						{title ? <p className = "tw-font-bold">{title}</p> : null}
+						{title ? <p className = {`${PRIMARY_TEXT} tw-font-bold`}>{title}</p> : null}
 						{
-							isBulkAction ? <span className = "tw-text-xs tw-font-semibold">Fill out the fields that you would like to update across all the selected tickets. Blank fields will be unchanged on the selected tickets.</span> : null
+							isBulkAction ? <span className = {`${SECONDARY_TEXT} tw-text-xs tw-font-semibold`}>Fill out the fields that you would like to update across all the selected tickets. Blank fields will be unchanged on the selected tickets.</span> : null
 						}
 						{
 							!isBulkAction ? (
@@ -333,7 +334,7 @@ export const AddTicketForm = ({
 							        	Number(watch("ticketTypeId").value) == epicTicketType?.id ? (
 									        <div className = "tw-flex tw-flex tw-items-center tw-gap-x-2">
 												<IconWarning className = "tw-h-6 tw-w-6 tw-text-warning"/>
-												<span className = "tw-font-semibold">If the ticket type is "Epic", it cannot changed once saved.</span>
+												<span className = {`tw-font-semibold ${SECONDARY_TEXT}`}>If the ticket type is "Epic", it cannot changed once saved.</span>
 											</div>
 							        	) : null
 							        }

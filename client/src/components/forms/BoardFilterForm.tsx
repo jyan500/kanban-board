@@ -17,6 +17,7 @@ import { format } from "date-fns"
 import { addToast } from "../../slices/toastSlice"
 import { displayUser } from "../../helpers/functions"
 import { v4 as uuidv4 } from "uuid"
+import { Label } from "../page-elements/Label"
 
 export type FormValues = {
 	priorityId: OptionType 
@@ -184,8 +185,8 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 			}}>
 				<div className = "tw-flex tw-flex-col tw-gap-y-4">
 					<div className="tw-flex tw-flex-col tw-gap-y-2">
-						<div className = "tw-flex tw-flex-col">
-							<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<Label htmlFor = "filters-ticket-type">Ticket Type</Label>
 							<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
 								<Select 
 									id={"filters-ticket-type"}
@@ -198,8 +199,8 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 							)}>
 							</Controller>
 						</div>
-						<div className = "tw-flex tw-flex-col">
-							<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<Label htmlFor = "filters-ticket-priority">Priority</Label>
 							<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
 								<Select 
 									id={"filters-ticket-priority"}
@@ -212,8 +213,8 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 							)}>
 							</Controller>
 						</div>
-						<div className = "tw-flex tw-flex-col">
-							<label className = "label" htmlFor = "filters-ticket-status">Status</label>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<Label htmlFor = "filters-ticket-status">Status</Label>
 							<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
 								<Select 
 									id={"filters-ticket-status"}
@@ -226,8 +227,8 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 							)}>
 							</Controller>
 						</div>
-						<div className = "tw-flex tw-flex-col">
-							<label className = "label" htmlFor = "filters-ticket-assignee">Assignee</label>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<Label htmlFor = "filters-ticket-assignee">Assignee</Label>
 							<Controller
 								name={"assignee"}
 								control={control}
@@ -246,8 +247,8 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 								)}
 							/>
 						</div>
-						<div className = "tw-flex tw-flex-col">
-							<label className = "label" htmlFor = "filters-ticket-sprint">Sprint</label>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<Label htmlFor = "filters-ticket-sprint">Sprint</Label>
 							<Controller
 								name={"sprint"}
 								control={control}

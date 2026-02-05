@@ -41,7 +41,7 @@ import { PaginationRow } from '../page-elements/PaginationRow'
 import { TicketRow } from "../TicketRow"
 import { CalendarSprintContainer } from './CalendarSprintContainer'
 import { v4 as uuidv4 } from "uuid"
-import { CELL_BACKGROUND, LG_BREAKPOINT, PRIMARY_TEXT, SEARCH_OPTIONS, SECONDARY_TEXT, TABLE_BACKGROUND, CELL_HOVER, STANDARD_BORDER, STANDARD_BORDER_COLOR, TABLE_DIVIDE } from '../../helpers/constants'
+import { CELL_BACKGROUND, LG_BREAKPOINT, PRIMARY_TEXT, SEARCH_OPTIONS, SECONDARY_TEXT, TABLE_BACKGROUND, CELL_HOVER, STANDARD_BORDER, STANDARD_BORDER_COLOR, TABLE_DIVIDE, NESTED_TABLE_BACKGROUND } from '../../helpers/constants'
 import { addToast } from '../../slices/toastSlice'
 import { PaginationButtonRow } from '../page-elements/PaginationButtonRow'
 import { Select } from '../page-elements/Select'
@@ -406,7 +406,7 @@ export const CalendarContainer = ({
                                                     onDrop={handleDrop} 
                                                     onDragOver={enableDropping} 
                                                     className={`${CELL_HOVER} tw-cursor-pointer tw-flex tw-flex-col tw-relative ${STANDARD_BORDER_COLOR} tw-border-r last:tw-border-r-0 tw-p-2 tw-min-h-32 ${
-                                                        !isCurrentMonth(date) ? CELL_BACKGROUND : ''
+                                                        !isCurrentMonth(date) ? NESTED_TABLE_BACKGROUND : ''
                                                     }`}
                                                     onClick={(e) => {
                                                         if (e.defaultPrevented){
@@ -430,7 +430,7 @@ export const CalendarContainer = ({
                                                         isTodayFns(date) 
                                                             ? 'tw-bg-blue-500 tw-text-white tw-rounded-full tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center' 
                                                             : !isCurrentMonth(date) 
-                                                            ? 'dark:tw-text-gray-900 tw-text-gray-400'
+                                                            ? 'dark:tw-text-slate-300 tw-text-gray-400'
                                                             // default text if not today's date AND not outside the current month
                                                             : SECONDARY_TEXT
                                                     }`}>

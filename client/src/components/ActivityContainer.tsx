@@ -32,7 +32,7 @@ export const ActivityContainer = ({
 	const [isActive, setIsActive] = useState<number>(0)
 	const dispatch = useAppDispatch()
 return (
-		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
+		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-2">
 				<p className = {`${PRIMARY_TEXT} tw-font-semibold`}>Activity</p>
 				<button onClick={() => {

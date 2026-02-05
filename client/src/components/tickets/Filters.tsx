@@ -19,6 +19,7 @@ import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { Button } from "../page-elements/Button"
 import { PLACEHOLDER_COLOR } from "../../helpers/constants"
+import { Label } from "../page-elements/Label"
 
 interface FormValues {
 	statusId: OptionType
@@ -129,8 +130,8 @@ export const Filters = () => {
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-4">
 			<div className = "tw-flex tw-flex-col tw-gap-y-2">
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-ticket-type">Ticket Type</Label>
 					<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
 						<Select 
 							id={"filters-ticket-type"}
@@ -143,8 +144,8 @@ export const Filters = () => {
 					)}>
 					</Controller>
 				</div>
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-ticket-priority">Priority</Label>
 					<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
 						<Select 
 							id={"filters-ticket-priority"}
@@ -157,8 +158,8 @@ export const Filters = () => {
 					)}>
 					</Controller>
 				</div>
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "filters-ticket-status">Status</label>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-ticket-status">Status</Label>
 					<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
 						<Select 
 							id={"filters-ticket-status"}
@@ -171,8 +172,8 @@ export const Filters = () => {
 					)}>
 					</Controller>
 				</div>
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "filters-ticket-board">Board</label>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-ticket-board">Board</Label>
 					{
 						!isLoading ? (
 							<Controller
@@ -196,8 +197,8 @@ export const Filters = () => {
 						)
 					}
 				</div>
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "filters-ticket-sprint">Sprint</label>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-ticket-sprint">Sprint</Label>
 					{
 						!isSprintLoading ? (
 							<Controller
@@ -221,8 +222,8 @@ export const Filters = () => {
 						)
 					}
 				</div>
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "filters-assignee">Assignee</label>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-assignee">Assignee</Label>
 					{
 						!isUserLoading ? (
 							<Controller

@@ -502,7 +502,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 											</div>
 										: (
 										<div className = "tw-w-full">
-											<div className = "tw-ml-3">{ticketTypeName}</div>
+											<div className = {`${PRIMARY_TEXT} tw-ml-3`}>{ticketTypeName}</div>
 										</div>
 										)
 									}
@@ -544,7 +544,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Due Date"}>
 							{
 								!editFieldVisibility["due-date"] ? (
-									<button onClick = {(e) => toggleFieldVisibility("due-date", true)} className = {`${isBefore(toDate(watch("dueDate")), new Date()) ? "tw-p-1 tw-border tw-border-red-400 tw-text-red-400 tw-font-medium" : ""} hover:tw-opacity-60 tw-flex tw-flex-row tw-items-center tw-gap-x-2`}>
+									<button onClick = {(e) => toggleFieldVisibility("due-date", true)} className = {`${isBefore(toDate(watch("dueDate")), new Date()) ? "tw-p-1 tw-border tw-border-red-400 tw-text-red-400 tw-font-medium" : PRIMARY_TEXT} hover:tw-opacity-60 tw-flex tw-flex-row tw-items-center tw-gap-x-2`}>
 										{isBefore(toDate(watch("dueDate")), new Date()) ? <IconWarning className = "tw-text-red-500"/> : null}
 										{isValidDateString(watch("dueDate")) ? format(toDate(watch("dueDate")), "MM/dd/yyyy") : "None"}
 									</button>

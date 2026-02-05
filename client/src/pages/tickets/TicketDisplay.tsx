@@ -180,7 +180,7 @@ export const TicketDisplay = () => {
 			</LoadingSkeleton> : (
 				<>
 				<div className = "tw-flex tw-flex-col lg:tw-flex-row tw-gap-y-6 lg:tw-gap-x-6">
-					<div className = "tw-w-full tw-max-h-[300px] tw-overflow-y-auto lg:tw-overflow-hidden lg:tw-max-h-full lg:tw-w-1/3 tw-flex tw-flex-col tw-gap-y-2">
+					<div className = "tw-w-full tw-max-h-[300px] tw-overflow-y-auto lg:tw-overflow-hidden lg:tw-max-h-[700px] lg:tw-w-1/3 tw-flex tw-flex-col tw-gap-y-2">
 						
 						{data?.data?.map((ticket: Ticket) => {
 							return (

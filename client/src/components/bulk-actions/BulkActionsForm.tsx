@@ -15,6 +15,7 @@ import { OptionType, Ticket, Toast } from "../../types/common"
 import { addToast } from "../../slices/toastSlice"
 import { TICKETS } from "../../helpers/routes"
 import { v4 as uuidv4 } from "uuid"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 interface Props {
 	boardId: number | null | undefined
@@ -104,7 +105,9 @@ export const BulkActionsForm = ({boardId, initStep=1, initSelectedIds=[]}: Props
 		const { priorityId, statusId, userIdOption } = formValues
 		try {
 			const assigneeId: number | null = !isNaN(Number(userIdOption?.value)) ? Number(userIdOption?.value) : null
-			await bulkEditTickets({ticketIds: selectedIds, priorityId, statusId, userIds: assigneeId != null ? [assigneeId] : []}).unwrap()
+			const priority: number | null = !isNaN(Number(priorityId?.value)) ? Number(priorityId.value) : null
+			const status: number | null = !isNaN(Number(statusId?.value)) ? Number(statusId.value) : null
+			await bulkEditTickets({ticketIds: selectedIds, priorityId: priority ?? 0, statusId: status ?? 0, userIds: assigneeId != null ? [assigneeId] : []}).unwrap()
 			// no need to send the notification if you're assigning the tickets to yourself
 			if (userProfile && assigneeId === 0 && unassignedNotificationType && selectedTickets){
 				// notify the user that they are unassigned from the ticket, unless the logged in user is unassigning themselves
@@ -342,12 +345,21 @@ export const BulkActionsForm = ({boardId, initStep=1, initSelectedIds=[]}: Props
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-w-full">
-			<h1>Bulk Actions</h1>	
+			<h1 className={PRIMARY_TEXT}>Bulk Actions</h1>	
 			<div className = "tw-flex tw-flex-col lg:tw-flex-row">
 				<div className = "lg:tw-w-1/4">
 					<ol>
 						{steps.map((s) => 
-							<BulkActionsFormStepIndicator disabled={s.step === 3 && skipStep3} key={s.step} Icon={<IconCircleCheckmark color={step > s.step ? "var(--bs-success)" : ""}/>} step = {s.step} setStep={setStep} currentStep = {step} text = {s.text}/>
+							<BulkActionsFormStepIndicator 
+								disabled={s.step === 3 && skipStep3} 
+								key={`step-indicator-${s.step}`} 
+								Icon={<IconCircleCheckmark 
+								color={step > s.step ? "var(--bs-success)" : ""}/>} 
+								step = {s.step} 
+								setStep={setStep} 
+								currentStep = {step} 
+								text = {s.text}
+							/>
 						)}
 					</ol>
 				</div>

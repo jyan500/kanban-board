@@ -4,6 +4,7 @@ import { MoveTicketForm, FormValues as MoveTicketFormValues } from "../forms/Mov
 import { AddTicketForm, AddTicketFormValues } from "../AddTicketForm"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { Button } from "../page-elements/Button"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 interface Props {
 	step: number
@@ -65,7 +66,7 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 		}} numSelectedIssues={selectedIds.length} onSubmit={moveTicketSubmit} boardId={boardId} title={"Move Issues"} buttonBar={buttonBar()}/>,
 		"edit-issues": <AddTicketForm step={step} formValues={{
 			statusId: formValues.statusId,
-			priorityId: {label: priorities.find((priority) => formValues.priorityId === priority.id)?.name ?? "", value: formValues.priorityId.toString()},
+			priorityId: {label: priorities.find((priority) => formValues.priorityId === priority.id)?.name ?? "", value: formValues.priorityId?.toString() ?? ""},
 			userIdOption: formValues.userIdOption,
 			ticketTypeId: {label: "", value: ""},
 			description: "",
@@ -75,7 +76,7 @@ export const BulkActionsFormStep3 = ({step, setStep, operation, boardId, selecte
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			<h3 className = "tw-m-0">Step 3 of 4: Operation Details</h3>
+			<h3 className = {`${PRIMARY_TEXT} tw-m-0`}>Step 3 of 4: Operation Details</h3>
 			{renderOperation()}
 		</div>
 	)

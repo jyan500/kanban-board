@@ -1,6 +1,7 @@
 import React from "react"
 import { BulkEditOperation, BulkEditOperationKey } from "./BulkActionsForm"
 import { Button } from "../page-elements/Button"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
 
 interface Props {
 	step: number
@@ -16,8 +17,8 @@ interface Props {
 export const BulkActionsFormStep2 = ({step, setStep, skipStep3, numSelectedIssues, operation: propOperation, setOperation, operations, isAdminOrBoardAdmin}: Props) => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			<h3 className = "tw-m-0">Step 2 of 4: Choose Operation</h3>
-			<p>Choose the operation you wish to perform on <span className = "tw-font-semibold">{numSelectedIssues}</span> issues</p>
+			<h3 className = {`${PRIMARY_TEXT} tw-m-0`}>Step 2 of 4: Choose Operation</h3>
+			<p className={SECONDARY_TEXT}>Choose the operation you wish to perform on <span className = "tw-font-semibold">{numSelectedIssues}</span> issues</p>
 			<div>
 				{operations.map((operation, index) => {
 					return (
@@ -26,10 +27,10 @@ export const BulkActionsFormStep2 = ({step, setStep, skipStep3, numSelectedIssue
 								<input onChange={() => setOperation(operation.key as BulkEditOperationKey)} value={operation.key} checked={propOperation === operation.key} type = "radio"/>	
 							</div>
 							<div className = "tw-flex tw-flex-1">
-								<p>{operation.text}</p>
+								<p className={PRIMARY_TEXT}>{operation.text}</p>
 							</div>
-							<div className = "tw-flex tw-flex-1">
-								<p>{operation.description}</p>
+							<div className = "tw-flexs tw-flex-1">
+								<p className={SECONDARY_TEXT}>{operation.description}</p>
 							</div>
 						</div>
 					)

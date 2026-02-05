@@ -1,7 +1,7 @@
 import React, {useState} from "react"
 import { Ticket } from "../types/common"
 import { priorityIconMap, PriorityIcon, TicketTypeIcon } from "./Ticket" 
-import { LG_BREAKPOINT, PRIORITY_COLOR_MAP, STANDARD_BORDER } from "../helpers/constants"
+import { LG_BREAKPOINT, PRIMARY_TEXT, PRIORITY_COLOR_MAP, STANDARD_BORDER } from "../helpers/constants"
 import { CgProfile } from "react-icons/cg"
 import { IconContext } from "react-icons"
 import { useAppSelector } from "../hooks/redux-hooks"
@@ -89,7 +89,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 					: <></>}	
 				</div>
 				{width >= SM_BREAKPOINT && !hideProfilePicture ? 
-					(isLoading ? <CgProfile className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/> : <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>) 
+					(isLoading ? <CgProfile className = {`${PRIMARY_TEXT} tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6`}/> : <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = {`${PRIMARY_TEXT} !tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full`}/>) 
 				: null}
 				<div className = "dark:tw-text-white tw-line-clamp-1 tw-text-left tw-break-words">{status?.name}</div>
 			</div>

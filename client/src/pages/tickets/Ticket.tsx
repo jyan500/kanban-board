@@ -24,6 +24,8 @@ export const Ticket = () => {
 		<LoadingSkeleton height="tw-h-[500px]" width="tw-w-full">
 			<TicketFormPlaceholder/>	
 		</LoadingSkeleton> : 
-		<EditTicketForm ticket={ticket?.[0]} statusesToDisplay={statuses}/>
+		<div className="lg:tw-max-h-[750px] tw-overflow-y-auto">
+			<EditTicketForm ticket={ticket?.[0]} statusesToDisplay={statuses}/>
+		</div>
 	)	
 }
