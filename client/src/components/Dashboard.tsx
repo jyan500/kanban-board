@@ -218,7 +218,7 @@ export const Dashboard = () => {
 			</BorderContainer>
 			<BorderContainer>
 				<h2 className = "dark:tw-text-white">My Tasks</h2>
-				<div className = "tw-w-full tw-flex tw-flex-col lg:tw-flex lg:tw-flex-row tw-h-full lg:tw-gap-x-4">
+				<div className = "tw-w-full tw-flex tw-flex-col xl:tw-flex xl:tw-flex-row tw-h-full xl:tw-gap-x-4">
 					{assignedTickets && !isAssignedTicketsLoading ? (
 						<TicketsContainer triggerSort={triggerSort} setPage={setAssignedToPage} setFilterBy={setAssignedFilter} tickets={assignedTickets} title={"Assigned"}/>
 					) : 

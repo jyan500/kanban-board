@@ -10,6 +10,7 @@ import { IconArrowDown } from "../icons/IconArrowDown"
 import { IconArrowUp } from "../icons/IconArrowUp"
 import { Button } from "../page-elements/Button"
 import { Select } from "../page-elements/Select"
+import { SECONDARY_TEXT } from "../../helpers/constants"
 
 type Props = {
 	title: string
@@ -55,7 +56,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage, triggerS
 			<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-col tw-gap-y-2">
 				<div className = "tw-flex tw-flex-row tw-justify-between">
 					<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-						<span className = "dark:tw-text-slate-400 tw-text-gray-500">Total:</span> <span className="dark:tw-text-slate-400">{tickets.pagination.total}</span>
+						<span className = {`${SECONDARY_TEXT}`}>Total:</span> <span className={SECONDARY_TEXT}>{tickets.pagination.total}</span>
 						<Select
 							options={[
 								{label: "Due Date", value: "dueDate"},
@@ -80,7 +81,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage, triggerS
 						: null
 					}
 				</div>
-				<>
+				<div className="tw-flex tw-flex-col tw-gap-y-2">
 					{tickets.data.map((ticket: Ticket) => {
 						return (
 							<Link key={`${title}_${ticket.id}`} to={`${TICKETS}/${ticket.id}`}>
@@ -93,7 +94,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage, triggerS
 							</Link>
 						)
 					})}
-				</>
+				</div>
 			</div>	
 		</div>
 	)

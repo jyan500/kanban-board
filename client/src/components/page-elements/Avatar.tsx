@@ -3,6 +3,7 @@ import { CgProfile } from "react-icons/cg"
 import { IconBuilding } from "../icons/IconBuilding"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { AVATAR_FONT_SIZES, AVATAR_SIZES } from "../../helpers/constants"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 type Props = {
 	size?: string 

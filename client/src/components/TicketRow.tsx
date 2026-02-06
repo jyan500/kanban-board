@@ -17,6 +17,7 @@ import { LoadingSpinner } from "./LoadingSpinner"
 import { isSameWeek, isAfter, parseISO, format } from "date-fns"
 import { IconWarning } from "./icons/IconWarning"
 import { STANDARD_HOVER } from "../helpers/constants"
+import { HoverTooltip } from "./page-elements/HoverTooltip"
 
 type Props = {
 	ticket: Ticket | undefined
@@ -33,6 +34,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { priorities } = useAppSelector((state) => state.priority)
+	const [showTooltip, setShowTooltip] = useState(false)
 	const status = statuses?.find((status) => status.id === ticket?.statusId)
 	const ticketType = ticketTypes?.find((ticketType) => ticketType.id === ticket?.ticketTypeId)?.name
 	const priority = priorities?.find((priority) => priority.id === ticket?.priorityId)?.name
@@ -42,21 +44,18 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 	const parsedDueDate = typeof ticket?.dueDate === 'string' ? parseISO(ticket.dueDate) : ticket?.dueDate
 	const dueDatePassed = parsedDueDate ? isAfter( new Date(), parsedDueDate) : false
 	const dueDateWithinOneWeek = parsedDueDate ? isSameWeek(parsedDueDate, new Date(),{ weekStartsOn: 1 }) && !dueDatePassed : false
-	const showDueDateBadge = () => {
-		if (parsedDueDate && (dueDatePassed || dueDateWithinOneWeek)){
-			if (width <= LG_BREAKPOINT){
-				return (
-					<div className = {`tw-w-1.5 tw-h-1.5 ${dueDatePassed ? "dark:tw-bg-red-400 tw-bg-red-500" : "tw-bg-amber-500"} tw-rounded-full`}></div>
-				)
-			}
-			return (
-				<div className = {`tw-p-1 tw-text-nowrap tw-flex tw-flex-row tw-items-center tw-gap-x-2`}>
-					<div className = {`tw-w-1.5 tw-h-1.5 ${dueDatePassed ? "dark:tw-bg-red-400 tw-bg-red-500" : "tw-bg-amber-500"} tw-rounded-full`}></div>
-					<span className = {`${dueDatePassed ? "dark:tw-text-red-400 tw-text-red-600" : "tw-text-amber-700"}`}>Due {typeof ticket?.dueDate === 'string' ?  format(parsedDueDate, "M/dd/yyyy") : ""}</span>
-				</div>
-			)
-		}
-		return <></>
+	const showDueDateBadge = (showHover: boolean) => {
+		return (
+			<div className = {`tw-relative tw-group tw-w-3 tw-h-3`}>
+				{
+					dueDatePassed || dueDateWithinOneWeek ? (
+						<div className = {`tw-w-1.5 tw-h-1.5 ${dueDatePassed ? "dark:tw-bg-red-400 tw-bg-red-500" : "tw-bg-amber-500"} tw-rounded-full`}>
+						</div>
+					) : (<></>)
+				}
+				<HoverTooltip direction={width <= LG_BREAKPOINT ? "left": "top"} forceShow={showHover} text={`${typeof ticket?.dueDate === 'string' && parsedDueDate ? `Due ${format(parsedDueDate, "M/dd/yyyy")}` : "No Due Date"}`}/>
+			</div>
+		)
 	}
 
 	const showBorder = () => {
@@ -71,8 +70,11 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 	}
 
 	return (
-		<div className = {`${showBorder()} ${isLoadingState ? "tw-opacity-50" : ""} ${STANDARD_HOVER} tw-p-1 lg:tw-p-1.5 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-rounded-md`}>
-			<div className = {`${(showUnlink && onUnlink && ticketRelationshipId) || showDueBadge ? "tw-w-[60%]" : "tw-w-[70%]"} lg:tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4`}>
+		<div 
+			onMouseEnter={() => setShowTooltip(true)}
+			onMouseLeave={() => setShowTooltip(false)}
+			className = {`${showBorder()} ${isLoadingState ? "tw-opacity-50" : ""} ${STANDARD_HOVER} tw-p-1 lg:tw-p-1.5 tw-flex tw-flex-row tw-items-center tw-justify-between tw-w-full tw-rounded-md`}>
+			<div className = {`${(showUnlink && onUnlink && ticketRelationshipId) || showDueBadge ? "tw-w-[50%]" : "tw-w-[60%]"} lg:tw-p-1 tw-flex tw-flex-row tw-items-center tw-gap-x-4`}>
 				<div>
 					{ticketType ? (
 							<TicketTypeIcon type={ticketType} />	
@@ -91,10 +93,10 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 				{width >= SM_BREAKPOINT && !hideProfilePicture ? 
 					(isLoading ? <CgProfile className = {`${PRIMARY_TEXT} tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6`}/> : <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = {`${PRIMARY_TEXT} !tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full`}/>) 
 				: null}
-				<div className = "dark:tw-text-white tw-line-clamp-1 tw-text-left tw-break-words">{status?.name}</div>
+				<div className = "dark:tw-text-white tw-line-clamp-1 tw-text-left tw-break-words tw-truncate">{status?.name}</div>
 			</div>
 			{
-				showDueBadge ? showDueDateBadge() : null 
+				showDueBadge ? showDueDateBadge(showTooltip) : null 
 			}
 			{
 				showUnlink && onUnlink && ticketRelationshipId ? (
