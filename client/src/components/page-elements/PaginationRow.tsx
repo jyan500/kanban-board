@@ -188,7 +188,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
             {
                 paginationData ? (
                     <>
-                        {showNumResults ? <p className={SECONDARY_TEXT}>Showing {paginationData.from} - {paginationData.to} out of {paginationData.total} results</p> : null}
+                        {showNumResults ? <p className={`${SECONDARY_TEXT} tw-font-semibold`}>Showing {paginationData.from} - {paginationData.to} out of {paginationData.total} results</p> : null}
                         <div className="tw-flex tw-flex-row tw-items-center tw-gap-x-2">
                             <ArrowButton 
                                 disabled={paginationData?.prevPage == null} 

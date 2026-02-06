@@ -7,7 +7,7 @@ type DarkModeState = {
 }
 
 const initialState: DarkModeState = {
-    isDarkMode: localStorage.getItem("isDarkMode") === "true" ? true : false
+    isDarkMode: false
 }
 
 const darkModeSlice = createSlice({
@@ -15,7 +15,6 @@ const darkModeSlice = createSlice({
     initialState,
     reducers: {
         setDarkMode: (state, {payload: { isDarkMode }}: PayloadAction<{ isDarkMode: boolean }>) => {
-            localStorage.setItem("isDarkMode", isDarkMode ? "true" : "false")
             state.isDarkMode = isDarkMode
         },
     },

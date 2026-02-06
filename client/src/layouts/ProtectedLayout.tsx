@@ -29,6 +29,7 @@ import { UserRole } from "../types/common"
 import { TEMP, ACCOUNT, LOGIN } from "../helpers/routes"
 import { BulkEditToolbarProvider } from "../contexts/BulkEditToolbarContext"
 import { useDarkMode } from "../hooks/useDarkMode"
+import { setDarkMode } from "../slices/darkModeSlice"
 
 const ProtectedLayout = () => {
 	const {token, isTemp} = useAppSelector((state) => state.auth)	
@@ -62,6 +63,7 @@ const ProtectedLayout = () => {
         if (token){
         	if (userProfileData){
 	        	dispatch(setUserProfile({userProfile: userProfileData}))
+				dispatch(setDarkMode({isDarkMode: userProfileData.isDarkMode ?? false}))
 	        }
 	        if (ticketTypesData){
 	        	dispatch(setTicketTypes({ticketTypes: ticketTypesData}))	

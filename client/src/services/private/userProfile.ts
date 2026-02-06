@@ -32,7 +32,7 @@ export const userProfileApi = privateApi.injectEndpoints({
 				url: `${USER_PROFILE_URL}/me`,
 				method: "GET",
 			}),
-			providesTags: ["UserProfiles"]
+			providesTags: [{type: "UserProfiles", id: "ME"}]
 		}),
 		getUser: builder.query<UserProfile, number>({
 			query: (userId) => ({
@@ -76,7 +76,17 @@ export const userProfileApi = privateApi.injectEndpoints({
 					confirm_existing_password: confirmExistingPassword,
 				}
 			}),
-			invalidatesTags: ["UserProfiles"]
+			invalidatesTags: [{type: "UserProfiles", id: "ME"}]
+		}),
+		editOwnUserPreference: builder.mutation<string, {isDarkMode: boolean}>({
+			query: ({isDarkMode}) => ({
+				url: `${USER_PROFILE_URL}/me/preference`,
+				method: "PATCH",
+				body: {
+					is_dark_mode: isDarkMode
+				}
+			}),
+			invalidatesTags: [{type: "UserProfiles", id: "ME"}]
 		}),
 		getUserOrganizations: builder.query<ListResponse<Organization>, Record<string, any>>({
 			query: (urlParams) => ({
@@ -156,6 +166,7 @@ export const {
 	useGetUserOrganizationsQuery, 
 	useEditUserProfileMutation,
 	useEditOwnUserProfileMutation,
+	useEditOwnUserPreferenceMutation,
 	useSwitchUserOrganizationMutation,
 	useGetUserNotificationTypesQuery,
 	useUpdateUserNotificationTypesMutation,

@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/db")
-const { getUserValidator, editUserValidator, editOwnUserValidator, editUserImageValidator, editNotificationTypesValidator, validateUserBoardFilterGet, validateUserBoardFilterUpdate } = require("../validation/user")
+const { getUserValidator, editUserValidator, editOwnUserValidator, editUserImageValidator, editNotificationTypesValidator, validateUserBoardFilterGet, validateUserBoardFilterUpdate, editOwnUserPreferenceValidator } = require("../validation/user")
 const { authenticateUserRole } = require("../middleware/userRoleMiddleware")
 const { handleValidationResult }  = require("../middleware/validationMiddleware")
 const { validateAddOrganization } = require("../validation/organization") 
@@ -156,6 +156,7 @@ router.get("/me", async (req, res, next) => {
 					"users.first_name as firstName", 
 					"users.last_name as lastName", 
 					"users.is_active as isActive",
+					"users.is_dark_mode as isDarkMode",
 					"users.image_url as imageUrl",
 					"users.email as email", 
 					"organizations.name as organizationName",
@@ -197,6 +198,25 @@ router.post("/me", editOwnUserValidator, handleValidationResult, async (req, res
 	}	
 	catch (err){
 		console.error(`Error while getting user profile: ${err.message}`)	
+		next(err)
+	}
+})
+
+router.patch("/me/preference", editOwnUserPreferenceValidator, handleValidationResult, async (req, res, next) => {
+	try {
+		const {id: userId, organization: organizationId} = req.user
+		await historyService.update(
+			"users",
+			userId,
+			{
+				is_dark_mode: req.body.is_dark_mode
+			},
+			req.historyContext
+		)
+		res.json({message: "Account updated successfully!"})
+	}
+	catch (err){
+		console.error(`Error while updating user preference: ${err.message}`)
 		next(err)
 	}
 })

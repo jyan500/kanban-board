@@ -105,7 +105,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 							e.preventDefault()
 							onUnlink(ticket?.id, ticketRelationshipId)
 						}}>
-							<Unlink className = "tw-w-6 tw-h-6 tw-shrink-0"/>	
+							<Unlink className = {`${PRIMARY_TEXT} tw-w-6 tw-h-6 tw-shrink-0`}/>	
 						</IconButton>
 				</div>
 				) : null

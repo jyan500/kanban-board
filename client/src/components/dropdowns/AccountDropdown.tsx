@@ -22,6 +22,7 @@ import { TextIconRow } from "../page-elements/TextIconRow"
 import { setDarkMode } from "../../slices/darkModeSlice"
 import { useDarkMode } from "../../hooks/useDarkMode"
 import { STANDARD_DROPDOWN_ITEM, STANDARD_HOVER } from "../../helpers/constants"
+import { useEditOwnUserPreferenceMutation } from "../../services/private/userProfile"
 
 type Props = {
 	isTemp: boolean
@@ -39,6 +40,7 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null
 	const isAdminOrBoardAdmin = userRole && (userRole === "ADMIN" || userRole === "BOARD_ADMIN")
+	const [ editUserOwnPreference, {isLoading, error} ] = useEditOwnUserPreferenceMutation()
 
 	useDarkMode("account-dropdown", isDarkMode)
 
@@ -52,18 +54,30 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 		},
 		...(isDarkMode ? {
 			"Light Mode": {
-				text: "Light Mode",
+				text: "Switch to Light Mode",
 				icon: <IconLightMode/>,
-				onClick: () => {
-					dispatch(setDarkMode({isDarkMode: false}))
+				onClick: async () => {
+					try {
+						await editUserOwnPreference({isDarkMode: false}).unwrap()
+						dispatch(setDarkMode({isDarkMode: false}))
+					}
+					catch (e){
+
+					}
 				}
 			}
 		} : {
 			"Dark Mode": {
-				text: "Dark Mode",
+				text: "Switch to Dark Mode",
 				icon: <IconDarkMode/>,
-				onClick: () => {
-					dispatch(setDarkMode({isDarkMode: true}))
+				onClick: async () => {
+					try {
+						await editUserOwnPreference({isDarkMode: true}).unwrap()
+						dispatch(setDarkMode({isDarkMode: true}))
+					}
+					catch (e){
+
+					}
 				}
 			}
 		}),
@@ -113,7 +127,7 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 									return 
 								}
 								option.onClick()
-								if (option.text !== "Light Mode" && option.text !== "Dark Mode"){
+								if (option.text !== "Switch to Light Mode" && option.text !== "Switch to Dark Mode"){
 									closeDropdown()
 								}
 							}}

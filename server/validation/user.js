@@ -29,6 +29,11 @@ const organizationUserRegisterValidator = [
 ]
 
 const editUserValidator = (action) => {
+	if (action === "editUserPreference"){
+		return [
+			body("is_dark_mode").isBoolean()
+		]
+	}
 	let validationRules = [
 		body("first_name").notEmpty().withMessage("First Name is required"),
 		body("last_name").notEmpty().withMessage("Last Name is required"),
@@ -41,6 +46,7 @@ const editUserValidator = (action) => {
 			body("user_role_id").notEmpty().withMessage("user_role_id is required").custom(async (value, {req}) => await checkEntityExistsIn("userRole", value, [{col: "id", value: value}], "user_roles")),
 		]
 	}
+
 	if (action === "editOwnUser"){
 		validationRules = [
 			...validationRules,
@@ -162,6 +168,7 @@ module.exports = {
 	registerValidator: editUserValidator("register"),
 	editUserValidator: editUserValidator("adminEditUser"),
 	editOwnUserValidator: editUserValidator("editOwnUser"),
+	editOwnUserPreferenceValidator: editUserValidator("editUserPreference"),
 	validateUserBoardFilterGet: userBoardFilterValidator("get"),
 	validateUserBoardFilterUpdate: userBoardFilterValidator("update"),
 	forgotPasswordValidator,
