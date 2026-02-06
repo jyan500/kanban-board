@@ -4,6 +4,7 @@ import {
     CELL_BACKGROUND, 
     NESTED_TABLE_BACKGROUND, 
     PRIMARY_TEXT, 
+    ICON_CELL_BACKGROUND,
     STANDARD_BORDER, 
     SECONDARY_TEXT, 
     STANDARD_HOVER 
@@ -21,7 +22,7 @@ export const SummaryCard = ({icon, link, header, subHeader, children}: Props) =>
     return (
         <Link to={link} className={`${STANDARD_HOVER} ${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
             <div className="tw-flex tw-items-start tw-gap-3">
-                <div className={`tw-p-2 ${CELL_BACKGROUND} tw-rounded`}>
+                <div className={`tw-p-2 ${ICON_CELL_BACKGROUND} tw-rounded`}>
                     {icon}
                 </div>
                 <div>

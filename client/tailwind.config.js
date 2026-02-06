@@ -24,6 +24,10 @@ module.exports = {
           'dark-mode-gradient': 'linear-gradient(to bottom right, rgb(30 41 59), rgb(51 65 85))', // slate-800 to slate-700
           'dark-mode-modal-gradient': 'linear-gradient(to bottom right, rgb(51 65 85), rgb(71 85 105))' //slate-700 to slate-600
       },
+      gridTemplateColumns: {
+        // Grid: [ticket-name] [priority] [status] [badge] [unlink]
+        'ticket-row': '1fr auto 1fr auto auto',
+      },
       keyframes: {
           'fade-in-up': {
               '0%': {

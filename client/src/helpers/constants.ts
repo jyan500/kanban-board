@@ -1,4 +1,5 @@
-
+/* Common Tailwind CSS Classes */
+export const FADE_ANIMATION = "tw-transition tw-duration-100 tw-ease-in-out"
 export const STANDARD_BORDER_COLOR = "dark:tw-border-gray-500 tw-border-gray-300"
 export const STANDARD_BORDER = `${STANDARD_BORDER_COLOR} tw-border`
 export const STANDARD_HOVER = "dark:hover:tw-bg-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
@@ -18,6 +19,7 @@ export const NESTED_TABLE_BACKGROUND = "dark:tw-bg-slate-700 tw-bg-gray-100"
 export const LINK_TEXT = "tw-font-medium dark:tw-text-light-primary tw-text-primary"
 export const TERTIARY_TEXT = "dark:tw-text-sky-300 tw-text-primary"
 export const TABLE_DIVIDE = "tw-divide-y dark:tw-divide-gray-500 tw-divide-gray-200"
+export const ICON_CELL_BACKGROUND = "dark:tw-bg-slate-400 tw-bg-gray-200"
 
 export const defaultStatuses = [
 	{id: "1", name: "To-Do", order: 1}, 
@@ -225,8 +227,6 @@ export const SEARCH_OPTIONS = [
     {label: "Assignee", value: "assignee"},
 ]
 
-/* Common Tailwind CSS Classes */
-export const FADE_ANIMATION = "tw-transition tw-duration-100 tw-ease-in-out"
 
 export const AVATAR_SIZES: {[k: string]: string} = {
     "l": "tw-w-32 tw-h-32",

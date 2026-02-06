@@ -159,27 +159,27 @@ export const BoardSummary = () => {
                 {/* Top Stats Cards */}
                 <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 xl:tw-grid-cols-4 tw-gap-4">
                     <SummaryCard 
-                        icon={<IconCircleCheckmark className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        icon={<IconCircleCheckmark className = {`tw-w-5 tw-h-5 tw-text-gray-700`}/>}
                         link={constructTicketLink(data?.ticketsCompleted ?? [])}
                         header={`${data?.ticketsCompleted.length ?? 0} completed`}
                         subHeader={"in the last 7 days"}
                     >
                     </SummaryCard>
                     <SummaryCard
-                        icon={<IconPencil className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        icon={<IconPencil className = "tw-w-5 tw-h-5 tw-text-gray-700"/>}
                         link={constructTicketLink(data?.ticketsUpdated ?? [])}
                         header={`${data?.ticketsUpdated.length ?? 0} updated`}
                         subHeader={"in the last 7 days"}
                     >
                     </SummaryCard>
                     <SummaryCard
-                        icon={<IconPaper className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        icon={<IconPaper className = "tw-w-5 tw-h-5 tw-text-gray-700"/>}
                         link={constructTicketLink(data?.ticketsCreated ?? [])}
                         header={`${data?.ticketsCreated.length ?? 0} created`}
                         subHeader={"in the last 7 days"}
                     />
                     <SummaryCard
-                        icon={<IconCalendar className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        icon={<IconCalendar className = "tw-w-5 tw-h-5 tw-text-gray-700"/>}
                         link={constructTicketLink(data?.ticketsDue ?? [])}
                         header={`${data?.ticketsDue.length ?? 0} due soon`}
                         subHeader={"in the next 7 days"}
@@ -225,7 +225,7 @@ export const BoardSummary = () => {
                                 return (
                                     <div key={index} className = "tw-space-y-1">
                                         <HorizontalProgressBarRow
-                                            icon={item.name !== "Unassigned" ? <Avatar userInitials={item.initials} imageUrl={item.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/> : <IconUser className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>}
+                                            icon={item.name !== "Unassigned" ? <Avatar userInitials={item.initials} imageUrl={item.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/> : <IconUser className = {`${PRIMARY_TEXT} tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6`}/>}
                                             item={item}
                                             link={`${TICKETS}?boardId=${boardInfo?.id ?? 0}&assignedToUser=${item.id ?? "0"}`}
                                             showPercentages={false}
@@ -270,7 +270,7 @@ export const BoardSummary = () => {
                     : 
                     Object.keys(groupedRecentActivity).map((date, index) => {
                         return (
-                            <div key={`recent-activity-group-${index}`} className = {`${NESTED_TABLE_BACKGROUND} tw-flex tw-flex-col tw-gap-y-4`}>
+                            <div key={`recent-activity-group-${index}`} className = {`${NESTED_TABLE_BACKGROUND} tw-min-h-[500px] tw-flex tw-flex-col tw-gap-y-4`}>
                                 <p className = {`tw-text-sm ${SECONDARY_TEXT}`}>{date}</p>
                                 {
                                     groupedRecentActivity[date].map((history) => {

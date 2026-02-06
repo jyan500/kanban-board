@@ -51,12 +51,12 @@ export const BarChart = ({data, searchKey, boardId}: Props) => {
                 <ReBarChart data={data}>
                     <XAxis 
                         dataKey="name" 
-                        tick={width >= LG_BREAKPOINT ? {fontSize: 12} : false}
+                        tick={width >= LG_BREAKPOINT ? {fontSize: 12, fill: isDarkMode ? "#FFF" : "#000"} : false}
                         axisLine={false}
                         tickLine={false}
                     />
                     <YAxis 
-                        tick={{fontSize: 12}}
+                        tick={{fontSize: 12, fill: isDarkMode ? "#FFF" : "#000"}}
                         axisLine={false}
                         tickLine={false}
                         allowDecimals={false}
