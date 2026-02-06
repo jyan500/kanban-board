@@ -30,6 +30,8 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 	const buttonRef = useRef<HTMLButtonElement>(null)
 	const { width, height } = useScreenSize()
 
+	const exceededLimit = status.limit && (status.limit <= numTickets)
+
 	const onClickOutside = () => {
 		setShowDropdown(false)	
 	}
@@ -37,18 +39,18 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
 
 	return (
-		<div className = {`${status.limit && (status.limit <= numTickets) ? "tw-bg-red-100" : ""} tw-relative tw-w-full tw-py-2 tw-flex tw-flex-col tw-gap-y-1`}>
+		<div className = {`${exceededLimit ? "tw-bg-red-100" : ""} tw-relative tw-w-full tw-py-2 tw-flex tw-flex-col tw-gap-y-1`}>
 			<div className = "tw-pl-2 tw-flex tw-flex-row tw-items-center tw-justify-between">
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
-					<p className = {`${PRIMARY_TEXT} tw-font-semibold`}>
+					<p className = {`${exceededLimit ? "tw-text-gray-900" : PRIMARY_TEXT} tw-font-semibold`}>
 						{status.name}
 					</p>
-					<span className = {SECONDARY_TEXT}>
+					<span className = {`${exceededLimit ? "tw-text-gray-900" : SECONDARY_TEXT}`}>
 						{numTickets}
 					</span>
 				</div>
 				{
-					status.limit && (status.limit <= numTickets) ?
+					exceededLimit ?
 					<div className = "tw-p-0.5 tw-border tw-border-red-300 tw-bg-red-300">
 						<p className = "tw-font-semibold">Max: {status.limit}</p>
 					</div>
@@ -60,7 +62,7 @@ export const StatusHeader = ({numTickets, boardId, status, addTicketHandler, hid
 							<button ref = {buttonRef} onClick={(e) => {
 								e.preventDefault()
 								setShowDropdown(!showDropdown)
-							}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu className = {`${PRIMARY_TEXT} tw-w-6 tw-h-6`}/></button>
+							}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu className = {`${exceededLimit ? "tw-text-gray-900" : PRIMARY_TEXT} tw-w-6 tw-h-6`}/></button>
 							{
 								showDropdown ? (
 									<StatusHeaderDropdown dropdownAlignLeft={dropdownAlignLeft} boardId = {boardId} statusId={status.id} hideStatusHandler={hideStatusHandler} addTicketHandler={addTicketHandler} closeDropdown={onClickOutside} ref = {menuDropdownRef}/>

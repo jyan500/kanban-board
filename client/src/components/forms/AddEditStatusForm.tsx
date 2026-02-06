@@ -26,7 +26,7 @@ import { BackendErrorMessage } from "../page-elements/BackendErrorMessage"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { Button } from "../page-elements/Button"
 import { Label } from "../page-elements/Label"
-import { PRIMARY_TEXT } from "../../helpers/constants"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
 
 type FormValues = {
 	id?: number
@@ -64,7 +64,7 @@ export const AddEditStatusForm = () => {
 	const addUpdateForm = (option: "add" | "update") => {
 		const error = option === "add" ? addStatusError : updateStatusError
 		return (
-			<form className = {`tw-border tw-border-gray-100 tw-p-4 ${PRIMARY_TEXT}`} onSubmit={handleSubmit(onSubmit)}>
+			<form className = {`tw-border tw-border-gray-100 tw-p-4`} onSubmit={handleSubmit(onSubmit)}>
 				{
 					<BackendErrorMessage error={error}/>
 				}
@@ -91,7 +91,7 @@ export const AddEditStatusForm = () => {
 						<Label htmlFor = "status-is-active">Is Active</Label>	
 					</div>
 					<div>
-						<small><span className = "tw-font-bold">*</span>display this status across all boards in this organization</small>	
+						<span className={`${SECONDARY_TEXT} tw-text-xs`}><span className = {`tw-font-semibold`}>* </span>display this status across all boards in this organization</span>	
 					</div>
 					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 						<Controller
@@ -110,7 +110,7 @@ export const AddEditStatusForm = () => {
 						<Label htmlFor = "status-is-completed">Is Completed</Label>	
 					</div>
 					<div>
-						<small><span className = "tw-font-bold">*</span>all tickets in this status are considered "completed" for progress checking purposes</small>	
+						<span className = {`${SECONDARY_TEXT} tw-text-xs`}><span className = {`tw-font-bold`}>* </span>all tickets in this status are considered "completed" for progress checking purposes</span>	
 					</div>
 					<div>
 						<LoadingButton isLoading={isAddStatusLoading || isUpdateStatusLoading} type = "submit" className = "button" text="Save"/>
@@ -236,10 +236,10 @@ export const AddEditStatusForm = () => {
 	}		
 
 	return (
-		<div className = {`${PRIMARY_TEXT} tw-flex tw-flex-col tw-gap-y-6`}>
-			<div className = "tw-flex tw-flex-col tw-gap-y-2">
-				<h1>Add/Edit Statuses</h1>
-				<p className = "tw-font-bold">Click on the buttons to edit the statuses, and arrows to change the order</p>
+		<div className = {`tw-flex tw-flex-col tw-gap-y-6`}>
+			<div className = "tw-flex tw-flex-col tw-gap-y-4">
+				<h1 className={PRIMARY_TEXT}>Add/Edit Statuses</h1>
+				<p className = {`${SECONDARY_TEXT} tw-font-semibold`}>Click on the buttons to edit the statuses, and arrows to change the order</p>
 				<div>
 					<Button theme="secondary" onClick={(e) => {
 						setShowNewStatus(!showNewStatus)
