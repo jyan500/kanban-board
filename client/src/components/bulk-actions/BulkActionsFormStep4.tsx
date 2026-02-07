@@ -11,6 +11,7 @@ import { RowContentLoading } from "../page-elements/RowContentLoading"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { Button } from "../page-elements/Button"
 import { Ticket } from "../../types/common"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
 
 interface Props {
 	selectedIds: Array<number>
@@ -48,9 +49,9 @@ export const BulkActionsFormStep4 = ({
 	const config = useBoardTicketConfig(false, selectedIds, setSelectedIds)
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-2">
-			<h3 className = "tw-m-0">Step 4 of 4: Confirmation</h3>
-			<p>Please confirm the operation and tickets selected, and click "Confirm" to commit these changes.</p>
-			<p><span className = "tw-font-semibold">Operation: </span> {operations.find(op => op.key === operation)?.text}</p>
+			<h3 className = {`${PRIMARY_TEXT} tw-m-0`}>Step 4 of 4: Confirmation</h3>
+			<p className={SECONDARY_TEXT}>Please confirm the operation and tickets selected, and click "Confirm" to commit these changes.</p>
+			<p className={SECONDARY_TEXT}><span className = "tw-font-semibold">Operation: </span> {operations.find(op => op.key === operation)?.text}</p>
 			{data?.pagination.nextPage || data?.pagination.prevPage ? (
 					<PaginationRow
 						showNumResults={true}

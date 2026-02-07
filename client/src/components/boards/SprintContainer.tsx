@@ -20,6 +20,7 @@ import { IconHelp } from "../icons/IconHelp"
 import { AsyncSelect } from "../AsyncSelect"
 import { SPRINT_URL } from "../../helpers/urls"
 import { BOARDS, BACKLOG } from "../../helpers/routes"
+import { SECONDARY_TEXT } from "../../helpers/constants"
 
 interface Props {
     itemIds: Array<number>
@@ -129,7 +130,7 @@ export const SprintContainer = ({
             title={
                 <div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
                     <span className = "tw-font-medium">{sprintData?.name ?? ""}</span>
-                    <span className = "tw-text-gray-600">
+                    <span className = {SECONDARY_TEXT}>
                         {
                             !sprintData?.startDate && !sprintData?.endDate ?
                             <Button onClick={(e) => editSprint()}>Add Dates</Button> :

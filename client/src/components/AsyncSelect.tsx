@@ -6,6 +6,8 @@ import { ListResponse, OptionType } from "../types/common"
 import { OptionsOrGroups, GroupBase, SelectInstance } from "react-select"
 import { v4 as uuidv4 } from "uuid"
 import { SELECT_Z_INDEX } from "../helpers/constants"
+import { useAppSelector } from "../hooks/redux-hooks"
+import { getSelectStyles } from "../helpers/getSelectStyles";
 
 export interface LoadOptionsType {
 	options: ListResponse<any>
@@ -43,6 +45,7 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 	const [searchTerm, setSearchTerm] = useState("")
 	const [val, setVal] = useState<OptionType | null>(defaultValue ?? null)
 	const [ genericFetch ] = useLazyGenericFetchQuery()
+	const { isDarkMode } = useAppSelector((state) => state.darkMode)
 
 	const loadOptions = async (
 		query: string, 
@@ -91,6 +94,12 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 		}, [onSelect]
 	)
 
+	const { classNames, styles } = getSelectStyles({
+        isDarkMode,
+        className: className,
+        hideIndicatorSeparator: false,
+    })
+
 	return (
 		<AsyncPaginate
 			inputId={id}
@@ -100,17 +109,8 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 			onInputChange={handleInputChange}
 			onBlur={onBlur}
 			additional={{page: 1}}
-			classNames={{
-			    control: (state) => `${className ?? "tw-w-full"} ${SELECT_Z_INDEX}`
-			}}
-			styles={{
-			    control: (baseStyles, state) => ({
-			      ...baseStyles,
-			      height: "43px",
-			      border: "var(--width-input-border) solid var(--bs-light-gray)",
-			      padding: ".1em",
-			    }),
-			}}
+			classNames={classNames}
+			styles={styles}
 			onChange={handleChange}
 			getOptionLabel={(option) => option.label}
 			getOptionValue={(option) => option.value}

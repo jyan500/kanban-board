@@ -2,6 +2,7 @@ import React from "react"
 import { IconWarning } from "../icons/IconWarning"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { Button } from "../page-elements/Button"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 type WarningProps = {
 	title: string
@@ -17,7 +18,7 @@ export const Warning = ({isLoading, title, submitText, cancelText, onSubmit, onC
 		<div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 				<IconWarning className = "--l-icon"/>
-				<strong>{title}</strong>
+				<p className={`${PRIMARY_TEXT} tw-font-bold`}>{title}</p>
 			</div>
 			{children}
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">

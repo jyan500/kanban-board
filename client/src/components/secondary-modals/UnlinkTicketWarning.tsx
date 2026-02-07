@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid"
 import { Toast } from "../../types/common"
 import { addToast } from "../../slices/toastSlice"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../../slices/secondaryModalSlice"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
 
 export interface UnlinkTicketWarningProps {
 	ticketId: number | undefined
@@ -62,8 +63,8 @@ export const UnlinkTicketWarning = ({ticketId, ticketRelationshipId}: UnlinkTick
 				cancelText={"Cancel"}
 			>
 				<div className = "tw-py-4">
-					<strong>Are you sure you want to unlink this ticket?</strong>
-					<p>This will not delete the ticket, it will only unlink the ticket from it's parent or child ticket.</p>
+					<p className={`${PRIMARY_TEXT} tw-font-semibold`}>Are you sure you want to unlink this ticket?</p>
+					<p className={SECONDARY_TEXT}>This will not delete the ticket, it will only unlink the ticket from it's parent or child ticket.</p>
 				</div>
 			</Warning>
 		</div>

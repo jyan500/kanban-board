@@ -17,6 +17,7 @@ import { Banner } from "../page-elements/Banner"
 import { AccountActivationBanner } from "../page-elements/AccountActivationBanner"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { TwoColumnLoading } from "../page-elements/TwoColumnLoading"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 interface Props {
 	isTemp?: boolean
@@ -37,7 +38,7 @@ export const AccountContainer = ({userProfile, links, uploadImage, setUploadImag
 						<div className = "lg:tw-w-1/4 tw-flex tw-flex-col tw-gap-y-4">
 							<>
 								<ProfileCard initials={getUserInitials(userProfile)} entityId={userProfile.id} imageUploadUrl={`${USER_PROFILE_URL}/image`} invalidatesTags={["UserProfiles"]} imageUrl={userProfile?.imageUrl}>
-									<>
+									<div className={`${PRIMARY_TEXT} tw-flex tw-flex-col tw-gap-y-2`}>
 										<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-start">
 								 			<div><IconUser className = "tw-mt-1"/></div>
 								 			<div>{displayUser(userProfile)}</div>	
@@ -53,7 +54,7 @@ export const AccountContainer = ({userProfile, links, uploadImage, setUploadImag
 									 			<div className = "tw-w-full">{userProfile?.organizationName}</div>	
 									 		</div>: <></>
 								 		}
-							 		</>
+							 		</div>
 								</ProfileCard>
 								<SettingsCard title={"Account Settings"} links={links}/>
 							</>

@@ -8,6 +8,7 @@ import { IconMove } from "../icons/IconMove"
 import { IconDelete } from "../icons/IconDelete"
 import { IconCopy } from "../icons/IconCopy"
 import { IconPlus } from "../icons/IconPlus"
+import { STANDARD_DROPDOWN_ITEM } from "../../helpers/constants"
 
 type Props = {
 	ticket: Ticket | null | undefined
@@ -88,7 +89,7 @@ export const EditTicketFormMenuDropdown = React.forwardRef<HTMLDivElement, Props
 							option.onClick()
 							closeDropdown()
 						}}
-						className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+						className={STANDARD_DROPDOWN_ITEM}
 						role="menuitem"
 					>
 						<TextIconRow icon={option.icon} text={option.text}/>

@@ -24,6 +24,7 @@ import { USER_PROFILE_URL } from "../../helpers/urls"
 import { displayUser } from "../../helpers/functions"
 import { useGetUserQuery } from "../../services/private/userProfile"
 import { LoadingSpinner } from "../LoadingSpinner"
+import { Label } from "../page-elements/Label"
 
 type FormValues = {
 	id?: number
@@ -152,16 +153,16 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 			<form onSubmit={handleSubmit(onSubmit)} className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
 				{
 					!projectId ? 
-					<div className = "tw-flex tw-flex-col">
-						<label htmlFor="project-image-url" className = "label">Image URL</label>
+					<div className = "tw-flex tw-flex-col tw-gap-y-2">
+						<Label htmlFor="project-image-url">Image URL</Label>
 						<input id={"project-image-url"} {...register("imageUrl")} type = "text"/>
 					</div>
 					: null
 				}
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor={"project-owner"}>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor={"project-owner"}>
 						Owner <span className = "tw-font-bold tw-text-red-500">*</span>
-					</label>
+					</Label>
 					<Controller
 						name={"userIdOption"}
 						control={control}
@@ -182,25 +183,25 @@ export const ProjectForm = ({ projectId }: ProjectFormProps) => {
 					{errors?.userIdOption && <small className = "--text-alert">{errors.userIdOption.message}</small>}
 				</div>
 				
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "project-name">
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "project-name">
 						Name <span className = "tw-font-bold tw-text-red-500">*</span>
-					</label>
+					</Label>
 					<input id = "project-name" type = "text"
 					{...register("name", registerOptions.name)}
 					className="tw-w-full"
 					/>
 					{errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 				</div>
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor = "project-description">Description</label>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "project-description">Description</Label>
 					<textarea id = "project-description"
 					{...register("description")}
 					className="tw-w-full"
 					/>
 				</div>
-				<div className = "tw-flex tw-flex-col">
-					<label className = "label" htmlFor={"project-boards"}>Boards</label>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor={"project-boards"}>Boards</Label>
 					<Controller
 						name={"boardIdOptions"}
 						control={control}

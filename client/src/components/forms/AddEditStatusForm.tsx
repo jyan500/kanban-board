@@ -25,6 +25,8 @@ import { RowContentLoading } from "../page-elements/RowContentLoading"
 import { BackendErrorMessage } from "../page-elements/BackendErrorMessage"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { Button } from "../page-elements/Button"
+import { Label } from "../page-elements/Label"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
 
 type FormValues = {
 	id?: number
@@ -62,13 +64,13 @@ export const AddEditStatusForm = () => {
 	const addUpdateForm = (option: "add" | "update") => {
 		const error = option === "add" ? addStatusError : updateStatusError
 		return (
-			<form className = "tw-border tw-border-gray-100 tw-p-4" onSubmit={handleSubmit(onSubmit)}>
+			<form className = {`tw-border tw-border-gray-100 tw-p-4`} onSubmit={handleSubmit(onSubmit)}>
 				{
 					<BackendErrorMessage error={error}/>
 				}
 				<div className = {`tw-flex tw-flex-col tw-gap-y-2`}>
-					<div className = "">
-						<label htmlFor = "status-name" className = "label">Name</label>
+					<div className = "tw-flex tw-flex-col tw-gap-y-2">
+						<Label htmlFor = "status-name">Name</Label>
 						<input id = "status-name" type = "text" {...register("name")}/>
 				        {errors?.name && <small className = "--text-alert">{errors.name.message}</small>}
 					</div>
@@ -86,10 +88,10 @@ export const AddEditStatusForm = () => {
 								/>
 							)}	
 						/>
-						<label htmlFor = "status-is-active" className = "label">Is Active</label>	
+						<Label htmlFor = "status-is-active">Is Active</Label>	
 					</div>
 					<div>
-						<small><span className = "tw-font-bold">*</span>display this status across all boards in this organization</small>	
+						<span className={`${SECONDARY_TEXT} tw-text-xs`}><span className = {`tw-font-semibold`}>* </span>display this status across all boards in this organization</span>	
 					</div>
 					<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
 						<Controller
@@ -105,10 +107,10 @@ export const AddEditStatusForm = () => {
 								/>
 							)}	
 						/>
-						<label htmlFor = "status-is-completed" className = "label">Is Completed</label>	
+						<Label htmlFor = "status-is-completed">Is Completed</Label>	
 					</div>
 					<div>
-						<small><span className = "tw-font-bold">*</span>all tickets in this status are considered "completed" for progress checking purposes</small>	
+						<span className = {`${SECONDARY_TEXT} tw-text-xs`}><span className = {`tw-font-bold`}>* </span>all tickets in this status are considered "completed" for progress checking purposes</span>	
 					</div>
 					<div>
 						<LoadingButton isLoading={isAddStatusLoading || isUpdateStatusLoading} type = "submit" className = "button" text="Save"/>
@@ -234,10 +236,10 @@ export const AddEditStatusForm = () => {
 	}		
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-6">
-			<div className = "tw-flex tw-flex-col tw-gap-y-2">
-				<h1>Add/Edit Statuses</h1>
-				<p className = "tw-font-bold">Click on the buttons to edit the statuses, and arrows to change the order</p>
+		<div className = {`tw-flex tw-flex-col tw-gap-y-6`}>
+			<div className = "tw-flex tw-flex-col tw-gap-y-4">
+				<h1 className={PRIMARY_TEXT}>Add/Edit Statuses</h1>
+				<p className = {`${SECONDARY_TEXT} tw-font-semibold`}>Click on the buttons to edit the statuses, and arrows to change the order</p>
 				<div>
 					<Button theme="secondary" onClick={(e) => {
 						setShowNewStatus(!showNewStatus)
@@ -277,8 +279,8 @@ export const AddEditStatusForm = () => {
 								{status.name}
 							</Button>
 							<div className = "tw-flex tw-flex-col tw-items-center">
-								<IconButton disabled = {index === 0} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, false))}><IconArrowUp className = "tw-w-6 tw-h-6"/></IconButton>
-								<IconButton disabled = {index === statusData.length-1} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, true))}><IconArrowDown className = "tw-w-6 tw-h-6"/></IconButton>
+								<IconButton disabled = {index === 0} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, false))}><IconArrowUp className = {`${PRIMARY_TEXT} tw-w-6 tw-h-6`}/></IconButton>
+								<IconButton disabled = {index === statusData.length-1} onClick={() => updateStatusOrder(status.id, findNextClosestOrder(status.id, status.order, true))}><IconArrowDown className = {`${PRIMARY_TEXT} tw-w-6 tw-h-6`}/></IconButton>
 							</div>
 						</div>
 						{

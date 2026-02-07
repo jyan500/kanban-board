@@ -23,10 +23,11 @@ import { addToast } from "../../slices/toastSlice"
 import { Toast, Notification } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { useScreenSize } from "../../hooks/useScreenSize"
-import { SM_BREAKPOINT } from "../../helpers/constants"
+import { PLACEHOLDER_COLOR, SM_BREAKPOINT } from "../../helpers/constants"
 import { NOTIFICATIONS } from "../../helpers/routes"
 import { Link } from "react-router-dom"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
+import { setDarkMode } from "../../slices/darkModeSlice"
 
 export const TopNav = () => {
 	const dispatch = useAppDispatch()
@@ -67,6 +68,7 @@ export const TopNav = () => {
 	const onLogout = () => {
 		dispatch(logout())
 		dispatch(privateApi.util.resetApiState())
+		dispatch(setDarkMode({isDarkMode: false}))
 	}
 
 	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
@@ -76,13 +78,13 @@ export const TopNav = () => {
 			{
 				isTemp ? (<div></div>) : (
 					!isLoading ? 
-						<HamburgerButton/> : <LoadingSkeleton width="tw-w-8" height="tw-h-8" className="tw-bg-gray-200"/>
+						<HamburgerButton/> : <LoadingSkeleton width="tw-w-8" height="tw-h-8" className={PLACEHOLDER_COLOR}/>
 				)
 			}
 			<div className = "tw-inline-block tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 				{!isLoading ? (
 					<>
-						<div className = "tw-mt-1">
+						<div className = "tw-mt-0">
 							<button className = "--transparent tw-p-0 hover:tw-opacity-60 tw-inline-block tw-relative" ref = {buttonRef} onClick={(e) => {
 								e.preventDefault()
 								setShowDropdown(!showDropdown)
@@ -101,15 +103,15 @@ export const TopNav = () => {
 						{
 							width >= SM_BREAKPOINT ? (
 								<div>
-									<span>{displayUser(userProfile)}</span>
+									<span className = "dark:tw-text-white">{displayUser(userProfile)}</span>
 								</div>
 							) : null
 						}
 					</>
 				) : (
 					<LoadingSkeleton width="tw-w-32" height="tw-h-8" className = "tw-flex tw-flex-row tw-gap-x-4 tw-justify-center tw-items-center">
-						<div className = "tw-bg-gray-200 tw-w-6 tw-h-6 tw-rounded-full"></div>
-						<div className = "tw-bg-gray-200 tw-w-24 tw-h-6"></div>
+						<div className = {`${PLACEHOLDER_COLOR} tw-w-6 tw-h-6 tw-rounded-full`}></div>
+						<div className = {`${PLACEHOLDER_COLOR} tw-w-24 tw-h-6`}></div>
 					</LoadingSkeleton>
 				)
 			}

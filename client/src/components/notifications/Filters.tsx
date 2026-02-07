@@ -16,6 +16,8 @@ import { LoadingButton } from "../../components/page-elements/LoadingButton"
 import { Button } from "../../components/page-elements/Button"
 import { Switch } from "../page-elements/Switch"
 import { Select } from "../page-elements/Select"
+import { PLACEHOLDER_COLOR } from "../../helpers/constants"
+import { Label } from "../page-elements/Label"
 
 interface FormValues {
 	notificationType: OptionType
@@ -87,8 +89,8 @@ export const Filters = () => {
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-noti-type">Notification Type</label>
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<Label htmlFor = "filters-noti-type">Notification Type</Label>
 				<Controller name={"notificationType"} control={control} render={({field: {onChange}}) => ( 
 					<Select 
 						id={"filters-noti-type"}
@@ -101,16 +103,16 @@ export const Filters = () => {
 					)}>
 				</Controller>
 			</div>
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-noti-date-from">Date From</label>
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<Label htmlFor = "filters-noti-date-from">Date From</Label>
 				<input {...register("dateFrom")} id = "filters-noti-date-from" aria-label="Date" type="date"/>
 			</div>
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-noti-date-to">Date To</label>
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<Label htmlFor = "filters-noti-date-to">Date To</Label>
 				<input {...register("dateTo")} id = "filters-noti-date-to" aria-label="Date" type="date"/>
 			</div>
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-noti-user">User</label>
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<Label htmlFor = "filters-noti-user">User</Label>
 				{
 					!isLoading ? 	
 					<Controller
@@ -129,11 +131,11 @@ export const Filters = () => {
 			                />
 		                )}
 					/> : 
-					<LoadingSkeleton className= "tw-bg-gray-200" width = "tw-w-64" height="tw-h-10"/>	
+					<LoadingSkeleton className= {PLACEHOLDER_COLOR} width = "tw-w-64" height="tw-h-10"/>	
 				}
 			</div>
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-noti-is-unread">Unread</label>
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<Label htmlFor = "filters-noti-is-unread">Unread</Label>
 				<div>
 					<Controller
 						name="isUnread"

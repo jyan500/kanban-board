@@ -25,6 +25,7 @@ import { SimpleEditor } from "./page-elements/SimpleEditor"
 import { useAddNotificationMutation, useBulkCreateNotificationsMutation } from "../services/private/notification"
 import { TICKETS } from "../helpers/routes"
 import { ProfileActivityRow } from "./page-elements/ProfileActivityRow"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../helpers/constants"
 
 type CommentFormValues = {
 	id: number
@@ -205,12 +206,12 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 			{
 				showAddCommentField ? (!showAddCommentForm ? (
 					<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2">
-						<CgProfile className = "tw-w-8 tw-h-8"/>
+						<CgProfile className = {`${PRIMARY_TEXT} tw-w-8 tw-h-8`}/>
 						<button onClick = {() => setShowAddCommentForm(true)} className = "tw-bg-gray-50 tw-p-1 tw-w-full lg:tw-w-[400px] tw-border tw-border-gray-300"><i>Add a comment...</i></button>
 					</div>
 				) : (
 					<div className = "tw-flex tw-flex-row tw-items-start tw-gap-x-2 tw-w-full">
-						<CgProfile className = "tw-w-8 tw-h-8"/>
+						<CgProfile className = {`${PRIMARY_TEXT} tw-w-8 tw-h-8`}/>
 						<FormProvider {...methods}>
 							<CommentField 
 								isLoading={isAddTicketCommentLoading}
@@ -235,7 +236,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 			<div className = {`${ticketComments.length > 0 ? "tw-min-h-[620px]" : ""} tw-flex tw-flex-col tw-gap-y-4`}>
 				{
 					ticketComments?.map((comment: TicketComment) => (
-						<ProfileActivityRow data={comment}>
+						<ProfileActivityRow key={`comment-${comment.id}`} data={comment}>
 							<>
 								{showEditCommentId === comment.id ? (
 								<FormProvider {...methods}>
@@ -263,7 +264,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 								)}
 								{comment.userId === userProfile?.id && !showAddCommentForm && !showEditCommentId ? (
 									<div className = "tw-flex tw-flex-row tw-gap-x-2">
-										<button className = "tw-font-bold tw-text-secondary" onClick={() => {
+										<button className = {`${SECONDARY_TEXT} tw-font-bold`} onClick={() => {
 											reset({
 												id: comment.id,
 												ticketId: comment.ticketId,
@@ -277,7 +278,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 											dispatch(toggleShowSecondaryModal(true))
 											dispatch(setSecondaryModalProps<DeleteCommentWarningProps>({ticketId: currentTicketId ?? undefined, commentId: comment.id}))
 											dispatch(setSecondaryModalType("SHOW_DELETE_COMMENT_WARNING"))
-										}} className = "tw-font-bold tw-text-secondary">Delete</button>
+										}} className = {`${SECONDARY_TEXT} tw-font-bold`}>Delete</button>
 									</div>
 								) : null}	
 							</>

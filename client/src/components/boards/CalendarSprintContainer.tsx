@@ -3,6 +3,7 @@ import type { CalendarData } from "../../pages/boards/BoardCalendar"
 import { SprintPreviewDropdown } from "../dropdowns/SprintPreviewDropdown"
 import { IconCycle } from "../icons/IconCycle"
 import { useClickOutside } from "../../hooks/useClickOutside"
+import { FADE_ANIMATION } from "../../helpers/constants"
 
 interface Props {
     data: CalendarData & {startCol: number, span: number}
@@ -28,7 +29,7 @@ export const CalendarSprintContainer = ({data, boardId, uniqueKey}: Props) => {
                 }}
                 /* The pointer events auto ensures that the button can still be clicked, even though the absolutely positioned parent has pointer-events-none,
                 in order to allow the cell below it to be clicked. */ 
-                className={`${data.color} ${data.hoverColor} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-pointer-events-auto`}
+                className={`${data.color} ${data.hoverColor} tw-rounded tw-px-2 tw-py-1 tw-font-medium tw-text-xs tw-flex tw-items-center tw-pointer-events-auto ${FADE_ANIMATION}`}
                 style={{
                     gridColumn: `${data.startCol + 1} / span ${data.span}`
                 }}

@@ -19,6 +19,7 @@ import { UploadImageForm } from "../../components/UploadImageForm"
 import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4} from "uuid"
 import { EditImageIndicator } from "../../components/page-elements/EditImageIndicator"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 export const Account = () => {
 	const dispatch = useAppDispatch()
@@ -28,7 +29,7 @@ export const Account = () => {
 		<div>
 			{userProfile ? 
 				<div>
-					<h1>Profile</h1>
+					<h1 className={PRIMARY_TEXT}>Profile</h1>
 					<EditUserForm isAccountsPage={true} isChangePassword={false} userId={userProfile.id}/>
 				</div>
 			: null

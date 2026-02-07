@@ -16,7 +16,7 @@ import { addToast } from "../../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { sortStatusByOrder } from "../../helpers/functions"
 import { StatusHeader } from "./StatusHeader"
-import { MAX_COLUMN_LIMIT } from "../../helpers/constants"
+import { CARD_BACKGROUND_COLOR, MAX_COLUMN_LIMIT } from "../../helpers/constants"
 
 type Props = {
 	tickets: Array<TicketType>
@@ -90,7 +90,7 @@ export const Board = ({
 					key = {status.id} 
 					onDrop={handleDrop} 
 					onDragOver={enableDropping} 
-					className = "tw-flex tw-flex-col tw-bg-gray-50 tw-min-h-[600px]"
+					className = {`tw-flex tw-flex-col ${CARD_BACKGROUND_COLOR} tw-min-h-[600px]`}
 				>
 					<div>
 						<StatusHeader 

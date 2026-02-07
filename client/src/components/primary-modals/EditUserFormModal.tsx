@@ -7,6 +7,8 @@ type Props = {
 
 export const EditUserFormModal = ({userId}: Props) => {
 	return (
-		<EditUserForm isAccountsPage={false} isChangePassword={false} userId={userId}/>
+		<div className="tw-w-full lg:tw-w-1/2">
+			<EditUserForm isAccountsPage={false} isChangePassword={false} userId={userId}/>
+		</div>
 	)
 }

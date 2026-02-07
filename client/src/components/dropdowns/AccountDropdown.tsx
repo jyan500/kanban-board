@@ -16,7 +16,13 @@ import { IconBell } from "../icons/IconBell"
 import { IconAccount } from "../icons/IconAccount"
 import { IconBuildingUser } from "../icons/IconBuildingUser"
 import { IconLogout } from "../icons/IconLogout"
+import { IconDarkMode } from "../icons/IconDarkMode"
+import { IconLightMode } from "../icons/IconLightMode"
 import { TextIconRow } from "../page-elements/TextIconRow"
+import { setDarkMode } from "../../slices/darkModeSlice"
+import { useDarkMode } from "../../hooks/useDarkMode"
+import { STANDARD_DROPDOWN_ITEM, STANDARD_HOVER } from "../../helpers/constants"
+import { useEditOwnUserPreferenceMutation } from "../../services/private/userProfile"
 
 type Props = {
 	isTemp: boolean
@@ -29,10 +35,14 @@ type Props = {
 export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp, numNotifications, closeDropdown, onLogout}: Props, ref) => {
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
+	const { isDarkMode } = useAppSelector((state) => state.darkMode)
 	const { userProfile } = useAppSelector((state) => state.userProfile)
 	const { userRoleLookup } = useAppSelector((state) => state.userRole)
 	const userRole = userProfile && userRoleLookup ? userRoleLookup[userProfile?.userRoleId] : null
 	const isAdminOrBoardAdmin = userRole && (userRole === "ADMIN" || userRole === "BOARD_ADMIN")
+	const [ editUserOwnPreference, {isLoading, error} ] = useEditOwnUserPreferenceMutation()
+
+	useDarkMode("account-dropdown", isDarkMode)
 
 	const options = {
 		"Account": {
@@ -42,7 +52,35 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 				navigate(isTemp ? `${TEMP}${ACCOUNT}` : ACCOUNT)
 			}
 		},
-		
+		...(isDarkMode ? {
+			"Light Mode": {
+				text: "Switch to Light Mode",
+				icon: <IconLightMode/>,
+				onClick: async () => {
+					try {
+						await editUserOwnPreference({isDarkMode: false}).unwrap()
+						dispatch(setDarkMode({isDarkMode: false}))
+					}
+					catch (e){
+
+					}
+				}
+			}
+		} : {
+			"Dark Mode": {
+				text: "Switch to Dark Mode",
+				icon: <IconDarkMode/>,
+				onClick: async () => {
+					try {
+						await editUserOwnPreference({isDarkMode: true}).unwrap()
+						dispatch(setDarkMode({isDarkMode: true}))
+					}
+					catch (e){
+
+					}
+				}
+			}
+		}),
 		...(userProfile?.isActive && !isTemp ? {
 			"Notifications": {
 				text: "Notifications",
@@ -71,13 +109,13 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 
 
 	return (
-		<Dropdown closeDropdown={closeDropdown} ref = {ref} className = "lg:!tw-w-96 !tw-w-92">
+		<Dropdown id={"account-dropdown"} closeDropdown={closeDropdown} ref = {ref} className = "lg:!tw-w-96 !tw-w-92">
 			<ul>
 				<li className = "tw-border-b tw-border-gray-200 tw-flex tw-flex-row tw-items-center tw-gap-x-4 tw-px-4 tw-py-2">
 					<Avatar userInitials={getUserInitials(userProfile)} imageUrl = {userProfile?.imageUrl} size = "m" className = "tw-rounded-full"/>
 					<div className = "tw-flex tw-flex-col">
 						<h3 className = "tw-m-0 tw-font-semibold">{displayUser(userProfile)}</h3>
-						<p className = "tw-text-gray-700">{userProfile?.email}</p>
+						<p className = "dark:tw-text-white tw-text-gray-700">{userProfile?.email}</p>
 					</div>
 				</li>
 				{Object.values(options).map((option) => {
@@ -89,9 +127,11 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 									return 
 								}
 								option.onClick()
-								closeDropdown()
+								if (option.text !== "Switch to Light Mode" && option.text !== "Switch to Dark Mode"){
+									closeDropdown()
+								}
 							}}
-							className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+							className={STANDARD_DROPDOWN_ITEM}
 							role="menuitem"
 						>
 						{

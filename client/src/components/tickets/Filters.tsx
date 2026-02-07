@@ -18,6 +18,8 @@ import { setFilters } from "../../slices/ticketFilterSlice"
 import { toggleShowSecondaryModal, setSecondaryModalProps, setSecondaryModalType } from "../../slices/secondaryModalSlice"
 import { LoadingButton } from "../page-elements/LoadingButton"
 import { Button } from "../page-elements/Button"
+import { PLACEHOLDER_COLOR } from "../../helpers/constants"
+import { Label } from "../page-elements/Label"
 
 interface FormValues {
 	statusId: OptionType
@@ -126,123 +128,125 @@ export const Filters = () => {
 	}
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-2">
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-ticket-type">Ticket Type</label>
-				<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
-					<Select 
-						id={"filters-ticket-type"}
-						options={ticketTypesForSelect}
-						defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
-						onSelect={(selectedOption: {label: string, value: string} | null) => {
-							onChange(selectedOption) 	
-						}}
-					/>
-				)}>
-				</Controller>
-			</div>
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-ticket-priority">Priority</label>
-				<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
-					<Select 
-						id={"filters-ticket-priority"}
-						options={prioritiesForSelect}
-						defaultValue={watch("priorityId") ?? {value: "", label: ""}}
-						onSelect={(selectedOption: {label: string, value: string} | null) => {
-							onChange(selectedOption) 	
-						}}
-					/>
-				)}>
-				</Controller>
-			</div>
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-ticket-status">Status</label>
-				<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
-					<Select 
-						id={"filters-ticket-status"}
-						options={statusesForSelect}
-						defaultValue={watch("statusId") ?? {value: "", label: ""}}
-						onSelect={(selectedOption: {label: string, value: string} | null) => {
-							onChange(selectedOption) 	
-						}}
-					/>
-				)}>
-				</Controller>
-			</div>
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-ticket-board">Board</label>
-				{
-					!isLoading ? (
-						<Controller
-							name={"board"}
-							control={control}
-							render={({ field: { onChange, value, name, ref } }) => (
-								<AsyncSelect 
-									id={"filters-ticket-board"}
-									endpoint={BOARD_URL} 
-									urlParams={{}} 
-									defaultValue={watch("board") ?? {value: "", label: ""}}
-									className={"tw-w-64"}
-									onSelect={(selectedOption: {label: string, value: string} | null) => {
-										onChange(selectedOption) 	
-									}}
-								/>
-							)}
+		<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-4">
+			<div className = "tw-flex tw-flex-col tw-gap-y-2">
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-ticket-type">Ticket Type</Label>
+					<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
+						<Select 
+							id={"filters-ticket-type"}
+							options={ticketTypesForSelect}
+							defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
+							onSelect={(selectedOption: {label: string, value: string} | null) => {
+								onChange(selectedOption) 	
+							}}
 						/>
-					) : (
-						<LoadingSkeleton className= "tw-bg-gray-200" width = "tw-w-64" height="tw-h-10"/>	
-					)
-				}
-			</div>
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-ticket-sprint">Sprint</label>
-				{
-					!isSprintLoading ? (
-						<Controller
-							name={"sprint"}
-							control={control}
-							render={({ field: { onChange, value, name, ref } }) => (
-								<AsyncSelect 
-									id={"filters-ticket-sprint"}
-									endpoint={SPRINT_URL} 
-									urlParams={{"searchBy": "name"}} 
-									defaultValue={watch("sprint") ?? {value: "", label: ""}}
-									className={"tw-w-64"}
-									onSelect={(selectedOption: {label: string, value: string} | null) => {
-										onChange(selectedOption) 	
-									}}
-								/>
-							)}
+					)}>
+					</Controller>
+				</div>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-ticket-priority">Priority</Label>
+					<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
+						<Select 
+							id={"filters-ticket-priority"}
+							options={prioritiesForSelect}
+							defaultValue={watch("priorityId") ?? {value: "", label: ""}}
+							onSelect={(selectedOption: {label: string, value: string} | null) => {
+								onChange(selectedOption) 	
+							}}
 						/>
-					) : (
-						<LoadingSkeleton className= "tw-bg-gray-200" width = "tw-w-64" height="tw-h-10"/>	
-					)
-				}
-			</div>
-			<div className = "tw-flex tw-flex-col">
-				<label className = "label" htmlFor = "filters-assignee">Assignee</label>
-				{
-					!isUserLoading ? (
-						<Controller
-							name={"assignedToUser"}
-							control={control}
-							render={({ field: { onChange, value, name, ref } }) => (
-								<AsyncSelect 
-									id={"filters-assignee"}
-									endpoint={USER_PROFILE_URL} 
-									urlParams={{forSelect: true, includeUnassigned: true}} 
-									defaultValue={watch("assignedToUser") ?? {value: "", label: ""}}
-									className={"tw-w-64"}
-									onSelect={(selectedOption: {label: string, value: string} | null) => {
-										onChange(selectedOption) 	
-									}}
-								/>
-							)}
+					)}>
+					</Controller>
+				</div>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-ticket-status">Status</Label>
+					<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
+						<Select 
+							id={"filters-ticket-status"}
+							options={statusesForSelect}
+							defaultValue={watch("statusId") ?? {value: "", label: ""}}
+							onSelect={(selectedOption: {label: string, value: string} | null) => {
+								onChange(selectedOption) 	
+							}}
 						/>
-					) : (
-						<LoadingSkeleton className= "tw-bg-gray-200" width = "tw-w-64" height="tw-h-10"/>	
-					)
-				}
+					)}>
+					</Controller>
+				</div>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-ticket-board">Board</Label>
+					{
+						!isLoading ? (
+							<Controller
+								name={"board"}
+								control={control}
+								render={({ field: { onChange, value, name, ref } }) => (
+									<AsyncSelect 
+										id={"filters-ticket-board"}
+										endpoint={BOARD_URL} 
+										urlParams={{}} 
+										defaultValue={watch("board") ?? {value: "", label: ""}}
+										className={"tw-w-64"}
+										onSelect={(selectedOption: {label: string, value: string} | null) => {
+											onChange(selectedOption) 	
+										}}
+									/>
+								)}
+							/>
+						) : (
+							<LoadingSkeleton className= {PLACEHOLDER_COLOR} width = "tw-w-64" height="tw-h-10"/>	
+						)
+					}
+				</div>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-ticket-sprint">Sprint</Label>
+					{
+						!isSprintLoading ? (
+							<Controller
+								name={"sprint"}
+								control={control}
+								render={({ field: { onChange, value, name, ref } }) => (
+									<AsyncSelect 
+										id={"filters-ticket-sprint"}
+										endpoint={SPRINT_URL} 
+										urlParams={{"searchBy": "name"}} 
+										defaultValue={watch("sprint") ?? {value: "", label: ""}}
+										className={"tw-w-64"}
+										onSelect={(selectedOption: {label: string, value: string} | null) => {
+											onChange(selectedOption) 	
+										}}
+									/>
+								)}
+							/>
+						) : (
+							<LoadingSkeleton className= {PLACEHOLDER_COLOR} width = "tw-w-64" height="tw-h-10"/>	
+						)
+					}
+				</div>
+				<div className = "tw-flex tw-flex-col tw-gap-y-2">
+					<Label htmlFor = "filters-assignee">Assignee</Label>
+					{
+						!isUserLoading ? (
+							<Controller
+								name={"assignedToUser"}
+								control={control}
+								render={({ field: { onChange, value, name, ref } }) => (
+									<AsyncSelect 
+										id={"filters-assignee"}
+										endpoint={USER_PROFILE_URL} 
+										urlParams={{forSelect: true, includeUnassigned: true}} 
+										defaultValue={watch("assignedToUser") ?? {value: "", label: ""}}
+										className={"tw-w-64"}
+										onSelect={(selectedOption: {label: string, value: string} | null) => {
+											onChange(selectedOption) 	
+										}}
+									/>
+								)}
+							/>
+						) : (
+							<LoadingSkeleton className={PLACEHOLDER_COLOR} width = "tw-w-64" height="tw-h-10"/>	
+						)
+					}
+				</div>
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				<LoadingButton type={"submit"} text={"Submit"}/>	

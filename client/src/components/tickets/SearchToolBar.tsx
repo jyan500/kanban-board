@@ -52,7 +52,7 @@ export const SearchToolBar = ({
 	const {register, reset, getValues, control, watch, formState: {errors}} = methods
 
 	return (
-		<div className = "tw-flex tw-flex-col tw-gap-y-2">
+		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-items-center lg:tw-gap-x-2">
 				<FormProvider {...methods}>
 					<form onSubmit={(e) => {
@@ -66,7 +66,6 @@ export const SearchToolBar = ({
 										<Select 
 											options={searchOptions}
 											clearable={false}
-											className={"!tw-w-full lg:!tw-w-36"}
 											hideIndicatorSeparator={true}
 											searchable={false}
 											defaultValue={watch("searchBy") ? {value: watch("searchBy"), label: searchOptions.find((option: OptionType) => option.value === watch("searchBy"))?.label ?? ""} : {value: "", label: ""}}

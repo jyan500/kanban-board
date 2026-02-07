@@ -1,5 +1,6 @@
 import React from "react"
 import { IconButton } from "../page-elements/IconButton"
+import { SECONDARY_TEXT } from "../../helpers/constants"
 
 interface Props {
 	currentStep: number
@@ -12,7 +13,7 @@ interface Props {
 
 export const BulkActionsFormStepIndicator = ({currentStep, setStep, step, text, Icon, disabled}: Props) => {
 	return (
-		<li className = {`${step === currentStep ? "tw-font-bold" : ""} tw-flex tw-flex-row tw-items-center tw-gap-x-2`}><IconButton disabled={disabled} className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2" onClick={() => {
+		<li className = {`${step === currentStep ? "tw-font-bold" : ""} ${SECONDARY_TEXT} tw-flex tw-flex-row tw-items-center tw-gap-x-2`}><IconButton disabled={disabled} className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2" onClick={() => {
 			if (currentStep >= step){
 				setStep(step)
 			}

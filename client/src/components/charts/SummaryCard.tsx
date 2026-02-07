@@ -1,5 +1,14 @@
 import React from "react"
 import { Link } from "react-router-dom"
+import { 
+    CELL_BACKGROUND, 
+    NESTED_TABLE_BACKGROUND, 
+    PRIMARY_TEXT, 
+    ICON_CELL_BACKGROUND,
+    STANDARD_BORDER, 
+    SECONDARY_TEXT, 
+    STANDARD_HOVER 
+} from "../../helpers/constants"
 
 interface Props {
     icon: React.ReactNode
@@ -11,14 +20,14 @@ interface Props {
 
 export const SummaryCard = ({icon, link, header, subHeader, children}: Props) => {
     return (
-        <Link to={link} className="hover:tw-bg-gray-100 tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
+        <Link to={link} className={`${STANDARD_HOVER} ${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
             <div className="tw-flex tw-items-start tw-gap-3">
-                <div className="tw-p-2 tw-bg-gray-100 tw-rounded">
+                <div className={`tw-p-2 ${ICON_CELL_BACKGROUND} tw-rounded`}>
                     {icon}
                 </div>
                 <div>
-                    <div className="tw-text-2xl tw-font-semibold">{header}</div>
-                    <div className="tw-text-sm tw-text-gray-500">{subHeader}</div>
+                    <div className={`${PRIMARY_TEXT} tw-text-2xl tw-font-semibold`}>{header}</div>
+                    <div className={`tw-text-sm ${SECONDARY_TEXT}`}>{subHeader}</div>
                 </div>
                 {children}
             </div>

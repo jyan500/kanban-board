@@ -16,6 +16,7 @@ import { SearchBar } from "../../components/SearchBar"
 import { RowContentLoading } from "../../components/page-elements/RowContentLoading"
 import { Button } from "../../components/page-elements/Button"
 import { useBulkEditToolbar } from "../../contexts/BulkEditToolbarContext"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 type RegFormValues = {
 	regQuery: string
@@ -68,9 +69,9 @@ const UserForm = ({filters}: UserFormProps) => {
 
 	return (
 		isUserProfilesLoading ? <RowContentLoading height={"tw-h-[400px]"}/> : (
-			<div className = "tw-flex tw-flex-col tw-gap-y-4">
+			<div className = {`tw-flex tw-flex-col tw-gap-y-4`}>
 				<div>
-					<h1>Users</h1>
+					<h1 className={PRIMARY_TEXT}>Users</h1>
 				</div>
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
 					<FormProvider {...methods}>
@@ -163,7 +164,7 @@ const RegForm = ({filters}: RegFormProps) => {
 		isRegistrationRequestsLoading ? <RowContentLoading height={"tw-h-[400px]"}/> : (
 			<div className = "tw-flex tw-flex-col tw-gap-y-4">
 				<div>
-					<h1>Registration Requests</h1>
+					<h1 className={PRIMARY_TEXT}>Registration Requests</h1>
 				</div>
 				<div className = "tw-flex tw-flex-row tw-gap-x-2">
 					<FormProvider {...methods}>

@@ -15,6 +15,7 @@ import { withUrlParams } from "../../helpers/functions"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { Button } from "../../components/page-elements/Button"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 type FormValues = {
 	query?: string
@@ -63,7 +64,7 @@ export const Boards = () => {
 	return (
 		<div className = "tw-space-y-4">
 			<div>
-				<h1>Boards</h1>
+				<h1 className={PRIMARY_TEXT}>Boards</h1>
 			</div>
 			{isLoading ? 
 			<LoadingSkeleton width="tw-w-full" height="tw-h-84">

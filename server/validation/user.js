@@ -1,6 +1,6 @@
 const { body, param } = require("express-validator")
 const { checkEntityExistsIn, validateUniqueOrgEmail, validateUniqueUserEmail, validatePasswordAndConfirmation } = require("./helper")
-const { BULK_INSERT_LIMIT } = require("../constants")
+const { BULK_INSERT_LIMIT, FAILED_TO_LOGIN_MESSAGE } = require("../constants")
 const db = require("../db/db")
 const config = require("../config")
 const bcrypt = require("bcrypt")
@@ -29,6 +29,11 @@ const organizationUserRegisterValidator = [
 ]
 
 const editUserValidator = (action) => {
+	if (action === "editUserPreference"){
+		return [
+			body("is_dark_mode").isBoolean()
+		]
+	}
 	let validationRules = [
 		body("first_name").notEmpty().withMessage("First Name is required"),
 		body("last_name").notEmpty().withMessage("Last Name is required"),
@@ -41,6 +46,7 @@ const editUserValidator = (action) => {
 			body("user_role_id").notEmpty().withMessage("user_role_id is required").custom(async (value, {req}) => await checkEntityExistsIn("userRole", value, [{col: "id", value: value}], "user_roles")),
 		]
 	}
+
 	if (action === "editOwnUser"){
 		validationRules = [
 			...validationRules,
@@ -102,7 +108,7 @@ const loginValidator = [
 		return new Promise((resolve, reject) => {
 			db("users").where("email", req.body.email).then((res) => {
 				if (res?.length === 0){
-					reject(new Error(`User with email ${req.body.email} could not be found`))
+					reject(new Error(FAILED_TO_LOGIN_MESSAGE))
 				}
 				resolve(true)
 			})	
@@ -162,6 +168,7 @@ module.exports = {
 	registerValidator: editUserValidator("register"),
 	editUserValidator: editUserValidator("adminEditUser"),
 	editOwnUserValidator: editUserValidator("editOwnUser"),
+	editOwnUserPreferenceValidator: editUserValidator("editUserPreference"),
 	validateUserBoardFilterGet: userBoardFilterValidator("get"),
 	validateUserBoardFilterUpdate: userBoardFilterValidator("update"),
 	forgotPasswordValidator,

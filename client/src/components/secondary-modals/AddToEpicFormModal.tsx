@@ -9,6 +9,7 @@ import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps
 import { Toast } from "../../types/common"
 import { v4 as uuidv4 } from "uuid"
 import { Button } from "../page-elements/Button"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 type Props = {
 	childTicketId: number | string | undefined
@@ -76,7 +77,7 @@ export const AddToEpicFormModal = ({childTicketId}: Props) => {
 
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
-			<p className = "tw-font-bold">Add To Epic</p>		
+			<p className = {`${PRIMARY_TEXT} tw-font-bold`}>Add To Epic</p>		
 			<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>
 				<Controller
 					name={"parentTicketId"}

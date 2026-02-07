@@ -19,6 +19,8 @@ import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../placeholders/RowPlaceholder"
 import { HOME } from "../../helpers/routes"
 import { Button } from "../page-elements/Button"
+import { Label } from "../page-elements/Label"
+import { PRIMARY_TEXT } from "../../helpers/constants"
 
 export const SwitchOrganizationForm = () => {
 	const dispatch = useAppDispatch()
@@ -58,12 +60,12 @@ export const SwitchOrganizationForm = () => {
 				<LoadingSkeleton width="tw-w-full" height = "tw-h-84">
 					<RowPlaceholder/>	
 				</LoadingSkeleton> : (
-					<>
+					<div className="tw-flex tw-flex-col tw-gap-y-2">
 						<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-							<Avatar isOrg={true} size = "s" className = {`${organization?.imageUrl ? "tw-rounded-full" : ""}`} imageUrl={organization?.imageUrl}/>
-							<p className = "tw-font-medium">{userProfile?.organizationName}</p>
+							<Avatar isOrg={true} size = "s" className = {`${PRIMARY_TEXT} ${organization?.imageUrl ? "tw-rounded-full" : ""}`} imageUrl={organization?.imageUrl}/>
+							<p className = {`${PRIMARY_TEXT} tw-font-medium`}>{userProfile?.organizationName}</p>
 						</div>
-						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+						<div className = "tw-flex tw-flex-col tw-gap-y-4">
 							<AsyncSelect 
 								ref={selectRef}
 								cacheKey={cacheKey} 
@@ -80,7 +82,7 @@ export const SwitchOrganizationForm = () => {
 								<Button theme="primary" onClick={switchOrganization}>Switch Organization</Button>
 							</div>
 						</div>
-					</>
+					</div>
 				)
 			}
 		</>

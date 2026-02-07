@@ -8,6 +8,7 @@ import { TabButton } from "./page-elements/TabButton"
 import { TicketActivity } from "./TicketActivity"
 import { IconSparkle } from "./icons/IconSparkle" 
 import { setSecondaryModalType, setSecondaryModalProps, toggleShowSecondaryModal } from "../slices/secondaryModalSlice"
+import { PRIMARY_TEXT } from "../helpers/constants"
 
 type Props = {
 	currentTicketId: number
@@ -31,16 +32,16 @@ export const ActivityContainer = ({
 	const [isActive, setIsActive] = useState<number>(0)
 	const dispatch = useAppDispatch()
 return (
-		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2">
+		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-2">
-				<p className = "tw-font-semibold">Activity</p>
+				<p className = {`${PRIMARY_TEXT} tw-font-semibold`}>Activity</p>
 				<button onClick={() => {
 					dispatch(setSecondaryModalType("TICKET_AI_FEATURES_MODAL"))
 					dispatch(setSecondaryModalProps({ticketId: currentTicketId ?? "", loadSmartSummary: true}))
 					dispatch(toggleShowSecondaryModal(true))
 				}} className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
-					<IconSparkle className = "tw-text-light-purple tw-ml-3 --m-icon"/>
-					<small className = "tw-text-light-purple tw-font-semibold">Smart Summary</small>
+					<IconSparkle className = {`dark:tw-text-lavender tw-text-light-purple tw-ml-3 --m-icon`}/>
+					<small className = "dark:tw-text-lavender tw-text-light-purple tw-font-semibold">Smart Summary</small>
 				</button>
 			</div>
 			<div className = "tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">

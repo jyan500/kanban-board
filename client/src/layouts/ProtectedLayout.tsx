@@ -28,9 +28,12 @@ import { setNotificationTypes } from "../slices/notificationTypeSlice"
 import { UserRole } from "../types/common" 
 import { TEMP, ACCOUNT, LOGIN } from "../helpers/routes"
 import { BulkEditToolbarProvider } from "../contexts/BulkEditToolbarContext"
+import { useDarkMode } from "../hooks/useDarkMode"
+import { setDarkMode } from "../slices/darkModeSlice"
 
 const ProtectedLayout = () => {
 	const {token, isTemp} = useAppSelector((state) => state.auth)	
+	const { isDarkMode } = useAppSelector((state) => state.darkMode)
 	const dispatch = useAppDispatch()
     const {data: userProfileData, isFetching: isUserProfileFetching, isError: isUserProfileError } = useGetUserProfileQuery() 
     const {data: statusData, isLoading: isStatusDataLoading} = useGetStatusesQuery({})
@@ -51,11 +54,16 @@ const ProtectedLayout = () => {
     	isNotificationTypeDataLoading
     )
 
+
+	// use effect hook for dark mode
+	useDarkMode("protected-main", isDarkMode)
+
     useEffect(() => {
         // Retrieve user on startup
         if (token){
         	if (userProfileData){
 	        	dispatch(setUserProfile({userProfile: userProfileData}))
+				dispatch(setDarkMode({isDarkMode: userProfileData.isDarkMode ?? false}))
 	        }
 	        if (ticketTypesData){
 	        	dispatch(setTicketTypes({ticketTypes: ticketTypesData}))	
@@ -92,7 +100,7 @@ const ProtectedLayout = () => {
 	
 	return (
 		<BulkEditToolbarProvider>
-			<div>
+			<div className = "dark:tw-bg-dark-mode-gradient" id = "protected-main">
 				<SideBar/>
 				<div className = "tw-flex tw-flex-col tw-gap-y-4">
 					<div className = "tw-px-4 md:tw-px-16 tw-w-full tw-min-h-screen">

@@ -1,6 +1,7 @@
 import { PieChartItem } from "../../types/common"
 import { Link } from "react-router-dom"
 import { TICKETS } from "../../helpers/routes"
+import { SECONDARY_TEXT } from "../../helpers/constants"
 
 interface Props {
     data: PieChartItem
@@ -14,9 +15,9 @@ export const ColorKeyRow = ({data, boardId, searchKey}: Props) => {
             className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
             <div className = "tw-w-3 tw-h-3 tw-rounded-sm" style={{backgroundColor: data.color}}></div>
             {boardId && searchKey ? 
-                <Link to={`${TICKETS}?boardId=${boardId}&${searchKey}=${data.id}`}><span className = "tw-text-gray-700">{data.name}: {data.value}</span></Link>
+                <Link to={`${TICKETS}?boardId=${boardId}&${searchKey}=${data.id}`}><span className={SECONDARY_TEXT}>{data.name}: {data.value}</span></Link>
                 :
-                <span className = "tw-text-gray-700">{data.name}: {data.value}</span>}
+                <span className = {`${SECONDARY_TEXT}`}>{data.name}: {data.value}</span>}
         </div>
     )
 }

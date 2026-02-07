@@ -19,6 +19,7 @@ import { FiPlus as PlusIcon } from "react-icons/fi";
 import { IconPlus } from "../icons/IconPlus"
 import { TICKETS } from "../../helpers/routes"
 import { LoadingSpinner } from "../LoadingSpinner"
+import { STANDARD_DROPDOWN_ITEM, STANDARD_DROPDOWN_ITEM_NO_HOVER } from "../../helpers/constants"
 
 type Props = {
 	closeDropdown: () => void
@@ -141,7 +142,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 									}
 									options[option as keyof typeof options]?.()
 								}}
-								className="tw-border-b tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+								className={`${STANDARD_DROPDOWN_ITEM}`}
 								role="menuitem"
 							>
 								<div className = "tw-flex tw-flex-row tw-justify-between tw-items-center tw-gap-x-2">
@@ -155,7 +156,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 					}
 				})}
 				<li
-					className="tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+					className={STANDARD_DROPDOWN_ITEM_NO_HOVER}
 					role = "menuitem"
 				>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2 tw-py-1">
@@ -178,7 +179,7 @@ export const WatchMenuDropdown = React.forwardRef<HTMLDivElement, Props>(({isMob
 				{
 					isAdminOrBoardAdmin || isTicketReporter ? 
 					<li
-						className="tw-border-t tw-block hover:tw-bg-gray-50 tw-px-4 tw-py-2 tw-text-sm tw-text-gray-700 tw-hover:bg-gray-100 tw-hover:text-gray-900"
+						className={`${STANDARD_DROPDOWN_ITEM} tw-border-t`}
 						onClick={() => options["Add Watchers"]?.()}
 						role = "menuitem"
 					>

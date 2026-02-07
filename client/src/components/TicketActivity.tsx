@@ -6,6 +6,7 @@ import { TextAreaDisplay } from "./page-elements/TextAreaDisplay"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps } from "../slices/secondaryModalSlice"
 import { DeleteTicketActivityWarningProps } from "./secondary-modals/DeleteTicketActivityWarning"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../helpers/constants"
 
 type Props = {
 	ticketActivities?: Array<TicketActivityType>
@@ -22,13 +23,13 @@ export const TicketActivity = ({currentTicketId, ticketActivities}: Props) => {
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			{
 				ticketActivities?.map((activity: TicketActivityType) => (
-					<ProfileActivityRow data={activity} additionalHeaderContent={<span>Logged <span className = "tw-font-bold">{convertMinutesToTimeDisplay(activity.minutesSpent, false, true)}</span></span>} >
+					<ProfileActivityRow data={activity} additionalHeaderContent={<span className={PRIMARY_TEXT}>Logged <span className = "tw-font-bold">{convertMinutesToTimeDisplay(activity.minutesSpent, false, true)}</span></span>} >
 						<>
 							<TextAreaDisplay rawHTMLString={activity.description}/>
 							{
 								activity.userId === userProfile?.id ? (
 									<div className = "tw-flex tw-flex-row tw-gap-x-2">
-										<button className = "tw-font-bold tw-text-secondary" onClick={() => {
+										<button className = {`tw-font-bold tw-text-secondary ${SECONDARY_TEXT}`} onClick={() => {
 											dispatch(toggleShowSecondaryModal(true))
 											dispatch(setSecondaryModalProps({ticketId: currentTicketId ?? undefined, ticketActivityId: activity.id}))
 											dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
@@ -37,7 +38,7 @@ export const TicketActivity = ({currentTicketId, ticketActivities}: Props) => {
 											dispatch(toggleShowSecondaryModal(true))
 											dispatch(setSecondaryModalProps<DeleteTicketActivityWarningProps>({ticketId: currentTicketId ?? undefined, activityId: activity.id}))
 											dispatch(setSecondaryModalType("DELETE_TICKET_ACTIVITY_WARNING"))
-										}} className = "tw-font-bold tw-text-secondary">Delete</button>
+										}} className = {`tw-font-bold ${SECONDARY_TEXT}`}>Delete</button>
 									</div>
 								) : null
 							}

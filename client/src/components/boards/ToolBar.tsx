@@ -15,7 +15,7 @@ import { useGetUserProfilesQuery } from "../../services/private/userProfile"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { useClickOutside } from "../../hooks/useClickOutside" 
-import { MD_BREAKPOINT, GROUP_BY_OPTIONS } from "../../helpers/constants"
+import { MD_BREAKPOINT, GROUP_BY_OPTIONS, PRIMARY_TEXT } from "../../helpers/constants"
 import { setSearchTerm } from "../../slices/boardFilterSlice"
 import { IconButton } from "../page-elements/IconButton"
 import { IconGear } from "../icons/IconGear"
@@ -24,6 +24,7 @@ import { FilterButton } from "../page-elements/FilterButton"
 import { Button } from "../page-elements/Button"
 import { displayUser, getUserInitials } from "../../helpers/functions"
 import { Select } from "../page-elements/Select"
+import { Label } from "../page-elements/Label" 
 
 type FormValues = {
 	query: string	
@@ -141,7 +142,7 @@ export const ToolBar = () => {
 					}}>Add Ticket</Button>
 				</div>
 				<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-					<label className = "label" htmlFor="board-group-by">Group By</label>
+					<Label htmlFor="board-group-by">Group By</Label>
 					{/* this fixes a misalignment issue due to the label class having a slight margin top */}
 					<div className={"!tw-mt-0 !tw-w-40"}>
 						<Select
@@ -167,7 +168,7 @@ export const ToolBar = () => {
 				<div className = "tw-relative tw-inline-block">
 					<button ref = {buttonRef} onClick={(e) => {
 						setShowDropdown(!showDropdown)
-					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconGear className = "tw-w-6 tw-h-6"/></button>
+					}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconGear className = {`${PRIMARY_TEXT} tw-w-6 tw-h-6`}/></button>
 					{
 						showDropdown ? <BoardToolbarDropdown
 							ref={menuDropdownRef}

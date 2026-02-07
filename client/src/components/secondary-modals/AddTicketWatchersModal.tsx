@@ -21,6 +21,7 @@ import { displayUser } from "../../helpers/functions"
 import { LoadingSpinner } from "../LoadingSpinner"
 import { TICKETS } from "../../helpers/routes"
 import { LoadingButton } from "../page-elements/LoadingButton"
+import { PRIMARY_TEXT } from "../../helpers/constants";
 
 type Props = {
 	ticketId: number | undefined
@@ -117,7 +118,7 @@ export const AddTicketWatchersModal = ({ticketAssigneeId, ticketId}: Props) => {
 	return (
 		<>
 			<div className = "tw-flex tw-flex-col lg:tw-w-[80%] tw-w-full tw-gap-y-4 tw-p-4">
-				<p className = "tw-font-bold">Add Watchers</p>		
+				<p className = {`${PRIMARY_TEXT} tw-font-bold`}>Add Watchers</p>		
 				{!isTicketWatchersLoading ? (
 					<>
 					<form className = "tw-flex tw-flex-col tw-gap-y-2" onSubmit={handleSubmit(onSubmit)}>

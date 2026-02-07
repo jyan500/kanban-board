@@ -10,6 +10,7 @@ import { IconArrowDown } from "../icons/IconArrowDown"
 import { IconArrowUp } from "../icons/IconArrowUp"
 import { Button } from "../page-elements/Button"
 import { Select } from "../page-elements/Select"
+import { SECONDARY_TEXT } from "../../helpers/constants"
 
 type Props = {
 	title: string
@@ -32,9 +33,9 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage, triggerS
 	return (
 		<div className = "tw-w-full tw-flex tw-flex-col">
 			{/* Top */}
-			<h3>{title}</h3>
+			<h3 className = "dark:tw-text-white">{title}</h3>
 			{/* Middle selection area */}
-			<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y tw-border-gray-200">
+			<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-row tw-flex-wrap tw-gap-x-6 tw-border-y dark:tw-border-gray-700 tw-border-gray-200">
 				<TabButton isActive={isActive === 0} onClick={(e) => {
 					setFilterBy(undefined)
 					setIsActive(0)
@@ -55,7 +56,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage, triggerS
 			<div className = "tw-p-1 lg:tw-p-2 tw-flex tw-flex-col tw-gap-y-2">
 				<div className = "tw-flex tw-flex-row tw-justify-between">
 					<div className = "tw-flex tw-flex-row tw-gap-x-2 tw-items-center">
-						<span className = "tw-text-gray-500">Total:</span> {tickets.pagination.total}
+						<span className = {`${SECONDARY_TEXT}`}>Total:</span> <span className={SECONDARY_TEXT}>{tickets.pagination.total}</span>
 						<Select
 							options={[
 								{label: "Due Date", value: "dueDate"},
@@ -80,7 +81,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage, triggerS
 						: null
 					}
 				</div>
-				<>
+				<div className="tw-flex tw-flex-col tw-gap-y-2">
 					{tickets.data.map((ticket: Ticket) => {
 						return (
 							<Link key={`${title}_${ticket.id}`} to={`${TICKETS}/${ticket.id}`}>
@@ -93,7 +94,7 @@ export const TicketsContainer = ({title, tickets, setFilterBy, setPage, triggerS
 							</Link>
 						)
 					})}
-				</>
+				</div>
 			</div>	
 		</div>
 	)

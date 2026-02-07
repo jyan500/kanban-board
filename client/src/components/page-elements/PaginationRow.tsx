@@ -9,7 +9,7 @@ import { ArrowButton } from "./ArrowButton"
 import { InlineEditButton } from "./InlineEditButton"
 import { IconCheckmark } from "../icons/IconCheckmark"
 import { IconClose } from "../icons/IconClose"
-import { MAX_PAGES_BEFORE_COMPRESS } from "../../helpers/constants"
+import { MAX_PAGES_BEFORE_COMPRESS, SECONDARY_TEXT, STANDARD_BORDER } from "../../helpers/constants"
 
 interface Props {
     showPageNums: boolean 
@@ -101,7 +101,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
                     <div key={`ellipsis-${index}`}>
                         {showInputIndex !== index ? (
                             <button
-                                className="tw-px-2 tw-py-1 tw-border-b tw-border-transparent hover:tw-text-gray-600"
+                                className="tw-px-2 tw-py-1 tw-border-b tw-border-transparent dark:hover:tw-text-gray-200 hover:tw-text-gray-600"
                                 onClick={() => setShowInputIndex(index)}
                             >
                                 ...
@@ -158,11 +158,11 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
         if (!url) {
             return (
                 <button
-                    className={`tw-px-2 tw-py-1 tw-border-b ${isActive ? "tw-font-bold tw-border-gray-800" : "tw-border-transparent"}`}
+                    className={`tw-px-2 tw-py-1 tw-border-b ${isActive ? "tw-font-bold dark:tw-border-gray-100 tw-border-gray-800" : "tw-border-transparent"}`}
                     key={`pagination-page-${pageNum}`}
                     onClick={() => setPage(pageNum)}
                 >
-                    {pageNum}
+                    <span className={SECONDARY_TEXT}>{pageNum}</span>
                 </button>
             )
         }
@@ -174,7 +174,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
 
         return (
             <Link 
-                className={`tw-px-2 tw-py-1 tw-border-b ${isActive ? "tw-font-bold tw-border-gray-800" : "tw-border-transparent"}`}
+                className={`${SECONDARY_TEXT} tw-px-2 tw-py-1 tw-border-b ${isActive ? "tw-font-bold dark:tw-border-gray-100 tw-border-gray-800" : "tw-border-transparent"}`}
                 key={`pagination_page_${pageNum}`} 
                 to={`${url}?${parseURLParams(urlParamsWithPage)}`}
             >
@@ -188,7 +188,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
             {
                 paginationData ? (
                     <>
-                        {showNumResults ? <p>Showing {paginationData.from} - {paginationData.to} out of {paginationData.total} results</p> : null}
+                        {showNumResults ? <p className={`${SECONDARY_TEXT} tw-font-semibold`}>Showing {paginationData.from} - {paginationData.to} out of {paginationData.total} results</p> : null}
                         <div className="tw-flex tw-flex-row tw-items-center tw-gap-x-2">
                             <ArrowButton 
                                 disabled={paginationData?.prevPage == null} 

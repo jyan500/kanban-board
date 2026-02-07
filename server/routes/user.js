@@ -15,7 +15,7 @@ const registrationRequestTemplate = require("../email/templates/registration-req
 const activateAccountTemplate = require("../email/templates/activate-account")
 const passwordResetTemplate = require("../email/templates/password-reset")
 const {sendEmail} = require("../email/email")
-const { EXCEEDED_MESSAGE, DEFAULT_STATUSES } = require("../constants")
+const { FAILED_TO_LOGIN_MESSAGE, EXCEEDED_MESSAGE, DEFAULT_STATUSES } = require("../constants")
 const axios = require("axios")
 const { rateLimitAuth } = require("../middleware/rateLimitMiddleware")
 const HistoryService = require('../services/history-service')
@@ -25,7 +25,7 @@ const historyService = new HistoryService(db)
 router.post("/login", rateLimitAuth, userValidator.loginValidator, handleValidationResult, async (req, res, next) => {
 	try {
 		const user = await db("users").where("email", req.body.email).first()
-		const error = "Failed to login: email, organization or password is incorrect."
+		const error = FAILED_TO_LOGIN_MESSAGE
 		if (!user){
 			res.status(400).json({errors: [error]})
 			return

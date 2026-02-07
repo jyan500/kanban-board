@@ -12,6 +12,7 @@ import { useUpdateUserBoardFiltersMutation } from "../../services/private/userPr
 import { Switch } from "../page-elements/Switch"
 import { SimpleEditor } from "../page-elements/SimpleEditor"
 import { setFilters } from "../../slices/boardFilterSlice"
+import { Label } from "../page-elements/Label"
 
 interface SprintFormProps {
     sprintId?: number;
@@ -148,40 +149,40 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
         <div className="tw-flex tw-flex-col tw-gap-y-2 lg:tw-w-[80%] tw-w-full">
             <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)} className="tw-w-full tw-flex tw-flex-col tw-gap-y-2">
-                    <div className="tw-flex tw-flex-col">
-                        <label className="label" htmlFor="sprint-name">
+                    <div className="tw-flex tw-flex-col tw-gap-y-2">
+                        <Label htmlFor="sprint-name">
                             Name <span className="tw-font-bold tw-text-red-500">*</span>
-                        </label>
+                        </Label>
                         <input id="sprint-name" type="text"
                             {...register("name", registerOptions.name)}
                             className="tw-w-full"
                         />
                         {errors?.name && <small className="--text-alert">{errors.name.message}</small>}
                     </div>
-                    <div className="tw-flex tw-flex-col">
-                        <label className="label" htmlFor="sprint-goal">
+                    <div className="tw-flex tw-flex-col tw-gap-y-2">
+                        <Label htmlFor="sprint-goal">
                             Goal <span className="tw-font-bold tw-text-red-500">*</span>
-                        </label>
+                        </Label>
                         <SimpleEditor
                             registerField={"goal"}
                             registerOptions={registerOptions.goal}
                         />
                         {errors?.goal && <small className="--text-alert">{errors.goal.message}</small>}
                     </div>
-                    <div className="tw-flex tw-flex-col">
-                        <label className="label" htmlFor="sprint-start-date">
+                    <div className="tw-flex tw-flex-col tw-gap-y-2">
+                        <Label htmlFor="sprint-start-date">
                             Start Date <span className="tw-font-bold tw-text-red-500">*</span>
-                        </label>
+                        </Label>
                         <input disabled={sprintInfo?.isCompleted} id="sprint-start-date" type="date"
                             {...register("startDate", registerOptions.startDate)}
                             className="tw-w-full"
                         />
                         {errors?.startDate && <small className="--text-alert">{errors.startDate.message}</small>}
                     </div>
-                    <div className="tw-flex tw-flex-col">
-                        <label className="label" htmlFor="sprint-end-date">
+                    <div className="tw-flex tw-flex-col tw-gap-y-2">
+                        <Label htmlFor="sprint-end-date">
                             End Date <span className="tw-font-bold tw-text-red-500">*</span>
-                        </label>
+                        </Label>
                         <input disabled={sprintInfo?.isCompleted} id="sprint-end-date" type="date"
                             {...register("endDate", registerOptions.endDate)}
                             className="tw-w-full"
@@ -204,7 +205,7 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
                                     />
                                 )}
                             />
-                            <label htmlFor = "apply-sprint-filter" className = "label">Apply this sprint as a default filter</label>
+                        <Label htmlFor = "apply-sprint-filter">Apply this sprint as a default filter</Label>
                         </div> : null
                     }
                     <div>

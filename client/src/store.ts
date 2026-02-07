@@ -20,6 +20,7 @@ import { tooltipReducer } from "./slices/tooltipSlice"
 import { secondaryModalReducer } from "./slices/secondaryModalSlice" 
 import { notificationFilterReducer } from "./slices/notificationFilterSlice"
 import { userRoleReducer } from "./slices/userRoleSlice" 
+import { darkModeReducer } from "./slices/darkModeSlice"
 import { publicApi } from "./services/public"
 import { privateApi } from "./services/private"
 import {
@@ -66,6 +67,7 @@ export const store = configureStore({
 		"tooltip": tooltipReducer,
 		"ticketFilter": ticketFilterReducer,
 		"notificationFilter": notificationFilterReducer,
+		"darkMode": darkModeReducer,
 	},
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: {
 			ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]

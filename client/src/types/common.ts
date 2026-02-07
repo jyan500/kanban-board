@@ -29,6 +29,7 @@ export interface UserProfile {
 	organizationId: number
 	userRoleId: number
 	isActive?: boolean
+	isDarkMode?: boolean
 	organizationName?: string
 	imageUrl?: string
 }

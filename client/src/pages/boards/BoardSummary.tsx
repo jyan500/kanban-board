@@ -4,7 +4,18 @@ import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useNavigate, Link } from "react-router-dom"
 import { BoardSummary as BoardSummaryType, TicketEntityHistory, ProgressBarItem, PieChartItem, UserProfile, Ticket } from "../../types/common"
-import { PRIORITY_COLOR_MAP, TICKET_TYPE_COLOR_MAP } from "../../helpers/constants"
+import { 
+    PRIMARY_TEXT, 
+    SECONDARY_TEXT, 
+    STANDARD_BORDER, 
+    NESTED_TABLE_BACKGROUND, 
+    PIE_CHART_COLOR_MAP, 
+    TABLE_BACKGROUND, 
+    TICKET_TYPE_COLOR_MAP, 
+    STANDARD_HOVER,
+    STANDARD_DROPDOWN_ITEM,
+    TERTIARY_TEXT
+} from "../../helpers/constants"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
 import { HorizontalProgressBarRow } from "../../components/page-elements/HorizontalProgressBarRow"
@@ -95,7 +106,7 @@ export const BoardSummary = () => {
             id: item.priorityId,
             name: priority ? priority.name : `Priority ${item.priorityId}`,
             value: item.totalTickets,
-            color: priority ? PRIORITY_COLOR_MAP[priority.name] : '#999'
+            color: priority ? PIE_CHART_COLOR_MAP[priority.name] : '#999'
         }
     }) ?? []
 
@@ -143,32 +154,32 @@ export const BoardSummary = () => {
         <LoadingSkeleton>
             <RowPlaceholder/>
         </LoadingSkeleton> :
-        <div className="tw-min-h-screen tw-bg-gray-50 tw-flex-col tw-flex xl:tw-flex-row xl:tw-gap-x-4 tw-gap-y-4 tw-p-6">
+        <div className={`${TABLE_BACKGROUND} tw-min-h-screen tw-flex-col tw-flex xl:tw-flex-row xl:tw-gap-x-4 tw-gap-y-4 tw-p-6`}>
             <div className="tw-flex tw-flex-col tw-gap-y-6">
                 {/* Top Stats Cards */}
                 <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 xl:tw-grid-cols-4 tw-gap-4">
                     <SummaryCard 
-                        icon={<IconCircleCheckmark className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        icon={<IconCircleCheckmark className = {`tw-w-5 tw-h-5 tw-text-gray-700`}/>}
                         link={constructTicketLink(data?.ticketsCompleted ?? [])}
                         header={`${data?.ticketsCompleted.length ?? 0} completed`}
                         subHeader={"in the last 7 days"}
                     >
                     </SummaryCard>
                     <SummaryCard
-                        icon={<IconPencil className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        icon={<IconPencil className = "tw-w-5 tw-h-5 tw-text-gray-700"/>}
                         link={constructTicketLink(data?.ticketsUpdated ?? [])}
                         header={`${data?.ticketsUpdated.length ?? 0} updated`}
                         subHeader={"in the last 7 days"}
                     >
                     </SummaryCard>
                     <SummaryCard
-                        icon={<IconPaper className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        icon={<IconPaper className = "tw-w-5 tw-h-5 tw-text-gray-700"/>}
                         link={constructTicketLink(data?.ticketsCreated ?? [])}
                         header={`${data?.ticketsCreated.length ?? 0} created`}
                         subHeader={"in the last 7 days"}
                     />
                     <SummaryCard
-                        icon={<IconCalendar className = "tw-w-5 tw-h-5 tw-text-gray-600"/>}
+                        icon={<IconCalendar className = "tw-w-5 tw-h-5 tw-text-gray-700"/>}
                         link={constructTicketLink(data?.ticketsDue ?? [])}
                         header={`${data?.ticketsDue.length ?? 0} due soon`}
                         subHeader={"in the next 7 days"}
@@ -178,11 +189,11 @@ export const BoardSummary = () => {
                 {/* Main Content Grid */}
                 <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-4">
                     {/* Status Overview */}
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
-                        <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Status overview</h2>
-                        <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
+                    <div className={`${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
+                        <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Status overview</h2>
+                        <p className={`tw-text-sm ${SECONDARY_TEXT} tw-mb-6`}>
                             Get a snapshot of the status of your tickets.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className="tw-text-blue-600 hover:tw-underline">View all tickets</Link>
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>View all tickets</Link>
                         </p>
                         <div className = "tw-space-y-1">
                             <BarChart data={statusData} searchKey={"statusId"} boardId={boardInfo?.id ?? 0}/>
@@ -190,11 +201,11 @@ export const BoardSummary = () => {
                     </div>
 
                     {/* Priority Breakdown */}
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
-                        <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Priority breakdown</h2>
-                        <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
+                    <div className={`${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
+                        <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Priority breakdown</h2>
+                        <p className={`tw-text-sm ${SECONDARY_TEXT} tw-mb-6`}>
                             Get a holistic view of how tickets are being prioritized.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className="tw-text-blue-600 hover:tw-underline">Manage priorities</Link>
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>Manage priorities</Link>
                         </p>
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
                             <PieChartWithKey boardId={boardInfo?.id ?? 0} searchKey={"priorityId"} data={priorityData} total={totalTickets}/>
@@ -202,11 +213,11 @@ export const BoardSummary = () => {
                     </div>
 
                     {/* Team Workload */}
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
-                        <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Team workload</h2>
-                        <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
+                    <div className={`${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
+                        <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Team workload</h2>
+                        <p className={`tw-text-sm ${SECONDARY_TEXT} tw-mb-6`}>
                             Monitor the capacity of your team.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className="tw-text-blue-600 hover:tw-underline">Reassign tickets</Link>
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>Reassign tickets</Link>
                         </p>
 
                         <div className="tw-space-y-3">
@@ -214,7 +225,7 @@ export const BoardSummary = () => {
                                 return (
                                     <div key={index} className = "tw-space-y-1">
                                         <HorizontalProgressBarRow
-                                            icon={item.name !== "Unassigned" ? <Avatar userInitials={item.initials} imageUrl={item.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/> : <IconUser className = "tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6"/>}
+                                            icon={item.name !== "Unassigned" ? <Avatar userInitials={item.initials} imageUrl={item.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/> : <IconUser className = {`${PRIMARY_TEXT} tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6`}/>}
                                             item={item}
                                             link={`${TICKETS}?boardId=${boardInfo?.id ?? 0}&assignedToUser=${item.id ?? "0"}`}
                                             showPercentages={false}
@@ -226,11 +237,11 @@ export const BoardSummary = () => {
                     </div>
 
                     {/* Ticket Types */}
-                    <div className="tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6">
-                        <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Types of tickets</h2>
-                        <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
+                    <div className={`${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
+                        <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Types of tickets</h2>
+                        <p className={`tw-text-sm ${SECONDARY_TEXT} tw-mb-6`}>
                             Get a breakdown of tickets by their types.{' '}
-                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className="tw-text-blue-600 hover:tw-underline">View all tickets</Link>
+                            <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>View all tickets</Link>
                         </p>
 
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
@@ -244,38 +255,46 @@ export const BoardSummary = () => {
                     </div>
                 </div>
             </div>
-            <div className = "tw-flex tw-flex-col tw-gap-y-4 tw-bg-white tw-rounded-lg tw-border tw-border-gray-200 tw-p-6 tw-flex-1">
+            <div className = {`tw-flex tw-flex-col tw-gap-y-4 ${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6 tw-flex-1`}>
                 <div>
-                    <h2 className="tw-text-lg tw-font-semibold tw-mb-2">Recent Activity</h2>
-                    <p className="tw-text-sm tw-text-gray-600 tw-mb-6">
+                    <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Recent Activity</h2>
+                    <p className={`${SECONDARY_TEXT} tw-text-sm tw-text-gray-600 tw-mb-6`}>
                         Stay up to date with what's happening across the space
                     </p>
                 </div>
                 {
-                    !Object.keys(groupedRecentActivity).length ?     
+                    (isBoardActivityLoading ) ?     
                     <LoadingSkeleton>
                         <RowPlaceholder/>
                     </LoadingSkeleton>
                     : 
-                    Object.keys(groupedRecentActivity).map((date, index) => {
-                        return (
-                            <div key={`recent-activity-group-${index}`} className = "tw-flex tw-flex-col tw-gap-y-4">
-                                <p className = "tw-text-sm tw-text-gray-600">{date}</p>
-                                {
-                                    groupedRecentActivity[date].map((history) => {
-                                        const displayName = displayUser(userProfiles?.data.find((user) => user.id === history.changedBy))
-                                        const user = userProfiles?.data?.find((user) => user.id === history.changedBy) ?? null
-                                        return (
-                                            <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center" key = {`recent-activity-${history.historyId}`}>
-                                                <Avatar userInitials={getUserInitials(user)} imageUrl={user?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>
-                                                <Link to={`${TICKETS}/${history.ticketId}`} className = "hover:tw-opacity-70 tw-line-clamp-2">{history.displayString}</Link>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </div>
-                        )
-                    })
+                    (Object.keys(groupedRecentActivity).length ? (
+                        <div className="tw-flex tw-flex-col tw-gap-y-4 tw-min-h-[600px]">
+                            {
+                                Object.keys(groupedRecentActivity).map((date, index) => {
+                                    return (
+                                        <div key={`recent-activity-group-${index}`} className = {`${NESTED_TABLE_BACKGROUND} tw-flex tw-flex-col tw-gap-y-4`}>
+                                            <p className = {`tw-text-sm ${SECONDARY_TEXT}`}>{date}</p>
+                                            {
+                                                groupedRecentActivity[date].map((history) => {
+                                                    const displayName = displayUser(userProfiles?.data.find((user) => user.id === history.changedBy))
+                                                    const user = userProfiles?.data?.find((user) => user.id === history.changedBy) ?? null
+                                                    return (
+                                                        <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center" key = {`recent-activity-${history.historyId}`}>
+                                                            <Avatar userInitials={getUserInitials(user)} imageUrl={user?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>
+                                                            <Link to={`${TICKETS}/${history.ticketId}`} className = {`${PRIMARY_TEXT} tw-line-clamp-2`}>{history.displayString}</Link>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                    ) : (
+                        <p className={SECONDARY_TEXT}>No Recent Activity Found</p>
+                    ))
                 }
                 {
                     !isBoardActivityLoading && boardActivityData?.pagination && Object.keys(groupedRecentActivity).length ? 

@@ -3,20 +3,9 @@ table {
 	width: 100%;
 
 	& td {
-		border-top: 1px solid var(--bs-light-gray);
-		border-bottom: 1px solid var(--bs-light-gray);
 		padding: var(--s-spacing);
 		max-width: 200px;
 		word-break: break-word;
-
-		& a {
-			color: var(--bs-primary);
-			font-weight: bold;
-		}
-
-		& a:hover {
-			opacity: .7;
-		}
 	}
 
 	& th {

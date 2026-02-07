@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { TOOLBAR_Z_INDEX } from "../../helpers/constants"
+import { CELL_BACKGROUND, TABLE_BACKGROUND, TOOLBAR_Z_INDEX } from "../../helpers/constants"
 import { useBulkEditToolbar } from "../../contexts/BulkEditToolbarContext"
 import { BulkEditToolbar } from "./BulkEditToolbar"
 import type { BulkEditToolbarConfig } from "../../contexts/BulkEditToolbarContext"
@@ -27,7 +27,7 @@ export const BottomBulkEditToolbar = () => {
     }, [shouldShow, toolbarConfig])
 
     return (
-        <div className = {`${TOOLBAR_Z_INDEX} tw-border tw-border-gray-300 tw-rounded-md tw-shadow-lg tw-bg-white tw-fixed tw-left-1/2 -tw-translate-x-1/2 tw-flex tw-flex-row tw-max-w-full tw-transition-transform tw-duration-350 tw-ease-out ${
+        <div className = {`${CELL_BACKGROUND} ${TOOLBAR_Z_INDEX} tw-rounded-md tw-shadow-lg tw-fixed tw-left-1/2 -tw-translate-x-1/2 tw-flex tw-flex-row tw-max-w-full tw-transition-transform tw-duration-350 tw-ease-out ${
             shouldShow ? 'tw-bottom-4 tw-translate-y-0' : 'tw-translate-y-full tw-bottom-0'
         }`}>
             {displayConfig && displayConfig.itemIds.length > 0 ? (

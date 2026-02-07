@@ -14,7 +14,7 @@ import { TICKETS } from "../helpers/routes"
 import { addToast } from "../slices/toastSlice"
 import { v4 as uuidv4 } from "uuid"
 import { useScreenSize } from "../hooks/useScreenSize"
-import { LG_BREAKPOINT } from "../helpers/constants"
+import { LG_BREAKPOINT, PRIMARY_TEXT, TERTIARY_TEXT } from "../helpers/constants"
 import { toggleShowSecondaryModal, setSecondaryModalType, setSecondaryModalProps} from "../slices/secondaryModalSlice"
 import { Tooltip } from "./page-elements/Tooltip"
 
@@ -81,7 +81,7 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 					dispatch(toggleShowSecondaryModal(true))
 				}}>
 				<div className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
-					<IconSparkle className = "tw-text-light-purple tw-ml-3 --l-icon"/>
+					<IconSparkle className = "dark:tw-text-lavender tw-text-light-purple tw-ml-3 --l-icon"/>
 				</div>
 			</button>	
 			<div className = "tw-relative tw-inline-block tw-text-left">
@@ -90,10 +90,10 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 					setShowWatchDropdown(!showWatchDropdown)
 				}}>
 					<div className = "tw-flex tw-flex-row tw-gap-x-1 tw-items-center">
-						<IconEye color={"var(--bs-primary"} className = "tw-ml-3 --l-icon"/>
+						<IconEye className = {`${TERTIARY_TEXT} tw-ml-3 --l-icon`}/>
 						{
 							(ticketWatchers && ticketWatchers?.length > 0 ? (
-								<span className = "tw-text-primary">{ticketWatchers.length}</span>
+								<span className = {TERTIARY_TEXT}>{ticketWatchers.length}</span>
 							) : null)
 						}
 					</div>
@@ -114,13 +114,13 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 					animationType: "animation-in"
 				}))
 			}}>
-				<IconShare color = {"var(--bs-primary"} className = "tw-ml-3 --l-icon"/>
+				<IconShare className = {`${TERTIARY_TEXT} tw-ml-3 --l-icon`}/>
 			</button>
 			<div className = "tw-relative tw-inline-block tw-text-left">
 				<button ref = {buttonRef} onClick={(e) => {
 					e.preventDefault()
 					setShowDropdown(!showDropdown)
-				}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu color={"var(--bs-dark-grey)"} className = "tw-ml-3 --l-icon"/></button>
+				}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu className = {`${PRIMARY_TEXT} tw-ml-3 --l-icon`}/></button>
 				{
 					showDropdown ? (
 						<EditTicketFormMenuDropdown closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>

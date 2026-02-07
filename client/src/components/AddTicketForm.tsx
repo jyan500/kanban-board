@@ -27,6 +27,8 @@ import { LoadingButton } from "./page-elements/LoadingButton"
 import { AsyncSelect } from "./AsyncSelect"
 import { Select } from "./page-elements/Select"
 import { SimpleEditor } from "./page-elements/SimpleEditor"
+import { Label } from "./page-elements/Label"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../helpers/constants"
 
 export type FormCommon = {
 	id?: number
@@ -222,16 +224,16 @@ export const AddTicketForm = ({
 	return (
 		<div className = "tw-flex tw-flex-col lg:tw-w-[500px]">
 			<FormProvider {...methods}>
-				<form onSubmit={handleSubmit(propsOnSubmit ?? onSubmit)}>
+				<form className="tw-flex tw-flex-col tw-gap-y-4" onSubmit={handleSubmit(propsOnSubmit ?? onSubmit)}>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-						{title ? <p className = "tw-font-bold">{title}</p> : null}
+						{title ? <p className = {`${PRIMARY_TEXT} tw-font-bold`}>{title}</p> : null}
 						{
-							isBulkAction ? <span className = "tw-text-xs tw-font-semibold">Fill out the fields that you would like to update across all the selected tickets. Blank fields will be unchanged on the selected tickets.</span> : null
+							isBulkAction ? <span className = {`${SECONDARY_TEXT} tw-text-xs tw-font-semibold`}>Fill out the fields that you would like to update across all the selected tickets. Blank fields will be unchanged on the selected tickets.</span> : null
 						}
 						{
 							!isBulkAction ? (
-								<div>
-									<label className = "label" htmlFor="ticket-name">Name</label>
+								<div className = "tw-flex tw-flex-col tw-gap-y-2">
+									<Label htmlFor="ticket-name">Name</Label>
 									<input className = "tw-w-full" id = "ticket-name" type = "text"
 									{...register("name", registerOptions.name)}
 									/>
@@ -239,8 +241,8 @@ export const AddTicketForm = ({
 								</div>
 							) : null
 						}
-						<div>
-							<label className = "label" htmlFor = "ticket-status">Status</label>
+						<div className="tw-flex tw-flex-col tw-gap-y-2">
+							<Label htmlFor = "ticket-status">Status</Label>
 							<Controller name={"statusId"} control={control} render={({field: {onChange}}) => (
 								<Select 
 									id={"ticket-status"}
@@ -260,8 +262,8 @@ export const AddTicketForm = ({
 						</div>
 						{
 							!isBulkAction ? (
-								<div>
-									<label className = "label" htmlFor = "ticket-description">Description</label>
+								<div className = "tw-flex tw-flex-col tw-gap-y-2">
+									<Label htmlFor = "ticket-description">Description</Label>
 									<SimpleEditor
 										id={"ticket-description"}
 										registerField={"description"}
@@ -272,8 +274,8 @@ export const AddTicketForm = ({
 							    </div>
 							) : null
 						}
-					    <div>
-							<label className = "label" htmlFor = "ticket-assignee">Assignee</label>
+					    <div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<Label htmlFor = "ticket-assignee">Assignee</Label>
 							<Controller
 								name={"userIdOption"}
 								control={control}
@@ -293,8 +295,8 @@ export const AddTicketForm = ({
 							/>
 					        {errors?.userIdOption && <small className = "--text-alert">{errors.userIdOption.message}</small>}
 						</div>
-						<div>
-							<label className = "label" htmlFor = "ticket-priority">Priority</label>
+						<div className = "tw-flex tw-flex-col tw-gap-y-2">
+							<Label htmlFor = "ticket-priority">Priority</Label>
 							<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
 								<Select 
 									id={"ticket-priority"}
@@ -313,7 +315,7 @@ export const AddTicketForm = ({
 							!isBulkAction ? (
 								<div className = "tw-space-y-2">
 									<>
-										<label className = "label" htmlFor = "ticket-type">Ticket Type</label>
+										<Label htmlFor = "ticket-type">Ticket Type</Label>
 										<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
 											<Select 
 												id={"ticket-type"}
@@ -332,21 +334,22 @@ export const AddTicketForm = ({
 							        	Number(watch("ticketTypeId").value) == epicTicketType?.id ? (
 									        <div className = "tw-flex tw-flex tw-items-center tw-gap-x-2">
 												<IconWarning className = "tw-h-6 tw-w-6 tw-text-warning"/>
-												<span className = "tw-font-semibold">If the ticket type is "Epic", it cannot changed once saved.</span>
+												<span className = {`tw-font-semibold ${SECONDARY_TEXT}`}>If the ticket type is "Epic", it cannot changed once saved.</span>
 											</div>
 							        	) : null
 							        }
 								</div>	
 							) : null
 						}
-						{
-							buttonBar ? buttonBar : (
-								<div>
-									<LoadingButton isLoading={submitLoading} type="submit" className = "button" text={"Submit"}></LoadingButton>
-								</div>
-							)
-						}
+
 					</div>
+					{
+						buttonBar ? buttonBar : (
+							<div>
+								<LoadingButton isLoading={submitLoading} type="submit" className = "button" text={"Submit"}></LoadingButton>
+							</div>
+						)
+					}
 				</form>
 			</FormProvider>
 		</div>

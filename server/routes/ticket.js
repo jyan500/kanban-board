@@ -236,7 +236,6 @@ router.post("/bulk-edit", validateBulkEdit, handleValidationResult, async (req, 
 			...(req.body.priority_id ? {priority_id: req.body.priority_id} : {})
 		}
 		if (Object.keys(updateBody).length){
-			// await db("tickets").whereIn("id", req.body.ticket_ids).update(updateBody)
 			await historyService.bulkUpdate(
 				'tickets',
 				req.body.ticket_ids,

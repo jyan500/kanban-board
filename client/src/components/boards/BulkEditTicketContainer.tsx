@@ -13,7 +13,7 @@ import { selectCurrentTicketId } from "../../slices/boardSlice"
 import { IconHelp } from "../icons/IconHelp"
 import { HoverTooltip } from "../page-elements/HoverTooltip"
 import { useScreenSize } from "../../hooks/useScreenSize"
-import { LG_BREAKPOINT } from "../../helpers/constants"
+import { LG_BREAKPOINT, PRIMARY_TEXT, SECONDARY_TEXT, STANDARD_BORDER, TABLE_BACKGROUND } from "../../helpers/constants"
 import { IconCircleCheckmark } from "../icons/IconCircleCheckmark"
 
 interface Props {
@@ -54,19 +54,16 @@ export const BulkEditTicketContainer = ({
     const dispatch = useAppDispatch()
     const { width, height } = useScreenSize()
     return (
-        <div className = "tw-p-2 tw-w-full tw-flex tw-flex-col tw-gap-y-2 tw-border tw-bg-gray-100">
+        <div className = {`tw-p-4 tw-w-full tw-flex tw-flex-col tw-gap-y-2 ${STANDARD_BORDER} ${TABLE_BACKGROUND}`}>
             <div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-2 lg:tw-flex-row lg:tw-justify-between lg:tw-items-center">
                 {
                     width >= LG_BREAKPOINT ? (
                         <>
                             <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
-                                <IconButton onClick={() => setShowTickets(!showTickets)}>
-                                    {showTickets ? <IconArrowDown/> : <IconArrowRight/>}
-                                </IconButton>
-                                {title}
-                                <span>({totalTickets} items)</span>
+                                <span className={PRIMARY_TEXT}>{title}</span>
+                                <span className={SECONDARY_TEXT}>({totalTickets} items)</span>
                                 <div className = "tw-group tw-relative">
-                                    {!isSprintComplete ? <IconHelp className = "tw-w-5 tw-h-5"/> : <IconCircleCheckmark className="tw-text-green-500 tw-w-5 tw-h-5"/>}
+                                    {!isSprintComplete ? <IconHelp className = {`${SECONDARY_TEXT} tw-w-5 tw-h-5`}/> : <IconCircleCheckmark className="tw-text-green-500 tw-w-5 tw-h-5"/>}
                                     <HoverTooltip direction={"top"} width={!isSprintComplete ? "tw-w-64 lg:tw-w-96" : "tw-w-32 lg:tw-w-48"} text={helpText}/>
                                 </div>
                                 {isLoading ? <LoadingSpinner/>: null}
@@ -76,15 +73,12 @@ export const BulkEditTicketContainer = ({
                     ) : (
                         <>
                             <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
-                                <IconButton onClick={() => setShowTickets(!showTickets)}>
-                                    {showTickets ? <IconArrowDown/> : <IconArrowRight/>}
-                                </IconButton>
-                                {title}
+                                <span className={PRIMARY_TEXT}>{title}</span>
                             </div>
                             <div className = "tw-flex tw-items-center tw-flex-row tw-gap-x-2">
-                                <span>({totalTickets} items)</span>
+                                <span className={SECONDARY_TEXT}>({totalTickets} items)</span>
                                 <div className = "tw-group tw-relative">
-                                    <IconHelp className = "tw-w-5 tw-h-5"/>
+                                    <IconHelp className = {`${SECONDARY_TEXT} tw-w-5 tw-h-5`}/>
                                     <HoverTooltip direction={"right"} width={"tw-w-64 lg:tw-w-96"} text={helpText}/>
                                 </div>
                                 {isLoading ? <LoadingSpinner/>: null}
@@ -104,10 +98,9 @@ export const BulkEditTicketContainer = ({
                 : null
             }
             {
-                showTickets ? 
-                <div className = {`${tickets.length ? "tw-border" : ""} tw-bg-white tw-flex tw-flex-col tw-gap-y-2`}>
+                <div className = {`tw-flex tw-flex-col tw-gap-y-2`}>
                     {tickets.map((ticket) => 
-                        <div key={`bulk-edit-ticket-${ticket.id}`} className = "tw-pl-4 tw-flex tw-flex-row tw-gap-x-2"> 
+                        <div key={`bulk-edit-ticket-${ticket.id}`} className = "tw-pl-2 tw-flex tw-flex-row tw-gap-x-2"> 
                             {!isSprintComplete ? <input id={`bulk-edit-ticket-${ticket.id}-checkmark`} checked={itemIds.includes(ticket.id)} onChange={(e) => onCheck(ticket.id)} type = "checkbox"/> : null}
                             <button className = "tw-w-full" onClick={(e) => {
                                 dispatch(toggleShowModal(true))
@@ -116,7 +109,7 @@ export const BulkEditTicketContainer = ({
                             }}><TicketRow ticket={ticket} borderless={true}/></button>
                         </div>
                     )}
-                </div> : <LoadingSkeleton><RowPlaceholder/></LoadingSkeleton> 
+                </div>
             }
             {
                 createButton ?? null

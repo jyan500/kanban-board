@@ -30,7 +30,16 @@ import { useClickOutside } from "../hooks/useClickOutside"
 import { useScreenSize } from "../hooks/useScreenSize"
 import { getUserInitials } from "../helpers/functions"
 import { HoverTooltip } from "./page-elements/HoverTooltip";
-import { AVATAR_SIZES, LG_BREAKPOINT, PRIORITY_COLOR_MAP } from "../helpers/constants"
+import { 
+	AVATAR_SIZES, 
+	LG_BREAKPOINT, 
+	PRIMARY_TEXT, 
+	PRIORITY_COLOR_MAP, 
+	SECONDARY_TEXT, 
+	STANDARD_HOVER,
+	TERTIARY_TEXT,
+	TICKET_BACKGROUND_COLOR
+} from "../helpers/constants"
 
 export const priorityIconMap: {[key: string]: ReactNode} = {
 	"Low": <LowPriorityIcon/>,	
@@ -105,9 +114,9 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
 
 	return (
-		<div className = {`tw-relative tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md hover:tw-bg-gray-50 tw-p-2 tw-gap-y-2`}>
+		<div className = {`tw-relative tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md ${TICKET_BACKGROUND_COLOR} ${STANDARD_HOVER} tw-p-2 tw-gap-y-2`}>
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1 tw-text-wrap">
-				<span className = "tw-w-4/5 tw-font-medium tw-break-words">{ticket.name}</span>
+				<span className = {`${PRIMARY_TEXT} tw-w-4/5 tw-font-medium tw-break-words`}>{ticket.name}</span>
 				{ticket?.assignees?.[0]?.id ? <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-shrink-0 tw-mt-1 tw-rounded-full"/> :
 				<CgProfile className = {`${AVATAR_SIZES["s"]}`}/>}
 			</div>
@@ -128,12 +137,12 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 						<TicketTypeIcon type = {ticketType} className = {"tw-shrink-0 tw-w-5 tw-h-5"}/>
 					) : <></>}
 					{
-						priority ? (<PriorityIcon type={priority} color={priority in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priority] : ""} className={"tw-shrink-0 tw-w-5 tw-h-5"}/>) : <></>
+						priority ? (<PriorityIcon type={priority} className={`${priority in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priority] : ""} tw-shrink-0 tw-w-5 tw-h-5`}/>) : <></>
 					}
 					{
 						ticket.hasNonEpicRelationship ? 
 						<div className = "tw-group tw-relative">
-							<IconLink className = "icon"/>
+							<IconLink className = {`${SECONDARY_TEXT} icon`}/>
 							<HoverTooltip text={"Linked ticket"} direction={"top"}/>
 						</div>
 						: null
@@ -141,7 +150,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 					{
 						ticket.isWatching ? 
 						<div className = "tw-group tw-relative">
-							<IconEye className = "tw-text-primary icon"/>	
+							<IconEye className = {`${TERTIARY_TEXT} icon`}/>	
 							<HoverTooltip text={"You are watching this ticket"} direction={"top"}/>
 						</div> : 
 						null
@@ -155,7 +164,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 								// when clicking the "..." menu on the individual ticket rather than from inside the edit ticket form modal
 								e.preventDefault()
 								setShowDropdown(!showDropdown)
-							}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu color={"var(--bs-dark-gray)"} className = "tw-ml-3 tw-w-4 tw-h-4"/></button>
+							}} className = "--transparent tw-p-0 hover:tw-opacity-60"><IconMenu className = {`${PRIMARY_TEXT} tw-ml-3 tw-w-4 tw-h-4`}/></button>
 							{
 								showDropdown ? (
 									<EditTicketFormMenuDropdown dropdownAlignLeft={dropdownAlignLeft} closeDropdown={onClickOutside} statusesToDisplay={statusesToDisplay} boardId={boardId} ticket={ticket} ref = {menuDropdownRef}/>

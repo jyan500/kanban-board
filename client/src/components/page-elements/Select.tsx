@@ -2,6 +2,8 @@ import React, { useState, useCallback, useEffect } from "react"
 import {default as ReactSelect} from "react-select"
 import { OptionType } from "../../types/common"
 import { SELECT_Z_INDEX } from "../../helpers/constants"
+import { useAppSelector } from "../../hooks/redux-hooks"
+import { getSelectStyles } from "../../helpers/getSelectStyles"
 
 interface Props {
 	id?: string
@@ -24,7 +26,7 @@ export const Select = ({
     clearable,
 	searchable=false,
 	hideIndicatorSeparator=false,
-	textColor="black",
+	textColor="inherit",
 	textAlign="left",
     className,
     onSelect,
@@ -32,6 +34,7 @@ export const Select = ({
 }: Props) => {
     const [searchTerm, setSearchTerm] = useState("")
 	const [val, setVal] = useState<OptionType | null>(defaultValue ?? null)
+	const { isDarkMode } = useAppSelector((state) => state.darkMode)
 
     const handleInputChange = (newValue: string) => {
 		const inputValue = newValue.trim()
@@ -46,48 +49,22 @@ export const Select = ({
 		}, [onSelect]
 	)
 
+	const { classNames, styles } = getSelectStyles({
+        isDarkMode,
+        textColor,
+        textAlign,
+        className,
+        hideIndicatorSeparator: true,
+    })
+
     return (
         <ReactSelect
 			inputId={id}
             options={options}
             value={defaultValue}
 			onBlur={onBlur}
-            classNames={{
-			    control: (state) => `${className ?? "tw-w-full"} ${SELECT_Z_INDEX}`
-			}}
-			styles={{
-			    control: (baseStyles, state) => ({
-			      ...baseStyles,
-			      height: "43px",
-			      border: "var(--width-input-border) solid var(--bs-light-gray)",
-			      padding: ".1em",
-				  textAlign: textAlign,
-			    }),
-				// styles selected text and placeholder
-				singleValue: (base) => ({
-					...base,
-					color: textColor, 
-				}),
-				placeholder: (base) => ({
-					...base,
-					color: textColor,
-					textAlign: textAlign,
-				}),
-				dropdownIndicator: (provided) => ({
-					...provided,
-					'svg': {
-						fill: textColor,
-					},
-				}),
-				valueContainer: (provided) => ({
-					...provided,
-					textAlign: textAlign, // Ensures the selected value aligns left
-				}),
-				indicatorSeparator: () => ({
-					display: hideIndicatorSeparator ? 'none' : 'block',
-				}),
-			}}
-			
+            classNames={classNames}
+			styles={styles}
 			onChange={handleChange}
             isClearable={clearable ?? true}
 			isSearchable={searchable ?? true}
