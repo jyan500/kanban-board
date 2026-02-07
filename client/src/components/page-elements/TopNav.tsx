@@ -27,6 +27,7 @@ import { PLACEHOLDER_COLOR, SM_BREAKPOINT } from "../../helpers/constants"
 import { NOTIFICATIONS } from "../../helpers/routes"
 import { Link } from "react-router-dom"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
+import { setDarkMode } from "../../slices/darkModeSlice"
 
 export const TopNav = () => {
 	const dispatch = useAppDispatch()
@@ -67,6 +68,7 @@ export const TopNav = () => {
 	const onLogout = () => {
 		dispatch(logout())
 		dispatch(privateApi.util.resetApiState())
+		dispatch(setDarkMode({isDarkMode: false}))
 	}
 
 	useClickOutside(menuDropdownRef, onClickOutside, buttonRef)
@@ -82,7 +84,7 @@ export const TopNav = () => {
 			<div className = "tw-inline-block tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 				{!isLoading ? (
 					<>
-						<div className = "tw-mt-1">
+						<div className = "tw-mt-0">
 							<button className = "--transparent tw-p-0 hover:tw-opacity-60 tw-inline-block tw-relative" ref = {buttonRef} onClick={(e) => {
 								e.preventDefault()
 								setShowDropdown(!showDropdown)

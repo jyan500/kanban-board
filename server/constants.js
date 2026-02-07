@@ -18,6 +18,7 @@ const MAX_BOARD_TICKET_LIMIT = 1000
 const ORG_STATUS_LIMIT = 10
 
 const EXCEEDED_MESSAGE = "You have exceeded the maximum amount of attempts. Please try again later."
+const FAILED_TO_LOGIN_MESSAGE = "Failed to login: email, organization or password is incorrect."
 
 const TICKET_ENTITY_TYPES = {
    "tickets_to_users": (ticketName, displayName, action) => {
@@ -66,5 +67,6 @@ module.exports = {
 	MAX_BOARD_TICKET_LIMIT,
 	ORG_STATUS_LIMIT,
 	EXCEEDED_MESSAGE,
+	FAILED_TO_LOGIN_MESSAGE,
 	TICKET_ENTITY_TYPES,
 }

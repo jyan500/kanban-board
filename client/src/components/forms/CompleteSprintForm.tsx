@@ -13,10 +13,12 @@ import {
 } from "../../services/private/sprint"
 import { Switch } from "../page-elements/Switch"
 import { SimpleEditor } from "../page-elements/SimpleEditor"
-import { MOVE_OPEN_ITEM_OPTIONS } from "../../helpers/constants"
+import { MOVE_OPEN_ITEM_OPTIONS, STANDARD_BORDER } from "../../helpers/constants"
 import { LoadingSkeleton } from "../page-elements/LoadingSkeleton"
 import { TicketFormPlaceholder } from "../placeholders/TicketFormPlaceholder"
 import { Select } from "../page-elements/Select"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants"
+import { Label } from "../page-elements/Label"
 
 interface CompleteSprintFormProps {
     sprintId?: number;
@@ -81,15 +83,15 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
 
     return (
         <div className="tw-flex tw-flex-col tw-gap-y-2 lg:tw-w-[80%] tw-w-full">
-            <p className = "tw-text-lg tw-font-bold">Complete {sprintInfo?.name}</p>
-            <p className = " tw-font-medium tw-text-gray-500">{sprintInfo?.startDate ? new Date(sprintInfo.startDate).toLocaleDateString() : ""} - {sprintInfo?.endDate ? new Date(sprintInfo.endDate).toLocaleDateString() : ""}</p>
+            <p className = {`${PRIMARY_TEXT} tw-text-lg tw-font-bold`}>Complete {sprintInfo?.name}</p>
+            <p className = {`${SECONDARY_TEXT} tw-font-medium tw-text-gray-500`}>{sprintInfo?.startDate ? new Date(sprintInfo.startDate).toLocaleDateString() : ""} - {sprintInfo?.endDate ? new Date(sprintInfo.endDate).toLocaleDateString() : ""}</p>
             <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)} className="tw-w-full tw-flex tw-flex-col tw-gap-y-2">
-                    <div className = "tw-border tw-p-2">
-                        <p className = "tw-font-semibold">
-                            This sprint contains <span className = "tw-font-bold tw-text-green-500">{sprintInfo?.numCompletedTickets}</span> completed work items and <span className="tw-font-bold tw-text-gray-800">{sprintInfo?.numOpenTickets}</span> open work items. 
+                    <div className = {`${STANDARD_BORDER} tw-p-2`}>
+                        <p className = {`${SECONDARY_TEXT} tw-font-semibold`}>
+                            This sprint contains <span className = "tw-font-bold tw-text-green-500">{sprintInfo?.numCompletedTickets}</span> completed work items and <span className={`tw-font-bold ${PRIMARY_TEXT}`}>{sprintInfo?.numOpenTickets}</span> open work items. 
                         </p>
-                        <ul>
+                        <ul className={`${SECONDARY_TEXT} tw-text-sm`}>
                             <li>
                                 Completed work items includes everything in the last column on the board (i.e Completed).
                             </li>
@@ -98,8 +100,8 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
                             </li>
                         </ul>
                     </div>
-                    <div className = "tw-flex tw-flex-col">
-                        <label className = "label" htmlFor="move-open-work-items">Move open work items to</label>
+                    <div className = "tw-flex tw-flex-col tw-gap-y-2">
+                        <Label htmlFor="move-open-work-items">Move open work items to</Label>
                         <Controller
                             name={"moveItemsOption"}
                             control={control}
@@ -125,10 +127,10 @@ export const CompleteSprintForm = ({ sprintId, boardId }: CompleteSprintFormProp
                         </Controller>
                         {errors?.moveItemsOption && <small className = "--text-alert">{errors.moveItemsOption.message}</small>}
                     </div>
-                    <div className="tw-flex tw-flex-col">
-                        <label className="label" htmlFor="sprint-debrief">
+                    <div className="tw-flex tw-flex-col tw-gap-y-2">
+                        <Label htmlFor="sprint-debrief">
                             Debrief
-                        </label>
+                        </Label>
                         <SimpleEditor
                             id={"sprint-debrief"}
                             registerField={"debrief"}

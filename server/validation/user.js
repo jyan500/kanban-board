@@ -1,6 +1,6 @@
 const { body, param } = require("express-validator")
 const { checkEntityExistsIn, validateUniqueOrgEmail, validateUniqueUserEmail, validatePasswordAndConfirmation } = require("./helper")
-const { BULK_INSERT_LIMIT } = require("../constants")
+const { BULK_INSERT_LIMIT, FAILED_TO_LOGIN_MESSAGE } = require("../constants")
 const db = require("../db/db")
 const config = require("../config")
 const bcrypt = require("bcrypt")
@@ -108,7 +108,7 @@ const loginValidator = [
 		return new Promise((resolve, reject) => {
 			db("users").where("email", req.body.email).then((res) => {
 				if (res?.length === 0){
-					reject(new Error(`User with email ${req.body.email} could not be found`))
+					reject(new Error(FAILED_TO_LOGIN_MESSAGE))
 				}
 				resolve(true)
 			})	

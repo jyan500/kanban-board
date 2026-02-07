@@ -26,6 +26,7 @@ import { Button } from "../../components/page-elements/Button"
 import { IconFilter } from "../../components/icons/IconFilter"
 import { useBulkEditToolbar } from "../../contexts/BulkEditToolbarContext"
 import { FilterButton } from "../../components/page-elements/FilterButton"
+import { PRIMARY_TEXT, SECONDARY_TEXT } from "../../helpers/constants" 
 import { useFilterSync } from "../../hooks/useFilterSync"
 
 export type FormValues = {
@@ -255,7 +256,8 @@ export const Notifications = ({fromDashboard}: Props) => {
 			) : (
 				<>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-						{Object.entries(groupedByDate(data?.data)).map(([key, value]) => {
+						{Object.keys(groupedByDate).length > 0 ? 
+						Object.entries(groupedByDate(data?.data)).map(([key, value]) => {
 							return (
 								<div className = "tw-flex tw-flex-col tw-gap-y-2" key = {key}>
 									<p className = "dark:tw-text-white tw-font-bold">{key}</p>
@@ -279,8 +281,12 @@ export const Notifications = ({fromDashboard}: Props) => {
 										}
 									</div>
 								</div>
-							)
-						})}
+								)
+						}) : (
+							<div>
+								<p className = {SECONDARY_TEXT}>No Notifications Found</p>
+							</div>
+						)}
 					</div>
                     {
                         !fromDashboard ? 
