@@ -35,6 +35,7 @@ import {
 	LG_BREAKPOINT, 
 	PRIMARY_TEXT, 
 	PRIORITY_COLOR_MAP, 
+	SECONDARY_TEXT, 
 	STANDARD_HOVER,
 	TERTIARY_TEXT,
 	TICKET_BACKGROUND_COLOR
@@ -141,7 +142,7 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 					{
 						ticket.hasNonEpicRelationship ? 
 						<div className = "tw-group tw-relative">
-							<IconLink className = "icon"/>
+							<IconLink className = {`${SECONDARY_TEXT} icon`}/>
 							<HoverTooltip text={"Linked ticket"} direction={"top"}/>
 						</div>
 						: null
