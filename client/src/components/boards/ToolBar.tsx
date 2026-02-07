@@ -24,6 +24,7 @@ import { FilterButton } from "../page-elements/FilterButton"
 import { Button } from "../page-elements/Button"
 import { displayUser, getUserInitials } from "../../helpers/functions"
 import { Select } from "../page-elements/Select"
+import { Label } from "../page-elements/Label" 
 
 type FormValues = {
 	query: string	
@@ -141,7 +142,7 @@ export const ToolBar = () => {
 					}}>Add Ticket</Button>
 				</div>
 				<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
-					<label className = {`tw-font-semibold ${PRIMARY_TEXT}`} htmlFor="board-group-by">Group By</label>
+					<Label htmlFor="board-group-by">Group By</Label>
 					{/* this fixes a misalignment issue due to the label class having a slight margin top */}
 					<div className={"!tw-mt-0 !tw-w-40"}>
 						<Select

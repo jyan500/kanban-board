@@ -256,7 +256,7 @@ export const Notifications = ({fromDashboard}: Props) => {
 			) : (
 				<>
 					<div className = "tw-flex tw-flex-col tw-gap-y-2">
-						{Object.keys(groupedByDate).length > 0 ? 
+						{data?.data?.length ? 
 						Object.entries(groupedByDate(data?.data)).map(([key, value]) => {
 							return (
 								<div className = "tw-flex tw-flex-col tw-gap-y-2" key = {key}>

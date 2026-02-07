@@ -263,30 +263,38 @@ export const BoardSummary = () => {
                     </p>
                 </div>
                 {
-                    !Object.keys(groupedRecentActivity).length ?     
+                    (isBoardActivityLoading ) ?     
                     <LoadingSkeleton>
                         <RowPlaceholder/>
                     </LoadingSkeleton>
                     : 
-                    Object.keys(groupedRecentActivity).map((date, index) => {
-                        return (
-                            <div key={`recent-activity-group-${index}`} className = {`${NESTED_TABLE_BACKGROUND} tw-min-h-[500px] tw-flex tw-flex-col tw-gap-y-4`}>
-                                <p className = {`tw-text-sm ${SECONDARY_TEXT}`}>{date}</p>
-                                {
-                                    groupedRecentActivity[date].map((history) => {
-                                        const displayName = displayUser(userProfiles?.data.find((user) => user.id === history.changedBy))
-                                        const user = userProfiles?.data?.find((user) => user.id === history.changedBy) ?? null
-                                        return (
-                                            <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center" key = {`recent-activity-${history.historyId}`}>
-                                                <Avatar userInitials={getUserInitials(user)} imageUrl={user?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>
-                                                <Link to={`${TICKETS}/${history.ticketId}`} className = {`${PRIMARY_TEXT} tw-line-clamp-2`}>{history.displayString}</Link>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </div>
-                        )
-                    })
+                    (Object.keys(groupedRecentActivity).length ? (
+                        <div className="tw-flex tw-flex-col tw-gap-y-4 tw-min-h-[600px]">
+                            {
+                                Object.keys(groupedRecentActivity).map((date, index) => {
+                                    return (
+                                        <div key={`recent-activity-group-${index}`} className = {`${NESTED_TABLE_BACKGROUND} tw-flex tw-flex-col tw-gap-y-4`}>
+                                            <p className = {`tw-text-sm ${SECONDARY_TEXT}`}>{date}</p>
+                                            {
+                                                groupedRecentActivity[date].map((history) => {
+                                                    const displayName = displayUser(userProfiles?.data.find((user) => user.id === history.changedBy))
+                                                    const user = userProfiles?.data?.find((user) => user.id === history.changedBy) ?? null
+                                                    return (
+                                                        <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center" key = {`recent-activity-${history.historyId}`}>
+                                                            <Avatar userInitials={getUserInitials(user)} imageUrl={user?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>
+                                                            <Link to={`${TICKETS}/${history.ticketId}`} className = {`${PRIMARY_TEXT} tw-line-clamp-2`}>{history.displayString}</Link>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                    ) : (
+                        <p className={SECONDARY_TEXT}>No Recent Activity Found</p>
+                    ))
                 }
                 {
                     !isBoardActivityLoading && boardActivityData?.pagination && Object.keys(groupedRecentActivity).length ? 
