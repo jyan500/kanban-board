@@ -678,8 +678,8 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								<>
 									{
 										!editFieldVisibility.description ? (
-											<div onClick = {(e) => toggleFieldVisibility("description", true)} className = {`${FADE_ANIMATION} hover:tw-bg-gray-100 tw-cursor-pointer`}>
-												<TextAreaDisplay rawHTMLString={watch("description")}/>
+											<div onClick = {(e) => toggleFieldVisibility("description", true)} >
+												<TextAreaDisplay isEditable={true} rawHTMLString={watch("description")}/>
 											</div>
 										) : (
 											<div className = "tw-flex tw-flex-col tw-gap-y-2">

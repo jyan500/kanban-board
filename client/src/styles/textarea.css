@@ -13,15 +13,41 @@
   color: #d63384; /* pinkish-red */
 }
 
-/* Remove the left padding when HTML is displayed outside of the editor itself */
-.quill-display .ql-editor,
-.quill-display {
-  padding-left: 0;
+/* 
+Target all descendant elements of the quill display and editor for editable areas
+*/
+.quill-display.editable,
+.quill-display.editable *,
+.quill-display.editable.ql-editor,
+.quill-display.editable.ql-editor *,
+.quill-display.editable:hover,
+.quill-display.editable:hover * {
+  cursor: pointer !important;
 }
 
+.quill-display,
+.quill-display *,
+.quill-display.ql-editor,
+.quill-display.ql-editor *,
+.quill-display:hover,
+.quill-display:hover * {
+  cursor: auto !important;
+}
+
+.quill-display.editable:hover,
+.quill-display.editable:hover * {
+  opacity: .6,
+}
+
+/* Remove the left padding when HTML is displayed outside of the editor itself */
+/* .quill-display .ql-editor,
+.quill-display {
+  padding-left: 0;
+} */
+
 /* Dark mode - restore padding */
-.tw-dark .quill-display .ql-editor,
+/* .tw-dark .quill-display .ql-editor,
 .tw-dark .quill-display {
   padding-left: inherit;
 }
-
+ */
