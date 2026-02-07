@@ -84,16 +84,18 @@ export const TopNav = () => {
 			<div className = "tw-inline-block tw-relative tw-flex tw-flex-row tw-gap-x-4 tw-items-center">
 				{!isLoading ? (
 					<>
-						<div className = "tw-mt-0">
-							<button className = "--transparent tw-p-0 hover:tw-opacity-60 tw-inline-block tw-relative" ref = {buttonRef} onClick={(e) => {
-								e.preventDefault()
-								setShowDropdown(!showDropdown)
-							}}>
-								<Avatar userInitials={getUserInitials(userProfile)} imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
-								{
-									<Indicator showIndicator={polledNotifications?.data ? polledNotifications?.data.length > 0 : false} className = "tw-h-3 tw-w-3 -tw-bottom-0.5 -tw-right-0.5 tw-bg-red-500"/>
-								}
-							</button>
+						<div>
+							<div className="tw-flex tw-items-center">
+								<button className = "--transparent tw-p-0 hover:tw-opacity-60 tw-inline-block tw-relative" ref = {buttonRef} onClick={(e) => {
+									e.preventDefault()
+									setShowDropdown(!showDropdown)
+								}}>
+									<Avatar userInitials={getUserInitials(userProfile)} imageUrl = {userProfile?.imageUrl} size = "s" className = "tw-rounded-full"/>
+									{
+										<Indicator showIndicator={polledNotifications?.data ? polledNotifications?.data.length > 0 : false} className = "tw-h-3 tw-w-3 -tw-bottom-0.5 -tw-right-0.5 tw-bg-red-500"/>
+									}
+								</button>
+							</div>
 							{
 								showDropdown ? (
 									<AccountDropdown isTemp={isTemp} numNotifications={polledNotifications?.data ? polledNotifications?.data.length : 0} ref={menuDropdownRef} onLogout={onLogout} closeDropdown={onClickOutside}/>
@@ -102,7 +104,7 @@ export const TopNav = () => {
 						</div>
 						{
 							width >= SM_BREAKPOINT ? (
-								<div>
+								<div className="tw-flex tw-items-center">
 									<span className = "dark:tw-text-white">{displayUser(userProfile)}</span>
 								</div>
 							) : null

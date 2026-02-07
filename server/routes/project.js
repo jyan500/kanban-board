@@ -32,6 +32,7 @@ router.get("/", async (req, res, next) => {
 			"projects.description as description",
 			"projects.created_at as createdAt",
 		)
+		.where("organization_id", req.user.organization)
 		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true});
 		const resData = await Promise.all(data.data.map(async (project) => {
 			const user = await db("users").where("id", project.userId).first()
