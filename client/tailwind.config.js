@@ -27,7 +27,6 @@ module.exports = {
       gridTemplateColumns: {
         // Grid: [ticket-name] [priority] [status] [badge] [unlink]
         'ticket-row': '1fr auto 1fr auto auto',
-        'edit-ticket-right-side': '1fr auto auto'
       },
       keyframes: {
           'fade-in-up': {
