@@ -315,6 +315,7 @@ export interface ViewedItem {
 	type: string
 	id: number
 	name: string
+	organizationId: number
 	viewedAt: Date
 }
 

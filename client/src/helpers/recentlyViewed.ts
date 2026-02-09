@@ -4,13 +4,13 @@ const STORAGE_KEY = "recentlyViewed"
 const MAX_ITEMS = 20
 
 // Add item to recently viewed
-export const trackViewedItem = (type: string, id: number, name: string) => {
+export const trackViewedItem = (type: string, id: number, name: string, organizationId: number) => {
     // Get existing items from localStorage
     const existingItems: Array<ViewedItem> = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")
 
     // remove item if it already exists
     const filteredItems = existingItems.filter((item) => {
-        return !(item.type === type && item.id === id)
+        return item.organizationId === organizationId && !(item.type === type && item.id === id)
     })
 
     // Add new item to the beginning of the array
@@ -18,6 +18,7 @@ export const trackViewedItem = (type: string, id: number, name: string) => {
         type,
         id,
         name,
+        organizationId,
         viewedAt: new Date()
     })
 
@@ -31,20 +32,20 @@ export const trackViewedItem = (type: string, id: number, name: string) => {
 }
 
 // Get recently viewed items
-export const getRecentlyViewed = (page: number=1, limit: number=10): Array<ViewedItem> => {
+export const getRecentlyViewed = (organizationId: number, page: number=1, limit: number=10): Array<ViewedItem> => {
     const items: Array<ViewedItem> = JSON.parse(
         localStorage.getItem(STORAGE_KEY) || "[]"
-    )    
+    ).filter((item: ViewedItem) => item.organizationId === organizationId)    
     const startIndex = (page * limit) - limit
     const endIndex = (page * limit)
     return items.slice(startIndex, endIndex)
 }
 
 // get total pages
-export const getTotalPages = (limit: number=10) => {
+export const getTotalPages = (organizationId: number, limit: number=10) => {
     const items: Array<ViewedItem> = JSON.parse(
         localStorage.getItem(STORAGE_KEY) || "[]"
-    )    
+    ).filter((item: ViewedItem) => item.organizationId === organizationId)
     return Math.ceil(items.length/limit)
 }
 

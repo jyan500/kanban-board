@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { trackViewedItem } from "../helpers/recentlyViewed"
+import { useAppSelector } from "./redux-hooks"
 
 interface UseTrackRecentlyViewedProps {
     type: string
@@ -14,9 +15,10 @@ export const useTrackRecentlyViewed = ({
     name,
     enabled=true
 }: UseTrackRecentlyViewedProps) => {
+    const { userProfile } = useAppSelector((state) => state.userProfile)
     useEffect(() => {
-        if (enabled && id && name) {
-            trackViewedItem(type, id, name)
+        if (enabled && id && name && userProfile) {
+            trackViewedItem(type, id, name, userProfile.organizationId)
         }
-    }, [type, id, name, enabled])
+    }, [type, id, name, enabled, userProfile])
 }
