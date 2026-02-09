@@ -52,36 +52,37 @@ export const AccountDropdown = React.forwardRef<HTMLDivElement, Props>(({isTemp,
 				navigate(isTemp ? `${TEMP}${ACCOUNT}` : ACCOUNT)
 			}
 		},
-		...(isDarkMode ? {
-			"Light Mode": {
-				text: "Switch to Light Mode",
-				icon: <IconLightMode/>,
-				onClick: async () => {
-					try {
-						await editUserOwnPreference({isDarkMode: false}).unwrap()
-						dispatch(setDarkMode({isDarkMode: false}))
-					}
-					catch (e){
-
-					}
-				}
-			}
-		} : {
-			"Dark Mode": {
-				text: "Switch to Dark Mode",
-				icon: <IconDarkMode/>,
-				onClick: async () => {
-					try {
-						await editUserOwnPreference({isDarkMode: true}).unwrap()
-						dispatch(setDarkMode({isDarkMode: true}))
-					}
-					catch (e){
-
-					}
-				}
-			}
-		}),
+	
 		...(userProfile?.isActive && !isTemp ? {
+			...(isDarkMode ? {
+				"Light Mode": {
+					text: "Switch to Light Mode",
+					icon: <IconLightMode/>,
+					onClick: async () => {
+						try {
+							await editUserOwnPreference({isDarkMode: false}).unwrap()
+							dispatch(setDarkMode({isDarkMode: false}))
+						}
+						catch (e){
+	
+						}
+					}
+				}
+			} : {
+				"Dark Mode": {
+					text: "Switch to Dark Mode",
+					icon: <IconDarkMode/>,
+					onClick: async () => {
+						try {
+							await editUserOwnPreference({isDarkMode: true}).unwrap()
+							dispatch(setDarkMode({isDarkMode: true}))
+						}
+						catch (e){
+	
+						}
+					}
+				}
+			}),
 			"Notifications": {
 				text: "Notifications",
 				icon: <IconBell/>,
