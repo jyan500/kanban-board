@@ -223,7 +223,7 @@ export const BoardSummary = () => {
                             <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>Reassign tickets</Link>
                         </p>
 
-                        /* extra margin bottom to prevent overlap with the pagination */
+                        {/* extra margin bottom to prevent overlap with the pagination */}
                         <div className="tw-mb-10 tw-space-y-3">
                             <div className={`tw-space-y-3 ${byAssigneeSummary?.pagination.prevPage || byAssigneeSummary?.pagination.nextPage ? "lg:tw-min-h-[650px]" : ""}`}>
                                 {assigneeData.map((item, index) => {
@@ -283,7 +283,6 @@ export const BoardSummary = () => {
                     </LoadingSkeleton>
                     : 
                     (Object.keys(groupedRecentActivity).length ? (
-                        /* extra margin bottom to prevent overlap with the pagination */
                         <div className={`tw-mb-10 tw-flex tw-flex-col tw-gap-y-4`}>
                             {
                                 Object.keys(groupedRecentActivity).map((date, index) => {
