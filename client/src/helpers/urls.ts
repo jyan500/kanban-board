@@ -34,6 +34,7 @@ export const PROJECT_BOARD_URL = (projectId: number | string) => `/${API_VERSION
 export const BOARD_TICKET_URL = (boardId: number | string, ticketId: number | string) => `/${API_VERSION}/board/${boardId}/ticket` + (ticketId !== "" ? `/${ticketId}` : "")
 export const BOARD_PROJECT_URL = (boardId: number) => `/${API_VERSION}/board/${boardId}/project`
 export const BOARD_SUMMARY_URL = (boardId: number) => `/${API_VERSION}/board/${boardId}/summary`
+export const BY_ASSIGNEE_BOARD_SUMMARY_URL = (boardId: number) => `${BOARD_SUMMARY_URL(boardId)}/assignee`
 export const BOARD_ACTIVITY_URL = (boardId: number) => `/${API_VERSION}/board/${boardId}/activity`
 export const BOARD_STATUS_URL = (boardId: number | string, statusId: number | string) => `/${API_VERSION}/board/${boardId}/status` + (statusId !== "" ? `/${statusId}` : "")
 export const BOARD_BULK_EDIT_STATUS_URL = (boardId: number | string) => `/${API_VERSION}/board/${boardId}/status/bulk-edit`

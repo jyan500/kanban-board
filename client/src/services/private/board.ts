@@ -8,10 +8,11 @@ import {
 	BOARD_BULK_EDIT_STATUS_URL,
 	BOARD_PROJECT_URL,
 	BOARD_SUMMARY_URL,
+	BY_ASSIGNEE_BOARD_SUMMARY_URL,
 	BOARD_ACTIVITY_URL,
 	BOARD_FILTER_URL,
 } from "../../helpers/urls" 
-import { CustomError, GenericObject, Board, BoardSummary, ListResponse, Project, Status, Ticket, TicketEntityHistory } from "../../types/common" 
+import { CustomError, GenericObject, Board, ByAssigneeSummary, BoardSummary, ListResponse, Project, Status, Ticket, TicketEntityHistory } from "../../types/common" 
 import { privateApi } from "../private"
 import { parseURLParams } from "../../helpers/functions" 
 
@@ -209,12 +210,21 @@ export const boardApi = privateApi.injectEndpoints({
 			}),
 			providesTags: ["BoardFilters"]
 		}),
-		getBoardSummary: builder.query<BoardSummary, {boardId: number}>({
-			query: ({boardId}) => ({
+		getBoardSummary: builder.query<BoardSummary, {boardId: number, urlParams: Record<string, any>}>({
+			query: ({boardId, urlParams}) => ({
 				url: BOARD_SUMMARY_URL(boardId),
-				method: "GET"
+				method: "GET",
+				params: urlParams,
 			}),
 			providesTags: ["BoardSummary"]
+		}),
+		getByAssigneeSummary: builder.query<ListResponse<ByAssigneeSummary>, {boardId: number, urlParams: Record<string, any>}>({
+			query: ({boardId, urlParams}) => ({
+				url: BY_ASSIGNEE_BOARD_SUMMARY_URL(boardId),
+				method: "GET",
+				params: urlParams,
+			}),
+			providesTags: ["ByAssigneeSummary"]
 		}),
 		getBoardActivity: builder.query<ListResponse<TicketEntityHistory>, {boardId: number, urlParams: Record<string, any>}>({
 			query: ({boardId, urlParams}) => ({
@@ -249,4 +259,5 @@ export const {
 	useBulkEditBoardStatusesMutation,
 	useGetBoardProjectsQuery,
 	useUpdateBoardProjectsMutation,
+	useGetByAssigneeSummaryQuery,
 } = boardApi 

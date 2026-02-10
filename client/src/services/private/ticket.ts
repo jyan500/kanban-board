@@ -143,7 +143,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					is_watcher: isWatcher
 				}
 			}),
-			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary"]
+			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary", "ByAssigneeSummary", "BoardActivity"]
 		}),
 		addTicketAssignee: builder.mutation<TicketAssigneeResponse, TicketAssigneeRequest>({
 			query: ({ticketId, userIds, isWatcher}) => ({
@@ -154,7 +154,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					is_watcher: isWatcher
 				}
 			}),
-			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary"],
+			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary", "ByAssigneeSummary", "BoardActivity"],
 		}),
 		deleteTicketAssignee: builder.mutation<TicketAssigneeResponse, SingleTicketAssigneeRequest>({
 			query: ({ticketId, userId, isWatcher}) => ({
@@ -166,7 +166,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					is_watcher: isWatcher
 				}
 			}),
-			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary"],
+			invalidatesTags: ["TicketAssignees", "Tickets", "BoardTickets", "TicketSummary", "BoardSummary", "ByAssigneeSummary", "BoardActivity"],
 		}),
 		addTicket: builder.mutation<{id: number, message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "id" | "createdAt" | "storyPoints" | "dueDate"> & {dueDate?: string | undefined}>({
 			query: (ticket) => ({
@@ -181,7 +181,7 @@ export const ticketApi = privateApi.injectEndpoints({
 					...(ticket.dueDate != null ? {due_date: ticket.dueDate} : {})
 				},
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets", "BoardSummary"]
+			invalidatesTags: ["Tickets", "BoardTickets", "BoardSummary", "ByAssigneeSummary", "BoardActivity"]
 		}),
 		updateTicket: builder.mutation<{message: string, mentions: Array<Mention>}, Omit<Ticket, "organizationId" | "createdAt" | "userIdOption" | "userId">>({
 			query: (ticket) => ({
@@ -205,7 +205,9 @@ export const ticketApi = privateApi.injectEndpoints({
 				"TicketSummary", 
 				"Sprints", 
 				"SprintTickets", 
-				"BoardSummary"
+				"BoardSummary",
+				"ByAssigneeSummary",
+				"BoardActivity"
 			]
 			// invalidatesTags: (result, error, arg) => [{type: "Tickets", id: arg.id}, {type: "BoardTickets", id: arg.id}]
 		}),
@@ -229,6 +231,8 @@ export const ticketApi = privateApi.injectEndpoints({
 				"Sprints",
 				"SprintTickets",
 				"BoardSummary",
+				"ByAssigneeSummary",
+				"BoardActivity",
 			]
 		}),
 		bulkWatchTickets: builder.mutation<{message: string}, {toAdd: boolean, ticketIds: Array<number>, userId: number}>({
@@ -248,7 +252,7 @@ export const ticketApi = privateApi.injectEndpoints({
 				url: `${TICKET_URL}/${ticketId}`,
 				method: "DELETE",
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "BoardSummary"]
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "BoardSummary", "ByAssigneeSummary", "BoardActivity"]
 		}),
 		updateTicketStatus: builder.mutation<{message: string}, {ticketId: number, statusId: number}>({
 			query: ({ticketId, statusId}) => ({
@@ -256,7 +260,7 @@ export const ticketApi = privateApi.injectEndpoints({
 				method: "PATCH",
 				body: {status_id: statusId}
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary", "BoardSummary"]
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary", "BoardSummary", "ByAssigneeSummary", "BoardActivity"]
 		}),
 		updateTicketDueDate: builder.mutation<{message: string}, {ticketId: number, dueDate: string}>({
 			query: ({ticketId, dueDate}) => ({
@@ -264,7 +268,7 @@ export const ticketApi = privateApi.injectEndpoints({
 				method: "PATCH",
 				body: {due_date: dueDate}
 			}),
-			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary", "BoardSummary"]
+			invalidatesTags: ["Tickets", "BoardTickets", "TicketRelationships", "TicketSummary", "BoardSummary", "ByAssigneeSummary", "BoardActivity"]
 		}),
 		getTicketRelationships: builder.query<ListResponse<TicketRelationship>, TicketEntityPaginationRequest>({
 			query: ({ticketId, params}) => ({

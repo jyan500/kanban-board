@@ -89,6 +89,7 @@ export const TAG_TYPES = [
     "UserBoardFilters",
     "BoardFilters",
     "BoardSummary",
+    "ByAssigneeSummary",
     "BoardActivity",
 ]
 

@@ -91,9 +91,13 @@ export interface Board {
 	percentComplete?: number
 }
 
+export interface ByAssigneeSummary {
+	userId: number
+	totalTickets: number
+}
+
 export interface BoardSummary {
 	totalTickets: number
-	ticketsByAssignee: Array<{userId: number, totalTickets: number}>
 	ticketsByPriority: Array<{priorityId: number, totalTickets: number}>
 	ticketsByStatus: Array<{statusId: number, totalTickets: number}>
 	ticketsByTicketType: Array<{ticketTypeId: number, totalTickets: number}>
