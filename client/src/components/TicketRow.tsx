@@ -95,8 +95,8 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 			{/* Avatar and status */}
 			<div className = {`tw-flex tw-flex-row tw-items-center tw-justify-start tw-gap-x-2 tw-min-w-0`}>
 				{width >= SM_BREAKPOINT && !hideProfilePicture ? 
-					<div className="tw-shrink-0">
-						{isLoading ? <CgProfile className = {`${PRIMARY_TEXT} tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6`}/> : <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = {`${PRIMARY_TEXT} !tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full`}/>}
+					<div className="tw-flex tw-flex-col tw-items-center tw-shrink-0">
+						{isLoading ? <CgProfile className = {`${PRIMARY_TEXT} tw-shrink-0 tw-w-6 tw-h-6`}/> : <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = {`${PRIMARY_TEXT} !tw-w-6 !tw-h-6 tw-shrink-0 tw-rounded-full`}/>}
 					</div>
 				: null}
 				<div className = "dark:tw-text-white tw-truncate tw-min-w-0 tw-flex-1 tw-text-left">{status?.name}</div>

@@ -302,13 +302,17 @@ export const Notifications = ({fromDashboard}: Props) => {
                             />
                         </div>
                         :
-                        <div>
-                            <Button onClick={() => {
-                                navigate(NOTIFICATIONS)
-                            }}>
-                                See More Notifications
-                            </Button>
-                        </div>
+							data?.data?.length ? 
+							(
+								<div>
+									<Button onClick={() => {
+										navigate(NOTIFICATIONS)
+									}}>
+										See More Notifications
+									</Button>
+								</div>
+							)
+						: <></>
                     }
 				</>
 			)}

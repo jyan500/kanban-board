@@ -458,7 +458,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							{
 								!isTicketAssigneesLoading && ticketAssignees ? (
 									<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
-										<div className = "tw-w-[2em] tw-shrink-0">
+										<div className = "tw-flex tw-flex-row tw-justify-start tw-w-[2em] tw-shrink-0">
 											{selectFieldLoading["assignees"] ? <LoadingSpinner/> : <Avatar userInitials={getUserInitials(ticketAssignees?.[0])} imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>}
 										</div>
 										<div className = "tw-flex tw-flex-1">
@@ -470,7 +470,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						</RightSectionRow>
 						<RightSectionRow title={"Reporter"}>
 							<div className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center">
-								<div className = "tw-w-[2em] tw-shrink-0">
+								<div className = "tw-flex tw-flex-row tw-justify-start tw-w-[2em] tw-shrink-0">
 									<Avatar userInitials={getUserInitials(reporter)} imageUrl={reporter?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>
 								</div>
 								<div className = {`${PRIMARY_TEXT} tw-ml-3 tw-flex tw-flex-1`}>{displayUser(reporter)}</div>
@@ -478,7 +478,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						</RightSectionRow>
 						<RightSectionRow title={"Priority"}>
 							<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
-								<div className = "tw-w-[2em] tw-shrink-0">
+								<div className = "tw-flex tw-flex-row tw-justify-start tw-w-[2em] tw-shrink-0">
 									{selectFieldLoading["priority"] ? <LoadingSpinner/> : priorityName ? 
 									<PriorityIcon type={priorityName} className={`${priorityName in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priorityName] : ""} tw-shrink-0 tw-w-5 tw-h-5`}/>
 									: <></>}
@@ -491,7 +491,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Ticket Type"}>
 							{
 								<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
-									<div className = "tw-w-[2em] tw-shrink-0">
+									<div className = "tw-flex tw-flex-row tw-justify-start tw-w-[2em] tw-shrink-0">
 										{selectFieldLoading["ticket-type"] ? <LoadingSpinner/> : ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-0.5 tw-w-5 tw-h-5 tw-shrink-0"/> : null}
 									</div>
 									<div className = "tw-flex tw-flex-1">

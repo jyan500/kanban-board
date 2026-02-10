@@ -84,15 +84,16 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 			reset({
 				...userWithoutOrganization, 
 				userRoleId: {
-					label: userRolesForSelect.find((userRole) => userInfo.userRoleId.toString() === userRole.value)?.label ?? "",
-					value: userInfo.userRoleId.toString()
+					label: userRolesForSelect.find((userRole) => userInfo.userRoleId?.toString() === userRole.value)?.label ?? "",
+					value: userInfo.userRoleId?.toString() ?? "",
 				},
-				changePassword: isAccountsPage && isChangePassword})
+				changePassword: isAccountsPage && isChangePassword
+			})
 		}
 		else {
 			reset(defaultForm)
 		}
-	}, [showModal, userInfo, userId, isChangePassword])
+	}, [showModal, userInfo, userId, isChangePassword, userRolesForSelect])
 
     const onSubmit = async (values: FormValues) => {
     	try {

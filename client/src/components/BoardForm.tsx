@@ -179,7 +179,7 @@ export const BoardForm = ({boardId, projectId}: Props) => {
 				!boardId ? 
 				<div className = "tw-flex tw-flex-col tw-gap-y-2">
 					<Label className = "label" htmlFor = "existing-board">Board</Label>
-					<span className = "tw-text-xs">Select this to use an existing board</span>
+					<span className = {`${SECONDARY_TEXT} tw-text-xs`}>Select this to use an existing board</span>
 					<AsyncSelect 
 						id={"existing-board"}
 						endpoint={BOARD_URL} 

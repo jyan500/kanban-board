@@ -12,10 +12,12 @@ import { IconArrowRight } from "../icons/IconArrowRight"
 import { setSourceMapRange } from "typescript"
 import { PaginationButtonRow } from "./PaginationButtonRow"
 import { BorderContainer } from "../page-elements/BorderContainer"
-import { STANDARD_HOVER } from "../../helpers/constants"
+import { SECONDARY_TEXT, STANDARD_HOVER } from "../../helpers/constants"
+import { useAppSelector } from "../../hooks/redux-hooks"
 
 export const RecentlyViewed = () => {
     const [recentItems, setRecentItems] = useState<Array<ViewedItem>>([])
+    const { userProfile } = useAppSelector((state) => state.userProfile)
     const [totalPages, setTotalPages] = useState(0)
     const [page, setPage] = useState(1)
     const PER_PAGE = 5
@@ -23,41 +25,45 @@ export const RecentlyViewed = () => {
 
     useEffect(() => {
         // Load items from local storage
-        const items = getRecentlyViewed(page, PER_PAGE)
-        const totalPages = getTotalPages(PER_PAGE)
-        setRecentItems(items)
-        setTotalPages(totalPages)
+        if (userProfile){
+            const items = getRecentlyViewed(userProfile.organizationId, page, PER_PAGE)
+            const totalPages = getTotalPages(userProfile.organizationId, PER_PAGE)
+            setRecentItems(items)
+            setTotalPages(totalPages)
 
-        // Listen for storage changes across multiple tabs
-        const handleStorageChange = () => {
-            const updatedItems = getRecentlyViewed(page, PER_PAGE)
-            const updatedPages = getTotalPages(PER_PAGE)
-            setRecentItems(updatedItems)
-            setTotalPages(updatedPages)
+            // Listen for storage changes across multiple tabs
+            const handleStorageChange = () => {
+                const updatedItems = getRecentlyViewed(userProfile.organizationId, page, PER_PAGE)
+                const updatedPages = getTotalPages(userProfile.organizationId, PER_PAGE)
+                setRecentItems(updatedItems)
+                setTotalPages(updatedPages)
+            }
+
+            window.addEventListener("storage", handleStorageChange)
+            // listen for custom event when items are tracked
+            window.addEventListener("recentlyViewedUpdated", handleStorageChange)
+
+            const timeInterval = setInterval(() => {
+                setCurrentDate(new Date())
+            }, 60000)
+
+            return () => {
+                window.removeEventListener("storage", handleStorageChange)
+                window.removeEventListener("recentlyViewedUpdated", handleStorageChange)
+                clearInterval(timeInterval)
+            }
         }
 
-        window.addEventListener("storage", handleStorageChange)
-        // listen for custom event when items are tracked
-        window.addEventListener("recentlyViewedUpdated", handleStorageChange)
-
-        const timeInterval = setInterval(() => {
-            setCurrentDate(new Date())
-        }, 60000)
-
-        return () => {
-            window.removeEventListener("storage", handleStorageChange)
-            window.removeEventListener("recentlyViewedUpdated", handleStorageChange)
-            clearInterval(timeInterval)
-        }
-
-    }, [])
+    }, [userProfile])
 
     useEffect(() => {
-        const items = getRecentlyViewed(page, PER_PAGE)
-        const totalPages = getTotalPages(PER_PAGE)
-        setRecentItems(items)
-        setTotalPages(totalPages)
-    }, [page])
+        if (userProfile){
+            const items = getRecentlyViewed(userProfile.organizationId, page, PER_PAGE)
+            const totalPages = getTotalPages(userProfile.organizationId, PER_PAGE)
+            setRecentItems(items)
+            setTotalPages(totalPages)
+        }
+    }, [page, userProfile])
 
     const getItemLink = useCallback((item: ViewedItem) => {
         switch (item.type){
@@ -101,21 +107,25 @@ export const RecentlyViewed = () => {
             <h2 className = "dark:tw-text-white">Recently Viewed</h2>
             <div className = {`tw-flex tw-flex-col tw-gap-y-2 sm:tw-min-h-96 `}>
                 {
-                    recentItems.map((item) => {
-                        return (
-                            <Link 
-                                key={`${item.type}-${item.id}`}
-                                to={getItemLink(item)}
-                                className = {`${STANDARD_HOVER} tw-flex tw-items-center tw-p-3 tw-rounded-md tw-no-underline tw-text-inherit`}
-                            >
-                                <span className = "tw-text-xl tw-mr-3">{getItemIcon(item.type)}</span>
-                                <div className = "tw-flex tw-flex-col tw-line-clamp-1">
-                                    <span className = "tw-font-medium dark:tw-text-gray-50 tw-text-gray-900">{item.name}</span>
-                                    <span className = "tw-text-xs dark:tw-text-slate-400 tw-text-gray-500 tw-mt-0.5">{formatTimeAgo(item.viewedAt)}</span>
-                                </div>
-                            </Link>
-                        )
-                    })
+                    recentItems.length ? (
+                        recentItems.map((item) => {
+                            return (
+                                <Link 
+                                    key={`${item.type}-${item.id}`}
+                                    to={getItemLink(item)}
+                                    className = {`${STANDARD_HOVER} tw-flex tw-items-center tw-p-3 tw-rounded-md tw-no-underline tw-text-inherit`}
+                                >
+                                    <span className = "tw-text-xl tw-mr-3">{getItemIcon(item.type)}</span>
+                                    <div className = "tw-flex tw-flex-col tw-line-clamp-1">
+                                        <span className = "tw-font-medium dark:tw-text-gray-50 tw-text-gray-900">{item.name}</span>
+                                        <span className = "tw-text-xs dark:tw-text-slate-400 tw-text-gray-500 tw-mt-0.5">{formatTimeAgo(item.viewedAt)}</span>
+                                    </div>
+                                </Link>
+                            )
+                        })
+                    ) : (
+                        <p className={SECONDARY_TEXT}>No recently viewed items found</p>
+                    )
                 }
             </div>
             <div className = {`lg:tw-absolute lg:tw-bottom-0 lg:tw-left-0 lg:tw-ml-2 lg:tw-mb-2`}>
