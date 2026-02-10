@@ -303,24 +303,9 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
         .groupBy("tickets.ticket_type_id")
         .select("tickets.ticket_type_id as ticketTypeId")
         .count("tickets.id as totalTickets")
-		/* 
-			Get the counts of tickets on the board aggregated by assignee, including unassigned tickets 
-		*/
-		const ticketsByAssignee = await db("tickets")
-		.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
-		.leftJoin("tickets_to_users", (queryBuilder) => {
-			queryBuilder.on("tickets_to_users.ticket_id", "=", "tickets.id")
-				.andOn("tickets_to_users.is_watcher", "=", db.raw("?", [false]))
-				.andOn("tickets_to_users.is_mention", "=", db.raw("?", [false]))
-		})
-		.where("tickets_to_boards.board_id", req.params.boardId)
-		.groupBy("tickets_to_users.user_id")
-		.select("tickets_to_users.user_id as userId")
-		.count("tickets.id as totalTickets")
 
 		res.json({
 			totalTickets: ticketIds.length,
-			ticketsByAssignee: ticketsByAssignee,
 			ticketsByPriority: ticketsByPriority,
 			ticketsByTicketType: ticketsByTicketType,
 			ticketsByStatus: ticketsByStatus,
@@ -333,6 +318,31 @@ router.get("/:boardId/summary", validateGet, handleValidationResult, async (req,
 	catch (err) {
 		console.error(`Error while getting tickets: ${err.message}`)
 		next(err)
+	}
+})
+
+router.get("/:boardId/summary/assignee", validateGet, handleValidationResult, async (req, res, next) => {
+	try {
+		/* 
+		Get the counts of tickets on the board aggregated by assignee, including unassigned tickets 
+		*/
+		const ticketsByAssignee = await db("tickets")
+		.join("tickets_to_boards", "tickets_to_boards.ticket_id", "=", "tickets.id")
+		.leftJoin("tickets_to_users", (queryBuilder) => {
+			queryBuilder.on("tickets_to_users.ticket_id", "=", "tickets.id")
+				.andOn("tickets_to_users.is_watcher", "=", db.raw("?", [false]))
+				.andOn("tickets_to_users.is_mention", "=", db.raw("?", [false]))
+		})
+		.where("tickets_to_boards.board_id", req.params.boardId)
+		.groupBy("tickets_to_users.user_id")
+		.select("tickets_to_users.user_id as userId")
+		.count("tickets.id as totalTickets")
+		.paginate({ perPage: req.query.perPage ?? 10, currentPage: req.query.page ? parseInt(req.query.page) : 1, isLengthAware: true})
+		
+		res.json(ticketsByAssignee)
+	}
+	catch (e){
+		console.error(`Error while getting tickets: ${err.message}`)
 	}
 })
 

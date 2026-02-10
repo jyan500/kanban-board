@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"
-import { useGetBoardActivityQuery, useGetBoardSummaryQuery } from "../../services/private/board"
+import { useGetBoardActivityQuery, useGetBoardSummaryQuery, useGetByAssigneeSummaryQuery } from "../../services/private/board"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
 import { useNavigate, Link } from "react-router-dom"
-import { BoardSummary as BoardSummaryType, TicketEntityHistory, ProgressBarItem, PieChartItem, UserProfile, Ticket } from "../../types/common"
+import { BoardSummary as BoardSummaryType, ByAssigneeSummary, TicketEntityHistory, ProgressBarItem, PieChartItem, UserProfile, Ticket } from "../../types/common"
 import { 
     PRIMARY_TEXT, 
     SECONDARY_TEXT, 
@@ -52,16 +52,18 @@ export const BoardSummary = () => {
     const { ticketTypes } = useAppSelector((state) => state.ticketType)
     const [ groupedRecentActivity, setGroupedRecentActivity ] = useState<Record<string, Array<GroupedActivity>>>({})
     const [ historyPage, setHistoryPage ] = useState(1)
+    const [ assigneePage, setAssigneePage ] = useState(1)
     const { width, height } = useScreenSize()
 
-    const { data, isLoading } = useGetBoardSummaryQuery(boardInfo ? {boardId: boardInfo?.id} : skipToken)
+    const { data, isLoading } = useGetBoardSummaryQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {}} : skipToken)
     const { data: boardActivityData, isLoading: isBoardActivityLoading} = useGetBoardActivityQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {page: historyPage}} : skipToken)
+    const { data: byAssigneeSummary, isLoading: isByAssigneeSummaryLoading } = useGetByAssigneeSummaryQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {page: assigneePage}} : skipToken)
     const [trigger, { data: userProfiles, isLoading: isUserProfilesLoading}] = useLazyGetUserProfilesQuery()
 
     useEffect(() => {
         // get all user profiles from the tickets to assignees
-        if (data && boardActivityData && !isLoading && !isBoardActivityLoading){
-            const userIds = data.ticketsByAssignee.map((obj) => obj.userId)
+        if (byAssigneeSummary && boardActivityData && !isByAssigneeSummaryLoading && !isBoardActivityLoading){
+            const userIds = byAssigneeSummary.data?.map((obj) => obj.userId)
             // make sure the id is not in userIds to avoid duplicates
             const boardActivityUserIds = boardActivityData.data.map((obj) => obj.changedBy).filter((id) => !userIds.includes(id))
             const allUserIds = [...userIds, ...boardActivityUserIds]
@@ -69,7 +71,7 @@ export const BoardSummary = () => {
                 trigger({userIds: allUserIds, skipPaginate: true})
             }
         }
-    }, [data, boardActivityData, isLoading, isBoardActivityLoading])
+    }, [byAssigneeSummary, boardActivityData, isByAssigneeSummaryLoading, isBoardActivityLoading])
 
     useEffect(() => {
         if (!isBoardActivityLoading && boardActivityData && userProfiles && !isUserProfilesLoading){
@@ -120,7 +122,7 @@ export const BoardSummary = () => {
         }
     }) ?? []
 
-    const assigneeData: Array<ProgressBarItem> = data?.ticketsByAssignee.map(item => {
+    const assigneeData: Array<ProgressBarItem> = byAssigneeSummary?.data.map(item => {
         let profile: UserProfile | undefined; 
         if (userProfiles){
             profile = userProfiles.data.find((userProfile: UserProfile) => userProfile.id === item.userId)
@@ -221,18 +223,25 @@ export const BoardSummary = () => {
                         </p>
 
                         <div className="tw-space-y-3">
-                            {assigneeData.map((item, index) => {
-                                return (
-                                    <div key={index} className = "tw-space-y-1">
-                                        <HorizontalProgressBarRow
-                                            icon={item.name !== "Unassigned" ? <Avatar userInitials={item.initials} imageUrl={item.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/> : <IconUser className = {`${PRIMARY_TEXT} tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6`}/>}
-                                            item={item}
-                                            link={`${TICKETS}?boardId=${boardInfo?.id ?? 0}&assignedToUser=${item.id ?? "0"}`}
-                                            showPercentages={false}
-                                        />
-                                    </div>
-                                )
-                            })}
+                            <div className={`tw-space-y-3 ${byAssigneeSummary?.pagination.prevPage || byAssigneeSummary?.pagination.nextPage ? "lg:tw-min-h-[650px]" : ""}`}>
+                                {assigneeData.map((item, index) => {
+                                    return (
+                                        <div key={index} className = "tw-space-y-1">
+                                            <HorizontalProgressBarRow
+                                                icon={item.name !== "Unassigned" ? <Avatar userInitials={item.initials} imageUrl={item.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/> : <IconUser className = {`${PRIMARY_TEXT} tw-mt-1 tw-shrink-0 tw-w-6 tw-h-6`}/>}
+                                                item={item}
+                                                link={`${TICKETS}?boardId=${boardInfo?.id ?? 0}&assignedToUser=${item.id ?? "0"}`}
+                                                showPercentages={false}
+                                            />
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                            {
+                                !isByAssigneeSummaryLoading && byAssigneeSummary?.pagination && (byAssigneeSummary?.pagination.prevPage || byAssigneeSummary?.pagination.nextPage) ? 
+                                <PaginationRow setPage={setAssigneePage} currentPage={assigneePage} showPageNums={true} paginationData={byAssigneeSummary?.pagination}/>
+                                : null 
+                            }
                         </div>
                     </div>
 
@@ -269,7 +278,7 @@ export const BoardSummary = () => {
                     </LoadingSkeleton>
                     : 
                     (Object.keys(groupedRecentActivity).length ? (
-                        <div className="tw-flex tw-flex-col tw-gap-y-4 tw-min-h-[600px]">
+                        <div className={`tw-flex tw-flex-col tw-gap-y-4 ${boardActivityData?.pagination.prevPage || boardActivityData?.pagination.nextPage ? "lg:tw-min-h-[600px]" : ""}`}>
                             {
                                 Object.keys(groupedRecentActivity).map((date, index) => {
                                     return (
@@ -297,7 +306,7 @@ export const BoardSummary = () => {
                     ))
                 }
                 {
-                    !isBoardActivityLoading && boardActivityData?.pagination && Object.keys(groupedRecentActivity).length ? 
+                    !isBoardActivityLoading && boardActivityData?.pagination && Object.keys(groupedRecentActivity).length && (boardActivityData?.pagination.prevPage || boardActivityData?.pagination.nextPage) ? 
                     <PaginationRow setPage={setHistoryPage} currentPage={historyPage} showPageNums={true} paginationData={boardActivityData?.pagination}/>
                     : null 
                 }
