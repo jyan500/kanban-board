@@ -9,7 +9,7 @@ import { ArrowButton } from "./ArrowButton"
 import { InlineEditButton } from "./InlineEditButton"
 import { IconCheckmark } from "../icons/IconCheckmark"
 import { IconClose } from "../icons/IconClose"
-import { MAX_PAGES_BEFORE_COMPRESS, SECONDARY_TEXT, STANDARD_BORDER } from "../../helpers/constants"
+import { FADE_ANIMATION, MAX_PAGES_BEFORE_COMPRESS, SECONDARY_TEXT, STANDARD_BORDER } from "../../helpers/constants"
 
 interface Props {
     showPageNums: boolean 
@@ -158,7 +158,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
         if (!url) {
             return (
                 <button
-                    className={`tw-px-2 tw-py-1 tw-border-b ${isActive ? "tw-font-bold dark:tw-border-gray-100 tw-border-gray-800" : "tw-border-transparent"}`}
+                    className={`${FADE_ANIMATION} hover:tw-opacity-60 tw-px-2 tw-py-1 tw-border-b ${isActive ? "tw-font-bold dark:tw-border-gray-100 tw-border-gray-800" : "tw-border-transparent"}`}
                     key={`pagination-page-${pageNum}`}
                     onClick={() => setPage(pageNum)}
                 >
@@ -174,7 +174,7 @@ export const PaginationRow = ({showPageNums, showNumResults, paginationData, set
 
         return (
             <Link 
-                className={`${SECONDARY_TEXT} tw-px-2 tw-py-1 tw-border-b ${isActive ? "tw-font-bold dark:tw-border-gray-100 tw-border-gray-800" : "tw-border-transparent"}`}
+                className={`${FADE_ANIMATION} hover:tw-opacity-60 ${SECONDARY_TEXT} tw-px-2 tw-py-1 tw-border-b ${isActive ? "tw-font-bold dark:tw-border-gray-100 tw-border-gray-800" : "tw-border-transparent"}`}
                 key={`pagination_page_${pageNum}`} 
                 to={`${url}?${parseURLParams(urlParamsWithPage)}`}
             >
