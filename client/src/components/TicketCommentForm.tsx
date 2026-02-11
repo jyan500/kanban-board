@@ -233,7 +233,7 @@ export const TicketCommentForm = ({currentTicketId, ticketComments}: TicketComme
 					</div>
 				)) : null
 			}
-			<div className = {`${ticketComments.length > 0 ? "tw-min-h-[620px]" : ""} tw-flex tw-flex-col tw-gap-y-4`}>
+			<div className = {`tw-flex tw-flex-col tw-gap-y-4`}>
 				{
 					ticketComments?.map((comment: TicketComment) => (
 						<ProfileActivityRow key={`comment-${comment.id}`} data={comment}>
