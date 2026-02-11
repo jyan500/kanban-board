@@ -12,6 +12,7 @@ const getAssigneesFromBoards = async (organizationId, boardIds) => {
 	.groupBy("tickets_to_users.user_id")
 	.groupBy("users.first_name")
 	.groupBy("users.last_name")
+	.groupBy("users.image_url")
 	.select("boards.id as id", "tickets_to_users.user_id as userId", "users.first_name as firstName", "users.last_name as lastName", "users.image_url as imageUrl")
 }
 
