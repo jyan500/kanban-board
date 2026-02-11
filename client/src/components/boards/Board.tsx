@@ -127,6 +127,7 @@ export const Board = ({
 										}}
 										draggable
 										onDragStart={dragStart}
+										className={"tw-cursor-pointer"}
 										>
 										{ticket ? <Ticket 
 											ticket = {ticket}

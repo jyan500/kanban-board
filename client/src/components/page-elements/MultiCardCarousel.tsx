@@ -50,7 +50,7 @@ export const MultiCardCarousel = ({ index, items, itemsPerPage, itemContainerCla
     return (
         <div>
             <div className = "tw-flex tw-justify-center">
-                <div className={`${itemsPerPage === 1 ? "tw-max-w-[800px]" : ""} tw-relative tw-h-full tw-w-full tw-overflow-hidden tw-rounded-lg`}>
+                <div className={`${itemsPerPage === 1 ? "tw-max-w-[900px]" : ""} tw-relative tw-h-full tw-w-full tw-overflow-hidden tw-rounded-lg`}>
                     {/* 
                         transition translate X based on the -(currentIndex) * 100. 
                         it's negative so the animation will start from right to left

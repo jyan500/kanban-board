@@ -28,9 +28,20 @@ type Props = {
 	hideProfilePicture?: boolean
 	showDueBadge?: boolean
 	isLoadingState?: boolean
+	className?: string
 }
 
-export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, borderless, hideProfilePicture, isLoadingState, showDueBadge}: Props) => {
+export const TicketRow = ({
+	className="tw-p-1 lg:tw-p-1.5", 
+	ticket, 
+	ticketRelationshipId, 
+	showUnlink, 
+	onUnlink, 
+	borderless, 
+	hideProfilePicture, 
+	isLoadingState, 
+	showDueBadge
+}: Props) => {
 	const { statuses } = useAppSelector((state) => state.status)
 	const { ticketTypes } = useAppSelector((state) => state.ticketType)
 	const { priorities } = useAppSelector((state) => state.priority)
@@ -70,7 +81,7 @@ export const TicketRow = ({ticket, ticketRelationshipId, showUnlink, onUnlink, b
 
 	return (
 		<div 
-			className = {`tw-group ${showBorder()} ${isLoadingState ? "tw-opacity-50" : ""} ${STANDARD_HOVER} tw-p-1 lg:tw-p-1.5 tw-grid tw-grid-cols-ticket-row tw-gap-x-2 tw-items-center tw-w-full tw-rounded-md tw-min-w-0`}>
+			className = {`${className} tw-group ${showBorder()} ${isLoadingState ? "tw-opacity-50" : ""} ${STANDARD_HOVER} tw-grid tw-grid-cols-ticket-row tw-gap-x-2 tw-items-center tw-w-full tw-rounded-md tw-min-w-0`}>
 			{/* Ticket name and icon */}
 			<div className = {`tw-flex tw-flex-row tw-items-center tw-justify-start tw-gap-x-2 lg:tw-gap-x-4 tw-min-w-0`}>
 				<div className="tw-shrink-0">

@@ -184,8 +184,8 @@ export const TicketDisplay = () => {
 						
 						{data?.data?.map((ticket: Ticket) => {
 							return (
-								<button key = {`ticket_display_row_${ticket.id}`} className = "hover:tw-gray-50" onClick={() => showTicket(ticket.id)}>
-									<TicketRow ticket={ticket}/>
+								<button key = {`ticket_display_row_${ticket.id}`} onClick={() => showTicket(ticket.id)}>
+									<TicketRow className={"tw-p-2 lg:tw-p-4"} ticket={ticket}/>
 								</button>
 							)
 						})}
