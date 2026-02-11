@@ -311,7 +311,7 @@ const ScheduleContainerScrollableSection = ({
                             return (
                                 <>
                                     {/* add one empty row to account for the group by header on the left column */}
-                                    <div key={`groupby-${groupById}`} className="tw-relative tw-h-16 tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
+                                    <div key={`groupby-${groupById}`} className={`tw-relative tw-h-16 tw-flex tw-items-center ${STANDARD_HOVER}`}>
                                     </div>
                                     {
                                         groupedTickets[groupById].map((ticket, index) => {
