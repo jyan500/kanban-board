@@ -23,7 +23,7 @@ export const Logo = ({isAuthLayout, textColor}: Props) => {
 				</div>
 			</div>
 		) : (
-			<div className="tw-flex tw-items-center tw-gap-2 tw-text-xl tw-font-semibold tw-text-blue-600">
+			<div className="tw-flex tw-items-center tw-gap-3 tw-text-xl tw-font-semibold tw-text-white">
 				<img width={36} height={36} src={LogoIcon}/>
 				<span className = "tw-font-mono">Kanban</span>
 			</div>

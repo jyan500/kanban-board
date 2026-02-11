@@ -88,6 +88,7 @@ router.post("/register", rateLimitAuth, userValidator.registerValidator, handleV
 				email: req.body.email,
 				password: hash,
 				is_active: true,
+				is_dark_mode: true,
 			},
 			req.historyContext
 		)

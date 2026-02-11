@@ -193,6 +193,7 @@ export const GroupedBoard = ({
 																		}}
 																		key = {`group_by_${groupById}_ticket_${ticketId}`} 
 																		id = {`group_by_${groupById}_ticket_${ticketId}`}
+																		className={"tw-cursor-pointer"}
 																		draggable
 																		onDragStart={dragStart}
 																		>

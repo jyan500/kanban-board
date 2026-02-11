@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import MentionsImage from "../assets/images/landing-page/mentions.png"
-import BacklogImage from "../assets/images/landing-page/backlog.png"
-import BoardImage from "../assets/images/landing-page/board.png"
+import MentionsImage from "../assets/images/landing-page/v2/mentions.png"
+import BacklogImage from "../assets/images/landing-page/v2/backlog.png"
+import SummaryImage from "../assets/images/landing-page/v2/summary.png"
+import CalendarImage from "../assets/images/landing-page/v2/calendar.png"
+import BoardImage from "../assets/images/landing-page/v2/board.png"
 import { useScreenSize } from '../hooks/useScreenSize';
 import { ImageOverlay } from '../components/page-elements/ImageOverlay';
-import { LG_BREAKPOINT } from '../helpers/constants';
+import { FADE_ANIMATION, LG_BREAKPOINT } from '../helpers/constants';
 import { Link } from "react-router-dom"
 import { LOGIN } from '../helpers/routes';
 import { IconBell } from "../components/icons/IconBell"
@@ -17,11 +19,15 @@ import { IconBulkAction } from "../components/icons/IconBulkAction"
 import { IconDragDrop } from "../components/icons/IconDragDrop"
 import { REGISTER } from "../helpers/routes"
 import { MultiCardCarousel } from "../components/page-elements/MultiCardCarousel"
-import BulkActionsImage from "../assets/images/landing-page/bulk-actions.png"
-import EpicTicketsImage from "../assets/images/landing-page/epic-tickets.png"
-import NotificationsImage from "../assets/images/landing-page/notifications.png"
-import SettingsImage from "../assets/images/landing-page/organization-settings.png"
+import BulkActionsImage from "../assets/images/landing-page/v2/bulk-actions.png"
+import EpicTicketsImage from "../assets/images/landing-page/v2/epic-tickets.png"
+import NotificationsImage from "../assets/images/landing-page/v2/notifications.png"
+import SettingsImage from "../assets/images/landing-page/v2/organization-settings.png"
+import AISummaryImage from "../assets/images/landing-page/v2/summarization.png"
+import SprintsImage from "../assets/images/landing-page/v2/sprints.png"
 import RTEImage from "../assets/images/landing-page/rich-text-editing.png"
+import { IconCalendar } from '../components/icons/IconCalendar';
+import { IconSparkle } from '../components/icons/IconSparkle';
 
 interface Feature {
 	id: number
@@ -61,8 +67,8 @@ const FeatureCard = ({id, header, description, imageURL, imageOnRight, onClick}:
         </div>
     )
     const image = (
-        <button onClick={() => onClick(id)} className={`tw-bg-gradient-light tw-rounded-2xl tw-p-8 tw-shadow-lg tw-transition-all tw-shadow-lg hover:tw-shadow-xl hover:tw-shadow-blue-600/40`}>
-            <div className="tw-w-full tw-h-72 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
+        <button onClick={() => onClick(id)} className={`tw-bg-gradient-light tw-rounded-2xl tw-p-8 tw-shadow-lg tw-transition-all tw-shadow-lg hover:tw-shadow-xl hover:tw-shadow-blue-600/40 `}>
+            <div className="tw-w-full tw-h-64 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
                 <img src={imageURL} alt={description} className="tw-relative tw-object-cover tw-w-full tw-rounded-lg" />
             </div>
         </button>
@@ -101,7 +107,7 @@ interface CarouselContentProps<T = {}> {
 const ImageCarouselContent = ({data}: CarouselContentProps<CarouselElement>) => {
 	return (
 		<>
-	        <img src={data.imageURL} alt={data.title} className="tw-relative tw-object-cover tw-w-full tw-h-[45vh] tw-rounded-lg" />
+	        <img src={data.imageURL} alt={data.title} className="tw-relative tw-object-fit tw-w-full tw-h-[45vh] tw-rounded-lg" />
 	        {/* Adds linear gradient starting from mid to bottom of the image to provide more contrast with the white text*/}
         	<div className="tw-mx-2 tw-rounded-lg tw-absolute tw-inset-0 tw-bg-gradient-to-b tw-from-transparent tw-to-black tw-from-60%">
 		        <p className = "tw-absolute tw-bottom-4 tw-left-4 tw-text-2xl tw-font-bold tw-text-white">{data.title}</p>
@@ -147,44 +153,51 @@ export const LandingPage = () => {
         {
             id: 3,
             title: "Plan, Collaborate, Launch",
-            description: "Flexible board display with grouping and drag-and-drop statuses. Customize your workflow to match how your team actually works.",
-            imageURL: MentionsImage,
+            description: "Track your productivity and customize your workflow to match how your team actually works.",
+            imageURL: SummaryImage,
         },
     ]
 
     const additionalFeatures: Array<Feature> = [
         {
             id: 4,
-            title: "Mentions & Comments",
-            description: "Tag teammates in rich text comments and descriptions.",
+            title: "Master Your Deadlines",
+            description: "Visualize project timelines and drag-and-drop unscheduled tasks into your workflow.",
+            icon: <IconCalendar className={`${iconClass}`}/>,
+            imageURL: CalendarImage,
+        },
+        {
+            id: 5,
+            title: "Seamless Collaborations",
+            description: "Loop in teammates instantly with @mentions and rich-text discussions that keep context in one place.",
             icon: <IconComment className={`${iconClass}`} />,
             imageURL: MentionsImage,
         },
         {
-            id: 5,
-            title: "Bulk Actions",
-            description: "Apply actions to multiple tickets to optimize your workflow.",
+            id: 6,
+            title: "Work at Scale",
+            description: "Update multiple tickets at once to eliminate repetitive manual work.",
             icon: <IconBulkAction className = {`${iconClass}`}/>,
             imageURL: BulkActionsImage,
         },
         {
-            id: 6,
-            title: "Backlog & Issue Tracking",
-            description: "Track upcoming work and stay on top of the backlog.",
-            icon: <IconClipboardList className={`${iconClass}`} />,
-            imageURL: BacklogImage,
-        },
-        {
             id: 7,
-            title: "Notifications",
-            description: "Stay informed with smart, real-time notifications.",
-            icon: <IconBell className={`${iconClass}`} />,
-            imageURL: NotificationsImage,
+            title: "Sprint with Precision",
+            description: "Turn your backlog into reality by organizing upcoming work into high-impact sprints.",
+            icon: <IconClipboardList className={`${iconClass}`} />,
+            imageURL: SprintsImage,
         },
         {
             id: 8,
-            title: "Organization & User Settings",
-            description: "Manage your organization and personal preferences easily.",
+            title: "Smart Thread Summary",
+            description: "Instantly summarize complex discussions into clear, high-level updates.",
+            icon: <IconSparkle className={`${iconClass}`} />,
+            imageURL: AISummaryImage,
+        },
+        {
+            id: 9,
+            title: "Built to Fit Your Team",
+            description: "Fully customize your organizational workspace and personal preferences to match the way you work.",
             icon: <IconGear className={`${iconClass}`}/>,
             imageURL: SettingsImage,
         },
@@ -258,7 +271,7 @@ export const LandingPage = () => {
                                     setCarouselIndex(additionalFeatures.indexOf(element))
                                 }
                             }
-                        }} key={`additional-feature-${feature.id}`} className="tw-flex tw-flex-col tw-gap-y-2 tw-text-left tw-bg-white tw-p-8 tw-rounded-xl tw-border tw-border-gray-200 hover:tw-shadow-xl hover:tw-shadow-blue-600/40">
+                        }} key={`additional-feature-${feature.id}`} className={`hover:tw-bg-gray-50 ${FADE_ANIMATION} tw-flex tw-flex-col tw-gap-y-2 tw-text-left tw-bg-white tw-p-8 tw-rounded-xl tw-border tw-border-gray-200 hover:tw-shadow-xl hover:tw-shadow-blue-600/40`}>
                             <div className="tw-flex tw-flex-row tw-items-center tw-gap-x-4">
                                 <div className="tw-flex-shrink-0 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10 tw-bg-gradient-dark">{feature.icon}</div>
                                 <h3 className="tw-text-xl tw-font-mono tw-font-semibold">{feature.title}</h3>

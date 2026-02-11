@@ -117,8 +117,8 @@ export const Ticket = ({ticket, boardId, statusesToDisplay, dropdownAlignLeft, i
 		<div className = {`tw-relative tw-w-full tw-h-full tw-flex tw-flex-col tw-items-start tw-bg-white tw-rounded-md tw-shadow-md ${TICKET_BACKGROUND_COLOR} ${STANDARD_HOVER} tw-p-2 tw-gap-y-2`}>
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-1 tw-text-wrap">
 				<span className = {`${PRIMARY_TEXT} tw-w-4/5 tw-font-medium tw-break-words`}>{ticket.name}</span>
-				{ticket?.assignees?.[0]?.id ? <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-shrink-0 tw-mt-1 tw-rounded-full"/> :
-				<CgProfile className = {`${AVATAR_SIZES["s"]}`}/>}
+				{ticket?.assignees?.[0]?.id ? <Avatar userInitials={getUserInitials(data)} imageUrl={data?.imageUrl} className = {`${PRIMARY_TEXT} !tw-w-6 !tw-h-6 tw-shrink-0 tw-mt-1 tw-rounded-full`}/> :
+				<CgProfile className = {`${PRIMARY_TEXT} ${AVATAR_SIZES["s"]}`}/>}
 			</div>
 			<div className = "tw-flex tw-flex-row tw-gap-x-2">
 				{
