@@ -459,7 +459,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 								!isTicketAssigneesLoading && ticketAssignees ? (
 									<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
 										<div className = "tw-flex tw-flex-row tw-justify-start tw-w-[2em] tw-shrink-0">
-											{selectFieldLoading["assignees"] ? <LoadingSpinner/> : <Avatar userInitials={getUserInitials(ticketAssignees?.[0])} imageUrl={ticketAssignees?.[0]?.imageUrl} className = "tw-rounded-full tw-shrink-0"/>}
+											{selectFieldLoading["assignees"] ? <LoadingSpinner/> : <Avatar userInitials={getUserInitials(ticketAssignees?.[0])} imageUrl={ticketAssignees?.[0]?.imageUrl} className = {`${PRIMARY_TEXT} tw-rounded-full tw-shrink-0`}/>}
 										</div>
 										<div className = "tw-flex tw-flex-1">
 											{userProfileSelect}
