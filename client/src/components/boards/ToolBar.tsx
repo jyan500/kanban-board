@@ -151,7 +151,7 @@ export const ToolBar = () => {
 								label: GROUP_BY_OPTIONS[option as keyof typeof GROUP_BY_OPTIONS],
 								value: option
 							}))}
-							className={"!tw-bg-primary lg:!tw-w-auto"}
+							className={"dark:!tw-border-0 !tw-bg-primary lg:!tw-w-auto"}
 							textColor={"white"}
 							textAlign={"center"}
 							clearable={false}

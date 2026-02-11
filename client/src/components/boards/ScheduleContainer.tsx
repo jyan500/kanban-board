@@ -14,7 +14,7 @@ import { IconArrowLeft } from "../icons/IconArrowLeft"
 import { IconArrowDown } from "../icons/IconArrowDown"
 import { IconArrowUp } from "../icons/IconArrowUp"
 import { IconTicket } from '../icons/IconTicket'
-import { GROUP_BY_OPTIONS, PRIMARY_TEXT, SEARCH_OPTIONS, SECONDARY_TEXT, STANDARD_BORDER_COLOR, STANDARD_HOVER, TABLE_BACKGROUND, TABLE_DIVIDE } from "../../helpers/constants"
+import { CARD_BACKGROUND_COLOR, GROUP_BY_OPTIONS, PRIMARY_TEXT, SEARCH_OPTIONS, SECONDARY_TEXT, STANDARD_BORDER_COLOR, STANDARD_HOVER, TABLE_BACKGROUND, TABLE_DIVIDE } from "../../helpers/constants"
 import { IconCalendar } from "../icons/IconCalendar"
 import { IconClock } from "../icons/IconClock"
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks"
@@ -131,7 +131,7 @@ export const ScheduleContainerLeftColumn = ({
                         const groupByElement = groupByElements?.find((element: GroupByElement) => element.id === parseInt(groupById))
                         return (
                             <>
-                                <div key={`group-by-${groupByElement?.name}-${groupById}`} className="tw-flex tw-flex-row tw-justify-center tw-items-center tw-p-3 tw-h-16 tw-font-medium tw-text-gray-800 tw-bg-gray-50 tw-text-sm tw-truncate">
+                                <div key={`group-by-${groupByElement?.name}-${groupById}`} className={`tw-flex tw-flex-row tw-justify-center tw-items-center tw-p-3 tw-h-16 tw-font-medium ${PRIMARY_TEXT} ${CARD_BACKGROUND_COLOR} tw-text-sm tw-truncate`}>
                                     <button className = "hover:tw-opacity-60" onClick={() => {
                                         setCollapseArrows({...collapseArrows, [groupById]: !collapseArrows[groupById]})
                                     }}>
@@ -311,7 +311,7 @@ const ScheduleContainerScrollableSection = ({
                             return (
                                 <>
                                     {/* add one empty row to account for the group by header on the left column */}
-                                    <div key={`groupby-${groupById}`} className="tw-relative tw-h-16 tw-flex tw-items-center hover:tw-bg-gray-50 tw-transition-colors">
+                                    <div key={`groupby-${groupById}`} className={`tw-relative tw-h-16 tw-flex tw-items-center ${STANDARD_HOVER}`}>
                                     </div>
                                     {
                                         groupedTickets[groupById].map((ticket, index) => {
@@ -476,7 +476,7 @@ const ScheduleContainerSearchBar = ({
                                             label: GROUP_BY_OPTIONS[option as keyof typeof GROUP_BY_OPTIONS],
                                             value: option
                                         }))}
-                                        className={"!tw-bg-primary lg:!tw-w-auto"}
+                                        className={"dark:!tw-border-0 !tw-bg-primary lg:!tw-w-auto"}
                                         textColor={"white"}
                                         textAlign={"center"}
                                         clearable={false}

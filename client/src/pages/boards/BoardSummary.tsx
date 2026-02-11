@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useLayoutEffect, useState } from "react"
 import { useGetBoardActivityQuery, useGetBoardSummaryQuery, useGetByAssigneeSummaryQuery } from "../../services/private/board"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -14,7 +14,8 @@ import {
     TICKET_TYPE_COLOR_MAP, 
     STANDARD_HOVER,
     STANDARD_DROPDOWN_ITEM,
-    TERTIARY_TEXT
+    TERTIARY_TEXT,
+    FADE_ANIMATION,
 } from "../../helpers/constants"
 import { LoadingSkeleton } from "../../components/page-elements/LoadingSkeleton"
 import { RowPlaceholder } from "../../components/placeholders/RowPlaceholder"
@@ -38,6 +39,8 @@ import { MdBreakfastDining } from "react-icons/md"
 import { BOARD_ACTIVITY_URL } from "../../helpers/urls"
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
+import { IconHelp } from "../../components/icons/IconHelp"
+import { HoverTooltip } from "../../components/page-elements/HoverTooltip"
 
 
 type GroupedActivity = TicketEntityHistory & {
@@ -56,8 +59,8 @@ export const BoardSummary = () => {
     const { width, height } = useScreenSize()
 
     const { data, isLoading } = useGetBoardSummaryQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {}} : skipToken)
-    const { data: boardActivityData, isLoading: isBoardActivityLoading} = useGetBoardActivityQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {page: historyPage}} : skipToken)
-    const { data: byAssigneeSummary, isLoading: isByAssigneeSummaryLoading } = useGetByAssigneeSummaryQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {page: assigneePage}} : skipToken)
+    const { data: boardActivityData, isLoading: isBoardActivityLoading} = useGetBoardActivityQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {perPage: 20, page: historyPage}} : skipToken)
+    const { data: byAssigneeSummary, isLoading: isByAssigneeSummaryLoading } = useGetByAssigneeSummaryQuery(boardInfo ? {boardId: boardInfo?.id, urlParams: {perPage: 8, page: assigneePage}} : skipToken)
     const [trigger, { data: userProfiles, isLoading: isUserProfilesLoading}] = useLazyGetUserProfilesQuery()
 
     useEffect(() => {
@@ -68,7 +71,7 @@ export const BoardSummary = () => {
             const boardActivityUserIds = boardActivityData.data.map((obj) => obj.changedBy).filter((id) => !userIds.includes(id))
             const allUserIds = [...userIds, ...boardActivityUserIds]
             if (userIds.length){
-                trigger({userIds: allUserIds, skipPaginate: true})
+                trigger({userIds: allUserIds, skipPaginate: true}, true)
             }
         }
     }, [byAssigneeSummary, boardActivityData, isByAssigneeSummaryLoading, isBoardActivityLoading])
@@ -215,14 +218,15 @@ export const BoardSummary = () => {
                     </div>
 
                     {/* Team Workload */}
-                    <div className={`${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
+                    <div className={`tw-relative ${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
                         <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Team workload</h2>
                         <p className={`tw-text-sm ${SECONDARY_TEXT} tw-mb-6`}>
                             Monitor the capacity of your team.{' '}
                             <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>Reassign tickets</Link>
                         </p>
 
-                        <div className="tw-space-y-3">
+                        {/* extra margin bottom to prevent overlap with the pagination */}
+                        <div className="tw-mb-10 tw-space-y-3">
                             <div className={`tw-space-y-3 ${byAssigneeSummary?.pagination.prevPage || byAssigneeSummary?.pagination.nextPage ? "lg:tw-min-h-[650px]" : ""}`}>
                                 {assigneeData.map((item, index) => {
                                     return (
@@ -237,12 +241,15 @@ export const BoardSummary = () => {
                                     )
                                 })}
                             </div>
-                            {
-                                !isByAssigneeSummaryLoading && byAssigneeSummary?.pagination && (byAssigneeSummary?.pagination.prevPage || byAssigneeSummary?.pagination.nextPage) ? 
-                                <PaginationRow setPage={setAssigneePage} currentPage={assigneePage} showPageNums={true} paginationData={byAssigneeSummary?.pagination}/>
-                                : null 
-                            }
+                            
                         </div>
+                        {
+                            !isByAssigneeSummaryLoading && byAssigneeSummary?.pagination && (byAssigneeSummary?.pagination.prevPage || byAssigneeSummary?.pagination.nextPage) ? 
+                                <div className="tw-absolute tw-bottom-4 tw-left-3" >
+                                    <PaginationRow setPage={setAssigneePage} currentPage={assigneePage} showPageNums={true} paginationData={byAssigneeSummary?.pagination}/>
+                                </div>
+                            : null 
+                        }
                     </div>
 
                     {/* Ticket Types */}
@@ -264,9 +271,15 @@ export const BoardSummary = () => {
                     </div>
                 </div>
             </div>
-            <div className = {`tw-flex tw-flex-col tw-gap-y-4 ${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6 tw-flex-1`}>
+            <div className = {`tw-relative tw-flex tw-flex-col tw-gap-y-4 ${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6 tw-flex-1`}>
                 <div>
-                    <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Recent Activity</h2>
+                    <div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+                        <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Recent Activity</h2>
+                        <div className="tw-group tw-relative">
+                            <IconHelp className = {`${SECONDARY_TEXT} tw-w-5 tw-h-5`}/>
+                            <HoverTooltip direction={"top"} width={"tw-w-32 lg:tw-w-48"} text={"Currently shows recent activity up to the last 7 days"}/>
+                        </div>
+                    </div>
                     <p className={`${SECONDARY_TEXT} tw-text-sm tw-text-gray-600 tw-mb-6`}>
                         Stay up to date with what's happening across the space
                     </p>
@@ -278,7 +291,7 @@ export const BoardSummary = () => {
                     </LoadingSkeleton>
                     : 
                     (Object.keys(groupedRecentActivity).length ? (
-                        <div className={`tw-flex tw-flex-col tw-gap-y-4 ${boardActivityData?.pagination.prevPage || boardActivityData?.pagination.nextPage ? "lg:tw-min-h-[600px]" : ""}`}>
+                        <div className={`tw-mb-10 tw-flex tw-flex-col tw-gap-y-4`}>
                             {
                                 Object.keys(groupedRecentActivity).map((date, index) => {
                                     return (
@@ -291,7 +304,7 @@ export const BoardSummary = () => {
                                                     return (
                                                         <div className = "tw-flex tw-flex-row tw-gap-x-4 tw-items-center" key = {`recent-activity-${history.historyId}`}>
                                                             <Avatar userInitials={getUserInitials(user)} imageUrl={user?.imageUrl} className = "!tw-w-6 !tw-h-6 tw-mt-1 tw-shrink-0 tw-rounded-full"/>
-                                                            <Link to={`${TICKETS}/${history.ticketId}`} className = {`${PRIMARY_TEXT} tw-line-clamp-2`}>{history.displayString}</Link>
+                                                            <Link to={`${TICKETS}/${history.ticketId}`} className = {`hover:tw-opacity-60 ${FADE_ANIMATION} ${PRIMARY_TEXT} tw-line-clamp-2`}>{history.displayString}</Link>
                                                         </div>
                                                     )
                                                 })
@@ -307,7 +320,9 @@ export const BoardSummary = () => {
                 }
                 {
                     !isBoardActivityLoading && boardActivityData?.pagination && Object.keys(groupedRecentActivity).length && (boardActivityData?.pagination.prevPage || boardActivityData?.pagination.nextPage) ? 
-                    <PaginationRow setPage={setHistoryPage} currentPage={historyPage} showPageNums={true} paginationData={boardActivityData?.pagination}/>
+                        <div className = "tw-absolute tw-bottom-4 tw-left-3">
+                            <PaginationRow setPage={setHistoryPage} currentPage={historyPage} showPageNums={true} paginationData={boardActivityData?.pagination}/>
+                        </div>
                     : null 
                 }
             </div>

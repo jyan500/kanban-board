@@ -32,7 +32,7 @@ export const ActivityContainer = ({
 	const [isActive, setIsActive] = useState<number>(0)
 	const dispatch = useAppDispatch()
 return (
-		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4">
+		<div className = "tw-w-full tw-flex tw-flex-col tw-gap-y-4 tw-min-h-[175px]">
 			<div className = "tw-w-full tw-flex tw-flex-row tw-justify-between tw-gap-x-2">
 				<p className = {`${PRIMARY_TEXT} tw-font-semibold`}>Activity</p>
 				<button onClick={() => {
@@ -57,41 +57,43 @@ return (
 				</TabButton>
 			</div>	
 			{
-				isActive === 0 ? (
-					<>
-						<div className = "tw-flex tw-flex-row tw-justify-between tw-items-start tw-gap-x-4">
-							<TicketCommentForm currentTicketId={currentTicketId} ticketComments={ticketComments?.data?.length ? ticketComments.data : []}/>
-							{
-								ticketComments?.pagination.nextPage || ticketComments?.pagination.prevPage ? (
-									<PaginationRow
-										showNumResults={false}
-										showPageNums={false}
-										setPage={(page: number) => { setCommentPage(page)} }	
-										paginationData={ticketComments?.pagination}
-										currentPage={commentPage}
-									/>
-								) : null
-							}
-						</div>
-					</>
-				) : (
-					<>
-						<div className = "tw-flex tw-flex-row tw-justify-between tw-items-start tw-gap-x-4">
-							<TicketActivity currentTicketId={currentTicketId} ticketActivities={ticketActivities?.data?.length ? ticketActivities.data : []}/>
-							{
-								ticketActivities?.pagination.nextPage || ticketActivities?.pagination.prevPage ? (
-									<PaginationRow
-										showNumResults={false}
-										showPageNums={false}
-										setPage={(page: number) => { setActivityPage(page)} }	
-										paginationData={ticketActivities?.pagination}
-										currentPage={activityPage}
-									/>
-								) : null
-							}
-						</div>
-					</>
-				)
+				<div className = {`${ticketComments?.data.length || ticketActivities?.data.length ? "tw-min-h-[400px]" : "tw-min-h-[300px]"}`}>
+					{isActive === 0 ? (
+						<>
+							<div className = "tw-flex tw-flex-row tw-justify-between tw-items-start tw-gap-x-4">
+								<TicketCommentForm currentTicketId={currentTicketId} ticketComments={ticketComments?.data?.length ? ticketComments.data : []}/>
+								{
+									ticketComments?.pagination.nextPage || ticketComments?.pagination.prevPage ? (
+										<PaginationRow
+											showNumResults={false}
+											showPageNums={false}
+											setPage={(page: number) => { setCommentPage(page)} }	
+											paginationData={ticketComments?.pagination}
+											currentPage={commentPage}
+										/>
+									) : null
+								}
+							</div>
+						</>
+					) : (
+						<>
+							<div className = "tw-flex tw-flex-row tw-justify-between tw-items-start tw-gap-x-4">
+								<TicketActivity currentTicketId={currentTicketId} ticketActivities={ticketActivities?.data?.length ? ticketActivities.data : []}/>
+								{
+									ticketActivities?.pagination.nextPage || ticketActivities?.pagination.prevPage ? (
+										<PaginationRow
+											showNumResults={false}
+											showPageNums={false}
+											setPage={(page: number) => { setActivityPage(page)} }	
+											paginationData={ticketActivities?.pagination}
+											currentPage={activityPage}
+										/>
+									) : null
+								}
+							</div>
+						</>
+					)}
+				</div>
 			}
 		</div>
 	)

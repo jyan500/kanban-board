@@ -22,29 +22,33 @@ export const TicketActivity = ({currentTicketId, ticketActivities}: Props) => {
 	return (
 		<div className = "tw-flex tw-flex-col tw-gap-y-4">
 			{
-				ticketActivities?.map((activity: TicketActivityType) => (
-					<ProfileActivityRow data={activity} additionalHeaderContent={<span className={PRIMARY_TEXT}>Logged <span className = "tw-font-bold">{convertMinutesToTimeDisplay(activity.minutesSpent, false, true)}</span></span>} >
-						<>
-							<TextAreaDisplay rawHTMLString={activity.description}/>
-							{
-								activity.userId === userProfile?.id ? (
-									<div className = "tw-flex tw-flex-row tw-gap-x-2">
-										<button className = {`tw-font-bold tw-text-secondary ${SECONDARY_TEXT}`} onClick={() => {
-											dispatch(toggleShowSecondaryModal(true))
-											dispatch(setSecondaryModalProps({ticketId: currentTicketId ?? undefined, ticketActivityId: activity.id}))
-											dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
-										}}>Edit</button>
-										<button onClick={() => {
-											dispatch(toggleShowSecondaryModal(true))
-											dispatch(setSecondaryModalProps<DeleteTicketActivityWarningProps>({ticketId: currentTicketId ?? undefined, activityId: activity.id}))
-											dispatch(setSecondaryModalType("DELETE_TICKET_ACTIVITY_WARNING"))
-										}} className = {`tw-font-bold ${SECONDARY_TEXT}`}>Delete</button>
-									</div>
-								) : null
-							}
-						</>
-					</ProfileActivityRow>
-				))
+				ticketActivities?.length ? (
+					ticketActivities?.map((activity: TicketActivityType) => (
+						<ProfileActivityRow data={activity} additionalHeaderContent={<span className={PRIMARY_TEXT}>Logged <span className = "tw-font-bold">{convertMinutesToTimeDisplay(activity.minutesSpent, false, true)}</span></span>} >
+							<>
+								<TextAreaDisplay rawHTMLString={activity.description}/>
+								{
+									activity.userId === userProfile?.id ? (
+										<div className = "tw-flex tw-flex-row tw-gap-x-2">
+											<button className = {`tw-font-bold tw-text-secondary ${SECONDARY_TEXT}`} onClick={() => {
+												dispatch(toggleShowSecondaryModal(true))
+												dispatch(setSecondaryModalProps({ticketId: currentTicketId ?? undefined, ticketActivityId: activity.id}))
+												dispatch(setSecondaryModalType("TICKET_ACTIVITY_MODAL"))
+											}}>Edit</button>
+											<button onClick={() => {
+												dispatch(toggleShowSecondaryModal(true))
+												dispatch(setSecondaryModalProps<DeleteTicketActivityWarningProps>({ticketId: currentTicketId ?? undefined, activityId: activity.id}))
+												dispatch(setSecondaryModalType("DELETE_TICKET_ACTIVITY_WARNING"))
+											}} className = {`tw-font-bold ${SECONDARY_TEXT}`}>Delete</button>
+										</div>
+									) : null
+								}
+							</>
+						</ProfileActivityRow>
+					))
+				) : (
+					<p className={`${SECONDARY_TEXT}`}>No Time Logged</p>
+				)
 			}
 		</div>
 	)
