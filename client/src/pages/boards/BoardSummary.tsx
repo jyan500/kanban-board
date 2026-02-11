@@ -39,6 +39,8 @@ import { MdBreakfastDining } from "react-icons/md"
 import { BOARD_ACTIVITY_URL } from "../../helpers/urls"
 import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
+import { IconHelp } from "../../components/icons/IconHelp"
+import { HoverTooltip } from "../../components/page-elements/HoverTooltip"
 
 
 type GroupedActivity = TicketEntityHistory & {
@@ -271,7 +273,13 @@ export const BoardSummary = () => {
             </div>
             <div className = {`tw-relative tw-flex tw-flex-col tw-gap-y-4 ${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6 tw-flex-1`}>
                 <div>
-                    <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Recent Activity</h2>
+                    <div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
+                        <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Recent Activity</h2>
+                        <div className="tw-group tw-relative">
+                            <IconHelp className = {`${SECONDARY_TEXT} tw-w-5 tw-h-5`}/>
+                            <HoverTooltip direction={"top"} width={"tw-w-32 lg:tw-w-48"} text={"Currently shows recent activity up to the last 7 days"}/>
+                        </div>
+                    </div>
                     <p className={`${SECONDARY_TEXT} tw-text-sm tw-text-gray-600 tw-mb-6`}>
                         Stay up to date with what's happening across the space
                     </p>
