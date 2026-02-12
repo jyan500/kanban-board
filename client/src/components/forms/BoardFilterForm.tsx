@@ -149,16 +149,16 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 		}
 		try {
 			// get the board filter ids for each filter type that has a value and map to an array of objects like so
-			// { board_filter_id: filter id from the id map, value: the form vaule}
+			// { board_filter_id: filter id from the id map, value: the form value}
 			const userBoardFilters = [
-				...(watch("sprint").value !== "" && "sprintId" in filterIdMap ? [{ board_filter_id: filterIdMap["sprintId"], value: Number(watch("sprint").value)}] : []),
-				...(watch("assignee").value !== "" && "assignee" in filterIdMap ? [{ board_filter_id: filterIdMap["assignee"], value: Number(watch("assignee").value)}] : []),
-				...(watch("statusId").value !== "" && "statusId" in filterIdMap ? [{ board_filter_id: filterIdMap["statusId"], value: Number(watch("statusId").value)}] : []),
-				...(watch("priorityId").value !== "" && "priorityId" in filterIdMap ? [{ board_filter_id: filterIdMap["priorityId"], value: Number(watch("priorityId").value)}] : []),
-				...(watch("ticketTypeId").value !== "" && "ticketTypeId" in filterIdMap ? [{ board_filter_id: filterIdMap["ticketTypeId"], value: Number(watch("ticketTypeId").value)}] : []),
+				...(watch("sprint") != null && watch("sprint").value !== "" && "sprintId" in filterIdMap ? [{ board_filter_id: filterIdMap["sprintId"], value: Number(watch("sprint").value)}] : []),
+				...(watch("assignee") != null && watch("assignee").value !== "" && "assignee" in filterIdMap ? [{ board_filter_id: filterIdMap["assignee"], value: Number(watch("assignee").value)}] : []),
+				...(watch("statusId") != null && watch("statusId").value !== "" && "statusId" in filterIdMap ? [{ board_filter_id: filterIdMap["statusId"], value: Number(watch("statusId").value)}] : []),
+				...(watch("priorityId") != null && watch("priorityId").value !== "" && "priorityId" in filterIdMap ? [{ board_filter_id: filterIdMap["priorityId"], value: Number(watch("priorityId").value)}] : []),
+				...(watch("ticketTypeId") != null && watch("ticketTypeId").value !== "" && "ticketTypeId" in filterIdMap ? [{ board_filter_id: filterIdMap["ticketTypeId"], value: Number(watch("ticketTypeId").value)}] : []),
 			] 
 			await updateUserBoardFilters(userBoardFilters).unwrap()
-			postSubmit({
+			onSubmit({
 				assignee: watch("assignee"),
 				sprint: watch("sprint"),
 				ticketTypeId: watch("ticketTypeId"),
@@ -167,7 +167,8 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 			} as FormValues)
 			dispatch(addToast(defaultToast))
 		}
-		catch {
+		catch (e) {
+			console.log(e)
 			dispatch(addToast({
 				...defaultToast,
 				type: "failure",

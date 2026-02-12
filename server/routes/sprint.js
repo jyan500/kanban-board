@@ -42,8 +42,9 @@ router.get("/", validateSprintGet, handleValidationResult, async (req, res, next
 				queryBuilder.whereILike("name", `%${req.query.query}%`)
 			}
 			if (req.query.checkOverlapping && req.query.startDate && req.query.endDate){
+				/* CAST prevents an issue where DATE(?) doesn't get converted into valid syntax on the postgreSQL side*/
 				queryBuilder.andWhereRaw(
-					"DATE(sprints.start_date) <= DATE(?) AND DATE(sprints.end_date) >= DATE(?)",
+					"CAST(sprints.start_date AS DATE) <= CAST(? AS DATE) AND CAST(sprints.end_date AS DATE) >= CAST(? AS DATE)",
 					[req.query.endDate, req.query.startDate]
 				)
 			}

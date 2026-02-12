@@ -15,7 +15,7 @@ const registrationRequestTemplate = require("../email/templates/registration-req
 const activateAccountTemplate = require("../email/templates/activate-account")
 const passwordResetTemplate = require("../email/templates/password-reset")
 const {sendEmail} = require("../email/email")
-const { FAILED_TO_LOGIN_MESSAGE, EXCEEDED_MESSAGE, DEFAULT_STATUSES } = require("../constants")
+const { FAILED_TO_LOGIN_MESSAGE, EXCEEDED_MESSAGE, DEFAULT_FILTERS, DEFAULT_STATUSES } = require("../constants")
 const axios = require("axios")
 const { rateLimitAuth } = require("../middleware/rateLimitMiddleware")
 const HistoryService = require('../services/history-service')
@@ -312,6 +312,12 @@ router.post("/register/organization", rateLimitAuth, userValidator.organizationU
 		const notificationTypes = await db("notification_types")
 		const userToNotificationTypes = notificationTypes.map((notification) => ({user_id: userId, notification_type_id: notification.id}))	
 		await db("users_to_notification_types").insert(userToNotificationTypes)
+
+		// insert all default filters
+		await db("filters").insert(DEFAULT_FILTERS.map((filter) => ({
+			...filter,
+			organization_id: organizationId
+		})))
 
 		// Generate activation link
 	    const activationLink = `/activate?token=${activationToken}`;

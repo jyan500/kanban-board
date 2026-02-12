@@ -279,7 +279,11 @@ router.post("/board-filter", authenticateUserActivated, validateUserBoardFilterU
 		const { id: userId } = req.user
 		const existingFilters = await db("users_to_board_filters").where("user_id", userId)
 		const existingFilterIds = existingFilters.map((filter) => filter.board_filter_id)
+		// add if the id doesn't exist in the db table
 		const idsToAdd = req.body.ids.filter((idObj) => !existingFilterIds.includes(idObj.board_filter_id))
+		// update if the id does exist in the db table
+		const idsToUpdate = req.body.ids.filter((idObj) => existingFilterIds.includes(idObj.board_filter_id))
+		// we're deleting if the id doesn't exist in the request, but exists in the db table
 		const idsToDelete = existingFilterIds.filter((id) => !req.body.ids.map(idObj => idObj.board_filter_id).includes(id))
 		if (idsToAdd.length){
 			await db("users_to_board_filters").insert(idsToAdd.map((idObj) => {
@@ -287,6 +291,16 @@ router.post("/board-filter", authenticateUserActivated, validateUserBoardFilterU
 					user_id: userId,
 					board_filter_id: idObj.board_filter_id,
 					value: idObj.value,
+				}
+			}))
+		}
+		if (idsToUpdate.length){
+			await db("users_to_board_filters").where("user_id", userId).whereIn("board_filter_id", idsToUpdate.map((idObj)=>idObj.board_filter_id)).del()
+			await db("users_to_board_filters").insert(idsToUpdate.map((idObj) => {
+				return {
+					user_id: userId,
+					board_filter_id: idObj.board_filter_id,
+					value: idObj.value
 				}
 			}))
 		}

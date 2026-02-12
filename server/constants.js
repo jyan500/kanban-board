@@ -20,6 +20,14 @@ const ORG_STATUS_LIMIT = 10
 const EXCEEDED_MESSAGE = "You have exceeded the maximum amount of attempts. Please try again later."
 const FAILED_TO_LOGIN_MESSAGE = "Failed to login: email, organization or password is incorrect."
 
+const DEFAULT_FILTERS = [
+	{name: 'sprintId',  order: 5},
+    {name: 'ticketTypeId', order: 1},
+    {name: 'statusId', order: 3},
+    {name: 'priorityId', order: 2},
+    {name: 'assignee', order: 4},
+]
+
 const TICKET_ENTITY_TYPES = {
    "tickets_to_users": (ticketName, displayName, action) => {
 		const actionTypes = {"INSERT": "assigned to", "DELETE": "removed from"}
@@ -61,6 +69,7 @@ const TICKET_ENTITY_TYPES = {
 module.exports = {
 	BULK_INSERT_LIMIT,
 	DEFAULT_STATUSES,
+	DEFAULT_FILTERS,
 	MIN_COLUMN_LIMIT,
 	MAX_COLUMN_LIMIT,
 	MIN_BOARD_TICKET_LIMIT,
