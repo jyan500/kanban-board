@@ -285,9 +285,6 @@ router.post("/board-filter", authenticateUserActivated, validateUserBoardFilterU
 		const idsToUpdate = req.body.ids.filter((idObj) => existingFilterIds.includes(idObj.board_filter_id))
 		// we're deleting if the id doesn't exist in the request, but exists in the db table
 		const idsToDelete = existingFilterIds.filter((id) => !req.body.ids.map(idObj => idObj.board_filter_id).includes(id))
-		console.log("idsToAdd: ", idsToAdd)
-		console.log("idsToUpdate: ", idsToUpdate)
-		console.log("idsToDelete: ", idsToDelete)
 		if (idsToAdd.length){
 			await db("users_to_board_filters").insert(idsToAdd.map((idObj) => {
 				return {

@@ -77,7 +77,6 @@ export const Board = () => {
 
 	useEffect(() => {
 
-		console.log("user board filters: ", userBoardFilterData)
 		let newFilters: BoardFilters = {
 			sprintId: null,
 			ticketTypeId: null,
