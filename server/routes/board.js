@@ -481,8 +481,9 @@ router.get("/:boardId/ticket", validateGet, handleValidationResult, async (req, 
 			// If checkOverlapping is true, and both startDate and endDate are provided, check for interval overlaps
 			if (req.query.checkOverlapping === "true" && req.query.startDate && req.query.endDate) {
 				queryBuilder.whereNotNull("tickets.due_date"); // Ensure ticket has a due date
+				/* CAST prevents an issue where DATE(?) doesn't get converted into valid syntax on the postgreSQL side*/
 				queryBuilder.andWhereRaw(
-					"DATE(tickets.created_at) <= DATE(?) AND DATE(tickets.due_date) >= DATE(?)",
+					"CAST(tickets.created_at AS DATE) <= CAST(? AS DATE) AND CAST(tickets.due_date AS DATE) >= CAST(? AS DATE)",
 					[req.query.endDate, req.query.startDate]
 				);
 			}
@@ -943,6 +944,14 @@ router.post("/", validateCreate, handleValidationResult, async (req, res, next) 
 			organization_id: body.organization_id,
 			user_id: req.user.id,
 		})
+
+		// insert all filters by default
+		const filters = await db("filters").where("organization_id", req.user.organization)
+		await db("boards_to_filters").insert(filters.map((filter) => ({
+			filter_id: filter.id,
+			board_id: id,
+		})))
+
 		res.json({id: id, message: "Board inserted successfully!"})
 	}	
 	catch (err) {
