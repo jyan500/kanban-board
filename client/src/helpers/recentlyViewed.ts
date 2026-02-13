@@ -4,13 +4,13 @@ const STORAGE_KEY = "recentlyViewed"
 const MAX_ITEMS = 20
 
 // Add item to recently viewed
-export const trackViewedItem = (type: string, id: number, name: string, organizationId: number) => {
+export const trackViewedItem = (type: string, id: number, name: string, organizationId: number, userProfileId: number) => {
     // Get existing items from localStorage
     const existingItems: Array<ViewedItem> = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")
 
     // remove item if it already exists
     const filteredItems = existingItems.filter((item) => {
-        return item.organizationId === organizationId && !(item.type === type && item.id === id)
+        return item.organizationId === organizationId && item.userProfileId === item.userProfileId && !(item.type === type && item.id === id)
     })
 
     // Add new item to the beginning of the array
@@ -19,6 +19,7 @@ export const trackViewedItem = (type: string, id: number, name: string, organiza
         id,
         name,
         organizationId,
+        userProfileId,
         viewedAt: new Date()
     })
 
@@ -32,20 +33,20 @@ export const trackViewedItem = (type: string, id: number, name: string, organiza
 }
 
 // Get recently viewed items
-export const getRecentlyViewed = (organizationId: number, page: number=1, limit: number=10): Array<ViewedItem> => {
+export const getRecentlyViewed = (organizationId: number, userProfileId: number, page: number=1, limit: number=10): Array<ViewedItem> => {
     const items: Array<ViewedItem> = JSON.parse(
         localStorage.getItem(STORAGE_KEY) || "[]"
-    ).filter((item: ViewedItem) => item.organizationId === organizationId)    
+    ).filter((item: ViewedItem) => item.organizationId === organizationId && item.userProfileId === userProfileId)    
     const startIndex = (page * limit) - limit
     const endIndex = (page * limit)
     return items.slice(startIndex, endIndex)
 }
 
 // get total pages
-export const getTotalPages = (organizationId: number, limit: number=10) => {
+export const getTotalPages = (organizationId: number, userProfileId: number, limit: number=10) => {
     const items: Array<ViewedItem> = JSON.parse(
         localStorage.getItem(STORAGE_KEY) || "[]"
-    ).filter((item: ViewedItem) => item.organizationId === organizationId)
+    ).filter((item: ViewedItem) => item.organizationId === organizationId && item.userProfileId === userProfileId)
     return Math.ceil(items.length/limit)
 }
 

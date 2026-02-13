@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks"
 import { toggleShowModal, setModalProps } from "../slices/modalSlice" 
-import { useGetUserQuery, useEditOwnUserProfileMutation, useEditUserProfileMutation } from "../services/private/userProfile"
+import { useLazyGetUserProfileQuery, useLazyGetUserQuery, useEditOwnUserProfileMutation, useEditUserProfileMutation } from "../services/private/userProfile"
 import { useForm, Controller } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid" 
 import { addToast } from "../slices/toastSlice" 
@@ -60,7 +60,8 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 	}
 	const [ editUserProfile, {isLoading: isEditUserLoading, error: userError} ] = useEditUserProfileMutation() 
 	const [ editOwnUserProfile, {isLoading: isEditOwnUserLoading, error: ownUserError} ] = useEditOwnUserProfileMutation()
-	const { data: userInfo, isLoading: isUserDataLoading, isFetching: isUserDataFetching  } = useGetUserQuery(userId ? userId : skipToken)
+	const [triggerGetUser, { data: userInfo, isLoading: isUserDataLoading, isFetching: isUserDataFetching  }] = useLazyGetUserQuery()
+	const [triggerGetUserProfile, { data: userProfileInfo, isLoading: isUserProfileDataLoading}] = useLazyGetUserProfileQuery()
 	const [preloadedValues, setPreloadedValues] = useState<FormValues>(defaultForm)
 	const { register , handleSubmit, reset, watch, control, setValue, getValues, formState: {errors} } = useForm<FormValues>({
 		defaultValues: preloadedValues
@@ -76,24 +77,39 @@ export const EditUserForm = ({userId, isAccountsPage, isChangePassword}: Props) 
 	    	confirmPassword: {required: "Confirm Password is required"},
     	} : {}
     }
+
+	useEffect(() => {
+		if (userId){
+			if (!isAccountsPage){
+				triggerGetUser(userId)
+			}
+			else {
+				triggerGetUserProfile()
+			}
+		}
+	}, [userId, isAccountsPage])
+
 	useEffect(() => {
 		// initialize with current values if the user exists
-		if (userId && userInfo){
+		if (userId){
+			let info = !isAccountsPage ? userInfo : userProfileInfo
 			// everything except organization
-			const {organizationId, ...userWithoutOrganization} = userInfo
-			reset({
-				...userWithoutOrganization, 
-				userRoleId: {
-					label: userRolesForSelect.find((userRole) => userInfo.userRoleId?.toString() === userRole.value)?.label ?? "",
-					value: userInfo.userRoleId?.toString() ?? "",
-				},
-				changePassword: isAccountsPage && isChangePassword
-			})
+			if (info){
+				const {organizationId, ...userWithoutOrganization} = info
+				reset({
+					...userWithoutOrganization, 
+					userRoleId: {
+						label: userRolesForSelect.find((userRole) => info.userRoleId?.toString() === userRole.value)?.label ?? "",
+						value: info.userRoleId?.toString() ?? "",
+					},
+					changePassword: isAccountsPage && isChangePassword
+				})
+			}
 		}
 		else {
 			reset(defaultForm)
 		}
-	}, [showModal, userInfo, userId, isChangePassword, userRolesForSelect])
+	}, [showModal, userInfo, userProfileInfo, isAccountsPage, userId, isChangePassword, userRolesForSelect])
 
     const onSubmit = async (values: FormValues) => {
     	try {

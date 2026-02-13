@@ -161,6 +161,7 @@ export const {
 	useGetUserQuery,
 	useGetUserProfileQuery, 
 	useLazyGetUserQuery,
+	useLazyGetUserProfileQuery,
 	useGetUserProfilesQuery, 
 	useLazyGetUserProfilesQuery,
 	useGetUserOrganizationsQuery, 

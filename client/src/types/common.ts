@@ -320,6 +320,7 @@ export interface ViewedItem {
 	id: number
 	name: string
 	organizationId: number
+	userProfileId: number
 	viewedAt: Date
 }
 
