@@ -213,8 +213,7 @@ export const BoardSummary = () => {
                             <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>Manage priorities</Link>
                         </p>
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
-                            {/* Testing animation fix with the key */}
-                            <PieChartWithKey key={Math.random()} boardId={boardInfo?.id ?? 0} searchKey={"priorityId"} data={priorityData} total={totalTickets}/>
+                            <PieChartWithKey boardId={boardInfo?.id ?? 0} searchKey={"priorityId"} data={priorityData} total={totalTickets}/>
                         </div>
                     </div>
 
@@ -263,7 +262,6 @@ export const BoardSummary = () => {
 
                         <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
                             <PieChartWithKey
-                                key={Math.random()}
                                 searchKey={"ticketTypeId"}
                                 boardId={boardInfo?.id ?? 0}
                                 data={typeData}
