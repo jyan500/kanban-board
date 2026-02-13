@@ -26,15 +26,15 @@ export const RecentlyViewed = () => {
     useEffect(() => {
         // Load items from local storage
         if (userProfile){
-            const items = getRecentlyViewed(userProfile.organizationId, page, PER_PAGE)
-            const totalPages = getTotalPages(userProfile.organizationId, PER_PAGE)
+            const items = getRecentlyViewed(userProfile.organizationId, userProfile.id, page, PER_PAGE)
+            const totalPages = getTotalPages(userProfile.organizationId, userProfile.id, PER_PAGE)
             setRecentItems(items)
             setTotalPages(totalPages)
 
             // Listen for storage changes across multiple tabs
             const handleStorageChange = () => {
-                const updatedItems = getRecentlyViewed(userProfile.organizationId, page, PER_PAGE)
-                const updatedPages = getTotalPages(userProfile.organizationId, PER_PAGE)
+                const updatedItems = getRecentlyViewed(userProfile.organizationId, userProfile.id, page, PER_PAGE)
+                const updatedPages = getTotalPages(userProfile.organizationId, userProfile.id, PER_PAGE)
                 setRecentItems(updatedItems)
                 setTotalPages(updatedPages)
             }
@@ -58,8 +58,8 @@ export const RecentlyViewed = () => {
 
     useEffect(() => {
         if (userProfile){
-            const items = getRecentlyViewed(userProfile.organizationId, page, PER_PAGE)
-            const totalPages = getTotalPages(userProfile.organizationId, PER_PAGE)
+            const items = getRecentlyViewed(userProfile.organizationId, userProfile.id, page, PER_PAGE)
+            const totalPages = getTotalPages(userProfile.organizationId, userProfile.id, PER_PAGE)
             setRecentItems(items)
             setTotalPages(totalPages)
         }

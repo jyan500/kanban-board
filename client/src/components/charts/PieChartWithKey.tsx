@@ -56,7 +56,7 @@ const renderCenterLabel = (props: any) => {
     )
 }
 
-export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
+export const PieChartWithKey = React.memo(({data, total, boardId, searchKey}: Props) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     const { isDarkMode } = useAppSelector((state) => state.darkMode)
     const navigate = useNavigate()
@@ -122,4 +122,4 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
             />
         </div>
     )
-}
+})

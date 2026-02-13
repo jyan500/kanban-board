@@ -18,7 +18,7 @@ export const useTrackRecentlyViewed = ({
     const { userProfile } = useAppSelector((state) => state.userProfile)
     useEffect(() => {
         if (enabled && id && name && userProfile) {
-            trackViewedItem(type, id, name, userProfile.organizationId)
+            trackViewedItem(type, id, name, userProfile.organizationId, userProfile.id)
         }
     }, [type, id, name, enabled, userProfile])
 }
