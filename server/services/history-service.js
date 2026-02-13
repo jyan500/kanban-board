@@ -450,10 +450,7 @@ class HistoryService {
                 created_at: new Date()
             }
             
-            const [id] = await transaction('ticket_relationships')
-                .insert(relationshipData)
-                .returning('id')
-
+            const id = await insertAndGetId("ticket_relationships", relationshipData)
             // Record history for BOTH tickets involved
             await this.recordHistory(
                 transaction,
