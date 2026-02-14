@@ -78,7 +78,7 @@ export const PieChartWithKey = React.memo(({data, total, boardId, searchKey}: Pr
             <div className="tw-relative">
                 <ResponsiveContainer width={250} height={250}>
                     <PieChart>
-                        <Pie
+                        {/* <Pie
                             data={data}
                             cx="50%"
                             cy="50%"
@@ -103,7 +103,16 @@ export const PieChartWithKey = React.memo(({data, total, boardId, searchKey}: Pr
                                     onMouseLeave={handleMouseLeave}
                                 />
                             ))}
-                        </Pie>
+                        </Pie> */}
+                        <Pie
+                            data={data}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={70}
+                            outerRadius={100}
+                            dataKey="value"
+                            fill="#8884d8"
+                        />
                         <Label 
                             value={total} 
                             position="center" 
