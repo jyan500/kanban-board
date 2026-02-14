@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import { 
     Cell, 
     Label, 
@@ -59,10 +59,20 @@ const renderCenterLabel = (props: any) => {
 export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     const { isDarkMode } = useAppSelector((state) => state.darkMode)
+    const [renderChart, setRenderChart] = useState(false)
     const navigate = useNavigate()
 
     if (!data || !Array.isArray(data) || data.length === 0) {
         return <div>No chart data</div>
+    }
+
+    useEffect(() => {
+        // Force render after mount
+        setTimeout(() => setRenderChart(true), 100)
+    }, [])
+    
+    if (!renderChart) {
+        return <div style={{ width: 250, height: 250 }}>Loading...</div>
     }
 
     const handlePieClick = (data: any, index: number) => {
@@ -80,9 +90,22 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     return (
         <div className = "tw-flex tw-flex-col lg:tw-flex-row lg:tw-gap-x-2 tw-gap-y-2 lg:tw-items-center">
             <div className="tw-relative">
-                <ResponsiveContainer width={250} height={250}>
+                <div style={{ width: 250, height: 250 }}>
+                    <PieChart width={250} height={250}>
+                        <Pie 
+                            data={data} 
+                            dataKey="value"
+                            cx={125}
+                            cy={125}
+                            outerRadius={100}
+                            fill="#8884d8"
+                            isAnimationActive={false}
+                        />
+                    </PieChart>
+                </div>
+                {/* <ResponsiveContainer width={250} height={250}>
                     <PieChart>
-                        {/* <Pie
+                        <Pie
                             data={data}
                             cx="50%"
                             cy="50%"
@@ -107,7 +130,7 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
                                     onMouseLeave={handleMouseLeave}
                                 />
                             ))}
-                        </Pie> */}
+                        </Pie>
                         <Pie
                             data={data}
                             cx="50%"
@@ -117,14 +140,14 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
                             dataKey="value"
                             fill="#8884d8"
                         />
-                        {/* <Label 
+                        <Label 
                             value={total} 
                             position="center" 
                             content={(props: any) => renderCenterLabel({...props, isDarkMode})}
-                        /> */}
-                        {/* <Tooltip content={<ChartTooltip/>}/> */}
+                        />
+                        <Tooltip content={<ChartTooltip/>}/>
                     </PieChart>
-                </ResponsiveContainer>
+                </ResponsiveContainer> */}
             </div>
             <ColorKey 
                 boardId={boardId}
