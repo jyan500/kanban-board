@@ -41,8 +41,6 @@ import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
 import { IconHelp } from "../../components/icons/IconHelp"
 import { HoverTooltip } from "../../components/page-elements/HoverTooltip"
-import { TestPie } from "../../components/charts/TestPie"
-import { PieChart, Pie } from "recharts"
 
 
 type GroupedActivity = TicketEntityHistory & {
@@ -102,30 +100,27 @@ export const BoardSummary = () => {
         return {
             id: item.statusId,
             name: status ? status.name : `Status ${item.statusId}`,
-            value: item.totalTickets,
+            value: Number(item.totalTickets),
             color: "#78909C" // Dark Gray
         }
     }) ?? []
 
-    const priorityData: Array<PieChartItem> = data?.ticketsByPriority.map(item => {
+    const priorityData: Array<PieChartItem> = data?.ticketsByPriority.map((item, index) => {
         const priority = priorities.find((priority) => priority.id === item.priorityId)
         return {
             id: item.priorityId,
             name: priority ? priority.name : `Priority ${item.priorityId}`,
-            value: item.totalTickets,
+            value: Number(item.totalTickets),
             color: priority ? PIE_CHART_COLOR_MAP[priority.name] : '#999'
         }
     }) ?? []
-
-    // Before rendering, log it:
-    console.log('Passing to PieChartWithKey:', priorityData)
 
     const typeData: Array<PieChartItem> = data?.ticketsByTicketType.map(item => {
         const ticketType = ticketTypes.find((ticketType) => ticketType.id === item.ticketTypeId)
         return {
             id: item.ticketTypeId,
             name: ticketType ? ticketType.name : `Type ${item.ticketTypeId}`,
-            value: item.totalTickets,
+            value: Number(item.totalTickets),
             color: ticketType ? TICKET_TYPE_COLOR_MAP[ticketType.name] : '#999'
         }
     }) ?? []
@@ -139,7 +134,7 @@ export const BoardSummary = () => {
         return {
             id: item.userId,
             name: !item.userId ? 'Unassigned' : displayUser(profile),
-            value: item.totalTickets,
+            value: Number(item.totalTickets),
             initials: getUserInitials(profile),
             imageUrl: profile?.imageUrl,
             percentage: percentage,
@@ -217,20 +212,8 @@ export const BoardSummary = () => {
                             Get a holistic view of how tickets are being prioritized.{' '}
                             <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>Manage priorities</Link>
                         </p>
-                        {/* <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
+                        <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
                             <PieChartWithKey boardId={boardInfo?.id ?? 0} searchKey={"priorityId"} data={priorityData} total={totalTickets}/>
-                        </div> */}
-                        <div style={{ width: 300, height: 300, border: '2px solid red' }}>
-                            <PieChart width={300} height={300}>
-                                <Pie 
-                                    data={priorityData}
-                                    dataKey="value"
-                                    cx={150}
-                                    cy={150}
-                                    outerRadius={80}
-                                    fill="#8884d8"
-                                />
-                            </PieChart>
                         </div>
                     </div>
 
@@ -277,28 +260,13 @@ export const BoardSummary = () => {
                             <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>View all tickets</Link>
                         </p>
 
-                        {/* <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
+                        <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
                             <PieChartWithKey
                                 searchKey={"ticketTypeId"}
                                 boardId={boardInfo?.id ?? 0}
                                 data={typeData}
                                 total={totalTickets}
                             />
-                        </div> */}
-                        <div style={{ width: 300, height: 300, border: '2px solid red' }}>
-                            <PieChart width={300} height={300}>
-                                <Pie 
-                                    data={[
-                                        { name: 'A', value: 400 },
-                                        { name: 'B', value: 300 },
-                                    ]} 
-                                    dataKey="value"
-                                    cx={150}
-                                    cy={150}
-                                    outerRadius={80}
-                                    fill="#8884d8"
-                                />
-                            </PieChart>
                         </div>
                     </div>
                 </div>

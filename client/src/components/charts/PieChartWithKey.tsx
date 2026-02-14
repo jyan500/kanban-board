@@ -65,46 +65,11 @@ interface ErrorBoundaryState {
     error: Error | null
 }
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-    constructor(props: ErrorBoundaryProps) {
-        super(props)
-        this.state = { hasError: false, error: null }
-    }
-
-    static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-        return { hasError: true, error }
-    }
-
-    componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-        console.error('PieChart Error:', error, errorInfo)
-    }
-
-    render() {
-        if (this.state.hasError) {
-            return <div>Error rendering chart: {this.state.error?.message}</div>
-        }
-        return this.props.children
-    }
-}
-
 export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     const { isDarkMode } = useAppSelector((state) => state.darkMode)
     const [renderChart, setRenderChart] = useState(false)
     const navigate = useNavigate()
-
-    useEffect(() => {
-        // Force render after mount
-        setTimeout(() => setRenderChart(true), 100)
-    }, [])
-    
-    if (!data || !Array.isArray(data) || data.length === 0) {
-        return <div>No chart data</div>
-    }
-    
-    if (!renderChart) {
-        return <div style={{ width: 250, height: 250 }}>Loading...</div>
-    }
 
     const handlePieClick = (data: any, index: number) => {
         navigate(`${TICKETS}?boardId=${boardId}&${searchKey}=${data.id}`,  { replace: true })
@@ -121,22 +86,7 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     return (
         <div className = "tw-flex tw-flex-col lg:tw-flex-row lg:tw-gap-x-2 tw-gap-y-2 lg:tw-items-center">
             <div className="tw-relative">
-                <div style={{ width: 250, height: 250 }}>
-                    <ErrorBoundary>
-                        <PieChart width={250} height={250}>
-                            <Pie 
-                                data={data} 
-                                dataKey="value"
-                                cx={125}
-                                cy={125}
-                                outerRadius={100}
-                                fill="#8884d8"
-                                isAnimationActive={false}
-                            />
-                        </PieChart>
-                    </ErrorBoundary>
-                </div>
-                {/* <ResponsiveContainer width={250} height={250}>
+                <ResponsiveContainer width={250} height={250}>
                     <PieChart>
                         <Pie
                             data={data}
@@ -147,7 +97,6 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
                             dataKey="value"
                             startAngle={90}
                             endAngle={-270}
-                            isAnimationActive={false}
                             onClick={handlePieClick}
                         >
                             {data.map((entry, index) => (
@@ -164,15 +113,6 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
                                 />
                             ))}
                         </Pie>
-                        <Pie
-                            data={data}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={70}
-                            outerRadius={100}
-                            dataKey="value"
-                            fill="#8884d8"
-                        />
                         <Label 
                             value={total} 
                             position="center" 
@@ -180,7 +120,7 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
                         />
                         <Tooltip content={<ChartTooltip/>}/>
                     </PieChart>
-                </ResponsiveContainer> */}
+                </ResponsiveContainer>
             </div>
             <ColorKey 
                 boardId={boardId}

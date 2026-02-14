@@ -34,8 +34,6 @@ import { RowPlaceholder } from "./placeholders/RowPlaceholder"
 import { RecentlyViewed } from "./page-elements/RecentlyViewed"
 import { Notifications } from "./notifications/Notifications"
 import { BorderContainer } from "./page-elements/BorderContainer"
-import { TestPie } from "./charts/TestPie"
-
 
 type DashboardSectionProps = {
 	title: string
@@ -244,9 +242,6 @@ export const Dashboard = () => {
 				<BorderContainer width={`lg:tw-w-1/2`} className = {`tw-flex`}>
 					<Notifications fromDashboard={true}/>
 				</BorderContainer>
-			</div>
-			<div>
-				<TestPie/>
 			</div>
 		</div>
 	)	
