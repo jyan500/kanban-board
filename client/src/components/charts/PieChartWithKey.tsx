@@ -56,10 +56,14 @@ const renderCenterLabel = (props: any) => {
     )
 }
 
-export const PieChartWithKey = React.memo(({data, total, boardId, searchKey}: Props) => {
+export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     const { isDarkMode } = useAppSelector((state) => state.darkMode)
     const navigate = useNavigate()
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        return <div>No chart data</div>
+    }
 
     const handlePieClick = (data: any, index: number) => {
         navigate(`${TICKETS}?boardId=${boardId}&${searchKey}=${data.id}`,  { replace: true })
@@ -132,4 +136,4 @@ export const PieChartWithKey = React.memo(({data, total, boardId, searchKey}: Pr
             />
         </div>
     )
-})
+}

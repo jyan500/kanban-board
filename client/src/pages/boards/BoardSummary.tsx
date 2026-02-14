@@ -115,6 +115,9 @@ export const BoardSummary = () => {
         }
     }) ?? []
 
+    // Before rendering, log it:
+    console.log('Passing to PieChartWithKey:', priorityData)
+
     const typeData: Array<PieChartItem> = data?.ticketsByTicketType.map(item => {
         const ticketType = ticketTypes.find((ticketType) => ticketType.id === item.ticketTypeId)
         return {
