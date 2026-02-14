@@ -41,6 +41,8 @@ import { useScreenSize } from "../../hooks/useScreenSize"
 import { LG_BREAKPOINT } from "../../helpers/constants"
 import { IconHelp } from "../../components/icons/IconHelp"
 import { HoverTooltip } from "../../components/page-elements/HoverTooltip"
+import { TestPie } from "../../components/charts/TestPie"
+import { PieChart, Pie } from "recharts"
 
 
 type GroupedActivity = TicketEntityHistory & {
@@ -215,8 +217,20 @@ export const BoardSummary = () => {
                             Get a holistic view of how tickets are being prioritized.{' '}
                             <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>Manage priorities</Link>
                         </p>
-                        <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
+                        {/* <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
                             <PieChartWithKey boardId={boardInfo?.id ?? 0} searchKey={"priorityId"} data={priorityData} total={totalTickets}/>
+                        </div> */}
+                        <div style={{ width: 300, height: 300, border: '2px solid red' }}>
+                            <PieChart width={300} height={300}>
+                                <Pie 
+                                    data={priorityData}
+                                    dataKey="value"
+                                    cx={150}
+                                    cy={150}
+                                    outerRadius={80}
+                                    fill="#8884d8"
+                                />
+                            </PieChart>
                         </div>
                     </div>
 
@@ -263,13 +277,28 @@ export const BoardSummary = () => {
                             <Link to={`${TICKETS}?boardId=${boardInfo?.id ?? 0}`} className={`${TERTIARY_TEXT} hover:tw-underline`}>View all tickets</Link>
                         </p>
 
-                        <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
+                        {/* <div className="tw-flex tw-items-center tw-justify-center tw-mb-6">
                             <PieChartWithKey
                                 searchKey={"ticketTypeId"}
                                 boardId={boardInfo?.id ?? 0}
                                 data={typeData}
                                 total={totalTickets}
                             />
+                        </div> */}
+                        <div style={{ width: 300, height: 300, border: '2px solid red' }}>
+                            <PieChart width={300} height={300}>
+                                <Pie 
+                                    data={[
+                                        { name: 'A', value: 400 },
+                                        { name: 'B', value: 300 },
+                                    ]} 
+                                    dataKey="value"
+                                    cx={150}
+                                    cy={150}
+                                    outerRadius={80}
+                                    fill="#8884d8"
+                                />
+                            </PieChart>
                         </div>
                     </div>
                 </div>
