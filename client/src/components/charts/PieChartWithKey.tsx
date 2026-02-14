@@ -85,19 +85,23 @@ export const PieChartWithKey = React.memo(({data, total, boardId, searchKey}: Pr
                             innerRadius={70}
                             outerRadius={100}
                             dataKey="value"
-                            startAngle={90}
-                            endAngle={-270}
+                            // startAngle={90}
+                            // endAngle={-270}
+                            onAnimationStart={() => console.log('Animation started')}
+                            onAnimationEnd={() => console.log('Animation ended')}
+                            animationBegin={100}  // Add 100ms delay
+                            fill="#8884d8"  // Add a fallback fill
                             onClick={handlePieClick}
                         >
                             {data.map((entry, index) => (
                                 <Cell 
-                                    key={`cell-${index}`} 
+                                    key={`cell-${entry.id}-${entry.value}`} 
                                     fill={entry.color} 
-                                    style={{ 
-                                        cursor: 'pointer',
-                                        opacity: hoveredIndex === null || hoveredIndex === index ? 1 : 0.5,
-                                        transition: 'opacity 0.2s ease'
-                                    }} 
+                                    // style={{ 
+                                    //     cursor: 'pointer',
+                                    //     opacity: hoveredIndex === null || hoveredIndex === index ? 1 : 0.5,
+                                    //     transition: 'opacity 0.2s ease'
+                                    // }} 
                                     onMouseEnter={() => handleMouseEnter(index)}
                                     onMouseLeave={handleMouseLeave}
                                 />
