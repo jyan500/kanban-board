@@ -117,12 +117,12 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
                             dataKey="value"
                             fill="#8884d8"
                         />
-                        <Label 
+                        {/* <Label 
                             value={total} 
                             position="center" 
                             content={(props: any) => renderCenterLabel({...props, isDarkMode})}
-                        />
-                        <Tooltip content={<ChartTooltip/>}/>
+                        /> */}
+                        {/* <Tooltip content={<ChartTooltip/>}/> */}
                     </PieChart>
                 </ResponsiveContainer>
             </div>
