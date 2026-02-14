@@ -56,6 +56,37 @@ const renderCenterLabel = (props: any) => {
     )
 }
 
+interface ErrorBoundaryProps {
+    children: React.ReactNode
+}
+
+interface ErrorBoundaryState {
+    hasError: boolean
+    error: Error | null
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    constructor(props: ErrorBoundaryProps) {
+        super(props)
+        this.state = { hasError: false, error: null }
+    }
+
+    static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+        return { hasError: true, error }
+    }
+
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+        console.error('PieChart Error:', error, errorInfo)
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return <div>Error rendering chart: {this.state.error?.message}</div>
+        }
+        return this.props.children
+    }
+}
+
 export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
     const { isDarkMode } = useAppSelector((state) => state.darkMode)
@@ -91,17 +122,19 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
         <div className = "tw-flex tw-flex-col lg:tw-flex-row lg:tw-gap-x-2 tw-gap-y-2 lg:tw-items-center">
             <div className="tw-relative">
                 <div style={{ width: 250, height: 250 }}>
-                    <PieChart width={250} height={250}>
-                        <Pie 
-                            data={data} 
-                            dataKey="value"
-                            cx={125}
-                            cy={125}
-                            outerRadius={100}
-                            fill="#8884d8"
-                            isAnimationActive={false}
-                        />
-                    </PieChart>
+                    <ErrorBoundary>
+                        <PieChart width={250} height={250}>
+                            <Pie 
+                                data={data} 
+                                dataKey="value"
+                                cx={125}
+                                cy={125}
+                                outerRadius={100}
+                                fill="#8884d8"
+                                isAnimationActive={false}
+                            />
+                        </PieChart>
+                    </ErrorBoundary>
                 </div>
                 {/* <ResponsiveContainer width={250} height={250}>
                     <PieChart>

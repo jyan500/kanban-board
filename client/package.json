@@ -23,7 +23,7 @@
     "react-scripts": "5.0.1",
     "react-select": "^5.8.1",
     "react-select-async-paginate": "^0.7.6",
-    "recharts": "2.1.16",
+    "recharts": "2.5.0",
     "redux": "^5.0.1",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",

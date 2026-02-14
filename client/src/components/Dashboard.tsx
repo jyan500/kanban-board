@@ -34,6 +34,27 @@ import { RowPlaceholder } from "./placeholders/RowPlaceholder"
 import { RecentlyViewed } from "./page-elements/RecentlyViewed"
 import { Notifications } from "./notifications/Notifications"
 import { BorderContainer } from "./page-elements/BorderContainer"
+import { PieChart, Pie } from 'recharts'
+
+export const TestPie = () => {
+    return (
+        <div style={{ width: 300, height: 300, border: '2px solid red' }}>
+            <PieChart width={300} height={300}>
+                <Pie 
+                    data={[
+                        { name: 'A', value: 400 },
+                        { name: 'B', value: 300 },
+                    ]} 
+                    dataKey="value"
+                    cx={150}
+                    cy={150}
+                    outerRadius={80}
+                    fill="#8884d8"
+                />
+            </PieChart>
+        </div>
+    )
+}
 
 type DashboardSectionProps = {
 	title: string
@@ -242,6 +263,9 @@ export const Dashboard = () => {
 				<BorderContainer width={`lg:tw-w-1/2`} className = {`tw-flex`}>
 					<Notifications fromDashboard={true}/>
 				</BorderContainer>
+			</div>
+			<div>
+				<TestPie/>
 			</div>
 		</div>
 	)	
