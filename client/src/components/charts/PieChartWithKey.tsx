@@ -62,14 +62,14 @@ export const PieChartWithKey = ({data, total, boardId, searchKey}: Props) => {
     const [renderChart, setRenderChart] = useState(false)
     const navigate = useNavigate()
 
-    if (!data || !Array.isArray(data) || data.length === 0) {
-        return <div>No chart data</div>
-    }
-
     useEffect(() => {
         // Force render after mount
         setTimeout(() => setRenderChart(true), 100)
     }, [])
+    
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        return <div>No chart data</div>
+    }
     
     if (!renderChart) {
         return <div style={{ width: 250, height: 250 }}>Loading...</div>
