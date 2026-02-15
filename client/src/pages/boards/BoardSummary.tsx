@@ -159,10 +159,10 @@ export const BoardSummary = () => {
         <LoadingSkeleton>
             <RowPlaceholder/>
         </LoadingSkeleton> :
-        <div className={`${TABLE_BACKGROUND} tw-min-h-screen tw-flex-col tw-flex xl:tw-flex-row xl:tw-gap-x-4 tw-gap-y-4 tw-p-6`}>
-            <div className="tw-flex tw-flex-col tw-gap-y-6">
+        <div className={`${TABLE_BACKGROUND} tw-flex-col tw-flex 2xl:tw-flex-row 2xl:tw-gap-x-4 tw-gap-y-4 tw-p-6`}>
+            <div className="tw-flex-[3] tw-min-h-0 tw-flex tw-flex-col tw-gap-y-6">
                 {/* Top Stats Cards */}
-                <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 xl:tw-grid-cols-4 tw-gap-4">
+                <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 2xl:tw-grid-cols-4 tw-gap-4">
                     <SummaryCard 
                         icon={<IconCircleCheckmark className = {`tw-w-5 tw-h-5 tw-text-gray-700`}/>}
                         link={constructTicketLink(data?.ticketsCompleted ?? [])}
@@ -191,8 +191,8 @@ export const BoardSummary = () => {
                     />
                 </div>
 
-                {/* Main Content Grid */}
-                <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-4">
+                {/* Main Content Grid, 2nd row stretches to fill the remaining height */}
+                <div className="tw-flex-1 tw-min-h-0 tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-4 lg:tw-grid-rows-[auto_1fr]">
                     {/* Status Overview */}
                     <div className={`${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
                         <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Status overview</h2>
@@ -227,7 +227,7 @@ export const BoardSummary = () => {
 
                         {/* extra margin bottom to prevent overlap with the pagination */}
                         <div className="tw-mb-10 tw-space-y-3">
-                            <div className={`tw-space-y-3 ${byAssigneeSummary?.pagination.prevPage || byAssigneeSummary?.pagination.nextPage ? "lg:tw-min-h-[650px]" : ""}`}>
+                            <div className={`tw-space-y-3 ${byAssigneeSummary?.pagination.prevPage || byAssigneeSummary?.pagination.nextPage ? "tw-h-[550px] tw-overflow-y-auto" : ""}`}>
                                 {assigneeData.map((item, index) => {
                                     return (
                                         <div key={index} className = "tw-space-y-1">
@@ -271,7 +271,7 @@ export const BoardSummary = () => {
                     </div>
                 </div>
             </div>
-            <div className = {`tw-relative tw-flex tw-flex-col tw-gap-y-4 ${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6 tw-flex-1`}>
+            <div className = {`tw-relative tw-min-w-0 tw-flex-1 tw-flex tw-flex-col tw-gap-y-4 ${NESTED_TABLE_BACKGROUND} tw-rounded-lg ${STANDARD_BORDER} tw-p-6`}>
                 <div>
                     <div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-2">
                         <h2 className={`${PRIMARY_TEXT} tw-text-lg tw-font-semibold tw-mb-2`}>Recent Activity</h2>
@@ -291,7 +291,7 @@ export const BoardSummary = () => {
                     </LoadingSkeleton>
                     : 
                     (Object.keys(groupedRecentActivity).length ? (
-                        <div className={`tw-mb-10 tw-flex tw-flex-col tw-gap-y-4`}>
+                        <div className={`${boardActivityData?.pagination.prevPage || boardActivityData?.pagination.nextPage ? "tw-h-[1050px] tw-overflow-y-auto" : ""} tw-mb-10 tw-flex tw-flex-col tw-gap-y-4`}>
                             {
                                 Object.keys(groupedRecentActivity).map((date, index) => {
                                     return (
