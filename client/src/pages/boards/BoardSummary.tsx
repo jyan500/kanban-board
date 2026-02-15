@@ -227,7 +227,7 @@ export const BoardSummary = () => {
 
                         {/* extra margin bottom to prevent overlap with the pagination */}
                         <div className="tw-mb-10 tw-space-y-3">
-                            <div className={`tw-space-y-3 ${byAssigneeSummary?.pagination.prevPage || byAssigneeSummary?.pagination.nextPage ? "tw-h-[650px] tw-overflow-y-auto" : ""}`}>
+                            <div className={`tw-space-y-3 ${byAssigneeSummary?.pagination.prevPage || byAssigneeSummary?.pagination.nextPage ? "tw-h-[550px] tw-overflow-y-auto" : ""}`}>
                                 {assigneeData.map((item, index) => {
                                     return (
                                         <div key={index} className = "tw-space-y-1">
@@ -291,7 +291,7 @@ export const BoardSummary = () => {
                     </LoadingSkeleton>
                     : 
                     (Object.keys(groupedRecentActivity).length ? (
-                        <div className={`${boardActivityData?.pagination.prevPage || boardActivityData?.pagination.nextPage ? "tw-h-[1000px] tw-overflow-y-auto" : ""} tw-mb-10 tw-flex tw-flex-col tw-gap-y-4`}>
+                        <div className={`${boardActivityData?.pagination.prevPage || boardActivityData?.pagination.nextPage ? "tw-h-[1050px] tw-overflow-y-auto" : ""} tw-mb-10 tw-flex tw-flex-col tw-gap-y-4`}>
                             {
                                 Object.keys(groupedRecentActivity).map((date, index) => {
                                     return (
