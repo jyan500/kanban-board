@@ -75,7 +75,6 @@ export const RegisterUserForm = ({isOrgRegisterLoading, isOrgRegister, onSubmit:
 
 	const onSubmit = async (values: UserFormValues) => {
 		try {
-			console.log("values: ", values)
 			const data = await userRegister(values).unwrap()
     		navigate(LOGIN, {state: {"alert": "User registered successfully!"}, replace: true})
 		}

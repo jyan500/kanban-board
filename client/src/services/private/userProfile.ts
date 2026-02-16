@@ -137,19 +137,21 @@ export const userProfileApi = privateApi.injectEndpoints({
 			}),
 			invalidatesTags: ["UserProfiles"]
 		}),
-		getUserBoardFilters: builder.query<Array<UserBoardFilter>, void>({
-			query: () => ({
+		getUserBoardFilters: builder.query<Array<UserBoardFilter>, Record<string, any>>({
+			query: ({urlParams}) => ({
 				url: USER_BOARD_FILTER_URL,
 				method: "GET",
+				params: urlParams
 			}),
 			providesTags: ["UserBoardFilters"]
 		}),
-		updateUserBoardFilters: builder.mutation<{message: string}, Array<{board_filter_id: number | null, value: number}>>({
-			query: (ids) => ({
+		updateUserBoardFilters: builder.mutation<{message: string}, {boardId: number, userBoardFilters: Array<{board_filter_id: number | null, value: number}>}>({
+			query: ({boardId, userBoardFilters}) => ({
 				url: USER_BOARD_FILTER_URL,
 				method: "POST",
 				body: {
-					ids
+					boardId,
+					ids: userBoardFilters,
 				}
 			}),
 			invalidatesTags: ["UserBoardFilters"]

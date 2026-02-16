@@ -157,7 +157,10 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 				...(watch("priorityId") != null && watch("priorityId").value !== "" && "priorityId" in filterIdMap ? [{ board_filter_id: filterIdMap["priorityId"], value: Number(watch("priorityId").value)}] : []),
 				...(watch("ticketTypeId") != null && watch("ticketTypeId").value !== "" && "ticketTypeId" in filterIdMap ? [{ board_filter_id: filterIdMap["ticketTypeId"], value: Number(watch("ticketTypeId").value)}] : []),
 			] 
-			await updateUserBoardFilters(userBoardFilters).unwrap()
+			await updateUserBoardFilters({
+				userBoardFilters,
+				boardId
+			}).unwrap()
 			onSubmit({
 				assignee: watch("assignee"),
 				sprint: watch("sprint"),
@@ -167,8 +170,7 @@ export const BoardFilterForm = ({boardId, isBulkEdit}: Props) => {
 			} as FormValues)
 			dispatch(addToast(defaultToast))
 		}
-		catch (e) {
-			console.log(e)
+		catch {
 			dispatch(addToast({
 				...defaultToast,
 				type: "failure",

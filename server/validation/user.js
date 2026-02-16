@@ -1,5 +1,5 @@
 const { body, param } = require("express-validator")
-const { checkEntityExistsIn, validateUniqueOrgEmail, validateUniqueUserEmail, validatePasswordAndConfirmation } = require("./helper")
+const { checkEntityExistsIn, entityInOrganization, validateUniqueOrgEmail, validateUniqueUserEmail, validatePasswordAndConfirmation } = require("./helper")
 const { BULK_INSERT_LIMIT, FAILED_TO_LOGIN_MESSAGE } = require("../constants")
 const db = require("../db/db")
 const config = require("../config")
@@ -146,6 +146,7 @@ const userBoardFilterValidator = (actionType) => {
 	if (actionType === "update") {
 		validationRules = [
 			...validationRules,
+			body("boardId").custom(async (value, {req}) => await entityInOrganization(req.user.organization, "board", value, "boards")),
 			// must be an array of length > 0
 			body("ids").isArray({ max: BULK_INSERT_LIMIT })
 			.withMessage("ids must be an array")
