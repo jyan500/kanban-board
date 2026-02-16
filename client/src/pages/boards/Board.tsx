@@ -8,7 +8,7 @@ import {
 	useGetBoardFiltersQuery,
 	useGetBoardStatusesQuery } from "../../services/private/board"
 import { Board as KanbanBoard } from "../../components/Board" 
-import { GenericObject, KanbanBoard as KanbanBoardType } from "../../types/common" 
+import { GenericObject, KanbanBoard as KanbanBoardType, UserBoardFilter } from "../../types/common" 
 import { setBoard, setBoardInfo, setStatusesToDisplay, setFilteredTickets, setGroupBy, setTickets as setBoardTickets } from "../../slices/boardSlice" 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks" 
 import { skipToken } from '@reduxjs/toolkit/query/react'
@@ -47,7 +47,7 @@ export const Board = () => {
 	const { filters, searchTerm, filterIdMap } = useAppSelector((state) => state.boardFilter)
 	const { tickets } = useAppSelector((state) => state.board)
 	const {data: boardFilterData, isLoading: isBoardFilterDataLoading} = useGetBoardFiltersQuery(boardId ? {boardId} : skipToken)
-	const {data: userBoardFilterData, isLoading: isUserBoardFilterDataLoading } = useGetUserBoardFiltersQuery()
+	const {data: userBoardFilterData, isLoading: isUserBoardFilterDataLoading } = useGetUserBoardFiltersQuery(boardId ? {urlParams: {boardId}} : skipToken)
 	const {data: boardData, isLoading: isGetBoardLoading, isError: isGetBoardError } = useGetBoardQuery(boardId ? {id: boardId, urlParams: {assignees: true}} : skipToken)
 	const [trigger, {data: boardTicketData, isLoading: isGetBoardTicketsLoading , isError: isGetBoardTicketsError }] = useLazyGetBoardTicketsQuery()
 	const {data: statusData, isLoading: isGetBoardStatusesLoading, isError: isGetBoardStatusesError } = useGetBoardStatusesQuery(boardId ? {id: boardId, isActive: true} : skipToken)
@@ -62,6 +62,10 @@ export const Board = () => {
 			return arrayData.find((obj) => obj.name === name)?.[attribute] ?? 0
 		}
 		return 0
+	}
+
+	const getUserBoardFilterAttribute = (userBoardFilterData: Array<UserBoardFilter>, boardFilterId: number, name: string) => {
+		return userBoardFilterData.find((data) => data.boardFilterId === boardFilterId && data.name === name)
 	}
 
 	const onClickOutside = () => {
@@ -98,23 +102,24 @@ export const Board = () => {
 				...(statusFilterId !== 0 ? { statusId: statusFilterId } : {}),	
 				...(priorityFilterId !== 0 ? { priorityId: priorityFilterId } : {}),
 			}))
-		}
-		if (userBoardFilterData){
-			const sprintId = getBoardFilterAttribute(userBoardFilterData, "sprintId", "value")
-			const assigneeId = getBoardFilterAttribute(userBoardFilterData, "assignee", "value")
-			const ticketTypeId = getBoardFilterAttribute(userBoardFilterData, "ticketTypeId", "value")
-			const statusId = getBoardFilterAttribute(userBoardFilterData, "statusId", "value")
-			const priorityId = getBoardFilterAttribute(userBoardFilterData, "priorityId", "value")
-			newFilters = {
-				...filters,
-				...(sprintId !== 0 ? { sprintId: sprintId } : {}),
-				...(assigneeId !== 0 ? { assignee: assigneeId } : {}),
-				...(ticketTypeId !== 0 ? { ticketTypeId: ticketTypeId } : {}),
-				...(statusId !== 0 ? { statusId: statusId } : {}),	
-				...(priorityId !== 0 ? { priorityId: priorityId } : {}),	
+			if (userBoardFilterData){
+				const sprintId = getUserBoardFilterAttribute(userBoardFilterData, sprintFilterId, "sprintId")
+				const assigneeId = getUserBoardFilterAttribute(userBoardFilterData, assigneeFilterId, "assignee")
+				const ticketTypeId = getUserBoardFilterAttribute(userBoardFilterData, ticketTypeFilterId, "ticketTypeId")
+				const statusId = getUserBoardFilterAttribute(userBoardFilterData, statusFilterId, "statusId")
+				const priorityId = getUserBoardFilterAttribute(userBoardFilterData, priorityFilterId, "priorityId")
+				newFilters = {
+					...filters,
+					...(sprintId && sprintId.value !== 0 ? { sprintId: sprintId.value } : { sprintId: null }),
+					...(assigneeId && assigneeId.value !== 0 ? { assignee: assigneeId.value } : { assignee: null }),
+					...(ticketTypeId && ticketTypeId.value !== 0 ? { ticketTypeId: ticketTypeId.value } : { ticketTypeId: null }),
+					...(statusId && statusId.value !== 0 ? { statusId: statusId.value } : { statusId: null }),	
+					...(priorityId && priorityId.value !== 0 ? { priorityId: priorityId.value } : { priorityId: null }),	
+				}
+				dispatch(setFilters(newFilters))
 			}
-			dispatch(setFilters(newFilters))
 		}
+		
 
 	}, [boardFilterData, userBoardFilterData])
 

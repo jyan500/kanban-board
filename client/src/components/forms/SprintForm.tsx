@@ -104,7 +104,7 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
                 id = data.id
             }
 
-            if (id !== 0){
+            if (id !== 0 && boardId){
                 // get the board filter ids for each filter type that has a value and map to an array of objects like so
                 // { board_filter_id: filter id from the id map, value: the form vaule}
                 const userBoardFilters = [
@@ -119,7 +119,10 @@ export const SprintForm = ({ sprintId, boardId }: SprintFormProps) => {
                     sprintId: values.applySprintFilter ? id : null
                 }
                 dispatch(setFilters(newFilters))
-                await updateUserBoardFilters(userBoardFilters).unwrap()
+                await updateUserBoardFilters({
+                    boardId: boardId,
+                    userBoardFilters,
+                }).unwrap()
             } 
             dispatch(toggleShowModal(false))
             dispatch(addToast({
