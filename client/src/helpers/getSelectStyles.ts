@@ -27,7 +27,7 @@ export const getSelectStyles = ({
     /* TODO: Dark Mode Styling is commented out right now, but if other form inputs get dark styling, this can be uncommented*/
     return {
         classNames: {
-            control: (state) => `${className}`,
+            control: (state) => `${className} ${SELECT_Z_INDEX}`,
             // control: (state) => `${className} ${SELECT_Z_INDEX} dark:!tw-bg-gray-800 dark:!tw-border-gray-600`,
             // menu: (base) => `dark:!tw-bg-gray-800`,
             // placeholder: (base) => `dark:!tw-text-gray-200`,
