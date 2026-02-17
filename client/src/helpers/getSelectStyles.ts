@@ -33,6 +33,7 @@ export const getSelectStyles = ({
             // placeholder: (base) => `dark:!tw-text-gray-200`,
         },
         styles: {
+            /* https://stackoverflow.com/questions/57089251/react-select-can-not-overlay-react-modal */
             menuPortal: base => ({ ...base, zIndex: menuInPortal ? 9999 : 50 }),
             control: (baseStyles, state) => ({
                 ...baseStyles,
