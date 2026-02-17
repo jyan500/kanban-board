@@ -40,7 +40,7 @@ export const modalClassNames = {
 	// "ADD_TICKET_FORM": "--l-modal tw-top-[50%]",
 	// "EDIT_TICKET_FORM": "--l-modal tw-top-[50%]",
 	// "ORGANIZATION_STATUS_FORM": "--l-modal-height tw-top-[50%]"
-	"ADD_TICKET_FORM": defaultConfig,
+	"ADD_TICKET_FORM": withOverflow,
 	"EDIT_TICKET_FORM": withOverflow,
 	"ORGANIZATION_STATUS_FORM": defaultConfig,
 	"BOARD_FORM": avoidAsyncSelectMenuOverflow,

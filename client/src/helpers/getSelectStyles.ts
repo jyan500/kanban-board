@@ -9,6 +9,7 @@ interface GetSelectStylesParams {
     textAlign?: string
     className?: string
     hideIndicatorSeparator?: boolean
+    menuInPortal?: boolean
 }
 
 export const getSelectStyles = ({
@@ -17,6 +18,7 @@ export const getSelectStyles = ({
     textAlign = 'left',
     className = 'tw-w-full',
     hideIndicatorSeparator = false,
+    menuInPortal = false,
 }: GetSelectStylesParams): {
     classNames: ClassNamesConfig<OptionType, false, GroupBase<OptionType>>
     styles: StylesConfig<OptionType, false, GroupBase<OptionType>>
@@ -31,6 +33,8 @@ export const getSelectStyles = ({
             // placeholder: (base) => `dark:!tw-text-gray-200`,
         },
         styles: {
+            /* https://stackoverflow.com/questions/57089251/react-select-can-not-overlay-react-modal */
+            menuPortal: base => ({ ...base, zIndex: menuInPortal ? 9999 : 50 }),
             control: (baseStyles, state) => ({
                 ...baseStyles,
                 height: "43px",

@@ -247,6 +247,7 @@ export const AddTicketForm = ({
 								<Select 
 									id={"ticket-status"}
 									clearable={false}
+									menuInPortal={true}
 									options={statusesToDisplay?.map((status) => ({
 										label: status.name,
 										value: status.id.toString()
@@ -282,6 +283,7 @@ export const AddTicketForm = ({
 				                render={({ field: { onChange, value, name, ref } }) => (
 			                	<AsyncSelect 
 									id={"ticket-assignee"}
+									menuInPortal={true}
 			                		defaultValue={watch("userIdOption") ?? {label: "", value: ""}}
 				                	endpoint={USER_PROFILE_URL} 
 									// include the ability to unassign for bulk edit
@@ -300,6 +302,7 @@ export const AddTicketForm = ({
 							<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
 								<Select 
 									id={"ticket-priority"}
+									menuInPortal={true}
 									clearable={false}
 									options={prioritiesForSelect}
 									defaultValue={watch("priorityId") ?? {value: "", label: ""}}
@@ -320,6 +323,7 @@ export const AddTicketForm = ({
 											<Select 
 												id={"ticket-type"}
 												clearable={false}
+												menuInPortal={true}
 												options={ticketTypesForSelect}
 												defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
 												onSelect={(selectedOption: {label: string, value: string} | null) => {
