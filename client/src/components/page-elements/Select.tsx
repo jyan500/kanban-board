@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react"
 import {default as ReactSelect} from "react-select"
 import { OptionType } from "../../types/common"
-import { SELECT_Z_INDEX } from "../../helpers/constants"
+import { HOVER_Z_INDEX, SELECT_Z_INDEX } from "../../helpers/constants"
 import { useAppSelector } from "../../hooks/redux-hooks"
 import { getSelectStyles } from "../../helpers/getSelectStyles"
 
@@ -15,6 +15,7 @@ interface Props {
 	textColor?: string
 	hideIndicatorSeparator?: boolean
 	searchable?: boolean
+	menuInPortal?: boolean
 	onBlur?: () => void
 	onSelect: (selectedOption: OptionType | null) => void
 }
@@ -31,6 +32,7 @@ export const Select = ({
     className,
     onSelect,
 	onBlur,
+	menuInPortal=false,
 }: Props) => {
     const [searchTerm, setSearchTerm] = useState("")
 	const [val, setVal] = useState<OptionType | null>(defaultValue ?? null)
@@ -55,10 +57,17 @@ export const Select = ({
         textAlign,
         className,
         hideIndicatorSeparator: true,
+		menuInPortal: menuInPortal,
     })
 
     return (
         <ReactSelect
+			{
+				...(menuInPortal ? {
+					menuPortalTarget: document.body,
+					menuPosition: "fixed",
+				} : {})
+			}
 			inputId={id}
             options={options}
             value={defaultValue}

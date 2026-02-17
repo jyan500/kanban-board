@@ -26,6 +26,7 @@ interface AsyncSelectProps {
 	className?: string 
 	urlParams: Record<string, any>
 	cacheKey?: string
+	menuInPortal?: boolean
 	onSelect: (selectedOption: OptionType | null) => void
 }
 
@@ -40,7 +41,8 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
 		endpoint, 
 		onSelect, 
 		urlParams, 
-		onBlur 
+		onBlur,
+		menuInPortal=false
 	}, ref) => {
 	const [searchTerm, setSearchTerm] = useState("")
 	const [val, setVal] = useState<OptionType | null>(defaultValue ?? null)
@@ -98,10 +100,17 @@ export const AsyncSelect = React.forwardRef<SelectInstance<OptionType, false, Gr
         isDarkMode,
         className: className,
         hideIndicatorSeparator: false,
+		menuInPortal: menuInPortal,
     })
 
 	return (
 		<AsyncPaginate
+			{
+				...(menuInPortal ? {
+					menuPortalTarget: document.body,
+					menuPosition: "fixed",
+				} : {})
+			}
 			inputId={id}
 			selectRef={ref}
 			loadOptions={loadOptions}

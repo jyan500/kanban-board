@@ -9,6 +9,7 @@ interface GetSelectStylesParams {
     textAlign?: string
     className?: string
     hideIndicatorSeparator?: boolean
+    menuInPortal?: boolean
 }
 
 export const getSelectStyles = ({
@@ -17,6 +18,7 @@ export const getSelectStyles = ({
     textAlign = 'left',
     className = 'tw-w-full',
     hideIndicatorSeparator = false,
+    menuInPortal = false,
 }: GetSelectStylesParams): {
     classNames: ClassNamesConfig<OptionType, false, GroupBase<OptionType>>
     styles: StylesConfig<OptionType, false, GroupBase<OptionType>>
@@ -25,12 +27,13 @@ export const getSelectStyles = ({
     /* TODO: Dark Mode Styling is commented out right now, but if other form inputs get dark styling, this can be uncommented*/
     return {
         classNames: {
-            control: (state) => `${className} ${SELECT_Z_INDEX}`,
+            control: (state) => `${className}`,
             // control: (state) => `${className} ${SELECT_Z_INDEX} dark:!tw-bg-gray-800 dark:!tw-border-gray-600`,
             // menu: (base) => `dark:!tw-bg-gray-800`,
             // placeholder: (base) => `dark:!tw-text-gray-200`,
         },
         styles: {
+            menuPortal: base => ({ ...base, zIndex: menuInPortal ? 9999 : 50 }),
             control: (baseStyles, state) => ({
                 ...baseStyles,
                 height: "43px",

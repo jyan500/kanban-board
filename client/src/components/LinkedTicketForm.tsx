@@ -245,6 +245,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 										render={({field: {onChange}}) => {
 											return (
 												<Select 
+													menuInPortal={true}
 													options={
 														!isEpicParent ? ticketRelationshipTypesForSelect.filter((type) => type.value !== epicTicketRelationshipType?.id.toString()) :
 														ticketRelationshipTypesForSelect.filter((type) => type.value === epicTicketRelationshipType?.id.toString())
@@ -271,6 +272,7 @@ export const LinkedTicketForm = ({isModal, currentTicketId, isEpicParent, showAd
 										control={control}
 						                render={({ field: { onChange, value, name, ref } }) => (
 						                	<AsyncSelect 
+												menuInPortal={true}
 						                		ref={selectRef}
 						                		cacheKey={cacheKey}
 							                	endpoint={TICKET_URL} 

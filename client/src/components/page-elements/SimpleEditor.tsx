@@ -4,6 +4,7 @@ import ReactQuill, {Quill} from "react-quill"
 import "quill-mention";
 import "react-quill/dist/quill.snow.css"
 import "quill-mention/dist/quill.mention.css"
+import "../../styles/simple-editor.css"
 import { useLazyGenericFetchQuery } from "../../services/private/generic"
 import { USER_PROFILE_URL } from "../../helpers/urls"
 
