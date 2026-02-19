@@ -6,7 +6,7 @@ import CalendarImage from "../assets/images/landing-page/v2/calendar.png"
 import BoardImage from "../assets/images/landing-page/v2/board.png"
 import { useScreenSize } from '../hooks/useScreenSize';
 import { ImageOverlay } from '../components/page-elements/ImageOverlay';
-import { FADE_ANIMATION, LG_BREAKPOINT } from '../helpers/constants';
+import { FADE_ANIMATION, LG_BREAKPOINT, MD_BREAKPOINT } from '../helpers/constants';
 import { Link } from "react-router-dom"
 import { LOGIN } from '../helpers/routes';
 import { IconBell } from "../components/icons/IconBell"
@@ -44,7 +44,7 @@ interface SubHeaderProps {
 
 const SubHeader = ({textColor="tw-text-gray-900", children}: SubHeaderProps) => {
     return ( 
-        <h2 className={`tw-font-mono tw-text-5xl tw-font-bold tw-mb-4 ${textColor}`}>{children}</h2>
+        <h2 className={`tw-font-mono tw-text-3xl sm:tw-text-4xl lg:tw-text-5xl tw-font-bold tw-mb-4 tw-break-words ${textColor}`}>{children}</h2>
     )
 }
 
@@ -54,21 +54,22 @@ interface FeatureCardProps {
     description?: string
     imageURL?: string
     imageOnRight?: boolean
+    isMobile?: boolean
     onClick: (id: number) => void
 }
 
-const FeatureCard = ({id, header, description, imageURL, imageOnRight, onClick}: FeatureCardProps) => {
+const FeatureCard = ({id, isMobile, header, description, imageURL, imageOnRight, onClick}: FeatureCardProps) => {
     const headerCard = (
-        <div>
+        <div className="">
             <SubHeader>{header}</SubHeader>
-            <p className="tw-text-lg tw-text-gray-600 tw-leading-relaxed tw-mb-6">
+            <p className="tw-text-base sm:tw-text-lg tw-text-gray-600 tw-leading-relaxed tw-mb-6">
                 {description}
             </p>
         </div>
     )
     const image = (
         <button onClick={() => onClick(id)} className={`tw-bg-gradient-light tw-rounded-2xl tw-p-8 tw-shadow-lg tw-transition-all tw-shadow-lg hover:tw-shadow-xl hover:tw-shadow-blue-600/40 `}>
-            <div className="tw-w-full tw-h-64 tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
+            <div className="tw-w-full tw-bg-white tw-rounded-xl tw-border-2 tw-border-gray-200 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-font-semibold">
                 <img src={imageURL} alt={description} className="tw-relative tw-object-cover tw-w-full tw-rounded-lg" />
             </div>
         </button>
@@ -76,7 +77,7 @@ const FeatureCard = ({id, header, description, imageURL, imageOnRight, onClick}:
     return (
         <section className="tw-max-w-7xl tw-mx-auto tw-px-6 tw-my-32">
             <div className="tw-grid md:tw-grid-cols-2 tw-gap-16 tw-items-center">
-                {imageOnRight ? (
+                {imageOnRight || isMobile ? (
                     <>                    
                         {headerCard}
                         {image}
@@ -110,7 +111,7 @@ const ImageCarouselContent = ({data}: CarouselContentProps<CarouselElement>) => 
 	        <img src={data.imageURL} alt={data.title} className="tw-relative tw-object-fit tw-w-full tw-h-[45vh] tw-rounded-lg" />
 	        {/* Adds linear gradient starting from mid to bottom of the image to provide more contrast with the white text*/}
         	<div className="tw-mx-2 tw-rounded-lg tw-absolute tw-inset-0 tw-bg-gradient-to-b tw-from-transparent tw-to-black tw-from-60%">
-		        <p className = "tw-absolute tw-bottom-4 tw-left-4 tw-text-2xl tw-font-bold tw-text-white">{data.title}</p>
+		        <p className = "tw-absolute tw-bottom-4 tw-left-4 tw-text-lg sm:tw-text-xl lg:tw-text-2xl tw-font-bold tw-text-white tw-break-words">{data.title}</p>
         	</div>
         </>
 	)
@@ -212,14 +213,14 @@ export const LandingPage = () => {
             {/* Hero Section */}
             <section className={`tw-bg-gradient-background tw-pt-48 tw-pb-16 tw-px-6 tw-text-center`}>
                 {/* Applies a staggered animation with animation-delay */}
-                <div className="tw-max-w-4xl tw-mx-auto">
-                    <h1 className="tw-font-mono tw-text-6xl tw-font-bold tw-mb-6 tw-bg-gradient-dark tw-bg-clip-text tw-text-transparent tw-leading-tight tw-animate-fade-in-up">
+                <div className="tw-max-w-4xl tw-mx-auto tw-min-w-0">
+                    <h1 className="tw-font-mono lg:tw-pb-1 tw-text-3xl sm:tw-text-4xl md:tw-text-5xl lg:tw-text-6xl tw-font-bold tw-mb-6 tw-bg-gradient-dark tw-bg-clip-text tw-text-transparent tw-leading-snug tw-break-words tw-animate-fade-in-up">
                         Project Management Made Easy
                     </h1>
-                    <p className="tw-text-xl tw-text-gray-600 tw-mb-10 tw-leading-relaxed tw-opacity-0 tw-animate-fade-in-up [animation-delay:200ms]">
+                    <p className="tw-text-base sm:tw-text-lg lg:tw-text-xl tw-text-gray-600 tw-mb-10 tw-leading-relaxed tw-opacity-0 tw-animate-fade-in-up [animation-delay:200ms]">
                         Kanban helps startups and small teams stay agile without the overhead. Streamline your workflow and ship faster.
                     </p>
-                    <Link to={LOGIN} className="tw-bg-blue-600 tw-text-white tw-px-10 tw-py-4 tw-rounded-xl tw-text-lg tw-font-semibold hover:tw-bg-blue-700 tw-transition-all hover:-tw-translate-y-0.5 tw-shadow-lg tw-shadow-blue-600/30 hover:tw-shadow-xl hover:tw-shadow-blue-600/40 tw-opacity-0 tw-animate-fade-in-up [animation-delay:400ms]">
+                    <Link to={LOGIN} className="tw-bg-blue-600 tw-text-white tw-px-10 tw-py-4 tw-rounded-xl tw-text-base sm:tw-text-lg tw-font-semibold hover:tw-bg-blue-700 tw-transition-all hover:-tw-translate-y-0.5 tw-shadow-lg tw-shadow-blue-600/30 hover:tw-shadow-xl hover:tw-shadow-blue-600/40 tw-opacity-0 tw-animate-fade-in-up [animation-delay:400ms]">
                         Get Started
                     </Link>
                 </div>
@@ -231,6 +232,7 @@ export const LandingPage = () => {
                     <div key={`feature-section-${feature.id}`}>
                         <FeatureCard
                             id={feature.id}
+                            isMobile={width <= MD_BREAKPOINT}
                             header={feature.title}
                             description={feature.description}
                             imageURL={feature.imageURL}
@@ -246,7 +248,7 @@ export const LandingPage = () => {
             <section className="tw-max-w-7xl tw-mx-auto tw-px-6 tw-my-24">
                 <div className="tw-text-center tw-mb-16">
                     <SubHeader>Everything you need to ship</SubHeader>
-                    <p className="tw-text-xl tw-text-gray-600">Powerful features that scale with your team</p>
+                    <p className="tw-text-base sm:tw-text-lg lg:tw-text-xl tw-text-gray-600">Powerful features that scale with your team</p>
                 </div>
                 {
                     width >= LG_BREAKPOINT ? 
@@ -264,17 +266,22 @@ export const LandingPage = () => {
                 }
                 <div className="tw-grid md:tw-grid-cols-3 tw-gap-8">
                     {additionalFeatures.map((feature) => (
-                        <button disabled={width < LG_BREAKPOINT} onClick={() => {
+                        <button onClick={() => {
+                            const element = additionalFeatures.find((feat: Feature) => feature.id === feat.id)
                             if (width >= LG_BREAKPOINT){
-                                const element = additionalFeatures.find((feat: Feature) => feature.id === feat.id)
                                 if (element){
                                     setCarouselIndex(additionalFeatures.indexOf(element))
+                                }
+                            }
+                            else {
+                                if (element){
+                                    setShowImageOverlay({id: element.id, show: true})
                                 }
                             }
                         }} key={`additional-feature-${feature.id}`} className={`hover:tw-bg-gray-50 ${FADE_ANIMATION} tw-flex tw-flex-col tw-gap-y-2 tw-text-left tw-bg-white tw-p-8 tw-rounded-xl tw-border tw-border-gray-200 hover:tw-shadow-xl hover:tw-shadow-blue-600/40`}>
                             <div className="tw-flex tw-flex-row tw-items-center tw-gap-x-4">
                                 <div className="tw-flex-shrink-0 tw-flex tw-items-center tw-justify-center tw-rounded-full tw-w-10 tw-h-10 tw-bg-gradient-dark">{feature.icon}</div>
-                                <h3 className="tw-text-xl tw-font-mono tw-font-semibold">{feature.title}</h3>
+                                <h3 className="tw-text-lg sm:tw-text-xl tw-font-mono tw-font-bold tw-break-words">{feature.title}</h3>
                             </div>
                             <p className="tw-text-gray-600 tw-leading-relaxed">{feature.description}</p>
                         </button>
@@ -285,16 +292,13 @@ export const LandingPage = () => {
             {/* CTA Section */}
             <section className= "tw-bg-gradient-dark tw-text-white tw-py-20 tw-px-6 tw-my-24 tw-text-center">
                 <SubHeader textColor={"tw-white"}>Ready to streamline your workflow?</SubHeader>
-                <p className="tw-text-xl tw-mb-8 tw-opacity-90">Join teams who are shipping faster with Kanban</p>
-                <Link to={LOGIN} className="tw-bg-white tw-text-blue-600 tw-px-10 tw-py-4 tw-rounded-xl tw-text-lg tw-font-semibold hover:tw-shadow-2xl hover:tw-shadow-white/30 tw-transition-all">
+                <p className="tw-text-base sm:tw-text-lg lg:tw-text-xl tw-mb-8 tw-opacity-90">Join teams who are shipping faster with Kanban</p>
+                <Link to={LOGIN} className="tw-bg-white tw-text-blue-600 tw-px-10 tw-py-4 tw-rounded-xl tw-text-base sm:tw-text-lg tw-font-semibold hover:tw-shadow-2xl hover:tw-shadow-white/30 tw-transition-all">
                     Get Started Free
                 </Link>
             </section>
-
             {
-             	width >= LG_BREAKPOINT ? 
 	             <ImageOverlay imageUrl={[...features, ...additionalFeatures].find((feature: Feature) => feature.id === showImageOverlay.id)?.imageURL ?? ""} isOpen={showImageOverlay.show} onClose={() => setShowImageOverlay({id: 0, show: false})}/>
-	             : null
             }
         </div>
     );
