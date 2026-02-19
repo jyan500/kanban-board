@@ -23,8 +23,8 @@
 }
 
 .modal {
-	max-height:calc(100vh - 125px);
-	/* overflow: auto */
+	max-height:calc(100vh - 150px);
+	overflow: auto;
 }
 
 .modal-content {

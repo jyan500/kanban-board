@@ -100,10 +100,15 @@ const ProtectedLayout = () => {
 	
 	return (
 		<BulkEditToolbarProvider>
-			<div className = "dark:tw-bg-dark-mode-gradient" id = "protected-main">
+			<div className = "dark:tw-bg-dark-mode-gradient tw-flex tw-h-full" id = "protected-main">
 				<SideBar/>
-				<div className = "tw-flex tw-flex-col tw-gap-y-4">
-					<div className = "tw-px-4 md:tw-px-16 tw-w-full tw-min-h-screen">
+				{/* 
+				set max height as the screen to force scroll within the boundaries of the screen. This is to avoid issues with the sidebar
+				"jumping" on mobile browsers, since on mobile, the browser header disappears when you scroll past the screen height,
+				which alters the height calculation for the sidebar
+				*/}
+				<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-flex-1 tw-min-w-0 tw-min-h-screen tw-max-h-screen">
+					<div className = "tw-relative tw-px-4 md:tw-px-16 tw-w-full tw-h-full tw-overflow-y-auto tw-pb-48">
 						<TopNav/>
 						{isDataLoaded ? (
 							<div className = "tw-space-y-2">
@@ -115,7 +120,9 @@ const ProtectedLayout = () => {
 							<BoardPlaceholder/>	
 						</LoadingSkeleton>}
 					</div>
-					<Footer/>
+					<div className = "tw-fixed tw-bottom-0 tw-w-full">
+						<Footer/>
+					</div>
 				</div>
 				<Modal/>
 				<SecondaryModal/>

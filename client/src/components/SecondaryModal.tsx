@@ -22,7 +22,7 @@ import { STANDARD_BORDER, SECONDARY_MODAL_Z_INDEX, LG_BREAKPOINT, PRIMARY_TEXT }
 import { useScreenSize } from "../hooks/useScreenSize"
 import { getModalWidth } from "../helpers/functions"
 
-export const avoidAsyncSelectMenuOverflow =  {"type": "small", "modal-container": "tw-top-[50%]", "modal": "!tw-overflow-visible tw-min-h-96"}
+export const avoidAsyncSelectMenuOverflow =  {"type": "medium", "modal-container": "tw-top-[50%]", modal: "tw-overflow-y-auto"}
 
 export const secondaryModalTypes = {
 	"SHOW_DELETE_COMMENT_WARNING": DeleteCommentWarning,
