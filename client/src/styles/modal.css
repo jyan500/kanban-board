@@ -24,7 +24,7 @@
 
 .modal {
 	max-height:calc(100vh - 150px);
-	overflow: auto;
+	overflow-y: auto;
 }
 
 .modal-content {

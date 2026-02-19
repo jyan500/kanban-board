@@ -104,18 +104,22 @@ export const EditTicketFormToolbar = ({statusesToDisplay, ticket, ticketAssignee
 					) : null
 				}
 			</div>
-			<button className = "hover:tw-opacity-60" onClick={(e) => {
-				e.preventDefault()	
-				navigator.clipboard.writeText(`${window.location.origin}${TICKETS}/${ticket?.id}`)
-				dispatch(addToast({
-					id: uuidv4(),
-					type: "success",
-					message: "Link copied to clipboard",
-					animationType: "animation-in"
-				}))
-			}}>
-				<IconShare className = {`${TERTIARY_TEXT} tw-ml-3 --l-icon`}/>
-			</button>
+			{
+				navigator.clipboard ? 
+				<button className = "hover:tw-opacity-60" onClick={(e) => {
+					e.preventDefault()	
+					navigator.clipboard.writeText(`${window.location.origin}${TICKETS}/${ticket?.id}`)
+					dispatch(addToast({
+						id: uuidv4(),
+						type: "success",
+						message: "Link copied to clipboard",
+						animationType: "animation-in"
+					}))
+				}}>
+					<IconShare className = {`${TERTIARY_TEXT} tw-ml-3 --l-icon`}/>
+				</button>
+				: null
+			}
 			<div className = "tw-relative tw-inline-block tw-text-left">
 				<button ref = {buttonRef} onClick={(e) => {
 					e.preventDefault()

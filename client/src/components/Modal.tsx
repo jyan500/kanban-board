@@ -21,7 +21,7 @@ import { avoidAsyncSelectMenuOverflow } from "./SecondaryModal"
 import { getModalWidth } from "../helpers/functions"
 
 const defaultConfig = {"type": "large", "modal-container": "tw-top-[50%]", "modal": ""}
-const withOverflow = {...defaultConfig, "modal": "tw-overflow-y-auto"}
+const withOverflow = {...defaultConfig, "modal": ""}
 
 export const modalTypes = {
 	"ADD_TICKET_FORM": AddTicketFormModal,

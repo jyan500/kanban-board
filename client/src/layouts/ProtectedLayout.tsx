@@ -108,7 +108,7 @@ const ProtectedLayout = () => {
 				which alters the height calculation for the sidebar
 				*/}
 				<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-flex-1 tw-min-w-0 tw-min-h-screen tw-max-h-screen">
-					<div className = "tw-relative tw-px-4 md:tw-px-16 tw-w-full tw-h-full tw-overflow-y-auto tw-pb-48">
+					<div className = "tw-relative tw-px-4 md:tw-px-16 tw-w-full tw-h-full tw-overflow-y-auto tw-pb-36">
 						<TopNav/>
 						{isDataLoaded ? (
 							<div className = "tw-space-y-2">
@@ -119,9 +119,6 @@ const ProtectedLayout = () => {
 						>
 							<BoardPlaceholder/>	
 						</LoadingSkeleton>}
-					</div>
-					<div className = "tw-fixed tw-bottom-0 tw-w-full">
-						<Footer/>
 					</div>
 				</div>
 				<Modal/>
