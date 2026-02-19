@@ -23,7 +23,7 @@ export  const ImageOverlay: React.FC<ImageOverlayProps> = ({ imageUrl, alt = "",
             <img
                 src={imageUrl}
                 alt={alt}
-                className="tw-w-3/4 tw-h-3/4 tw-max-w-full tw-max-h-full tw-object-contain tw-rounded-lg tw-shadow-lg"
+                className="lg:tw-w-3/4 lg:tw-h-3/4 tw-max-w-full tw-max-h-full tw-object-contain tw-rounded-lg tw-shadow-lg"
             />
         </div>
     )
