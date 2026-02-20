@@ -109,18 +109,21 @@ const ProtectedLayout = () => {
 				for address bar/nav bar on mobile browsers.
 				*/}
 				<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-flex-1 tw-min-w-0 tw-min-h-dvh tw-max-h-dvh">
-					<div className = "tw-relative tw-w-full tw-h-full tw-overflow-y-auto">
-						<div className="tw-px-4 md:tw-px-16 tw-pb-12">
+					<div className = "tw-flex tw-flex-col tw-w-full tw-h-full tw-overflow-y-auto">
+						<div className = "tw-flex tw-flex-col tw-flex-1 tw-px-4 md:tw-px-16 tw-pb-12">
 							<TopNav/>
-							{isDataLoaded ? (
-								<div className = "tw-space-y-2">
-									<Outlet/>
-								</div>
-							): 
-							<LoadingSkeleton
-							>
-								<BoardPlaceholder/>	
-							</LoadingSkeleton>}
+							<>
+								{isDataLoaded ? (
+									<div className = "tw-space-y-2">
+										<Outlet/>
+									</div>
+								) : (
+									<LoadingSkeleton
+									>
+										<BoardPlaceholder/>	
+									</LoadingSkeleton>
+								)}
+							</>
 						</div>
 						<Footer/>
 					</div>
