@@ -102,7 +102,7 @@ const validateUniqueUserEmail = (emailField = "email", action = "", validateExis
 					// test to see if the user already exists. If validate exists is true,
 					// we're checking to see if a user with this email exists
 					if (res?.length > 0 && !validateExists){
-						reject(new Error("User email already in use"))
+						reject(new Error("This email has already been used"))
 					}
 					resolve(true)
 				})	

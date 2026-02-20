@@ -358,7 +358,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		<Controller name={"ticketTypeId"} control={control} render={({field: {onChange}}) => (
 			<Select 
 				options={ticketTypesForSelect}
-				className = {`tw-w-32 ${editFieldVisibility["ticket-type"] ? "" : "!tw-text-left hover:!tw-opacity-60 !tw-border-transparent !tw-cursor-pointer"}`}
+				className = {`${editFieldVisibility["ticket-type"] ? "" : "!tw-text-left hover:!tw-opacity-60 !tw-border-transparent !tw-cursor-pointer"}`}
 				clearable={false}
 				defaultValue={watch("ticketTypeId") ?? {value: "", label: ""}}
 				onSelect={async (selectedOption: {label: string, value: string} | null) => {
@@ -380,7 +380,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 		<Controller name={"priorityId"} control={control} render={({field: {onChange}}) => (
 			<Select 
 				options={prioritiesForSelect}
-				className = {`tw-w-32 ${editFieldVisibility["priority"] ? "" : "!tw-text-left hover:!tw-opacity-60 !tw-border-transparent !tw-cursor-pointer"}`}
+				className = {`${editFieldVisibility["priority"] ? "" : "!tw-text-left hover:!tw-opacity-60 !tw-border-transparent !tw-cursor-pointer"}`}
 				defaultValue={watch("priorityId") ?? {value: "", label: ""}}
 				clearable={false}
 				onSelect={async (selectedOption: {label: string, value: string} | null) => {
@@ -405,7 +405,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
             render={({ field: { onChange, value, name, ref } }) => (
             	<AsyncSelect 
                 	endpoint={USER_PROFILE_URL} 
-					className = {`tw-w-32 ${editFieldVisibility["assignees"] ? "" : "hover:!tw-opacity-60 !tw-border-transparent !tw-cursor-pointer"}`}
+					className = {`${editFieldVisibility["assignees"] ? "" : "hover:!tw-opacity-60 !tw-border-transparent !tw-cursor-pointer"}`}
                 	clearable={false}
                 	onBlur={(e) => toggleFieldVisibility("assignees", false)}
                 	defaultValue={watch("userIdOption") ?? null}
@@ -457,12 +457,12 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 						<RightSectionRow title={"Assignee"}>
 							{
 								!isTicketAssigneesLoading && ticketAssignees ? (
-									<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
+									<button className = "tw-w-full tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => toggleFieldVisibility("assignees", true)}>
 										<div className = "tw-flex tw-flex-row tw-justify-start tw-w-[2em] tw-shrink-0">
 											{selectFieldLoading["assignees"] ? <LoadingSpinner/> : <Avatar userInitials={getUserInitials(ticketAssignees?.[0])} imageUrl={ticketAssignees?.[0]?.imageUrl} className = {`${PRIMARY_TEXT} tw-rounded-full tw-shrink-0`}/>}
 										</div>
 										<div className = "tw-flex tw-flex-1">
-											{userProfileSelect}
+											<div className="tw-w-[95%]">{userProfileSelect}</div>
 										</div>
 									</button>
 								) : <LoadingSkeleton className={PLACEHOLDER_COLOR} width="tw-w-32" height="tw-h-6"/>
@@ -477,29 +477,27 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 							</div>
 						</RightSectionRow>
 						<RightSectionRow title={"Priority"}>
-							<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
+							<button className = "tw-w-full tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("priority", true)}}>
 								<div className = "tw-flex tw-flex-row tw-justify-start tw-w-[2em] tw-shrink-0">
 									{selectFieldLoading["priority"] ? <LoadingSpinner/> : priorityName ? 
 									<PriorityIcon type={priorityName} className={`${priorityName in PRIORITY_COLOR_MAP ? PRIORITY_COLOR_MAP[priorityName] : ""} tw-shrink-0 tw-w-5 tw-h-5`}/>
 									: <></>}
 								</div>
-								<div className = "tw-min-w-32 tw-flex tw-flex-1">
-									{prioritySelect}
+								<div className = "tw-flex tw-flex-1">
+									<div className="tw-w-[95%]">{prioritySelect}</div>
 								</div>
 							</button>
 						</RightSectionRow>
 						<RightSectionRow title={"Ticket Type"}>
 							{
-								<button className = "tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
+								<button className = "tw-w-full tw-flex tw-gap-x-1 tw-flex-1 tw-flex-row tw-items-center" onClick={(e) => {toggleFieldVisibility("ticket-type", true)}}>
 									<div className = "tw-flex tw-flex-row tw-justify-start tw-w-[2em] tw-shrink-0">
 										{selectFieldLoading["ticket-type"] ? <LoadingSpinner/> : ticketTypeName ? <TicketTypeIcon type={ticketTypeName} className = "tw-ml-0.5 tw-w-5 tw-h-5 tw-shrink-0"/> : null}
 									</div>
 									<div className = "tw-flex tw-flex-1">
 									{
 										epicTicketType?.id !== ticket?.ticketTypeId ?
-											<div className = "tw-min-w-32 tw-w-full">
-											{ticketTypeSelect}
-											</div>
+											<div className="tw-w-[95%]">{ticketTypeSelect}</div>
 										: (
 										<div className = "tw-w-full">
 											<div className = {`${PRIMARY_TEXT} tw-ml-3`}>{ticketTypeName}</div>

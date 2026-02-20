@@ -247,7 +247,7 @@ export const Board = () => {
 											</TabButton>
 											{
 												showDropdown ? 
-													<BoardNavDropdown ref={dropdownRef} additionalLinks={additionalLinks} closeDropdown={() => setShowDropdown(false)}/>
+													<BoardNavDropdown ref={dropdownRef} additionalLinks={additionalLinks} dropdownAlignLeft={width <= LG_BREAKPOINT} closeDropdown={() => setShowDropdown(false)}/>
 												: null
 											}
 										</div>

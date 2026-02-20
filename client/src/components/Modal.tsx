@@ -20,8 +20,8 @@ import { useScreenSize } from "../hooks/useScreenSize"
 import { avoidAsyncSelectMenuOverflow } from "./SecondaryModal"
 import { getModalWidth } from "../helpers/functions"
 
-const defaultConfig = {"type": "large", "modal-container": "--l-modal-height tw-top-[50%]", "modal": ""}
-const withOverflow = {...defaultConfig, "modal": "tw-overflow-y-auto"}
+const defaultConfig = {"type": "large", "modal-container": "tw-top-[50%]", "modal": ""}
+const withOverflow = {...defaultConfig, "modal": ""}
 
 export const modalTypes = {
 	"ADD_TICKET_FORM": AddTicketFormModal,
@@ -62,7 +62,9 @@ export const Modal = () => {
 	const type = currentModalType != null && currentModalType in modalClassNames ? modalClassNames[currentModalType as keyof typeof modalClassNames]["type"] : ""
 	const { width, height } = useScreenSize()
 	const style = {
-		width: getModalWidth(width, type) 
+		width: getModalWidth(width, type), 
+		// make sure the modal cannot exceed the screen's height (accounting for mobile browser where the bottom and top
+		// are cut off)
 	}
 
 	// define modal handlers type as the partial subset of all keys of modal types
