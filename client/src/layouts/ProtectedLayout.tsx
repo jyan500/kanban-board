@@ -105,20 +105,24 @@ const ProtectedLayout = () => {
 				{/* 
 				set max height as the screen to force scroll within the boundaries of the screen. This is to avoid issues with the sidebar
 				"jumping" on mobile browsers, since on mobile, the browser header disappears when you scroll past the screen height,
-				which alters the height calculation for the sidebar
+				which alters the height calculation for the sidebar. Also uses the dynamic view height (instead of just screen) to account
+				for address bar/nav bar on mobile browsers.
 				*/}
-				<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-flex-1 tw-min-w-0 tw-min-h-screen tw-max-h-screen">
-					<div className = "tw-relative tw-px-4 md:tw-px-16 tw-w-full tw-h-full tw-overflow-y-auto tw-pb-36">
-						<TopNav/>
-						{isDataLoaded ? (
-							<div className = "tw-space-y-2">
-								<Outlet/>
-							</div>
-						): 
-						<LoadingSkeleton
-						>
-							<BoardPlaceholder/>	
-						</LoadingSkeleton>}
+				<div className = "tw-flex tw-flex-col tw-gap-y-4 tw-flex-1 tw-min-w-0 tw-min-h-dvh tw-max-h-dvh">
+					<div className = "tw-relative tw-w-full tw-h-full tw-overflow-y-auto">
+						<div className="tw-px-4 md:tw-px-16 tw-pb-12">
+							<TopNav/>
+							{isDataLoaded ? (
+								<div className = "tw-space-y-2">
+									<Outlet/>
+								</div>
+							): 
+							<LoadingSkeleton
+							>
+								<BoardPlaceholder/>	
+							</LoadingSkeleton>}
+						</div>
+						<Footer/>
 					</div>
 				</div>
 				<Modal/>

@@ -28,12 +28,15 @@ const TempLoginProtectedLayout = () => {
 	}
 	if (isTemp){
 		return (
-			<div className = "tw-relative tw-min-h-screen tw-max-h-screen tw-flex tw-flex-col tw-gap-y-4">
-				<div className = "tw-p-4 md:tw-px-16 tw-w-full tw-h-full tw-overflow-y-auto tw-pb-36">
-					<TopNav/>
-					<div className = "tw-space-y-2">
-						<Outlet/>
+			<div className = "tw-relative tw-min-h-dvh tw-max-h-dvh tw-flex tw-flex-col tw-gap-y-4">
+				<div className = "tw-w-full tw-h-full tw-overflow-y-auto">
+					<div className="tw-p-4 md:tw-px-16 tw-pb-12">
+						<TopNav/>
+						<div className = "tw-space-y-2">
+							<Outlet/>
+						</div>
 					</div>
+					<Footer/>
 				</div>
 			</div>	
 		)

@@ -51,7 +51,7 @@ export const JoinOrganization = () => {
 		}
 	}
 	return (
-		<div className = "tw-w-1/2">
+		<div className = "tw-w-full lg:tw-w-1/2">
 			<h1 className={PRIMARY_TEXT}>Join Organization</h1>	
 			<form onSubmit={handleSubmit(onSubmit)} className = "tw-flex tw-flex-col tw-gap-y-4">
 				<div className={"tw-flex tw-flex-col tw-gap-y-2"}>

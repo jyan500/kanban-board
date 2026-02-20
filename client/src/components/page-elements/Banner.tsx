@@ -15,7 +15,7 @@ export const Banner = ({type, message, children}: Props) => {
 	const toastIcon = iconMap[type] as React.ReactNode || null
 	const color = toastColorMap[type] as string
 	return (
-		<div className = {`toast tw-flex tw-flex-col tw-w-96 tw-p-4 --${type}`}>
+		<div className = {`toast tw-flex tw-flex-col tw-w-full lg:tw-w-96 tw-p-4 --${type}`}>
 			<div className = "tw-flex tw-flex-row tw-items-center tw-gap-x-4">
 				<IconContext.Provider value = {{color: color, className: "--l-icon"}}>
 					{toastIcon && (

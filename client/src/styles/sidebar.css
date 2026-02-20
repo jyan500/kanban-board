@@ -1,6 +1,6 @@
 .sidebar {
-    height: 100dvh;
-	height: 100vh;
+    height: 100vh; /* fallback to 100vh in case 100dvh doesn't work, dvh should account for the mobile bottom navbar/address bar*/
+	height: 100dvh;
 	width: var(--sidebar-width);
 	top: 0;
 	left: 0;
