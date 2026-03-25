@@ -499,7 +499,7 @@ export const EditTicketForm = ({isModal, boardId, ticket, statusesToDisplay}: Pr
 										epicTicketType?.id !== ticket?.ticketTypeId ?
 											<div className="tw-w-[95%]">{ticketTypeSelect}</div>
 										: (
-										<div className = "tw-w-full">
+										<div className = "tw-w-full tw-text-left">
 											<div className = {`${PRIMARY_TEXT} tw-ml-3`}>{ticketTypeName}</div>
 										</div>
 										)
